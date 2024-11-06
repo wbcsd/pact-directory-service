@@ -44,6 +44,52 @@ When organizations exchange data in a bidirectional manner, each organization au
 
 ![](bidirectional-flow.png)
 
-## Authentication Service options analysis (OAuth, DNS, Certificates), pros/cons and recommendation
+## Authentication Service option analysis
 
-[In Progress]
+Besides the OAuth 2.0 authentication flow, there are other options that can be used to secure the communication between the the organizations' systems in the PACT network.
+
+### Mutual TLS
+
+Mutual TLS (Transport Layer Security) authentication requires both client and server to present and verify certificates. In this setup, each server authenticates the other by validating SSL/TLS certificates, adding an extra layer of security beyond standard bearer tokens. It's a very secure since both servers authenticate each other with trusted certificates which adds resillience against most common attack vectors.
+
+### Pros of mTLS
+
+1. **Enhanced Security and Trust**
+
+   - mTLS provides bidirectional (mutual) authentication, meaning both client and server verify each other’s identities. This significantly reduces the risk of impersonation attacks and ensures that only authorized servers can communicate with each other.
+
+2. **Protection Against Man-in-the-Middle (MitM) Attacks**
+
+   - Since both the client and server authenticate each other using certificates, mTLS makes it more challenging for attackers to intercept and alter communication between parties.
+
+3. **No Dependency on Tokens or Passwords**
+
+   - mTLS eliminates the need for passwords, API keys, or tokens, relying instead on X.509 certificates, which are harder to steal and misuse than credentials.
+
+4. **Ideal for Zero Trust Architectures**
+
+   - mTLS is often a key component of Zero Trust architectures, where each request must be authenticated and authorized, regardless of network location. This aligns with security models that assume no implicit trust.
+
+5. **Message Integrity and Confidentiality**
+   - Since TLS encryption is used, mTLS also provides data confidentiality and integrity. This means data is encrypted in transit, and unauthorized parties cannot alter or read it.
+
+### Cons of mTLS
+
+1. **Complexity in Certificate Management**
+
+   - Implementing mTLS requires managing client and server certificates, including issuing, distributing, renewing, and revoking certificates. This adds operational overhead, especially in large-scale environments.
+
+2. **Higher Setup and Maintenance Costs**
+
+   - Unlike simpler authentication methods (like API keys or bearer tokens), setting up mTLS requires more initial configuration and ongoing maintenance, including certificate authority (CA) setup and policies for certificate lifecycles.
+
+3. **Limited Compatibility**
+
+   - Not all clients and servers support mTLS out of the box, which can make it challenging to adopt in heterogeneous environments where different platforms or applications must communicate.
+
+4. **Scalability Challenges**
+
+   - Managing certificates for each client in large-scale deployments can be complex and may not scale as well as other methods like OAuth. Maintaining mTLS in microservices architectures, for example, can become challenging without automated certificate management.
+
+5. **Complexity in Error Handling and Debugging**
+   - Troubleshooting issues with mTLS can be more complex because both sides need valid certificates. Errors in certificate validity, expiration, or misconfiguration can lead to connection failures that are harder to diagnose than other authentication errors.
