@@ -91,3 +91,5 @@ Mutual TLS (Transport Layer Security) authentication requires both client and se
 
 4. **Complexity in Error Handling and Debugging**
    - Troubleshooting issues with mTLS can be more complex because both sides need valid certificates. Errors in certificate validity, expiration, or misconfiguration can lead to connection failures that are harder to diagnose than other authentication errors.
+
+**Recommendation:** The PACT network should use OAuth 2.0 for authentication and authorization as it is a widely adopted standard for securing APIs and provides a good balance between security and usability. Organizations can use mTLS in addition to OAuth 2.0 for an extra layer of security if needed, but at this moment it should not be the primary method of authentication as it requires more operational overhead and complexity that could result in friction to adoption, and a barrier to entry for smaller organizations.
