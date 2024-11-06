@@ -50,7 +50,9 @@ Besides the OAuth 2.0 authentication flow, there are other options that can be u
 
 ### Mutual TLS
 
-Mutual TLS (Transport Layer Security) authentication requires both client and server to present and verify certificates. In this setup, each server authenticates the other by validating SSL/TLS certificates, adding an extra layer of security beyond standard bearer tokens. It's a very secure since both servers authenticate each other with trusted certificates which adds resillience against most common attack vectors.
+Mutual TLS (Transport Layer Security) authentication requires both client and server to present and verify certificates. In this setup, each server authenticates the other by validating SSL/TLS certificates, adding an extra layer of security beyond standard bearer tokens. It's a very secure since both servers authenticate each other with trusted certificates which adds resillience against most common attack vectors. A request flow would look like this:
+
+![alt text](mtls-diagram.png)
 
 ### Pros of mTLS
 
@@ -81,15 +83,11 @@ Mutual TLS (Transport Layer Security) authentication requires both client and se
 
 2. **Higher Setup and Maintenance Costs**
 
-   - Unlike simpler authentication methods (like API keys or bearer tokens), setting up mTLS requires more initial configuration and ongoing maintenance, including certificate authority (CA) setup and policies for certificate lifecycles.
+   - Unlike simpler authentication methods (like API keys or bearer tokens), setting up mTLS requires more initial configuration and ongoing maintenance, including more involvement from IT teams within the organization(s) or Solution Providers.
 
-3. **Limited Compatibility**
-
-   - Not all clients and servers support mTLS out of the box, which can make it challenging to adopt in heterogeneous environments where different platforms or applications must communicate.
-
-4. **Scalability Challenges**
+3. **Scalability Challenges**
 
    - Managing certificates for each client in large-scale deployments can be complex and may not scale as well as other methods like OAuth. Maintaining mTLS in microservices architectures, for example, can become challenging without automated certificate management.
 
-5. **Complexity in Error Handling and Debugging**
+4. **Complexity in Error Handling and Debugging**
    - Troubleshooting issues with mTLS can be more complex because both sides need valid certificates. Errors in certificate validity, expiration, or misconfiguration can lead to connection failures that are harder to diagnose than other authentication errors.
