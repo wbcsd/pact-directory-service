@@ -47,3 +47,27 @@ sequenceDiagram
     API->>Client: POST Event Action (e.g., POST /2/eventssubpath)
     API->>Client: Respond with created PCF data
 ```
+
+## mTLS Flow
+
+```mermaid
+sequenceDiagram
+    participant Service A as Data Recipient
+    participant Service B as Host System
+
+    Note over Service A,Service B: Both services have certificates signed by the same internal CA<br>and trust each other’s certificates directly.
+
+    Service A->>Service B: Initiates mTLS connection
+    Service B-->>Service A: Sends server certificate
+    Service A->>Service A: Validates Service B's certificate against trusted root store
+
+    Service A-->>Service B: Sends client certificate
+    Service B->>Service B: Validates Service A's certificate against trusted root store
+
+    Note over Service A,Service B: If both validations succeed, mTLS connection is established
+
+    Service A->>Service B: Sends secured request
+    Service B-->>Service A: Sends secured
+
+    Note over Service A,Service B: Ongoing encrypted communication over TLS connection
+```
