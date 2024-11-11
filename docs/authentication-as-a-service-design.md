@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The purpose of this document is to outline the design of the authentication service for the PACT network. The authentication service will be responsible for managing client authentication and authorization for the systems exchanging data within the network.
+The purpose of this document is to outline the design of the authentication service for the PACT Network. The authentication service will be responsible for managing client authentication and authorization for the systems exchanging data within the network.
 
 ## Technical Architecture
 
@@ -46,11 +46,11 @@ When organizations exchange data in a bidirectional manner, each organization au
 
 ## Authentication Service option analysis
 
-Besides the OAuth 2.0 authentication flow, there are other options that can be used to secure the communication between the the organizations' systems in the PACT network.
+Besides the OAuth 2.0 authentication flow, there are other options that can be used to secure the communication between the organizations' systems in the PACT Network.
 
 ### Mutual TLS
 
-Mutual TLS (Transport Layer Security) authentication requires both client and server to present and verify certificates. In this setup, each server authenticates the other by validating SSL/TLS certificates, adding an extra layer of security beyond standard bearer tokens. It's a very secure since both servers authenticate each other with trusted certificates which adds resillience against most common attack vectors. A request flow would look like this:
+Mutual TLS (Transport Layer Security) authentication requires both client and server to present and verify certificates. In this setup, each server authenticates the other by validating SSL/TLS certificates, adding an extra layer of security beyond standard bearer tokens. It's very secure since both servers authenticate each other with trusted certificates which adds resillience against most common attack vectors. A request flow would look like this:
 
 ![alt text](mtls-diagram.png)
 
@@ -92,4 +92,4 @@ Mutual TLS (Transport Layer Security) authentication requires both client and se
 4. **Complexity in Error Handling and Debugging**
    - Troubleshooting issues with mTLS can be more complex because both sides need valid certificates. Errors in certificate validity, expiration, or misconfiguration can lead to connection failures that are harder to diagnose than other authentication errors.
 
-**Recommendation:** The PACT network should use OAuth 2.0 for authentication and authorization as it is a widely adopted standard for securing APIs and provides a good balance between security and usability. Organizations can use mTLS in addition to OAuth 2.0 for an extra layer of security if needed, but at this moment it should not be the primary method of authentication as it requires more operational overhead and complexity that could result in friction to adoption, and a barrier to entry for smaller organizations.
+**Recommendation:** The PACT Network should use OAuth 2.0 for authentication and authorization as it is a widely adopted standard for securing APIs and provides a good balance between security and usability. Organizations can use mTLS in addition to OAuth 2.0 for an extra layer of security if needed, but at this moment it should not be the primary method of authentication as it requires more operational overhead and complexity that could result in friction to adoption, and a barrier to entry for smaller organizations.
