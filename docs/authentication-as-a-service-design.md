@@ -50,7 +50,7 @@ Besides the OAuth 2.0 authentication flow, there are other options that can be u
 
 ### Mutual TLS
 
-Mutual TLS (Transport Layer Security) authentication requires both client and server to present and verify certificates. In this setup, each server authenticates the other by validating SSL/TLS certificates, adding an extra layer of security beyond standard bearer tokens. It's a very secure since both servers authenticate each other with trusted certificates which adds resillience against most common attack vectors. A request flow would look like this:
+Mutual TLS (Transport Layer Security) authentication requires both client and server to present and verify certificates. In this setup, each server authenticates the other by validating SSL/TLS certificates, adding an extra layer of security beyond standard bearer tokens. It's very secure since both servers authenticate each other with trusted certificates which adds resillience against most common attack vectors. A request flow would look like this:
 
 ![alt text](mtls-diagram.png)
 
