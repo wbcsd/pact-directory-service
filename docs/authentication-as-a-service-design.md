@@ -9,18 +9,18 @@ The purpose of this document is to outline the design of the authentication serv
 From a high level overview the PACT Authentication Service includes three key components:
 
 - Organizations Store: A central database or storage solution that holds information about the various organizations in the network.
-- PACT Directory Website: An interface for users within these organizations to discover and exchange PCF data. This interface also allows orgnisations to request and grant access to other organizations to their PCF data.
-- PACT Authentication Service REST API: A RESTful API that allows client systems to authenticate using the OAuth 2.0 standard so they access the PACT conforming APIs in the network.
+- PACT Directory Portal: An interface for users within these organizations to discover and exchange PCF data. This interface also allows orgnisations to request and grant access to other organizations to their PCF data.
+- PACT Authentication Service REST API: A RESTful API that allows client systems to authenticate using the OAuth 2.0 standard so they access the PACT conformant APIs in the network.
 
 ![](<PACT Authentication As A Service.jpg>)
 
 ## Registering an organization in the PACT directory
 
-When an organization wants to join the PACT network, it will need to register in the PACT directory website. The registration process will involve providing the organization's name, contact information, and other relevant details. Once the organization is registered, it will be able to request and grant access to other organizations sharing PCF data through their PACT compliant APIs.
+When an organization wants to join the PACT network, it will need to register in the PACT Directory Portal. The registration process will involve providing the organization's name, contact information, and other relevant details. Once the organization is registered, it will be able to request and grant access to other organizations sharing PCF data through their PACT conformant APIs.
 
 ## Data access request flow
 
-When an organization wants to access PCF data from another organization, it will need to request access through the PACT directory. The second organization will receive an email notification directing them to PACT directory where they can grant or deny access to the requesting organization.
+When an organization wants to access PCF data from another organization, it can request to create a contract between the two oganizations through the PACT Directory Portal. The second organization will receive an email notification directing them to PACT Directory Portal where they can grant or deny access to the requesting organization.
 
 The authentication grant flow will be as follows:
 
@@ -28,9 +28,9 @@ The authentication grant flow will be as follows:
 
 ## Credentials and Authentication
 
-Each organization will be issued a `client_id` and `client_secret` pair that will be used to authenticate with the PACT Authentication Service. These credentials will be unique to each organization and will be used to identify the organization when making requests to the PACT Authentication Service to get an access token that will allow them to request PCF data from connected organizations.
+Each organization will be issued a `client_id` and `client_secret` pair that will be used to authenticate with the PACT Authentication Service. These credentials will be unique to each organization and will be used to identify the organization, and its PACT Conformant Solution, when making requests to the PACT Authentication Service to get an access token that will allow them to request PCF data from connected organizations.
 
-When a PACT conforming API receives a request from a client system, it will validate the access token provided by the client system with the PACT Authentication Service to ensure that the client system is authorized to access the data using the `client_secret` issued by the Authentication Service to validate the access token's authenticity.
+When a PACT conformant API receives a request from a client system, it will validate the access token provided by the client system with the PACT Authentication Service to ensure that the client system is authorized to access the data using the `client_secret` issued by the Authentication Service to validate the access token's authenticity.
 
 ## API request (PCF data) flow
 
@@ -52,7 +52,7 @@ Besides the OAuth 2.0 authentication flow, there are other options that can be u
 
 Mutual TLS (Transport Layer Security) authentication requires both client and server to present and verify certificates. In this setup, each server authenticates the other by validating SSL/TLS certificates, adding an extra layer of security beyond standard bearer tokens. It's very secure since both servers authenticate each other with trusted certificates which adds resillience against most common attack vectors. A request flow would look like this:
 
-![alt text](mtls-diagram.png)
+![](mtls-diagram.png)
 
 ### Pros of mTLS
 
@@ -77,19 +77,23 @@ Mutual TLS (Transport Layer Security) authentication requires both client and se
 
 ### Cons of mTLS
 
-1. **Complexity in Certificate Management**
+1. **Change to the PACT Tech Specs**
+
+   - PACT Tech Specs require OAuth, and PACT community has therefore implemented OAuth based authentication; changing to a different authentication flow would require a new major version and all implementations to upgrade, making IM non-usable until orgs have completed this implementation and therefore impractical as a choice for MVP
+
+2. **Complexity in Certificate Management**
 
    - Implementing mTLS requires managing client and server certificates, including issuing, distributing, renewing, and revoking certificates. This adds operational overhead, especially in large-scale environments.
 
-2. **Higher Setup and Maintenance Costs**
+3. **Higher Setup and Maintenance Costs**
 
    - Unlike simpler authentication methods (like API keys or bearer tokens), setting up mTLS requires more initial configuration and ongoing maintenance, including more involvement from IT teams within the organization(s) or Solution Providers.
 
-3. **Scalability Challenges**
+4. **Scalability Challenges**
 
    - Managing certificates for each client in large-scale deployments can be complex and may not scale as well as other methods like OAuth. Maintaining mTLS in microservices architectures, for example, can become challenging without automated certificate management.
 
-4. **Complexity in Error Handling and Debugging**
+5. **Complexity in Error Handling and Debugging**
    - Troubleshooting issues with mTLS can be more complex because both sides need valid certificates. Errors in certificate validity, expiration, or misconfiguration can lead to connection failures that are harder to diagnose than other authentication errors.
 
 **Recommendation:** The PACT Network should use OAuth 2.0 for authentication and authorization as it is a widely adopted standard for securing APIs and provides a good balance between security and usability. Organizations can use mTLS in addition to OAuth 2.0 for an extra layer of security if needed, but at this moment it should not be the primary method of authentication as it requires more operational overhead and complexity that could result in friction to adoption, and a barrier to entry for smaller organizations.

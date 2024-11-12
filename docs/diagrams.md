@@ -18,7 +18,7 @@ sequenceDiagram
 sequenceDiagram
     participant Client as Data Recipient
     participant OAuthProvider as PACT IM OAuth Provider
-    participant API as Host System
+    participant API as Data Owner
 
     Client->>OAuthProvider: Exchange client_id, client_secret, and api url for Access Token
     OAuthProvider->>Client: Respond with Access Token
@@ -33,7 +33,7 @@ sequenceDiagram
 sequenceDiagram
     participant Client as Data Recipient
     participant OAuthProvider as PACT IM OAuth Provider
-    participant API as Host System
+    participant API as Data Owner
 
     Client->>OAuthProvider: Exchange client_id, client_secret, and api url for Access Token
     OAuthProvider->>Client: Respond with Access Token
@@ -53,7 +53,7 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant Service A as Data Recipient
-    participant Service B as Host System
+    participant Service B as Data Owner
 
     Note over Service A,Service B: Both services have certificates signed by the same internal CA<br>and trust each other’s certificates directly.
 
