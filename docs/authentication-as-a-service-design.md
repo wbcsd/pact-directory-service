@@ -97,3 +97,22 @@ Mutual TLS (Transport Layer Security) authentication requires both client and se
    - Troubleshooting issues with mTLS can be more complex because both sides need valid certificates. Errors in certificate validity, expiration, or misconfiguration can lead to connection failures that are harder to diagnose than other authentication errors.
 
 **Recommendation:** The PACT Network should use OAuth 2.0 for authentication and authorization as it is a widely adopted standard for securing APIs and provides a good balance between security and usability. Organizations can use mTLS in addition to OAuth 2.0 for an extra layer of security if needed, but at this moment it should not be the primary method of authentication as it requires more operational overhead and complexity that could result in friction to adoption, and a barrier to entry for smaller organizations.
+
+## Proposed Tech Stack
+
+The PACT Authentication Service, PACT Directory Portal will be built using the following technologies:
+
+1. **Core Backend**
+   - Node.js: Server environment for running JavaScript code on the backend.
+   - TypeScript: Type-safe language built on JavaScript, enabling easier development with type-checking and IDE support.
+2. **API Framework**
+   - Express.js: Lightweight and flexible web application framework for Node.js to handle HTTP requests and routing.
+3. **Authentication & Authorization**
+   - node-oauth2-server: OAuth 2.0 authorization server library for Node.js, which can be used to issue and manage access tokens.
+4. **Database**
+   - PostgreSQL: Relational database known for its robustness, especially with large datasets, very well suited for storing user data and token-related information.
+5. **Core Frontend**
+   - React: JavaScript library for building interactive user interfaces.
+   - TypeScript: Type-safe development in React, which enhances development productivity and reduces runtime errors.
+6. **UI Component Library**
+   - Radix UI: Primitives library for building accessible, unstyled UI components, offering building blocks for a highly customizable design.
