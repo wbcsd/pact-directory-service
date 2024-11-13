@@ -46,6 +46,9 @@ const SignupPage: React.FC = () => {
               style={{ display: "block", width: "100%", marginBottom: "10px" }}
             />
           </Form.Control>
+          <Form.Message match="valueMissing" style={{ color: "red" }}>
+            Company name is required.
+          </Form.Message>
         </Form.Field>
         <Form.Field name="companyIdentifier">
           <Form.Label>
@@ -79,6 +82,9 @@ const SignupPage: React.FC = () => {
               style={{ display: "block", width: "100%", marginBottom: "10px" }}
             />
           </Form.Control>
+          <Form.Message match="valueMissing" style={{ color: "red" }}>
+            Company identifier is required.
+          </Form.Message>
         </Form.Field>
         <Form.Field name="fullName">
           <Form.Label>
@@ -112,6 +118,9 @@ const SignupPage: React.FC = () => {
               style={{ display: "block", width: "100%", marginBottom: "10px" }}
             />
           </Form.Control>
+          <Form.Message match="valueMissing" style={{ color: "red" }}>
+            Your name is required.
+          </Form.Message>
         </Form.Field>
         <Form.Field name="email">
           <Form.Label>
@@ -145,6 +154,9 @@ const SignupPage: React.FC = () => {
               style={{ display: "block", width: "100%", marginBottom: "10px" }}
             />
           </Form.Control>
+          <Form.Message match="valueMissing" style={{ color: "red" }}>
+            Email is required.
+          </Form.Message>
         </Form.Field>
         <Form.Field name="password">
           <Form.Label>
@@ -177,6 +189,9 @@ const SignupPage: React.FC = () => {
               style={{ display: "block", width: "100%", marginBottom: "10px" }}
             />
           </Form.Control>
+          <Form.Message match="valueMissing" style={{ color: "red" }}>
+            Password is required.
+          </Form.Message>
         </Form.Field>
         <Form.Field name="solutionProdUrl">
           <Form.Label>
@@ -204,11 +219,14 @@ const SignupPage: React.FC = () => {
           </Form.Label>
           <Form.Control asChild>
             <input
-              type="password"
+              type="text"
               required
               style={{ display: "block", width: "100%", marginBottom: "10px" }}
             />
           </Form.Control>
+          <Form.Message match="valueMissing" style={{ color: "red" }}>
+            Solution API production URL is required.
+          </Form.Message>
         </Form.Field>
         <Form.Field name="solutionDevUrl">
           <Form.Label>
@@ -236,11 +254,14 @@ const SignupPage: React.FC = () => {
           </Form.Label>
           <Form.Control asChild>
             <input
-              type="password"
+              type="text"
               required
               style={{ display: "block", width: "100%", marginBottom: "10px" }}
             />
           </Form.Control>
+          <Form.Message match="valueMissing" style={{ color: "red" }}>
+            Solution API development URL is required.
+          </Form.Message>
         </Form.Field>
         <Form.Field name="registrationCode">
           <Form.Label>
@@ -273,6 +294,9 @@ const SignupPage: React.FC = () => {
               style={{ display: "block", width: "100%", marginBottom: "10px" }}
             />
           </Form.Control>
+          <Form.Message match="valueMissing" style={{ color: "red" }}>
+            Registration code is required.
+          </Form.Message>
         </Form.Field>
         <Form.Submit asChild>
           <button type="submit" style={{ marginTop: "10px" }}>
