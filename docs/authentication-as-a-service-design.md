@@ -8,7 +8,7 @@ The purpose of this document is to outline the design of the authentication serv
 
 From a high level overview the PACT Authentication Service includes three key components:
 
-- Organizations Store: A central database or storage solution that holds information about the various organizations in the network.
+- PACT Directory: A central database or storage solution that holds information about the various organizations in the network.
 - PACT Directory Portal: An interface for users within these organizations to discover and exchange PCF data. This interface also allows orgnisations to request and grant access to other organizations to their PCF data.
 - PACT Authentication Service REST API: A RESTful API that allows client systems to authenticate using the OAuth 2.0 standard so they access the PACT conformant APIs in the network.
 
