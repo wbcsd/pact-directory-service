@@ -3,7 +3,15 @@
  */
 
 export default {
-  Base: "/api",
+  DirectoryBase: "/api/directory",
+  Companies: {
+    Base: "/companies",
+    Signup: "/signup",
+    Login: "/login",
+    MyProfile: "/my-profile",
+    Profile: "/profile/:id",
+    Search: "/search",
+  },
   Users: {
     Base: "/users",
     Get: "/all",

@@ -27,7 +27,6 @@ export default tseslint.config(
   { files: ["**/*.ts"] },
   {
     rules: {
-      "@typescript-eslint/explicit-member-accessibility": "warn",
       "@typescript-eslint/no-misused-promises": 0,
       "@typescript-eslint/no-floating-promises": 0,
       "@typescript-eslint/no-confusing-void-expression": 0,
@@ -43,7 +42,16 @@ export default tseslint.config(
         },
       ],
       "@stylistic/ts/semi": ["warn"],
-      "comma-dangle": ["warn", "always-multiline"],
+      "comma-dangle": [
+        "warn",
+        {
+          arrays: "always-multiline",
+          objects: "always-multiline",
+          imports: "always-multiline",
+          exports: "always",
+          functions: "never",
+        },
+      ],
       "no-console": 1,
       "no-extra-boolean-cast": 0,
       indent: ["warn", 2],
@@ -51,5 +59,5 @@ export default tseslint.config(
       "n/no-missing-import": 0,
       "n/no-unpublished-import": 0,
     },
-  },
+  }
 );

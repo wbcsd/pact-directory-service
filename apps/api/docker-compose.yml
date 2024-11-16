@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  pact-directory-local-db:
+    image: postgres:15.2-alpine
+    volumes:
+      - pact-directory-local-db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 5432:5432
+    networks:
+      - postgres-network
+  prepare-db:
+    image: postgres:15.2-alpine
+    container_name: create-pact-directory-db-container
+    depends_on:
+      - pact-directory-local-db
+    environment:
+      PGPASSWORD: postgres
+    command: >
+      bash -c "while ! psql -h pact-directory-local-db -U postgres -d postgres -c 'SELECT 1;'; do sleep 1; done;
+      psql -h pact-directory-local-db -U postgres -tc \"SELECT 1 FROM pg_database WHERE datname = 'pact_directory_local'\" | grep -q 1 || psql -h pact-directory-local-db -U postgres -c 'CREATE DATABASE pact_directory_local;'"
+    networks:
+      - postgres-network
+volumes:
+  pact-directory-local-db:
+    driver: local
+networks:
+  postgres-network:
