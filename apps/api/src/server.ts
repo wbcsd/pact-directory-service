@@ -4,6 +4,7 @@ import express, { Request, Response, NextFunction } from "express";
 import logger from "jet-logger";
 
 import "express-async-errors";
+import cors from "cors";
 
 import BaseRouter from "@src/routes";
 
@@ -20,6 +21,7 @@ const app = express();
 // **** Setup **** //
 
 // Basic middleware
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

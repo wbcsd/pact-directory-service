@@ -1,8 +1,16 @@
 // src/App.tsx
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  Navigate,
+} from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
+import MyProfile from "./pages/MyProfile";
+import SearchPage from "./pages/SearchPage";
 
 const App: React.FC = () => {
   return (
@@ -12,11 +20,20 @@ const App: React.FC = () => {
           <Link to="/login" style={{ marginRight: "10px" }}>
             Login
           </Link>
-          <Link to="/signup">Sign Up</Link>
+          <Link to="/signup" style={{ marginRight: "10px" }}>
+            Sign Up
+          </Link>
+          <Link to="/my-profile" style={{ marginRight: "10px" }}>
+            My Profile
+          </Link>
+          <Link to="/search">Search</Link>
         </nav>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/my-profile" element={<MyProfile />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/" element={<Navigate to="/signup" />} />
         </Routes>
       </div>
     </Router>

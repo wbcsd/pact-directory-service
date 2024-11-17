@@ -24,6 +24,8 @@ async function signup(req: IReq, res: IRes) {
     registrationCode,
   } = req.body;
 
+  // TODO: validations: email already exists, registration code is valid
+
   // Check if passwords match
   if (password !== confirmPassword) {
     res
@@ -35,6 +37,8 @@ async function signup(req: IReq, res: IRes) {
 
   // Hash the password
   const hashedPassword = await bcrypt.hash(password as string, 10);
+
+  // TODO: generate client_id and client_secret
 
   // Insert into companies table
   // TODO do in transaction and rollback if user insert fails
@@ -52,7 +56,7 @@ async function signup(req: IReq, res: IRes) {
     .executeTakeFirstOrThrow();
 
   // Insert into users table
-  await db
+  const user = await db
     .insertInto("users")
     .values({
       fullName: fullName as string,
@@ -60,11 +64,14 @@ async function signup(req: IReq, res: IRes) {
       password: hashedPassword,
       companyId: company.id,
     })
-    .execute();
+    .returning(["id as userId", "email", "companyId"])
+    .executeTakeFirstOrThrow();
 
-  // TODO: generate client_id and client_secret
+  const token = jwt.sign(user, EnvVars.Jwt.Secret, {
+    expiresIn: "1h", // Token expiration time
+  });
 
-  res.status(HttpStatusCodes.CREATED).end();
+  res.status(HttpStatusCodes.CREATED).json({ token });
 }
 
 /**
@@ -126,14 +133,17 @@ async function myProfile(req: IReq, res: IRes) {
 
   const company = await db
     .selectFrom("companies")
+    .innerJoin("users", "companies.id", "users.companyId")
     .select([
-      "id",
-      "companyName",
-      "companyIdentifier",
-      "solutionApiProdUrl",
-      "solutionApiDevUrl",
+      "companies.id",
+      "companies.companyName",
+      "companies.companyIdentifier",
+      "companies.solutionApiProdUrl",
+      "companies.solutionApiDevUrl",
+      "users.fullName",
+      "users.email",
     ])
-    .where("id", "=", Number(companyId))
+    .where("companies.id", "=", Number(companyId))
     .executeTakeFirst();
 
   if (!company) {
@@ -201,6 +211,7 @@ async function searchCompanies(req: IReq, res: IRes) {
       "companies.solutionApiDevUrl",
       "companies.registrationCode",
       "users.email",
+      "users.fullName",
     ])
     .where("companies.companyName", "ilike", `%${searchQuery as string}%`)
     .execute();

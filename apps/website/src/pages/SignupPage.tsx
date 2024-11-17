@@ -1,9 +1,69 @@
 // src/pages/SignupPage.tsx
-import React from "react";
+import React, { useState } from "react";
 import * as Form from "@radix-ui/react-form";
 import { Box } from "@radix-ui/themes";
 import * as Tooltip from "@radix-ui/react-tooltip";
+import { useNavigate } from "react-router-dom";
+
 const SignupPage: React.FC = () => {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    companyName: "",
+    companyIdentifier: "",
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    solutionApiProdUrl: "",
+    solutionApiDevUrl: "",
+    registrationCode: "",
+  });
+  const [status, setStatus] = useState<null | "success" | "error">(null);
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    try {
+      console.log("Submitting form data:", formData);
+
+      // TODO: store api url properly in .env
+      const response = await fetch(
+        "http://localhost:3010/api/directory/companies/signup",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        const { token } = data;
+
+        // Save the token to local storage
+        localStorage.setItem("jwt", token);
+
+        setStatus("success");
+        console.log("Registration successful");
+
+        navigate("/my-profile");
+      } else {
+        setStatus("error");
+        console.error("Registration failed");
+      }
+    } catch (error) {
+      setStatus("error");
+      console.error("An error occurred:", error);
+    }
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
   return (
     <Box
       style={{
@@ -13,7 +73,7 @@ const SignupPage: React.FC = () => {
       }}
     >
       <h2>Sign Up</h2>
-      <Form.Root>
+      <Form.Root onSubmit={handleSubmit}>
         <Form.Field name="companyName">
           <Form.Label>
             Company Name
@@ -43,6 +103,8 @@ const SignupPage: React.FC = () => {
             <input
               type="text"
               required
+              value={formData.companyName}
+              onChange={handleChange}
               style={{ display: "block", width: "100%", marginBottom: "10px" }}
             />
           </Form.Control>
@@ -79,6 +141,8 @@ const SignupPage: React.FC = () => {
             <input
               type="text"
               required
+              value={formData.companyIdentifier}
+              onChange={handleChange}
               style={{ display: "block", width: "100%", marginBottom: "10px" }}
             />
           </Form.Control>
@@ -115,6 +179,8 @@ const SignupPage: React.FC = () => {
             <input
               type="text"
               required
+              value={formData.fullName}
+              onChange={handleChange}
               style={{ display: "block", width: "100%", marginBottom: "10px" }}
             />
           </Form.Control>
@@ -151,6 +217,8 @@ const SignupPage: React.FC = () => {
             <input
               type="email"
               required
+              value={formData.email}
+              onChange={handleChange}
               style={{ display: "block", width: "100%", marginBottom: "10px" }}
             />
           </Form.Control>
@@ -186,6 +254,8 @@ const SignupPage: React.FC = () => {
             <input
               type="password"
               required
+              value={formData.password}
+              onChange={handleChange}
               style={{ display: "block", width: "100%", marginBottom: "10px" }}
             />
           </Form.Control>
@@ -193,7 +263,50 @@ const SignupPage: React.FC = () => {
             Password is required.
           </Form.Message>
         </Form.Field>
-        <Form.Field name="solutionProdUrl">
+        <Form.Field name="confirmPassword">
+          <Form.Label>
+            Confirm Password
+            <Tooltip.Provider delayDuration={0}>
+              <Tooltip.Root>
+                <Tooltip.Trigger asChild>
+                  <span
+                    style={{
+                      marginLeft: "8px",
+                      cursor: "pointer",
+                      fontSize: "16px",
+                      color: "#888",
+                    }}
+                  >
+                    ℹ️
+                  </span>
+                </Tooltip.Trigger>
+                <Tooltip.Content side="right" align="center" sideOffset={5}>
+                  Please confirm your password.
+                  <Tooltip.Arrow />
+                </Tooltip.Content>
+              </Tooltip.Root>
+            </Tooltip.Provider>
+          </Form.Label>
+          <Form.Control asChild>
+            <input
+              type="password"
+              required
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              style={{ display: "block", width: "100%", marginBottom: "10px" }}
+            />
+          </Form.Control>
+          <Form.Message match="valueMissing" style={{ color: "red" }}>
+            Please confirm your password.
+          </Form.Message>
+          <Form.Message
+            match={(value) => value !== formData.password}
+            style={{ color: "red" }}
+          >
+            Passwords do not match.
+          </Form.Message>
+        </Form.Field>
+        <Form.Field name="solutionApiProdUrl">
           <Form.Label>
             Solution Api Production URL
             <Tooltip.Provider delayDuration={0}>
@@ -221,6 +334,8 @@ const SignupPage: React.FC = () => {
             <input
               type="text"
               required
+              value={formData.solutionApiProdUrl}
+              onChange={handleChange}
               style={{ display: "block", width: "100%", marginBottom: "10px" }}
             />
           </Form.Control>
@@ -228,7 +343,7 @@ const SignupPage: React.FC = () => {
             Solution API production URL is required.
           </Form.Message>
         </Form.Field>
-        <Form.Field name="solutionDevUrl">
+        <Form.Field name="solutionApiDevUrl">
           <Form.Label>
             Solution Api Development URL
             <Tooltip.Provider delayDuration={0}>
@@ -256,6 +371,8 @@ const SignupPage: React.FC = () => {
             <input
               type="text"
               required
+              value={formData.solutionApiDevUrl}
+              onChange={handleChange}
               style={{ display: "block", width: "100%", marginBottom: "10px" }}
             />
           </Form.Control>
@@ -291,6 +408,8 @@ const SignupPage: React.FC = () => {
             <input
               type="text"
               required
+              value={formData.registrationCode}
+              onChange={handleChange}
               style={{ display: "block", width: "100%", marginBottom: "10px" }}
             />
           </Form.Control>

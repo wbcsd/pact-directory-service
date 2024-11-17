@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "express-async-errors": "^3.1.1",
@@ -33,6 +34,7 @@
     "@eslint/js": "^9.13.0",
     "@stylistic/eslint-plugin-ts": "^2.9.0",
     "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
     "@types/eslint__js": "^8.42.3",
     "@types/express": "^5.0.0",
     "@types/find": "^0.2.4",

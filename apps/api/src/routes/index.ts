@@ -23,6 +23,7 @@ userRouter.delete(Paths.Users.Delete, UserRoutes.delete);
 // Signup
 companyRouter.post(Paths.Companies.Signup, CompanyRoutes.signup);
 companyRouter.post(Paths.Companies.Login, CompanyRoutes.login);
+// TODO: the following routes should be protected with the jwt auth middleware
 companyRouter.get(Paths.Companies.MyProfile, CompanyRoutes.myProfile);
 companyRouter.get(Paths.Companies.Profile, CompanyRoutes.getCompany);
 companyRouter.get(Paths.Companies.Search, CompanyRoutes.searchCompanies);
