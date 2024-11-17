@@ -180,11 +180,8 @@ async function getCompany(req: IReq, res: IRes) {
  * Search companies by companyName
  */
 async function searchCompanies(req: IReq, res: IRes) {
-  // TODO Add auth middleware
-
+  // TODO validate with zod
   const { searchQuery } = req.query;
-
-  // TODO validate searchQuery with zod
 
   if (!searchQuery) {
     res
@@ -195,15 +192,17 @@ async function searchCompanies(req: IReq, res: IRes) {
 
   const companies = await db
     .selectFrom("companies")
+    .innerJoin("users", "companies.id", "users.companyId")
     .select([
-      "id",
-      "companyName",
-      "companyIdentifier",
-      "solutionApiProdUrl",
-      "solutionApiDevUrl",
+      "companies.id",
+      "companies.companyName",
+      "companies.companyIdentifier",
+      "companies.solutionApiProdUrl",
+      "companies.solutionApiDevUrl",
+      "companies.registrationCode",
+      "users.email",
     ])
-
-    .where("companyName", "ilike", `%${searchQuery as string}%`)
+    .where("companies.companyName", "ilike", `%${searchQuery as string}%`)
     .execute();
 
   res.json(companies);
