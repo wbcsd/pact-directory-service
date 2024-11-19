@@ -27,6 +27,10 @@ companyRouter.post(Paths.Companies.Login, CompanyRoutes.login);
 companyRouter.get(Paths.Companies.MyProfile, CompanyRoutes.myProfile);
 companyRouter.get(Paths.Companies.Profile, CompanyRoutes.getCompany);
 companyRouter.get(Paths.Companies.Search, CompanyRoutes.searchCompanies);
+companyRouter.post(
+  Paths.Companies.CreateConnectionRequest,
+  CompanyRoutes.createConnectionRequest
+);
 
 // Add UserRouter
 apiRouter.use(Paths.Users.Base, userRouter);

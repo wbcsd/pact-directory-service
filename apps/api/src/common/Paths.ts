@@ -11,6 +11,7 @@ export default {
     MyProfile: "/my-profile",
     Profile: "/profile/:id",
     Search: "/search",
+    CreateConnectionRequest: "/create-connection-request",
   },
   Users: {
     Base: "/users",

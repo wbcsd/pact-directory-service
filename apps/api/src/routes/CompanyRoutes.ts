@@ -1,9 +1,10 @@
-import HttpStatusCodes from "@src/common/HttpStatusCodes";
-import { IReq, IRes } from "./common/types";
-import { db } from "../database/db";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import EnvVars from "@src/common/EnvVars";
+import HttpStatusCodes from "@src/common/HttpStatusCodes";
+import { connectionRequestStatus } from "@src/common/types";
+import { db } from "@src/database/db";
+import { IReq, IRes } from "./common/types";
 
 /**
  *
@@ -120,7 +121,9 @@ async function myProfile(req: IReq, res: IRes) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader?.startsWith("Bearer ")) {
-    res.status(401).json({ message: "Token missing or malformed" });
+    res
+      .status(HttpStatusCodes.UNAUTHORIZED)
+      .json({ message: "Token missing or malformed" });
     return void 0;
   }
 
@@ -146,12 +149,49 @@ async function myProfile(req: IReq, res: IRes) {
     .where("companies.id", "=", Number(companyId))
     .executeTakeFirst();
 
+  const sentConnectionRequests = await db
+    .selectFrom("connection_requests")
+    .innerJoin(
+      "companies",
+      "connection_requests.requestedCompanyId",
+      "companies.id"
+    )
+    .select(["createdAt", "status", "companies.companyName"])
+    .where("requestingCompanyId", "=", Number(companyId))
+
+    .execute();
+
+  const receivedConnectionRequests = await db
+    .selectFrom("connection_requests")
+    .innerJoin(
+      "companies",
+      "connection_requests.requestingCompanyId",
+      "companies.id"
+    )
+    .select([
+      "requestingCompanyId",
+      "requestedCompanyId",
+      "createdAt",
+      "status",
+      "companies.companyName",
+    ])
+    .where("requestedCompanyId", "=", Number(companyId))
+    .execute();
+
   if (!company) {
-    res.status(404).json({ message: "Company not found" });
+    res
+      .status(HttpStatusCodes.NOT_FOUND)
+      .json({ message: "Company not found" });
     return void 0;
   }
 
-  res.json(company);
+  res.json({
+    ...company,
+    connectionRequests: {
+      sent: sentConnectionRequests,
+      received: receivedConnectionRequests,
+    },
+  });
 }
 
 /**
@@ -159,6 +199,21 @@ async function myProfile(req: IReq, res: IRes) {
  */
 async function getCompany(req: IReq, res: IRes) {
   // TODO Add auth middleware
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader?.startsWith("Bearer ")) {
+    res
+      .status(HttpStatusCodes.UNAUTHORIZED)
+      .json({ message: "Token missing or malformed" });
+    return void 0;
+  }
+
+  const token = authHeader.split(" ")[1];
+  const decoded = jwt.verify(token, EnvVars.Jwt.Secret);
+
+  const user = decoded;
+
+  const { companyId: currentUserCompanyId } = user as { companyId: string };
 
   const { id } = req.params;
 
@@ -166,14 +221,17 @@ async function getCompany(req: IReq, res: IRes) {
 
   const company = await db
     .selectFrom("companies")
+    .innerJoin("users", "companies.id", "users.companyId")
     .select([
-      "id",
+      "companies.id",
       "companyName",
       "companyIdentifier",
       "solutionApiProdUrl",
       "solutionApiDevUrl",
+      "users.fullName",
+      "users.email",
     ])
-    .where("id", "=", Number(id))
+    .where("companies.id", "=", Number(id))
     .executeTakeFirst();
 
   if (!company) {
@@ -183,7 +241,15 @@ async function getCompany(req: IReq, res: IRes) {
     return;
   }
 
-  res.json(company);
+  // These are the connection requests sent by the current user on behalf of
+  // their company
+  const sentConnectionRequest = await db
+    .selectFrom("connection_requests")
+    .select(["createdAt", "status"])
+    .where("requestingCompanyId", "=", Number(currentUserCompanyId))
+    .executeTakeFirst();
+
+  res.json({ company, sentConnectionRequest });
 }
 
 /**
@@ -200,6 +266,7 @@ async function searchCompanies(req: IReq, res: IRes) {
     return;
   }
 
+  // TODO exclude own company from search results
   const companies = await db
     .selectFrom("companies")
     .innerJoin("users", "companies.id", "users.companyId")
@@ -219,10 +286,64 @@ async function searchCompanies(req: IReq, res: IRes) {
   res.json(companies);
 }
 
+/**
+ * Create a connection request
+ */
+async function createConnectionRequest(req: IReq, res: IRes) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader) {
+    res
+      .status(HttpStatusCodes.UNAUTHORIZED)
+      .json({ error: "No authorization header" });
+    return;
+  }
+
+  const token = authHeader.split(" ")[1];
+  const decoded = jwt.verify(token, EnvVars.Jwt.Secret);
+  // TODO: validate these inputs with zod,
+  // then there will be no need for castings below
+  const requestingCompanyId = (decoded as { companyId: number }).companyId;
+  const { companyId: requestedCompanyId } = req.body;
+
+  if (!requestedCompanyId) {
+    res
+      .status(HttpStatusCodes.BAD_REQUEST)
+      .json({ error: "Requested company ID is required" });
+    return;
+  }
+
+  if (requestingCompanyId === requestedCompanyId) {
+    res
+      .status(HttpStatusCodes.BAD_REQUEST)
+      .json({ error: "You cannot connect with yourself" });
+    return;
+  }
+
+  // TODO Validate connection request doesn't exist already
+
+  const result = await db
+    .insertInto("connection_requests")
+    .values({
+      requestingCompanyId: requestingCompanyId,
+      requestedCompanyId: requestedCompanyId as number,
+      status: connectionRequestStatus.PENDING,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+    .returning("id")
+    .executeTakeFirstOrThrow();
+
+  // TODO: send email to requested company
+
+  res.status(HttpStatusCodes.CREATED).json({ id: result.id });
+}
+
 export default {
   signup,
   login,
   myProfile,
   getCompany,
   searchCompanies,
+  createConnectionRequest,
 } as const;

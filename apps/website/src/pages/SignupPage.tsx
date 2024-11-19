@@ -91,10 +91,14 @@ const SignupPage: React.FC = () => {
                     ℹ️
                   </span>
                 </Tooltip.Trigger>
-                <Tooltip.Content side="right" align="center" sideOffset={5}>
+                <Tooltip.Content
+                  className="TooltipContent"
+                  side="right"
+                  align="center"
+                  sideOffset={5}
+                >
                   Your company name as it will appear on the PACT Network (i.e.
                   search, profile pages).
-                  <Tooltip.Arrow />
                 </Tooltip.Content>
               </Tooltip.Root>
             </Tooltip.Provider>
@@ -129,10 +133,14 @@ const SignupPage: React.FC = () => {
                     ℹ️
                   </span>
                 </Tooltip.Trigger>
-                <Tooltip.Content side="right" align="center" sideOffset={5}>
+                <Tooltip.Content
+                  className="TooltipContent"
+                  side="right"
+                  align="center"
+                  sideOffset={5}
+                >
                   This is the identifier for your company within the PACT
                   Network.
-                  <Tooltip.Arrow />
                 </Tooltip.Content>
               </Tooltip.Root>
             </Tooltip.Provider>
@@ -167,10 +175,14 @@ const SignupPage: React.FC = () => {
                     ℹ️
                   </span>
                 </Tooltip.Trigger>
-                <Tooltip.Content side="right" align="center" sideOffset={5}>
+                <Tooltip.Content
+                  className="TooltipContent"
+                  side="right"
+                  align="center"
+                  sideOffset={5}
+                >
                   Your name as will show up as a point of contact for your
                   organization.
-                  <Tooltip.Arrow />
                 </Tooltip.Content>
               </Tooltip.Root>
             </Tooltip.Provider>
@@ -205,10 +217,14 @@ const SignupPage: React.FC = () => {
                     ℹ️
                   </span>
                 </Tooltip.Trigger>
-                <Tooltip.Content side="right" align="center" sideOffset={5}>
+                <Tooltip.Content
+                  className="TooltipContent"
+                  side="right"
+                  align="center"
+                  sideOffset={5}
+                >
                   Your email address will be used to log in to the PACT Network,
                   and to receive important notifications.
-                  <Tooltip.Arrow />
                 </Tooltip.Content>
               </Tooltip.Root>
             </Tooltip.Provider>
@@ -243,9 +259,13 @@ const SignupPage: React.FC = () => {
                     ℹ️
                   </span>
                 </Tooltip.Trigger>
-                <Tooltip.Content side="right" align="center" sideOffset={5}>
+                <Tooltip.Content
+                  className="TooltipContent"
+                  side="right"
+                  align="center"
+                  sideOffset={5}
+                >
                   Your password must be at least 8 characters long.
-                  <Tooltip.Arrow />
                 </Tooltip.Content>
               </Tooltip.Root>
             </Tooltip.Provider>
@@ -280,9 +300,13 @@ const SignupPage: React.FC = () => {
                     ℹ️
                   </span>
                 </Tooltip.Trigger>
-                <Tooltip.Content side="right" align="center" sideOffset={5}>
+                <Tooltip.Content
+                  className="TooltipContent"
+                  side="right"
+                  align="center"
+                  sideOffset={5}
+                >
                   Please confirm your password.
-                  <Tooltip.Arrow />
                 </Tooltip.Content>
               </Tooltip.Root>
             </Tooltip.Provider>
@@ -323,9 +347,13 @@ const SignupPage: React.FC = () => {
                     ℹ️
                   </span>
                 </Tooltip.Trigger>
-                <Tooltip.Content side="right" align="center" sideOffset={5}>
+                <Tooltip.Content
+                  className="TooltipContent"
+                  side="right"
+                  align="center"
+                  sideOffset={5}
+                >
                   The production URL for your solution's API.
-                  <Tooltip.Arrow />
                 </Tooltip.Content>
               </Tooltip.Root>
             </Tooltip.Provider>
@@ -360,9 +388,13 @@ const SignupPage: React.FC = () => {
                     ℹ️
                   </span>
                 </Tooltip.Trigger>
-                <Tooltip.Content side="right" align="center" sideOffset={5}>
+                <Tooltip.Content
+                  className="TooltipContent"
+                  side="right"
+                  align="center"
+                  sideOffset={5}
+                >
                   The development URL for your solution's API.
-                  <Tooltip.Arrow />
                 </Tooltip.Content>
               </Tooltip.Root>
             </Tooltip.Provider>
@@ -397,9 +429,13 @@ const SignupPage: React.FC = () => {
                     ℹ️
                   </span>
                 </Tooltip.Trigger>
-                <Tooltip.Content side="right" align="center" sideOffset={5}>
+                <Tooltip.Content
+                  className="TooltipContent"
+                  side="right"
+                  align="center"
+                  sideOffset={5}
+                >
                   The registration code provided by the PACT Network.
-                  <Tooltip.Arrow />
                 </Tooltip.Content>
               </Tooltip.Root>
             </Tooltip.Provider>

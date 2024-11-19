@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { Box } from "@radix-ui/themes";
-import { useNavigate } from "react-router-dom";
 
-const MyProfile: React.FC = () => {
-  const navigate = useNavigate();
-
+const CompanyProfile: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
   const [profileData, setProfileData] = useState({
     companyName: "",
     companyIdentifier: "",
@@ -20,11 +19,11 @@ const MyProfile: React.FC = () => {
       try {
         const token = localStorage.getItem("jwt");
         if (!token) {
-          navigate("/login");
+          throw new Error("No token found");
         }
-        // TODO: store api url properly in .env
+
         const response = await fetch(
-          "http://localhost:3010/api/directory/companies/my-profile",
+          `http://localhost:3010/api/directory/companies/profile/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -33,19 +32,18 @@ const MyProfile: React.FC = () => {
         );
 
         if (!response.ok) {
-          // TODO show error message to user or redirect to login
           throw new Error("Failed to fetch profile data");
         }
 
         const data = await response.json();
-        setProfileData(data);
+        setProfileData(data.company);
       } catch (error) {
         console.error("Error fetching profile data:", error);
       }
     };
 
     fetchProfileData();
-  }, [navigate]);
+  }, [id]);
 
   return (
     <Box
@@ -55,7 +53,7 @@ const MyProfile: React.FC = () => {
         margin: "0 auto",
       }}
     >
-      <h2>My Profile</h2>
+      <h2>Company Profile</h2>
       <div>
         <h3>Company Name</h3>
         <p>{profileData.companyName}</p>
@@ -84,4 +82,4 @@ const MyProfile: React.FC = () => {
   );
 };
 
-export default MyProfile;
+export default CompanyProfile;

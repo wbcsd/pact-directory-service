@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { Box, Table, Button, TextField } from "@radix-ui/themes";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { Link } from "react-router-dom";
 
 interface SearchResults {
   id: number;
@@ -99,7 +100,9 @@ const SearchPage: React.FC = () => {
           <Table.Body>
             {searchResults.map((result) => (
               <Table.Row key={result.id}>
-                <Table.Cell>{result.companyName}</Table.Cell>
+                <Table.Cell>
+                  <Link to={`/company/${result.id}`}>{result.companyName}</Link>
+                </Table.Cell>
                 <Table.Cell>{result.companyIdentifier}</Table.Cell>
                 <Table.Cell>{result.solutionApiProdUrl}</Table.Cell>
                 <Table.Cell>{result.solutionApiDevUrl}</Table.Cell>

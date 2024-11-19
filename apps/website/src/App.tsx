@@ -11,6 +11,8 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import MyProfile from "./pages/MyProfile";
 import SearchPage from "./pages/SearchPage";
+import CompanyProfile from "./pages/CompanyProfile";
+import ManageConnections from "./pages/ManageConnections";
 
 const App: React.FC = () => {
   return (
@@ -26,13 +28,18 @@ const App: React.FC = () => {
           <Link to="/my-profile" style={{ marginRight: "10px" }}>
             My Profile
           </Link>
-          <Link to="/search">Search</Link>
+          <Link to="/search" style={{ marginRight: "10px" }}>
+            Search
+          </Link>
+          <Link to="/manage-connections">Manage Connections</Link>
         </nav>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/my-profile" element={<MyProfile />} />
           <Route path="/search" element={<SearchPage />} />
+          <Route path="/company/:id" element={<CompanyProfile />} />
+          <Route path="/manage-connections" element={<ManageConnections />} />
           <Route path="/" element={<Navigate to="/signup" />} />
         </Routes>
       </div>
