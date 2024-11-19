@@ -31,6 +31,10 @@ companyRouter.post(
   Paths.Companies.CreateConnectionRequest,
   CompanyRoutes.createConnectionRequest
 );
+companyRouter.post(
+  Paths.Companies.ConnectionRequesAction,
+  CompanyRoutes.connectionRequestAction
+);
 
 // Add UserRouter
 apiRouter.use(Paths.Users.Base, userRouter);

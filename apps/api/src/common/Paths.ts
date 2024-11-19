@@ -12,6 +12,7 @@ export default {
     Profile: "/profile/:id",
     Search: "/search",
     CreateConnectionRequest: "/create-connection-request",
+    ConnectionRequesAction: "/connection-request-action",
   },
   Users: {
     Base: "/users",

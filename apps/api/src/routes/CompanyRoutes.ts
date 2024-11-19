@@ -169,6 +169,7 @@ async function myProfile(req: IReq, res: IRes) {
       "companies.id"
     )
     .select([
+      "connection_requests.id",
       "requestingCompanyId",
       "requestedCompanyId",
       "createdAt",
@@ -247,6 +248,7 @@ async function getCompany(req: IReq, res: IRes) {
     .selectFrom("connection_requests")
     .select(["createdAt", "status"])
     .where("requestingCompanyId", "=", Number(currentUserCompanyId))
+    .where("requestedCompanyId", "=", Number(id))
     .executeTakeFirst();
 
   res.json({ company, sentConnectionRequest });
@@ -339,6 +341,74 @@ async function createConnectionRequest(req: IReq, res: IRes) {
   res.status(HttpStatusCodes.CREATED).json({ id: result.id });
 }
 
+/**
+ * Handle connection request action
+ */
+async function connectionRequestAction(req: IReq, res: IRes) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader) {
+    res
+      .status(HttpStatusCodes.UNAUTHORIZED)
+      .json({ error: "No authorization header" });
+    return;
+  }
+
+  const token = authHeader.split(" ")[1];
+  const decoded = jwt.verify(token, EnvVars.Jwt.Secret);
+  const { companyId: currentCompanyId } = decoded as { companyId: number };
+  const { requestId } = req.body;
+
+  if (!requestId) {
+    res
+      .status(HttpStatusCodes.BAD_REQUEST)
+      .json({ error: "Request ID is required" });
+    return;
+  }
+
+  // TODO reject flow
+  const connectionRequest = await db
+    .selectFrom("connection_requests")
+    .selectAll()
+    .where("id", "=", requestId as number)
+    .executeTakeFirst();
+
+  if (!connectionRequest) {
+    res
+      .status(HttpStatusCodes.NOT_FOUND)
+      .json({ error: "Connection request not found" });
+    return;
+  }
+
+  if (connectionRequest.requestedCompanyId !== currentCompanyId) {
+    res
+      .status(HttpStatusCodes.FORBIDDEN)
+      .json({ error: "Only the requested company can accept the request" });
+    return;
+  }
+
+  await db.transaction().execute(async (trx) => {
+    await trx
+      .insertInto("connections")
+      .values({
+        company_a_id: connectionRequest.requestingCompanyId,
+        company_b_id: connectionRequest.requestedCompanyId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .execute();
+
+    await trx
+      .deleteFrom("connection_requests")
+      .where("id", "=", requestId as number)
+      .execute();
+  });
+
+  res
+    .status(HttpStatusCodes.CREATED)
+    .json({ message: "Connection created successfully" });
+}
+
 export default {
   signup,
   login,
@@ -346,4 +416,5 @@ export default {
   getCompany,
   searchCompanies,
   createConnectionRequest,
+  connectionRequestAction,
 } as const;

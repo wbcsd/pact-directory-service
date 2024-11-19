@@ -4,6 +4,7 @@ export interface Database {
   companies: CompanyTable;
   users: UserTable;
   connection_requests: ConnectionRequestTable;
+  connections: ConnectionTable;
 }
 
 export interface CompanyTable {
@@ -28,6 +29,14 @@ export interface ConnectionRequestTable {
   requestingCompanyId: number;
   requestedCompanyId: number;
   status: "pending" | "accepted" | "rejected";
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ConnectionTable {
+  id: Generated<number>;
+  company_a_id: number;
+  company_b_id: number;
   createdAt: Date;
   updatedAt: Date;
 }
