@@ -1,10 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, AlertDialog, Flex } from "@radix-ui/themes";
+import { Link } from "react-router-dom";
 
 interface ConnectionRequest {
   id: number;
   companyName: string;
+  companyId: number;
   status: string;
+  createdAt: Date;
+}
+
+interface ConnectedOrganization {
+  companyId: number;
+  companyName: string;
+  requestedAt: Date;
   createdAt: Date;
 }
 
@@ -12,9 +21,11 @@ const ManageConnections: React.FC = () => {
   const [connectionsData, setConnectionsData] = useState<{
     sent: ConnectionRequest[];
     received: ConnectionRequest[];
+    connectedCompanies: ConnectedOrganization[];
   }>({
     sent: [],
     received: [],
+    connectedCompanies: [],
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -40,7 +51,10 @@ const ManageConnections: React.FC = () => {
 
       const data = await response.json();
 
-      setConnectionsData(data.connectionRequests);
+      setConnectionsData({
+        ...data.connectionRequests,
+        connectedCompanies: data.connectedCompanies,
+      });
     } catch (error) {
       console.error("Error fetching connections data:", error);
     }
@@ -114,12 +128,38 @@ const ManageConnections: React.FC = () => {
       >
         <h2>Manage Connections</h2>
         <Box>
+          <h3>Connected organizations</h3>
+          {connectionsData.connectedCompanies.length > 0 ? (
+            <ul>
+              {connectionsData.connectedCompanies.map((connection) => (
+                <li key={connection.companyId}>
+                  <p>
+                    <Link to={`/company/${connection.companyId}`}>
+                      {connection.companyName}
+                    </Link>
+                  </p>
+                  <p>
+                    Connected At:{" "}
+                    {new Date(connection.createdAt).toLocaleString()}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No connected organizations.</p>
+          )}
+        </Box>
+        <Box>
           <h3>Sent Connection Requests</h3>
           {connectionsData.sent.length > 0 ? (
             <ul>
               {connectionsData.sent.map((request, index) => (
                 <li key={index}>
-                  <p>Company Name: {request.companyName}</p>
+                  <p>
+                    <Link to={`/company/${request.companyId}`}>
+                      {request.companyName}
+                    </Link>
+                  </p>
                   <p>Status: {request.status}</p>
                   <p>
                     Created At: {new Date(request.createdAt).toLocaleString()}

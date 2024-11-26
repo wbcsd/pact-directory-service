@@ -35,8 +35,8 @@ export interface ConnectionRequestTable {
 
 export interface ConnectionTable {
   id: Generated<number>;
-  company_a_id: number;
-  company_b_id: number;
+  connectedCompanyOneId: number;
+  connectedCompanyTwoId: number;
   createdAt: Date;
-  updatedAt: Date;
+  requestedAt: Date;
 }

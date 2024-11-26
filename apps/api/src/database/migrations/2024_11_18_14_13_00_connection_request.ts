@@ -19,14 +19,14 @@ export async function up(db: Kysely<Database>): Promise<void> {
   await db.schema
     .createTable("connections")
     .addColumn("id", "serial", (c) => c.primaryKey())
-    .addColumn("company_a_id", "integer", (c) =>
+    .addColumn("connected_company_one_id", "integer", (c) =>
       c.references("companies.id").notNull()
     )
-    .addColumn("company_b_id", "integer", (c) =>
+    .addColumn("connected_company_two_id", "integer", (c) =>
       c.references("companies.id").notNull()
     )
     .addColumn("created_at", "timestamp", (c) => c.notNull())
-    .addColumn("updated_at", "timestamp", (c) => c.notNull())
+    .addColumn("requested_at", "timestamp", (c) => c.notNull())
     .execute();
 }
 

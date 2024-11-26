@@ -149,6 +149,7 @@ async function myProfile(req: IReq, res: IRes) {
     .where("companies.id", "=", Number(companyId))
     .executeTakeFirst();
 
+  // Connection requests
   const sentConnectionRequests = await db
     .selectFrom("connection_requests")
     .innerJoin(
@@ -156,7 +157,12 @@ async function myProfile(req: IReq, res: IRes) {
       "connection_requests.requestedCompanyId",
       "companies.id"
     )
-    .select(["createdAt", "status", "companies.companyName"])
+    .select([
+      "createdAt",
+      "status",
+      "companies.companyName",
+      "requestedCompanyId as companyId",
+    ])
     .where("requestingCompanyId", "=", Number(companyId))
 
     .execute();
@@ -170,8 +176,6 @@ async function myProfile(req: IReq, res: IRes) {
     )
     .select([
       "connection_requests.id",
-      "requestingCompanyId",
-      "requestedCompanyId",
       "createdAt",
       "status",
       "companies.companyName",
@@ -179,11 +183,61 @@ async function myProfile(req: IReq, res: IRes) {
     .where("requestedCompanyId", "=", Number(companyId))
     .execute();
 
+  // connections
+  const connections = await db
+    .selectFrom("connections")
+    .innerJoin(
+      "companies as companiesOne",
+      "connections.connectedCompanyOneId",
+      "companiesOne.id"
+    )
+    .innerJoin(
+      "companies as companiesTwo",
+      "connections.connectedCompanyTwoId",
+      "companiesTwo.id"
+    )
+    .select([
+      "connectedCompanyOneId",
+      "connectedCompanyTwoId",
+      "connections.requestedAt",
+      "connections.createdAt",
+      "companiesOne.companyName as companyOneName",
+      "companiesTwo.companyName as companyTwoName",
+    ])
+    .where((qb) =>
+      qb("connectedCompanyOneId", "=", Number(companyId)).or(
+        "connectedCompanyTwoId",
+        "=",
+        Number(companyId)
+      )
+    )
+    .execute();
+
+  const connectedCompanies = connections.map((connection) => {
+    if (connection.connectedCompanyOneId === Number(companyId)) {
+      return {
+        companyId: connection.connectedCompanyTwoId,
+        companyName: connection.companyTwoName,
+        requestedAt: connection.requestedAt,
+        createdAt: connection.createdAt,
+      };
+    }
+
+    return {
+      companyId: connection.connectedCompanyOneId,
+      companyName: connection.companyOneName,
+      requestedAt: connection.requestedAt,
+      createdAt: connection.createdAt,
+    };
+  });
+
+  console.log(connections);
+
   if (!company) {
     res
       .status(HttpStatusCodes.NOT_FOUND)
       .json({ message: "Company not found" });
-    return void 0;
+    return;
   }
 
   res.json({
@@ -192,6 +246,7 @@ async function myProfile(req: IReq, res: IRes) {
       sent: sentConnectionRequests,
       received: receivedConnectionRequests,
     },
+    connectedCompanies,
   });
 }
 
@@ -242,7 +297,7 @@ async function getCompany(req: IReq, res: IRes) {
     return;
   }
 
-  // These are the connection requests sent by the current user on behalf of
+  // This is the connection request sent by the current user on behalf of
   // their company
   const sentConnectionRequest = await db
     .selectFrom("connection_requests")
@@ -251,7 +306,30 @@ async function getCompany(req: IReq, res: IRes) {
     .where("requestedCompanyId", "=", Number(id))
     .executeTakeFirst();
 
-  res.json({ company, sentConnectionRequest });
+  // Are they connected?
+  const connection = await db
+    .selectFrom("connections")
+    .where((qb) =>
+      qb("connectedCompanyOneId", "=", Number(currentUserCompanyId)).or(
+        "connectedCompanyTwoId",
+        "=",
+        Number(currentUserCompanyId)
+      )
+    )
+    .where((qb) =>
+      qb("connectedCompanyOneId", "=", Number(id)).or(
+        "connectedCompanyTwoId",
+        "=",
+        Number(id)
+      )
+    )
+    .executeTakeFirst();
+
+  res.json({
+    company,
+    sentConnectionRequest,
+    connectedToCurrentCompany: !!connection,
+  });
 }
 
 /**
@@ -391,13 +469,14 @@ async function connectionRequestAction(req: IReq, res: IRes) {
     await trx
       .insertInto("connections")
       .values({
-        company_a_id: connectionRequest.requestingCompanyId,
-        company_b_id: connectionRequest.requestedCompanyId,
+        connectedCompanyOneId: connectionRequest.requestingCompanyId,
+        connectedCompanyTwoId: connectionRequest.requestedCompanyId,
         createdAt: new Date(),
-        updatedAt: new Date(),
+        requestedAt: connectionRequest.createdAt,
       })
       .execute();
 
+    // TODO don't delete it, set it to accepted
     await trx
       .deleteFrom("connection_requests")
       .where("id", "=", requestId as number)

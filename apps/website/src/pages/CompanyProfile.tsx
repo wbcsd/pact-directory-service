@@ -4,12 +4,13 @@ import { Box, Button } from "@radix-ui/themes";
 
 const RequestStatus = {
   PENDING: "pending",
-  NoRequest: "no-request",
+  NOREQUEST: "no-request",
+  ACCEPTED: "accepted",
 };
 
 const CompanyProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [requestStatus, setRequestStatus] = useState(RequestStatus.NoRequest);
+  const [requestStatus, setRequestStatus] = useState(RequestStatus.NOREQUEST);
 
   const [profileData, setProfileData] = useState({
     companyName: "",
@@ -48,6 +49,8 @@ const CompanyProfile: React.FC = () => {
 
         if (data.sentConnectionRequest) {
           setRequestStatus(RequestStatus.PENDING);
+        } else if (data.connectedToCurrentCompany) {
+          setRequestStatus(RequestStatus.ACCEPTED);
         }
       } catch (error) {
         console.error("Error fetching profile data:", error);
@@ -59,6 +62,10 @@ const CompanyProfile: React.FC = () => {
 
   const handleConnect = async () => {
     try {
+      if (requestStatus !== RequestStatus.NOREQUEST) {
+        return;
+      }
+
       const token = localStorage.getItem("jwt");
       if (!token) {
         throw new Error("No token found");
@@ -86,6 +93,12 @@ const CompanyProfile: React.FC = () => {
     }
   };
 
+  const statusLabelMapping = {
+    [RequestStatus.PENDING]: "Pending",
+    [RequestStatus.NOREQUEST]: "Connect",
+    [RequestStatus.ACCEPTED]: "Connected",
+  };
+
   return (
     <>
       <Box
@@ -108,19 +121,18 @@ const CompanyProfile: React.FC = () => {
           <Button
             onClick={handleConnect}
             style={
-              requestStatus === RequestStatus.PENDING
+              requestStatus !== RequestStatus.NOREQUEST
                 ? { backgroundColor: "gray" }
                 : {}
             }
           >
-            {requestStatus === RequestStatus.NoRequest ? "Connect" : "Pending"}
+            {statusLabelMapping[requestStatus]}
           </Button>
         </Box>
         <Box>
-          When you click Connect, PACT Identity Management Service will send a
-          request to this supplier, requesting their permission to create an
-          authenticated connection between your PACT Conformant Solution and
-          theirs.
+          {requestStatus === RequestStatus.ACCEPTED
+            ? "You are connected with this supplier."
+            : "When you click Connect, PACT Identity Management Service will send a request to this supplier, requesting their permission to create an authenticated connection between your PACT Conformant Solution and theirs."}
         </Box>
       </Box>
       <Box
