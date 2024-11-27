@@ -160,14 +160,18 @@ const CompanyProfile: React.FC = () => {
           <h3>Email</h3>
           <p>{profileData.email}</p>
         </div>
-        <div>
-          <h3>Solution API Prod URL</h3>
-          <p>{profileData.solutionApiProdUrl}</p>
-        </div>
-        <div>
-          <h3>Solution API Dev URL</h3>
-          <p>{profileData.solutionApiDevUrl}</p>
-        </div>
+        {requestStatus === RequestStatus.ACCEPTED && (
+          <>
+            <div>
+              <h3>Solution API Prod URL</h3>
+              <p>{profileData.solutionApiProdUrl}</p>
+            </div>
+            <div>
+              <h3>Solution API Dev URL</h3>
+              <p>{profileData.solutionApiDevUrl}</p>
+            </div>
+          </>
+        )}
       </Box>
     </>
   );

@@ -13,7 +13,19 @@ const MyProfile: React.FC = () => {
     solutionApiProdUrl: "",
     solutionApiDevUrl: "",
     registrationCode: "",
+    clientId: "",
+    clientSecret: "",
   });
+
+  const [showCredentials, setShowCredentials] = useState(false);
+
+  const toggleCredentials = () => {
+    setShowCredentials((prevState) => !prevState);
+  };
+
+  const maskValue = (value: string) => {
+    return value.replace(/.(?=.{4})/g, "*");
+  };
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -79,6 +91,27 @@ const MyProfile: React.FC = () => {
       <div>
         <h3>Solution API Dev URL</h3>
         <p>{profileData.solutionApiDevUrl}</p>
+      </div>
+
+      <h2>Credentials</h2>
+      <a href="#" onClick={toggleCredentials} style={{ marginLeft: "10px" }}>
+        {showCredentials ? "Hide Credentials" : "Show Credentials"}
+      </a>
+      <div>
+        <h3>ClientId</h3>
+        <p>
+          {showCredentials
+            ? profileData.clientId
+            : maskValue(profileData.clientId)}
+        </p>
+      </div>
+      <div>
+        <h3>ClientSecret</h3>
+        <p>
+          {showCredentials
+            ? profileData.clientSecret
+            : maskValue(profileData.clientSecret)}
+        </p>
       </div>
     </Box>
   );

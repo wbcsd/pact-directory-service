@@ -5,6 +5,7 @@ import HttpStatusCodes from "@src/common/HttpStatusCodes";
 import { connectionRequestStatus } from "@src/common/types";
 import { db } from "@src/database/db";
 import { IReq, IRes } from "./common/types";
+import { generateCredentials } from "@src/util/credentials";
 
 /**
  *
@@ -41,6 +42,8 @@ async function signup(req: IReq, res: IRes) {
 
   // TODO: generate client_id and client_secret
 
+  const { clientId, clientSecret } = await generateCredentials();
+
   // Insert into companies table
   // TODO do in transaction and rollback if user insert fails
   const company = await db
@@ -52,6 +55,8 @@ async function signup(req: IReq, res: IRes) {
       solutionApiProdUrl: solutionApiProdUrl as string,
       solutionApiDevUrl: solutionApiDevUrl as string,
       registrationCode: registrationCode as string,
+      clientId,
+      clientSecret,
     })
     .returning("id")
     .executeTakeFirstOrThrow();
@@ -143,6 +148,8 @@ async function myProfile(req: IReq, res: IRes) {
       "companies.companyIdentifier",
       "companies.solutionApiProdUrl",
       "companies.solutionApiDevUrl",
+      "companies.clientId",
+      "companies.clientSecret",
       "users.fullName",
       "users.email",
     ])
@@ -230,8 +237,6 @@ async function myProfile(req: IReq, res: IRes) {
       createdAt: connection.createdAt,
     };
   });
-
-  console.log(connections);
 
   if (!company) {
     res

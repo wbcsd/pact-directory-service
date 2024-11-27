@@ -14,6 +14,8 @@ export interface CompanyTable {
   solutionApiProdUrl: string;
   solutionApiDevUrl: string;
   registrationCode: string;
+  clientId: string;
+  clientSecret: string;
 }
 
 export interface UserTable {
