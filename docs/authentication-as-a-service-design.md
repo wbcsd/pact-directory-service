@@ -20,7 +20,7 @@ When an organization wants to join the PACT network, it will need to register in
 
 ## Data access request flow
 
-When an organization wants to access PCF data from another organization, it can request to create a contract between the two oganizations through the PACT Directory Portal. The second organization will receive an email notification directing them to PACT Directory Portal where they can grant or deny access to the requesting organization.
+When an organization wants to access PCF data from another organization, it can request to create a connection between the two oganizations through the PACT Directory Portal. The second organization will receive an email notification directing them to PACT Directory Portal where they can grant or deny access to the requesting organization.
 
 The authentication grant flow will be as follows:
 
@@ -34,7 +34,7 @@ When a PACT conformant API receives a request from a client system, it will vali
 
 ## API request (PCF data) flow
 
-Once an organization has granted acess to another organization, the requesting organization's solution can authenticate with the PACT Authentication Service using an OAuth 2.0 flow where a `client_id`, `client_secret`, and the api url from the data source API are exchanged for an access token, then access the PCF from the organizations they have access to. The API requests flow will be as follows:
+Once an organization has granted acess to another organization, the requesting organization's solution can authenticate with the PACT Authentication Service using an OAuth 2.0 flow where the requesting organization's `client_id`, `client_secret`, and the company ID (not a legal identifier, but an id issue by the authentication service during sign up) of the data owner are exchanged for an access token, then access the PCF from the organizations they have access to. This access token will have a validity period of 3 hours, after which a the client will need to request a new token. The API requests flow will be as follows:
 
 ![](auth-flow.png)
 
