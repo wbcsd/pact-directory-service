@@ -20,7 +20,7 @@ sequenceDiagram
     participant OAuthProvider as PACT IM OAuth Provider
     participant API as Data Owner
 
-    Client->>OAuthProvider: Exchange client_id, client_secret, and api url for Access Token
+    Client->>OAuthProvider: Exchange client_id, client_secret, and network identifier for Access Token
     OAuthProvider->>Client: Respond with Access Token
 
     Client->>API: Request with Access Token (e.g., GET /2/footprints?limit=10)
@@ -35,7 +35,7 @@ sequenceDiagram
     participant OAuthProvider as PACT IM OAuth Provider
     participant API as Data Owner
 
-    Client->>OAuthProvider: Exchange client_id, client_secret, and api url for Access Token
+    Client->>OAuthProvider: Exchange client_id, client_secret, and network identifier for Access Token
     OAuthProvider->>Client: Respond with Access Token
 
     Client->>API: Request Create Event Action (e.g., POST /2/events)
