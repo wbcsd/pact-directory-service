@@ -1,7 +1,7 @@
 // src/pages/LoginPage.tsx
 import React, { useState } from "react";
 import * as Form from "@radix-ui/react-form";
-import { Box } from "@radix-ui/themes";
+import { Box, Button } from "@radix-ui/themes";
 import { useNavigate } from "react-router-dom";
 
 const LoginPage: React.FC = () => {
@@ -90,9 +90,9 @@ const LoginPage: React.FC = () => {
           </Form.Control>
         </Form.Field>
         <Form.Submit asChild>
-          <button type="submit" style={{ marginTop: "10px" }}>
+          <Button type="submit" style={{ marginTop: "10px" }}>
             Login
-          </button>
+          </Button>
         </Form.Submit>
       </Form.Root>
       {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}

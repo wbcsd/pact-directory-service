@@ -177,7 +177,9 @@ const ManageConnections: React.FC = () => {
             <ul>
               {connectionsData.received.map((request) => (
                 <li key={request.id}>
-                  <p>Company Name: {request.companyName}</p>
+                  <Link to={`/company/${request.companyId}`}>
+                    {request.companyName}
+                  </Link>
                   <p>Status: {request.status}</p>
                   <p>
                     Created At: {new Date(request.createdAt).toLocaleString()}

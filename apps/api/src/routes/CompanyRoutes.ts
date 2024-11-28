@@ -74,7 +74,7 @@ async function signup(req: IReq, res: IRes) {
     .executeTakeFirstOrThrow();
 
   const token = jwt.sign(user, EnvVars.Jwt.Secret, {
-    expiresIn: "1h", // Token expiration time
+    expiresIn: "6h", // Token expiration time
   });
 
   res.status(HttpStatusCodes.CREATED).json({ token });
@@ -110,7 +110,7 @@ async function login(req: IReq, res: IRes) {
     { userId: user.id, email: user.email, companyId: user.companyId },
     EnvVars.Jwt.Secret,
     {
-      expiresIn: "1h", // Token expiration time
+      expiresIn: "6h", // Token expiration time
     }
   );
 
@@ -186,6 +186,7 @@ async function myProfile(req: IReq, res: IRes) {
       "createdAt",
       "status",
       "companies.companyName",
+      "requestingCompanyId as companyId",
     ])
     .where("requestedCompanyId", "=", Number(companyId))
     .execute();

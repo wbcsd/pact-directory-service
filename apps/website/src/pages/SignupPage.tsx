@@ -1,7 +1,7 @@
 // src/pages/SignupPage.tsx
 import React, { useState } from "react";
 import * as Form from "@radix-ui/react-form";
-import { Box } from "@radix-ui/themes";
+import { Box, Button } from "@radix-ui/themes";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { useNavigate } from "react-router-dom";
 
@@ -454,9 +454,7 @@ const SignupPage: React.FC = () => {
           </Form.Message>
         </Form.Field>
         <Form.Submit asChild>
-          <button type="submit" style={{ marginTop: "10px" }}>
-            Join the network!
-          </button>
+          <Button style={{ marginTop: "10px" }}>Join the network!</Button>
         </Form.Submit>
       </Form.Root>
     </Box>

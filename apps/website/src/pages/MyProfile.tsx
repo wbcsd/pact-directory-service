@@ -30,11 +30,13 @@ const MyProfile: React.FC = () => {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
+        // TODO use hook, implement redirect when token expires
         const token = localStorage.getItem("jwt");
         if (!token) {
           navigate("/login");
         }
         // TODO: store api url properly in .env
+        // TODO handle token expiration/unauthenticated error, redirect to login.
         const response = await fetch(
           "http://localhost:3010/api/directory/companies/my-profile",
           {
