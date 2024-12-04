@@ -31,7 +31,7 @@ const CompanyProfile: React.FC = () => {
         }
 
         const response = await fetch(
-          `http://localhost:3010/api/directory/companies/profile/${id}`,
+          `${import.meta.env.VITE_DIRECTORY_API_URL}/companies/profile/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -72,7 +72,9 @@ const CompanyProfile: React.FC = () => {
       }
 
       const response = await fetch(
-        "http://localhost:3010/api/directory/companies/create-connection-request",
+        `${
+          import.meta.env.VITE_DIRECTORY_API_URL
+        }/companies/create-connection-request`,
         {
           method: "POST",
           headers: {

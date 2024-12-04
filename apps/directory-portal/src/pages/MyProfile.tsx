@@ -38,7 +38,7 @@ const MyProfile: React.FC = () => {
         // TODO: store api url properly in .env
         // TODO handle token expiration/unauthenticated error, redirect to login.
         const response = await fetch(
-          "http://localhost:3010/api/directory/companies/my-profile",
+          `${import.meta.env.VITE_DIRECTORY_API_URL}/companies/my-profile`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

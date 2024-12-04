@@ -20,9 +20,9 @@ const SearchPage: React.FC = () => {
   const handleSearch = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3010/api/directory/companies/search?searchQuery=${encodeURIComponent(
-          searchQuery
-        )}`
+        `${
+          import.meta.env.VITE_DIRECTORY_API_URL
+        }/companies/search?searchQuery=${encodeURIComponent(searchQuery)}`
       );
 
       if (!response.ok) {

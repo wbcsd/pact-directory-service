@@ -22,7 +22,7 @@ const LoginPage: React.FC = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:3010/api/directory/companies/login",
+        `${import.meta.env.VITE_DIRECTORY_API_URL}/companies/login`,
         {
           method: "POST",
           headers: {

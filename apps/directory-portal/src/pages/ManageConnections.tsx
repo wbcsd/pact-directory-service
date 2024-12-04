@@ -37,7 +37,7 @@ const ManageConnections: React.FC = () => {
       }
 
       const response = await fetch(
-        "http://localhost:3010/api/directory/companies/my-profile",
+        `${import.meta.env.VITE_DIRECTORY_API_URL}/companies/my-profile`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -72,7 +72,9 @@ const ManageConnections: React.FC = () => {
       }
 
       const response = await fetch(
-        "http://localhost:3010/api/directory/companies/connection-request-action",
+        `${
+          import.meta.env.VITE_DIRECTORY_API_URL
+        }/companies/connection-request-action`,
         {
           method: "POST",
           headers: {

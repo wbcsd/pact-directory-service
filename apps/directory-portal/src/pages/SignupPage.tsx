@@ -28,7 +28,7 @@ const SignupPage: React.FC = () => {
 
       // TODO: store api url properly in .env
       const response = await fetch(
-        "http://localhost:3010/api/directory/companies/signup",
+        `${import.meta.env.VITE_DIRECTORY_API_URL}/companies/signup`,
         {
           method: "POST",
           headers: {
