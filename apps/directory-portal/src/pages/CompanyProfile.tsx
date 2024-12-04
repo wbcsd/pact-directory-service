@@ -131,7 +131,7 @@ const CompanyProfile: React.FC = () => {
         </Box>
         <Box>
           {requestStatus === RequestStatus.ACCEPTED
-            ? "You are connected with this supplier."
+            ? "You are connected with this organization."
             : "When you click Connect, PACT Identity Management Service will send a request to this supplier, requesting their permission to create an authenticated connection between your PACT Conformant Solution and theirs."}
         </Box>
       </Box>
