@@ -1,8 +1,9 @@
 // src/pages/LoginPage.tsx
 import React, { useState } from "react";
 import * as Form from "@radix-ui/react-form";
-import { Box, Button } from "@radix-ui/themes";
-import { useNavigate } from "react-router-dom";
+import { Box, Button, Flex, Text, TextField, Callout } from "@radix-ui/themes";
+import { Link, useNavigate } from "react-router-dom";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -57,45 +58,85 @@ const LoginPage: React.FC = () => {
     <Box
       style={{
         padding: "20px",
-        maxWidth: "400px",
+        maxWidth: "550px",
         margin: "0 auto",
       }}
     >
       <h2>Login</h2>
       <Form.Root onSubmit={handleSubmit}>
         <Form.Field name="email">
-          <Form.Label>Email</Form.Label>
           <Form.Control asChild>
-            <input
+            <TextField.Root
               type="email"
-              name="email"
-              required
               value={formData.email}
+              required
+              placeholder="Email"
               onChange={handleChange}
-              style={{ display: "block", width: "100%", marginBottom: "10px" }}
-            />
+            ></TextField.Root>
           </Form.Control>
+          <Form.Message
+            match="valueMissing"
+            style={{
+              color: "var(--base-color-brand--light-blue)",
+              fontSize: "0.85em",
+            }}
+          >
+            Email is required.
+          </Form.Message>
         </Form.Field>
         <Form.Field name="password">
-          <Form.Label>Password</Form.Label>
           <Form.Control asChild>
-            <input
+            <TextField.Root
               type="password"
-              name="password"
-              required
               value={formData.password}
+              required
+              placeholder="Password"
               onChange={handleChange}
-              style={{ display: "block", width: "100%", marginBottom: "10px" }}
-            />
+            ></TextField.Root>
           </Form.Control>
+          <Form.Message
+            match="valueMissing"
+            style={{
+              color: "var(--base-color-brand--light-blue)",
+              fontSize: "0.85em",
+            }}
+          >
+            Password is required.
+          </Form.Message>
         </Form.Field>
-        <Form.Submit asChild>
-          <Button type="submit" style={{ marginTop: "10px" }}>
-            Login
-          </Button>
-        </Form.Submit>
+        <Flex gap={"3"}>
+          <Box>
+            <Form.Submit asChild>
+              <Button type="submit">Login</Button>
+            </Form.Submit>
+          </Box>
+          <Box
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                color: "var(--base-color-brand--light-blue)",
+                fontSize: "0.90em",
+              }}
+            >
+              Don't have an account? <Link to={"/signup"}>Sign Up</Link>
+            </Text>
+          </Box>
+        </Flex>
       </Form.Root>
-      {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
+      {errorMessage && (
+        <Callout.Root color="bronze" highContrast variant="surface" mt={"4"}>
+          <Callout.Icon>
+            <ExclamationTriangleIcon />
+          </Callout.Icon>
+          <Callout.Text>{errorMessage}</Callout.Text>
+        </Callout.Root>
+      )}
     </Box>
   );
 };

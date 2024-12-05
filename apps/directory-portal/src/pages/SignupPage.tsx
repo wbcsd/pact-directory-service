@@ -506,7 +506,7 @@ const SignupPage: React.FC = () => {
         <Flex gap={"3"}>
           <Box>
             <Form.Submit asChild>
-              <Button style={{ marginTop: "10px" }}>Join the network!</Button>
+              <Button>Join the network!</Button>
             </Form.Submit>
           </Box>
           <Box
