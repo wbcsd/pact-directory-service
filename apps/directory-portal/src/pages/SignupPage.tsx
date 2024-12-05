@@ -1,7 +1,7 @@
 // src/pages/SignupPage.tsx
 import React, { useState } from "react";
 import * as Form from "@radix-ui/react-form";
-import { Box, Button } from "@radix-ui/themes";
+import { Box, Button, TextField } from "@radix-ui/themes";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { useNavigate } from "react-router-dom";
 
@@ -68,257 +68,253 @@ const SignupPage: React.FC = () => {
     <Box
       style={{
         padding: "20px",
-        maxWidth: "400px",
+        maxWidth: "650px",
         margin: "0 auto",
       }}
     >
       <h2>Sign Up</h2>
       <Form.Root onSubmit={handleSubmit}>
         <Form.Field name="companyName">
-          <Form.Label>
-            Company Name
-            <Tooltip.Provider delayDuration={0}>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <span
-                    style={{
-                      marginLeft: "8px",
-                      cursor: "pointer",
-                      fontSize: "16px",
-                      color: "#888",
-                    }}
-                  >
-                    ℹ️
-                  </span>
-                </Tooltip.Trigger>
-                <Tooltip.Content
-                  className="TooltipContent"
-                  side="right"
-                  align="center"
-                  sideOffset={5}
-                >
-                  Your company name as it will appear on the PACT Network (i.e.
-                  search, profile pages).
-                </Tooltip.Content>
-              </Tooltip.Root>
-            </Tooltip.Provider>
-          </Form.Label>
           <Form.Control asChild>
-            <input
-              type="text"
-              required
+            <TextField.Root
               value={formData.companyName}
+              required
+              placeholder="Company Name"
               onChange={handleChange}
-              style={{ display: "block", width: "100%", marginBottom: "10px" }}
-            />
+            >
+              <TextField.Slot side="right">
+                <Tooltip.Provider delayDuration={0}>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <span
+                        style={{
+                          marginLeft: "8px",
+                          cursor: "pointer",
+                          fontSize: "16px",
+                          color: "#888",
+                        }}
+                      >
+                        ℹ️
+                      </span>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content
+                      className="TooltipContent"
+                      side="right"
+                      align="center"
+                      sideOffset={5}
+                    >
+                      Your company name as it will appear on the PACT Network
+                      (i.e. search, profile pages).
+                    </Tooltip.Content>
+                  </Tooltip.Root>
+                </Tooltip.Provider>
+              </TextField.Slot>
+            </TextField.Root>
           </Form.Control>
           <Form.Message match="valueMissing" style={{ color: "red" }}>
             Company name is required.
           </Form.Message>
         </Form.Field>
         <Form.Field name="companyIdentifier">
-          <Form.Label>
-            Company Identifier
-            <Tooltip.Provider delayDuration={0}>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <span
-                    style={{
-                      marginLeft: "8px",
-                      cursor: "pointer",
-                      fontSize: "16px",
-                      color: "#888",
-                    }}
-                  >
-                    ℹ️
-                  </span>
-                </Tooltip.Trigger>
-                <Tooltip.Content
-                  className="TooltipContent"
-                  side="right"
-                  align="center"
-                  sideOffset={5}
-                >
-                  This is the identifier for your company within the PACT
-                  Network.
-                </Tooltip.Content>
-              </Tooltip.Root>
-            </Tooltip.Provider>
-          </Form.Label>
           <Form.Control asChild>
-            <input
-              type="text"
-              required
+            <TextField.Root
               value={formData.companyIdentifier}
+              required
+              placeholder="Company Identifier"
               onChange={handleChange}
-              style={{ display: "block", width: "100%", marginBottom: "10px" }}
-            />
+            >
+              <TextField.Slot side="right">
+                <Tooltip.Provider delayDuration={0}>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <span
+                        style={{
+                          marginLeft: "8px",
+                          cursor: "pointer",
+                          fontSize: "16px",
+                          color: "#888",
+                        }}
+                      >
+                        ℹ️
+                      </span>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content
+                      className="TooltipContent"
+                      side="right"
+                      align="center"
+                      sideOffset={5}
+                    >
+                      This is the identifier for your company within the PACT
+                      Network.
+                    </Tooltip.Content>
+                  </Tooltip.Root>
+                </Tooltip.Provider>
+              </TextField.Slot>
+            </TextField.Root>
           </Form.Control>
           <Form.Message match="valueMissing" style={{ color: "red" }}>
             Company identifier is required.
           </Form.Message>
         </Form.Field>
         <Form.Field name="fullName">
-          <Form.Label>
-            Full Name
-            <Tooltip.Provider delayDuration={0}>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <span
-                    style={{
-                      marginLeft: "8px",
-                      cursor: "pointer",
-                      fontSize: "16px",
-                      color: "#888",
-                    }}
-                  >
-                    ℹ️
-                  </span>
-                </Tooltip.Trigger>
-                <Tooltip.Content
-                  className="TooltipContent"
-                  side="right"
-                  align="center"
-                  sideOffset={5}
-                >
-                  Your name as will show up as a point of contact for your
-                  organization.
-                </Tooltip.Content>
-              </Tooltip.Root>
-            </Tooltip.Provider>
-          </Form.Label>
           <Form.Control asChild>
-            <input
-              type="text"
-              required
+            <TextField.Root
               value={formData.fullName}
+              required
+              placeholder="Full Name"
               onChange={handleChange}
-              style={{ display: "block", width: "100%", marginBottom: "10px" }}
-            />
+            >
+              <TextField.Slot side="right">
+                <Tooltip.Provider delayDuration={0}>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <span
+                        style={{
+                          marginLeft: "8px",
+                          cursor: "pointer",
+                          fontSize: "16px",
+                          color: "#888",
+                        }}
+                      >
+                        ℹ️
+                      </span>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content
+                      className="TooltipContent"
+                      side="right"
+                      align="center"
+                      sideOffset={5}
+                    >
+                      Your name as will show up as a point of contact for your
+                      organization.
+                    </Tooltip.Content>
+                  </Tooltip.Root>
+                </Tooltip.Provider>
+              </TextField.Slot>
+            </TextField.Root>
           </Form.Control>
           <Form.Message match="valueMissing" style={{ color: "red" }}>
             Your name is required.
           </Form.Message>
         </Form.Field>
         <Form.Field name="email">
-          <Form.Label>
-            Email
-            <Tooltip.Provider delayDuration={0}>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <span
-                    style={{
-                      marginLeft: "8px",
-                      cursor: "pointer",
-                      fontSize: "16px",
-                      color: "#888",
-                    }}
-                  >
-                    ℹ️
-                  </span>
-                </Tooltip.Trigger>
-                <Tooltip.Content
-                  className="TooltipContent"
-                  side="right"
-                  align="center"
-                  sideOffset={5}
-                >
-                  Your email address will be used to log in to the PACT Network,
-                  and to receive important notifications.
-                </Tooltip.Content>
-              </Tooltip.Root>
-            </Tooltip.Provider>
-          </Form.Label>
           <Form.Control asChild>
-            <input
-              type="email"
-              required
+            <TextField.Root
               value={formData.email}
+              required
+              placeholder="Email"
               onChange={handleChange}
-              style={{ display: "block", width: "100%", marginBottom: "10px" }}
-            />
+            >
+              <TextField.Slot side="right">
+                <Tooltip.Provider delayDuration={0}>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <span
+                        style={{
+                          marginLeft: "8px",
+                          cursor: "pointer",
+                          fontSize: "16px",
+                          color: "#888",
+                        }}
+                      >
+                        ℹ️
+                      </span>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content
+                      className="TooltipContent"
+                      side="right"
+                      align="center"
+                      sideOffset={5}
+                    >
+                      Your email address will be used to log in to the PACT
+                      Network, and to receive important notifications.
+                    </Tooltip.Content>
+                  </Tooltip.Root>
+                </Tooltip.Provider>
+              </TextField.Slot>
+            </TextField.Root>
           </Form.Control>
           <Form.Message match="valueMissing" style={{ color: "red" }}>
             Email is required.
           </Form.Message>
         </Form.Field>
         <Form.Field name="password">
-          <Form.Label>
-            Password
-            <Tooltip.Provider delayDuration={0}>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <span
-                    style={{
-                      marginLeft: "8px",
-                      cursor: "pointer",
-                      fontSize: "16px",
-                      color: "#888",
-                    }}
-                  >
-                    ℹ️
-                  </span>
-                </Tooltip.Trigger>
-                <Tooltip.Content
-                  className="TooltipContent"
-                  side="right"
-                  align="center"
-                  sideOffset={5}
-                >
-                  Your password must be at least 8 characters long.
-                </Tooltip.Content>
-              </Tooltip.Root>
-            </Tooltip.Provider>
-          </Form.Label>
           <Form.Control asChild>
-            <input
+            <TextField.Root
               type="password"
-              required
               value={formData.password}
+              required
+              placeholder="Password"
               onChange={handleChange}
-              style={{ display: "block", width: "100%", marginBottom: "10px" }}
-            />
+            >
+              <TextField.Slot side="right">
+                <Tooltip.Provider delayDuration={0}>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <span
+                        style={{
+                          marginLeft: "8px",
+                          cursor: "pointer",
+                          fontSize: "16px",
+                          color: "#888",
+                        }}
+                      >
+                        ℹ️
+                      </span>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content
+                      className="TooltipContent"
+                      side="right"
+                      align="center"
+                      sideOffset={5}
+                    >
+                      Your password must be at least 8 characters long.
+                    </Tooltip.Content>
+                  </Tooltip.Root>
+                </Tooltip.Provider>
+              </TextField.Slot>
+            </TextField.Root>
           </Form.Control>
           <Form.Message match="valueMissing" style={{ color: "red" }}>
             Password is required.
           </Form.Message>
         </Form.Field>
         <Form.Field name="confirmPassword">
-          <Form.Label>
-            Confirm Password
-            <Tooltip.Provider delayDuration={0}>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <span
-                    style={{
-                      marginLeft: "8px",
-                      cursor: "pointer",
-                      fontSize: "16px",
-                      color: "#888",
-                    }}
-                  >
-                    ℹ️
-                  </span>
-                </Tooltip.Trigger>
-                <Tooltip.Content
-                  className="TooltipContent"
-                  side="right"
-                  align="center"
-                  sideOffset={5}
-                >
-                  Please confirm your password.
-                </Tooltip.Content>
-              </Tooltip.Root>
-            </Tooltip.Provider>
-          </Form.Label>
           <Form.Control asChild>
-            <input
+            <TextField.Root
               type="password"
-              required
               value={formData.confirmPassword}
+              required
+              placeholder="Confirm Password"
               onChange={handleChange}
-              style={{ display: "block", width: "100%", marginBottom: "10px" }}
-            />
+            >
+              <TextField.Slot side="right">
+                <Tooltip.Provider delayDuration={0}>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <span
+                        style={{
+                          marginLeft: "8px",
+                          cursor: "pointer",
+                          fontSize: "16px",
+                          color: "#888",
+                        }}
+                      >
+                        ℹ️
+                      </span>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content
+                      className="TooltipContent"
+                      side="right"
+                      align="center"
+                      sideOffset={5}
+                    >
+                      Please confirm your password.
+                    </Tooltip.Content>
+                  </Tooltip.Root>
+                </Tooltip.Provider>
+              </TextField.Slot>
+            </TextField.Root>
           </Form.Control>
           <Form.Message match="valueMissing" style={{ color: "red" }}>
             Please confirm your password.
@@ -331,125 +327,128 @@ const SignupPage: React.FC = () => {
           </Form.Message>
         </Form.Field>
         <Form.Field name="solutionApiProdUrl">
-          <Form.Label>
-            Solution Api Production URL
-            <Tooltip.Provider delayDuration={0}>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <span
-                    style={{
-                      marginLeft: "8px",
-                      cursor: "pointer",
-                      fontSize: "16px",
-                      color: "#888",
-                    }}
-                  >
-                    ℹ️
-                  </span>
-                </Tooltip.Trigger>
-                <Tooltip.Content
-                  className="TooltipContent"
-                  side="right"
-                  align="center"
-                  sideOffset={5}
-                >
-                  The production URL for your solution's API.
-                </Tooltip.Content>
-              </Tooltip.Root>
-            </Tooltip.Provider>
-          </Form.Label>
           <Form.Control asChild>
-            <input
-              type="text"
-              required
+            <TextField.Root
               value={formData.solutionApiProdUrl}
+              required
+              placeholder="Solution API Production URL"
               onChange={handleChange}
-              style={{ display: "block", width: "100%", marginBottom: "10px" }}
-            />
+            >
+              <TextField.Slot side="right">
+                <Tooltip.Provider delayDuration={0}>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <span
+                        style={{
+                          marginLeft: "8px",
+                          cursor: "pointer",
+                          fontSize: "16px",
+                          color: "#888",
+                        }}
+                      >
+                        ℹ️
+                      </span>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content
+                      className="TooltipContent"
+                      side="right"
+                      align="center"
+                      sideOffset={5}
+                    >
+                      The production URL for your solution's API.
+                    </Tooltip.Content>
+                  </Tooltip.Root>
+                </Tooltip.Provider>
+              </TextField.Slot>
+            </TextField.Root>
           </Form.Control>
           <Form.Message match="valueMissing" style={{ color: "red" }}>
             Solution API production URL is required.
           </Form.Message>
         </Form.Field>
         <Form.Field name="solutionApiDevUrl">
-          <Form.Label>
-            Solution Api Development URL
-            <Tooltip.Provider delayDuration={0}>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <span
-                    style={{
-                      marginLeft: "8px",
-                      cursor: "pointer",
-                      fontSize: "16px",
-                      color: "#888",
-                    }}
-                  >
-                    ℹ️
-                  </span>
-                </Tooltip.Trigger>
-                <Tooltip.Content
-                  className="TooltipContent"
-                  side="right"
-                  align="center"
-                  sideOffset={5}
-                >
-                  The development URL for your solution's API.
-                </Tooltip.Content>
-              </Tooltip.Root>
-            </Tooltip.Provider>
-          </Form.Label>
           <Form.Control asChild>
-            <input
-              type="text"
-              required
+            <TextField.Root
               value={formData.solutionApiDevUrl}
+              required
+              placeholder="Solution API Development URL"
               onChange={handleChange}
-              style={{ display: "block", width: "100%", marginBottom: "10px" }}
-            />
+            >
+              <TextField.Slot side="right">
+                <Tooltip.Provider delayDuration={0}>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <span
+                        style={{
+                          marginLeft: "8px",
+                          cursor: "pointer",
+                          fontSize: "16px",
+                          color: "#888",
+                        }}
+                      >
+                        ℹ️
+                      </span>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content
+                      className="TooltipContent"
+                      side="right"
+                      align="center"
+                      sideOffset={5}
+                    >
+                      The development URL for your solution's API.
+                    </Tooltip.Content>
+                  </Tooltip.Root>
+                </Tooltip.Provider>
+              </TextField.Slot>
+            </TextField.Root>
           </Form.Control>
           <Form.Message match="valueMissing" style={{ color: "red" }}>
             Solution API development URL is required.
           </Form.Message>
         </Form.Field>
         <Form.Field name="registrationCode">
-          <Form.Label>
-            Registration Code
-            <Tooltip.Provider delayDuration={0}>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <span
-                    style={{
-                      marginLeft: "8px",
-                      cursor: "pointer",
-                      fontSize: "16px",
-                      color: "#888",
-                    }}
-                  >
-                    ℹ️
-                  </span>
-                </Tooltip.Trigger>
-                <Tooltip.Content
-                  className="TooltipContent"
-                  side="right"
-                  align="center"
-                  sideOffset={5}
-                >
-                  The registration code provided by the PACT Network.
-                </Tooltip.Content>
-              </Tooltip.Root>
-            </Tooltip.Provider>
-          </Form.Label>
           <Form.Control asChild>
-            <input
-              type="text"
-              required
+            <TextField.Root
               value={formData.registrationCode}
+              required
+              placeholder="Registration Code"
               onChange={handleChange}
-              style={{ display: "block", width: "100%", marginBottom: "10px" }}
-            />
+            >
+              <TextField.Slot side="right">
+                <Tooltip.Provider delayDuration={0}>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <span
+                        style={{
+                          marginLeft: "8px",
+                          cursor: "pointer",
+                          fontSize: "16px",
+                          color: "#888",
+                        }}
+                      >
+                        ℹ️
+                      </span>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content
+                      className="TooltipContent"
+                      side="right"
+                      align="center"
+                      sideOffset={5}
+                    >
+                      The registration code provided by the PACT Network.
+                    </Tooltip.Content>
+                  </Tooltip.Root>
+                </Tooltip.Provider>
+              </TextField.Slot>
+            </TextField.Root>
           </Form.Control>
-          <Form.Message match="valueMissing" style={{ color: "red" }}>
+          <Form.Message
+            match="valueMissing"
+            style={{
+              color: "var(--base-color-brand--light-blue)",
+              fontSize: "0.85em",
+            }}
+          >
             Registration code is required.
           </Form.Message>
         </Form.Field>

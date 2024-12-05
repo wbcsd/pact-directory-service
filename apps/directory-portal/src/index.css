@@ -1,10 +1,20 @@
+:root {
+  --base-color-brand--light-blue: #3c3c68;
+  --base-color-brand--blue: #09094e;
+}
+
 body {
   margin: 0;
+  color: var(--base-color-brand--blue);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h2 {
+  color: var(--base-color-brand--blue);
 }
 
 code {
@@ -91,4 +101,26 @@ input {
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+div:has(.rt-TextFieldRoot) {
+  margin-bottom: 20px;
+}
+
+.rt-TextFieldRoot {
+  min-height: 64px;
+}
+
+input.rt-TextFieldInput {
+  padding: 0 15px;
+}
+
+input.rt-TextFieldInput::placeholder {
+  color: var(--base-color-brand--light-blue);
+}
+
+button.rt-Button {
+  background-color: var(--base-color-brand--blue);
+  padding: 20px;
+  min-height: 55px;
 }
