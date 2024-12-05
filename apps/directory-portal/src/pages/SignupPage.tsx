@@ -1,9 +1,9 @@
 // src/pages/SignupPage.tsx
 import React, { useState } from "react";
 import * as Form from "@radix-ui/react-form";
-import { Box, Button, TextField } from "@radix-ui/themes";
+import { Box, Button, TextField, Text, Flex } from "@radix-ui/themes";
 import * as Tooltip from "@radix-ui/react-tooltip";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const SignupPage: React.FC = () => {
   const navigate = useNavigate();
@@ -111,7 +111,13 @@ const SignupPage: React.FC = () => {
               </TextField.Slot>
             </TextField.Root>
           </Form.Control>
-          <Form.Message match="valueMissing" style={{ color: "red" }}>
+          <Form.Message
+            match="valueMissing"
+            style={{
+              color: "var(--base-color-brand--light-blue)",
+              fontSize: "0.85em",
+            }}
+          >
             Company name is required.
           </Form.Message>
         </Form.Field>
@@ -152,7 +158,13 @@ const SignupPage: React.FC = () => {
               </TextField.Slot>
             </TextField.Root>
           </Form.Control>
-          <Form.Message match="valueMissing" style={{ color: "red" }}>
+          <Form.Message
+            match="valueMissing"
+            style={{
+              color: "var(--base-color-brand--light-blue)",
+              fontSize: "0.85em",
+            }}
+          >
             Company identifier is required.
           </Form.Message>
         </Form.Field>
@@ -193,7 +205,13 @@ const SignupPage: React.FC = () => {
               </TextField.Slot>
             </TextField.Root>
           </Form.Control>
-          <Form.Message match="valueMissing" style={{ color: "red" }}>
+          <Form.Message
+            match="valueMissing"
+            style={{
+              color: "var(--base-color-brand--light-blue)",
+              fontSize: "0.85em",
+            }}
+          >
             Your name is required.
           </Form.Message>
         </Form.Field>
@@ -234,7 +252,13 @@ const SignupPage: React.FC = () => {
               </TextField.Slot>
             </TextField.Root>
           </Form.Control>
-          <Form.Message match="valueMissing" style={{ color: "red" }}>
+          <Form.Message
+            match="valueMissing"
+            style={{
+              color: "var(--base-color-brand--light-blue)",
+              fontSize: "0.85em",
+            }}
+          >
             Email is required.
           </Form.Message>
         </Form.Field>
@@ -275,7 +299,13 @@ const SignupPage: React.FC = () => {
               </TextField.Slot>
             </TextField.Root>
           </Form.Control>
-          <Form.Message match="valueMissing" style={{ color: "red" }}>
+          <Form.Message
+            match="valueMissing"
+            style={{
+              color: "var(--base-color-brand--light-blue)",
+              fontSize: "0.85em",
+            }}
+          >
             Password is required.
           </Form.Message>
         </Form.Field>
@@ -316,12 +346,21 @@ const SignupPage: React.FC = () => {
               </TextField.Slot>
             </TextField.Root>
           </Form.Control>
-          <Form.Message match="valueMissing" style={{ color: "red" }}>
+          <Form.Message
+            match="valueMissing"
+            style={{
+              color: "var(--base-color-brand--light-blue)",
+              fontSize: "0.85em",
+            }}
+          >
             Please confirm your password.
           </Form.Message>
           <Form.Message
             match={(value) => value !== formData.password}
-            style={{ color: "red" }}
+            style={{
+              color: "var(--base-color-brand--light-blue)",
+              fontSize: "0.85em",
+            }}
           >
             Passwords do not match.
           </Form.Message>
@@ -362,7 +401,13 @@ const SignupPage: React.FC = () => {
               </TextField.Slot>
             </TextField.Root>
           </Form.Control>
-          <Form.Message match="valueMissing" style={{ color: "red" }}>
+          <Form.Message
+            match="valueMissing"
+            style={{
+              color: "var(--base-color-brand--light-blue)",
+              fontSize: "0.85em",
+            }}
+          >
             Solution API production URL is required.
           </Form.Message>
         </Form.Field>
@@ -402,7 +447,13 @@ const SignupPage: React.FC = () => {
               </TextField.Slot>
             </TextField.Root>
           </Form.Control>
-          <Form.Message match="valueMissing" style={{ color: "red" }}>
+          <Form.Message
+            match="valueMissing"
+            style={{
+              color: "var(--base-color-brand--light-blue)",
+              fontSize: "0.85em",
+            }}
+          >
             Solution API development URL is required.
           </Form.Message>
         </Form.Field>
@@ -452,9 +503,30 @@ const SignupPage: React.FC = () => {
             Registration code is required.
           </Form.Message>
         </Form.Field>
-        <Form.Submit asChild>
-          <Button style={{ marginTop: "10px" }}>Join the network!</Button>
-        </Form.Submit>
+        <Flex gap={"3"}>
+          <Box>
+            <Form.Submit asChild>
+              <Button style={{ marginTop: "10px" }}>Join the network!</Button>
+            </Form.Submit>
+          </Box>
+          <Box
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                color: "var(--base-color-brand--light-blue)",
+                fontSize: "0.90em",
+              }}
+            >
+              Already a member? <Link to={"/login"}>Login</Link>
+            </Text>
+          </Box>
+        </Flex>
       </Form.Root>
     </Box>
   );
