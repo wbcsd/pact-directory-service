@@ -1,5 +1,6 @@
 :root {
   --base-color-brand--light-blue: #3c3c68;
+  --base-color-brand--light-grey: #8a8a8a;
   --base-color-brand--blue: #09094e;
 }
 
@@ -103,7 +104,7 @@ input {
   }
 }
 
-div:has(.rt-TextFieldRoot) {
+div:has(> .rt-TextFieldRoot) {
   margin-bottom: 20px;
 }
 
@@ -123,4 +124,14 @@ button.rt-Button {
   background-color: var(--base-color-brand--blue);
   padding: 20px;
   min-height: 55px;
+}
+
+.side-nav a {
+  text-decoration: none;
+  color: var(--base-color-brand--light-grey);
+}
+
+.side-nav a.active {
+  color: var(--base-color-brand--brand-blue);
+  font-weight: 500;
 }
