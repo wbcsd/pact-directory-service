@@ -34,7 +34,7 @@ When a PACT conformant API receives a request from a client system, it will vali
 
 ## API request (PCF data) flow
 
-Once an organization has granted acess to another organization, the requesting organization's solution can authenticate with the PACT Authentication Service using an OAuth 2.0 flow where the requesting organization's `client_id`, `client_secret`, and the company ID (not a legal identifier, but an id issue by the authentication service during sign up) of the data owner are exchanged for an access token, then access the PCF from the organizations they have access to. This access token will have a validity period of 3 hours, after which a the client will need to request a new token. The API requests flow will be as follows:
+Once an organization has granted acess to another organization, the requesting organization's solution can authenticate with the PACT Authentication Service using an OAuth 2.0 flow where the requesting organization's `client_id`, `client_secret`, and the PACT Network ID (which is generated when registering to the network) of the data owner are exchanged for an access token. Then the requesting organization can use this access token to request PCF data from the organizations they have been granted permission. This access token will have a validity period of 3 hours, after which a the client will need to request a new token. The API requests flow will be as follows:
 
 ![](auth-flow.png)
 
