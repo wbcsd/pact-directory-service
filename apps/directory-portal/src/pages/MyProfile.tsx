@@ -11,11 +11,11 @@ const MyProfile: React.FC = () => {
     companyIdentifier: "",
     fullName: "",
     email: "",
-    solutionApiProdUrl: "",
-    solutionApiDevUrl: "",
+    solutionApiUrl: "",
     registrationCode: "",
     clientId: "",
     clientSecret: "",
+    networkId: "",
   });
 
   const [showCredentials, setShowCredentials] = useState(false);
@@ -71,13 +71,10 @@ const MyProfile: React.FC = () => {
         style={{
           padding: "20px",
           maxWidth: "600px",
+          width: "600px",
         }}
       >
-        <h2>My Profile</h2>
-        <div>
-          <h3>Company Name</h3>
-          <p>{profileData.companyName}</p>
-        </div>
+        <h2>{profileData.companyName}</h2>
         <div>
           <h3>Company Identifier</h3>
           <p>{profileData.companyIdentifier}</p>
@@ -91,18 +88,39 @@ const MyProfile: React.FC = () => {
           <p>{profileData.email}</p>
         </div>
         <div>
-          <h3>Solution API Prod URL</h3>
-          <p>{profileData.solutionApiProdUrl}</p>
-        </div>
-        <div>
-          <h3>Solution API Dev URL</h3>
-          <p>{profileData.solutionApiDevUrl}</p>
+          <h3>Solution API URL</h3>
+          <p>{profileData.solutionApiUrl}</p>
         </div>
 
-        <h2>Credentials</h2>
-        <a href="#" onClick={toggleCredentials} style={{ marginLeft: "10px" }}>
-          {showCredentials ? "Hide Credentials" : "Show Credentials"}
-        </a>
+        <Flex gap={"3"} style={{ marginTop: "20px", marginBottom: "5px" }}>
+          <Box>
+            <h2 style={{ margin: 0 }}>Credentials</h2>
+          </Box>
+          <Box
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            <a
+              onClick={toggleCredentials}
+              style={{
+                color: "var(--base-color-brand--light-blue)",
+                cursor: "pointer",
+                fontSize: "0.90em",
+                textDecoration: "underline",
+                marginTop: "10px",
+              }}
+            >
+              {showCredentials ? "Hide Credentials" : "Show Credentials"}
+            </a>
+          </Box>
+        </Flex>
+        <div>
+          <h3>Network Identifier</h3>
+          <p>{profileData.networkId}</p>
+        </div>
         <div>
           <h3>ClientId</h3>
           <p>

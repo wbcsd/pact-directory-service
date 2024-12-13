@@ -11,11 +11,11 @@ export interface CompanyTable {
   id: Generated<number>;
   companyName: string;
   companyIdentifier: string;
-  solutionApiProdUrl: string;
-  solutionApiDevUrl: string;
+  solutionApiUrl: string;
   registrationCode: string;
   clientId: string;
   clientSecret: string;
+  networkId: string;
 }
 
 export interface UserTable {

@@ -33,7 +33,7 @@ const App: React.FC = () => {
         <img width={96} src={pactLogo} alt="Pact Logo" />
       </Box>
       <div style={{ padding: "20px" }}>
-        <nav>
+        {/* <nav>
           <Link to="/login" style={{ marginRight: "10px" }}>
             Login
           </Link>
@@ -47,7 +47,7 @@ const App: React.FC = () => {
             Search
           </Link>
           <Link to="/manage-connections">Manage Connections</Link>
-        </nav>
+        </nav> */}
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />

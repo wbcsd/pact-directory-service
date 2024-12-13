@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, AlertDialog, Flex } from "@radix-ui/themes";
 import { Link } from "react-router-dom";
+import SideNav from "../components/SideNav";
 
 interface ConnectionRequest {
   id: number;
@@ -121,83 +122,89 @@ const ManageConnections: React.FC = () => {
         </AlertDialog.Content>
       </AlertDialog.Root>
 
-      <Box
-        style={{
-          padding: "20px",
-          maxWidth: "800px",
-          margin: "0 auto",
-        }}
-      >
-        <h2>Manage Connections</h2>
+      <Flex gap={"5"} justify={"center"}>
         <Box>
-          <h3>Connected organizations</h3>
-          {connectionsData.connectedCompanies.length > 0 ? (
-            <ul>
-              {connectionsData.connectedCompanies.map((connection) => (
-                <li key={connection.companyId}>
-                  <p>
-                    <Link to={`/company/${connection.companyId}`}>
-                      {connection.companyName}
-                    </Link>
-                  </p>
-                  <p>
-                    Connected At:{" "}
-                    {new Date(connection.createdAt).toLocaleString()}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No connected organizations.</p>
-          )}
+          <SideNav />
         </Box>
-        <Box>
-          <h3>Sent Connection Requests</h3>
-          {connectionsData.sent.length > 0 ? (
-            <ul>
-              {connectionsData.sent.map((request, index) => (
-                <li key={index}>
-                  <p>
+
+        <Box
+          style={{
+            padding: "20px",
+            maxWidth: "600px",
+            width: "600px",
+          }}
+        >
+          <h2>Manage Connections</h2>
+          <Box>
+            <h3>Connected organizations</h3>
+            {connectionsData.connectedCompanies.length > 0 ? (
+              <ul>
+                {connectionsData.connectedCompanies.map((connection) => (
+                  <li key={connection.companyId}>
+                    <p>
+                      <Link to={`/company/${connection.companyId}`}>
+                        {connection.companyName}
+                      </Link>
+                    </p>
+                    <p>
+                      Connected At:{" "}
+                      {new Date(connection.createdAt).toLocaleString()}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No connected organizations.</p>
+            )}
+          </Box>
+          <Box>
+            <h3>Sent Connection Requests</h3>
+            {connectionsData.sent.length > 0 ? (
+              <ul>
+                {connectionsData.sent.map((request, index) => (
+                  <li key={index}>
+                    <p>
+                      <Link to={`/company/${request.companyId}`}>
+                        {request.companyName}
+                      </Link>
+                    </p>
+                    <p>Status: {request.status}</p>
+                    <p>
+                      Created At: {new Date(request.createdAt).toLocaleString()}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No sent connection requests.</p>
+            )}
+          </Box>
+          <Box>
+            <h3>Received Connection Requests</h3>
+            {connectionsData.received.length > 0 ? (
+              <ul>
+                {connectionsData.received.map((request) => (
+                  <li key={request.id}>
                     <Link to={`/company/${request.companyId}`}>
                       {request.companyName}
                     </Link>
-                  </p>
-                  <p>Status: {request.status}</p>
-                  <p>
-                    Created At: {new Date(request.createdAt).toLocaleString()}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No sent connection requests.</p>
-          )}
-        </Box>
-        <Box>
-          <h3>Received Connection Requests</h3>
-          {connectionsData.received.length > 0 ? (
-            <ul>
-              {connectionsData.received.map((request) => (
-                <li key={request.id}>
-                  <Link to={`/company/${request.companyId}`}>
-                    {request.companyName}
-                  </Link>
-                  <p>Status: {request.status}</p>
-                  <p>
-                    Created At: {new Date(request.createdAt).toLocaleString()}
-                  </p>
+                    <p>Status: {request.status}</p>
+                    <p>
+                      Created At: {new Date(request.createdAt).toLocaleString()}
+                    </p>
 
-                  <Button onClick={() => handleAccept(request.id)}>
-                    Accept
-                  </Button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No received connection requests.</p>
-          )}
+                    <Button onClick={() => handleAccept(request.id)}>
+                      Accept
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No received connection requests.</p>
+            )}
+          </Box>
         </Box>
-      </Box>
+      </Flex>
     </>
   );
 };

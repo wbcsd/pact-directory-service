@@ -14,8 +14,7 @@ const SignupPage: React.FC = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    solutionApiProdUrl: "",
-    solutionApiDevUrl: "",
+    solutionApiUrl: "",
     registrationCode: "",
   });
   const [status, setStatus] = useState<null | "success" | "error">(null);
@@ -365,12 +364,12 @@ const SignupPage: React.FC = () => {
             Passwords do not match.
           </Form.Message>
         </Form.Field>
-        <Form.Field name="solutionApiProdUrl">
+        <Form.Field name="solutionApiUrl">
           <Form.Control asChild>
             <TextField.Root
-              value={formData.solutionApiProdUrl}
+              value={formData.solutionApiUrl}
               required
-              placeholder="Solution API Production URL"
+              placeholder="Solution API URL"
               onChange={handleChange}
             >
               <TextField.Slot side="right">
@@ -394,7 +393,7 @@ const SignupPage: React.FC = () => {
                       align="center"
                       sideOffset={5}
                     >
-                      The production URL for your solution's API.
+                      The URL for your solution's API.
                     </Tooltip.Content>
                   </Tooltip.Root>
                 </Tooltip.Provider>
@@ -408,53 +407,7 @@ const SignupPage: React.FC = () => {
               fontSize: "0.85em",
             }}
           >
-            Solution API production URL is required.
-          </Form.Message>
-        </Form.Field>
-        <Form.Field name="solutionApiDevUrl">
-          <Form.Control asChild>
-            <TextField.Root
-              value={formData.solutionApiDevUrl}
-              required
-              placeholder="Solution API Development URL"
-              onChange={handleChange}
-            >
-              <TextField.Slot side="right">
-                <Tooltip.Provider delayDuration={0}>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <span
-                        style={{
-                          marginLeft: "8px",
-                          cursor: "pointer",
-                          fontSize: "16px",
-                          color: "#888",
-                        }}
-                      >
-                        ℹ️
-                      </span>
-                    </Tooltip.Trigger>
-                    <Tooltip.Content
-                      className="TooltipContent"
-                      side="right"
-                      align="center"
-                      sideOffset={5}
-                    >
-                      The development URL for your solution's API.
-                    </Tooltip.Content>
-                  </Tooltip.Root>
-                </Tooltip.Provider>
-              </TextField.Slot>
-            </TextField.Root>
-          </Form.Control>
-          <Form.Message
-            match="valueMissing"
-            style={{
-              color: "var(--base-color-brand--light-blue)",
-              fontSize: "0.85em",
-            }}
-          >
-            Solution API development URL is required.
+            Solution API URL is required.
           </Form.Message>
         </Form.Field>
         <Form.Field name="registrationCode">

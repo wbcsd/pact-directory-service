@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Box, Button } from "@radix-ui/themes";
+import { Box, Button, Flex } from "@radix-ui/themes";
+import SideNav from "../components/SideNav";
 
 const RequestStatus = {
   PENDING: "pending",
@@ -17,9 +18,9 @@ const CompanyProfile: React.FC = () => {
     companyIdentifier: "",
     fullName: "",
     email: "",
-    solutionApiProdUrl: "",
-    solutionApiDevUrl: "",
+    solutionApiUrl: "",
     registrationCode: "",
+    networkId: "",
   });
 
   useEffect(() => {
@@ -101,81 +102,89 @@ const CompanyProfile: React.FC = () => {
     [RequestStatus.ACCEPTED]: "Connected",
   };
 
+  const connectionStatusTextMapping = {
+    [RequestStatus.PENDING]:
+      "Your connection request is pending approval from this organization.",
+    [RequestStatus.NOREQUEST]:
+      "When you click Connect, PACT Identity Management Service will send a request to this supplier, requesting their permission to create an authenticated connection between your PACT Conformant Solution and theirs.",
+    [RequestStatus.ACCEPTED]: "You are connected with this organization.",
+  };
+
   return (
-    <>
+    <Flex gap={"5"} justify={"center"}>
+      <Box>
+        <SideNav />
+      </Box>
       <Box
         style={{
           padding: "20px",
-          maxWidth: "800px",
-          margin: "0 auto",
-          display: "flex",
-          gap: "16px",
+          maxWidth: "600px",
+          width: "600px",
         }}
       >
         <Box
           style={{
+            marginBottom: "20px",
             display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
+            gap: "16px",
           }}
         >
-          <Button
-            onClick={handleConnect}
-            style={
-              requestStatus !== RequestStatus.NOREQUEST
-                ? { backgroundColor: "gray" }
-                : {}
-            }
+          <Box>
+            <Button
+              onClick={handleConnect}
+              style={
+                requestStatus !== RequestStatus.NOREQUEST
+                  ? { backgroundColor: "gray" }
+                  : {}
+              }
+            >
+              {statusLabelMapping[requestStatus]}
+            </Button>
+          </Box>
+          <Box
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
           >
-            {statusLabelMapping[requestStatus]}
-          </Button>
+            {connectionStatusTextMapping[requestStatus]}
+          </Box>
         </Box>
         <Box>
-          {requestStatus === RequestStatus.ACCEPTED
-            ? "You are connected with this organization."
-            : "When you click Connect, PACT Identity Management Service will send a request to this supplier, requesting their permission to create an authenticated connection between your PACT Conformant Solution and theirs."}
+          <h2>{profileData.companyName}</h2>
+
+          <div>
+            <h3>Company Identifier</h3>
+            <p>{profileData.companyIdentifier}</p>
+          </div>
+          <div>
+            <h3>Contact's Name</h3>
+            <p>{profileData.fullName}</p>
+          </div>
+          <div>
+            <h3>Contact's Email</h3>
+            <p>{profileData.email}</p>
+          </div>
+          {requestStatus === RequestStatus.ACCEPTED && (
+            <>
+              <h2 style={{ margin: 0, marginTop: "20px" }}>
+                Api Configuration
+              </h2>
+              <div>
+                <h3>Network Identifier</h3>
+                <p>{profileData.networkId}</p>
+              </div>
+              <div>
+                <h3>Solution API URL</h3>
+                <p>{profileData.solutionApiUrl}</p>
+              </div>
+            </>
+          )}
         </Box>
       </Box>
-      <Box
-        style={{
-          padding: "20px",
-          paddingTop: "0",
-          maxWidth: "800px",
-          margin: "0 auto",
-        }}
-      >
-        <h2>Company Profile</h2>
-        <div>
-          <h3>Company Name</h3>
-          <p>{profileData.companyName}</p>
-        </div>
-        <div>
-          <h3>Company Identifier</h3>
-          <p>{profileData.companyIdentifier}</p>
-        </div>
-        <div>
-          <h3>Full Name</h3>
-          <p>{profileData.fullName}</p>
-        </div>
-        <div>
-          <h3>Email</h3>
-          <p>{profileData.email}</p>
-        </div>
-        {requestStatus === RequestStatus.ACCEPTED && (
-          <>
-            <div>
-              <h3>Solution API Prod URL</h3>
-              <p>{profileData.solutionApiProdUrl}</p>
-            </div>
-            <div>
-              <h3>Solution API Dev URL</h3>
-              <p>{profileData.solutionApiDevUrl}</p>
-            </div>
-          </>
-        )}
-      </Box>
-    </>
+    </Flex>
   );
 };
 

@@ -21,8 +21,7 @@ async function signup(req: IReq, res: IRes) {
     email,
     password,
     confirmPassword,
-    solutionApiProdUrl,
-    solutionApiDevUrl,
+    solutionApiUrl,
     registrationCode,
   } = req.body;
 
@@ -42,7 +41,7 @@ async function signup(req: IReq, res: IRes) {
 
   // TODO: generate client_id and client_secret
 
-  const { clientId, clientSecret } = await generateCredentials();
+  const { clientId, clientSecret, networkId } = await generateCredentials();
 
   // Insert into companies table
   // TODO do in transaction and rollback if user insert fails
@@ -52,11 +51,11 @@ async function signup(req: IReq, res: IRes) {
       // TODO casts will be removed when the input is typed and validated
       companyName: companyName as string,
       companyIdentifier: companyIdentifier as string,
-      solutionApiProdUrl: solutionApiProdUrl as string,
-      solutionApiDevUrl: solutionApiDevUrl as string,
+      solutionApiUrl: solutionApiUrl as string,
       registrationCode: registrationCode as string,
       clientId,
       clientSecret,
+      networkId,
     })
     .returning("id")
     .executeTakeFirstOrThrow();
@@ -146,10 +145,10 @@ async function myProfile(req: IReq, res: IRes) {
       "companies.id",
       "companies.companyName",
       "companies.companyIdentifier",
-      "companies.solutionApiProdUrl",
-      "companies.solutionApiDevUrl",
+      "companies.solutionApiUrl",
       "companies.clientId",
       "companies.clientSecret",
+      "companies.networkId",
       "users.fullName",
       "users.email",
     ])
@@ -288,8 +287,8 @@ async function getCompany(req: IReq, res: IRes) {
       "companies.id",
       "companyName",
       "companyIdentifier",
-      "solutionApiProdUrl",
-      "solutionApiDevUrl",
+      "networkId",
+      "solutionApiUrl",
       "users.fullName",
       "users.email",
     ])
@@ -360,8 +359,7 @@ async function searchCompanies(req: IReq, res: IRes) {
       "companies.id",
       "companies.companyName",
       "companies.companyIdentifier",
-      "companies.solutionApiProdUrl",
-      "companies.solutionApiDevUrl",
+      "companies.solutionApiUrl",
       "companies.registrationCode",
       "users.email",
       "users.fullName",

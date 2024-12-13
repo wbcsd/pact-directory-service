@@ -16,6 +16,18 @@ body {
 
 h2 {
   color: var(--base-color-brand--blue);
+  margin-top: 0;
+}
+
+h3 {
+  font-size: 0.85em;
+  color: var(--base-color-brand--blue);
+  margin-bottom: 0px;
+}
+
+p {
+  color: var(--base-color-brand--blue);
+  margin: 0;
 }
 
 code {
@@ -132,6 +144,6 @@ button.rt-Button {
 }
 
 .side-nav a.active {
-  color: var(--base-color-brand--brand-blue);
+  color: var(--base-color-brand--blue);
   font-weight: 500;
 }
