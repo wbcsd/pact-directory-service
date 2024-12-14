@@ -1,9 +1,10 @@
 // src/pages/SignupPage.tsx
 import React, { useState } from "react";
 import * as Form from "@radix-ui/react-form";
-import { Box, Button, TextField, Text, Flex } from "@radix-ui/themes";
+import { Box, Button, TextField, Text, Flex, Callout } from "@radix-ui/themes";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { Link, useNavigate } from "react-router-dom";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
 const SignupPage: React.FC = () => {
   const navigate = useNavigate();
@@ -481,6 +482,16 @@ const SignupPage: React.FC = () => {
           </Box>
         </Flex>
       </Form.Root>
+      {status === "error" && (
+        <Callout.Root color="bronze" highContrast variant="surface" mt={"4"}>
+          <Callout.Icon>
+            <ExclamationTriangleIcon />
+          </Callout.Icon>
+          <Callout.Text>
+            Error during sign up, please check your data.
+          </Callout.Text>
+        </Callout.Root>
+      )}
     </Box>
   );
 };

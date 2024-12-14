@@ -3,7 +3,6 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Link,
   Navigate,
 } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
@@ -33,21 +32,6 @@ const App: React.FC = () => {
         <img width={96} src={pactLogo} alt="Pact Logo" />
       </Box>
       <div style={{ padding: "20px" }}>
-        {/* <nav>
-          <Link to="/login" style={{ marginRight: "10px" }}>
-            Login
-          </Link>
-          <Link to="/signup" style={{ marginRight: "10px" }}>
-            Sign Up
-          </Link>
-          <Link to="/my-profile" style={{ marginRight: "10px" }}>
-            My Profile
-          </Link>
-          <Link to="/search" style={{ marginRight: "10px" }}>
-            Search
-          </Link>
-          <Link to="/manage-connections">Manage Connections</Link>
-        </nav> */}
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
