@@ -8,15 +8,16 @@ import {
   FileMigrationProvider,
 } from "kysely";
 import { Database } from "./types";
+import EnvVars from "../common/EnvVars";
 
 async function migrateToLatest() {
   const db = new Kysely<Database>({
     dialect: new PostgresDialect({
       pool: new Pool({
-        database: "pact_directory_local",
-        host: "localhost",
-        user: "postgres",
-        password: "postgres",
+        database: EnvVars.DirectoryDatabase.Database,
+        host: EnvVars.DirectoryDatabase.Host,
+        user: EnvVars.DirectoryDatabase.User,
+        password: EnvVars.DirectoryDatabase.Password,
         port: 5432,
         max: 10,
       }),
