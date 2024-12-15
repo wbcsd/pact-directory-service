@@ -20,4 +20,10 @@ export default {
     Secret: process.env.JWT_SECRET ?? "",
     Exp: process.env.COOKIE_EXP ?? "", // exp at the same time as the cookie
   },
+  DirectoryDatabase: {
+    Host: process.env.DIR_DB_HOST ?? "",
+    User: process.env.DIR_DB_USER ?? "",
+    Password: process.env.DIR_DB_PASSWORD ?? "",
+    Database: process.env.DIR_DB_NAME ?? "",
+  },
 } as const;
