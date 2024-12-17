@@ -311,6 +311,14 @@ async function getCompany(req: IReq, res: IRes) {
     .where("requestedCompanyId", "=", Number(id))
     .executeTakeFirst();
 
+  // This is the connection request sent to the current user's company
+  const receivedConnectionRequest = await db
+    .selectFrom("connection_requests")
+    .select(["createdAt", "status"])
+    .where("requestingCompanyId", "=", Number(id))
+    .where("requestedCompanyId", "=", Number(currentUserCompanyId))
+    .executeTakeFirst();
+
   // Are they connected?
   const connection = await db
     .selectFrom("connections")
@@ -333,6 +341,7 @@ async function getCompany(req: IReq, res: IRes) {
   res.json({
     company,
     sentConnectionRequest,
+    receivedConnectionRequest,
     connectedToCurrentCompany: !!connection,
   });
 }

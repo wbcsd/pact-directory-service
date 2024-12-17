@@ -15,6 +15,7 @@ interface SearchResults {
 const SearchPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResults[]>([]);
+  const [noResults, setNoResults] = useState(false);
 
   const handleSearch = async () => {
     try {
@@ -29,6 +30,13 @@ const SearchPage: React.FC = () => {
       }
 
       const data = await response.json();
+
+      if (data.length === 0) {
+        setNoResults(true);
+      } else {
+        setNoResults(false);
+      }
+
       setSearchResults(data);
     } catch (error) {
       console.error("Error fetching search results:", error);
@@ -82,6 +90,9 @@ const SearchPage: React.FC = () => {
             Search
           </Button>
         </Box>
+
+        {noResults && <Box>No results found.</Box>}
+
         {searchResults.length > 0 && (
           <Table.Root>
             <Table.Header>

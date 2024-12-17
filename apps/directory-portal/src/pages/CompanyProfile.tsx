@@ -7,6 +7,7 @@ const RequestStatus = {
   PENDING: "pending",
   NOREQUEST: "no-request",
   ACCEPTED: "accepted",
+  RECEIVED: "received",
 };
 
 const CompanyProfile: React.FC = () => {
@@ -52,6 +53,8 @@ const CompanyProfile: React.FC = () => {
           setRequestStatus(RequestStatus.PENDING);
         } else if (data.connectedToCurrentCompany) {
           setRequestStatus(RequestStatus.ACCEPTED);
+        } else if (data.receivedConnectionRequest) {
+          setRequestStatus(RequestStatus.RECEIVED);
         }
       } catch (error) {
         console.error("Error fetching profile data:", error);
@@ -108,6 +111,8 @@ const CompanyProfile: React.FC = () => {
     [RequestStatus.NOREQUEST]:
       "When you click Connect, PACT Identity Management Service will send a request to this supplier, requesting their permission to create an authenticated connection between your PACT Conformant Solution and theirs.",
     [RequestStatus.ACCEPTED]: "You are connected with this organization.",
+    [RequestStatus.RECEIVED]:
+      "This organization has sent you a connection request, you can accept it in the Manage Connections page.",
   };
 
   return (
@@ -122,36 +127,47 @@ const CompanyProfile: React.FC = () => {
           width: "600px",
         }}
       >
-        <Box
-          style={{
-            marginBottom: "20px",
-            display: "flex",
-            gap: "16px",
-          }}
-        >
-          <Box>
-            <Button
-              onClick={handleConnect}
-              style={
-                requestStatus !== RequestStatus.NOREQUEST
-                  ? { backgroundColor: "gray" }
-                  : {}
-              }
-            >
-              {statusLabelMapping[requestStatus]}
-            </Button>
-          </Box>
+        {requestStatus === RequestStatus.RECEIVED ? (
           <Box
             style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
+              marginBottom: "20px",
             }}
           >
-            {connectionStatusTextMapping[requestStatus]}
+            {connectionStatusTextMapping[RequestStatus.RECEIVED]}
           </Box>
-        </Box>
+        ) : (
+          <Box
+            style={{
+              marginBottom: "20px",
+              display: "flex",
+              gap: "16px",
+            }}
+          >
+            <Box>
+              <Button
+                onClick={handleConnect}
+                style={
+                  requestStatus !== RequestStatus.NOREQUEST
+                    ? { backgroundColor: "gray" }
+                    : {}
+                }
+              >
+                {statusLabelMapping[requestStatus]}
+              </Button>
+            </Box>
+            <Box
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {connectionStatusTextMapping[requestStatus]}
+            </Box>
+          </Box>
+        )}
+
         <Box>
           <h2>{profileData.companyName}</h2>
 

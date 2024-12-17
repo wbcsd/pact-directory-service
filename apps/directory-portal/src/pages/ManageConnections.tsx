@@ -18,6 +18,13 @@ interface ConnectedOrganization {
   createdAt: Date;
 }
 
+const formatDate = (date: Date): string => {
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 const ManageConnections: React.FC = () => {
   const [connectionsData, setConnectionsData] = useState<{
     sent: ConnectionRequest[];
@@ -134,73 +141,93 @@ const ManageConnections: React.FC = () => {
             width: "600px",
           }}
         >
-          <h2>Manage Connections</h2>
           <Box>
-            <h3>Connected organizations</h3>
+            <h2>Connected organizations</h2>
             {connectionsData.connectedCompanies.length > 0 ? (
-              <ul>
+              <>
                 {connectionsData.connectedCompanies.map((connection) => (
-                  <li key={connection.companyId}>
+                  <div className="connection" key={connection.companyId}>
                     <p>
                       <Link to={`/company/${connection.companyId}`}>
                         {connection.companyName}
                       </Link>
                     </p>
-                    <p>
-                      Connected At:{" "}
-                      {new Date(connection.createdAt).toLocaleString()}
+                    <p className="biline">
+                      Connected on {formatDate(new Date(connection.createdAt))}
                     </p>
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </>
             ) : (
-              <p>No connected organizations.</p>
+              <p style={{ marginBottom: "20px" }}>
+                No connected organizations.
+              </p>
             )}
           </Box>
           <Box>
-            <h3>Sent Connection Requests</h3>
+            <h2>Sent Connection Requests</h2>
             {connectionsData.sent.length > 0 ? (
-              <ul>
-                {connectionsData.sent.map((request, index) => (
-                  <li key={index}>
+              <>
+                {connectionsData.sent.map((request) => (
+                  <div className="connection" key={request.id}>
                     <p>
                       <Link to={`/company/${request.companyId}`}>
                         {request.companyName}
                       </Link>
                     </p>
-                    <p>Status: {request.status}</p>
-                    <p>
-                      Created At: {new Date(request.createdAt).toLocaleString()}
+                    <p className="biline">
+                      Status: {request.status} | Sent on{" "}
+                      {formatDate(new Date(request.createdAt))}
                     </p>
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </>
             ) : (
-              <p>No sent connection requests.</p>
+              <p style={{ marginBottom: "20px" }}>
+                No sent connection requests.{" "}
+                <Link to={"/search"}>Search for companies</Link>
+              </p>
             )}
           </Box>
           <Box>
-            <h3>Received Connection Requests</h3>
+            <h2>Received Connection Requests</h2>
             {connectionsData.received.length > 0 ? (
-              <ul>
+              <>
                 {connectionsData.received.map((request) => (
-                  <li key={request.id}>
-                    <Link to={`/company/${request.companyId}`}>
-                      {request.companyName}
-                    </Link>
-                    <p>Status: {request.status}</p>
-                    <p>
-                      Created At: {new Date(request.createdAt).toLocaleString()}
-                    </p>
-
-                    <Button onClick={() => handleAccept(request.id)}>
-                      Accept
-                    </Button>
-                  </li>
+                  <div className="connection" key={request.id}>
+                    <Flex gap={"3"} justify={"between"}>
+                      <Box>
+                        <Link to={`/company/${request.companyId}`}>
+                          {request.companyName}
+                        </Link>
+                        <p className="biline">
+                          Status: {request.status} | Received on{" "}
+                          {formatDate(new Date(request.createdAt))}
+                        </p>
+                      </Box>
+                      <Box
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <a
+                          style={{ fontSize: "0.85em", cursor: "pointer" }}
+                          onClick={() => handleAccept(request.id)}
+                        >
+                          Accept request
+                        </a>
+                      </Box>
+                    </Flex>
+                  </div>
                 ))}
-              </ul>
+              </>
             ) : (
-              <p>No received connection requests.</p>
+              <p style={{ marginBottom: "20px" }}>
+                No received connection requests.
+              </p>
             )}
           </Box>
         </Box>

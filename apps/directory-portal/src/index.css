@@ -147,3 +147,17 @@ button.rt-Button {
   color: var(--base-color-brand--blue);
   font-weight: 500;
 }
+
+.connection {
+  margin: 10px 0;
+}
+
+.connection a {
+  text-decoration: none;
+  font-weight: bold;
+  color: var(--base-color-brand--light-blue);
+}
+
+.connection .biline {
+  font-size: 0.85em;
+}
