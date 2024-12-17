@@ -4,6 +4,7 @@ import { Box, Table, Button, TextField, Flex } from "@radix-ui/themes";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Link } from "react-router-dom";
 import SideNav from "../components/SideNav";
+import { fetchWithAuth } from "../utils/auth-fetch";
 
 interface SearchResults {
   id: number;
@@ -19,13 +20,11 @@ const SearchPage: React.FC = () => {
 
   const handleSearch = async () => {
     try {
-      const response = await fetch(
-        `${
-          import.meta.env.VITE_DIRECTORY_API_URL
-        }/companies/search?searchQuery=${encodeURIComponent(searchQuery)}`
+      const response = await fetchWithAuth(
+        `/companies/search?searchQuery=${encodeURIComponent(searchQuery)}`
       );
 
-      if (!response.ok) {
+      if (!response || !response.ok) {
         throw new Error("Failed to fetch search results");
       }
 

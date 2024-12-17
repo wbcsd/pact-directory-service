@@ -24,9 +24,6 @@ const SignupPage: React.FC = () => {
     event.preventDefault();
 
     try {
-      console.log("Submitting form data:", formData);
-
-      // TODO: store api url properly in .env
       const response = await fetch(
         `${import.meta.env.VITE_DIRECTORY_API_URL}/companies/signup`,
         {

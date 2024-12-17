@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, AlertDialog, Flex } from "@radix-ui/themes";
 import { Link } from "react-router-dom";
 import SideNav from "../components/SideNav";
+import { fetchWithAuth } from "../utils/auth-fetch";
 
 interface ConnectionRequest {
   id: number;
@@ -39,21 +40,9 @@ const ManageConnections: React.FC = () => {
 
   const fetchConnectionsData = async () => {
     try {
-      const token = localStorage.getItem("jwt");
-      if (!token) {
-        throw new Error("No token found");
-      }
+      const response = await fetchWithAuth(`/companies/my-profile`);
 
-      const response = await fetch(
-        `${import.meta.env.VITE_DIRECTORY_API_URL}/companies/my-profile`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
+      if (!response || !response.ok) {
         throw new Error("Failed to fetch connections data");
       }
 
@@ -79,21 +68,15 @@ const ManageConnections: React.FC = () => {
         throw new Error("No token found");
       }
 
-      const response = await fetch(
-        `${
-          import.meta.env.VITE_DIRECTORY_API_URL
-        }/companies/connection-request-action`,
+      const response = await fetchWithAuth(
+        "/companies/connection-request-action",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
           body: JSON.stringify({ requestId }),
         }
       );
 
-      if (!response.ok) {
+      if (!response || !response.ok) {
         throw new Error("Failed to accept connection request");
       }
 

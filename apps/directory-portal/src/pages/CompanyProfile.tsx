@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Box, Button, Flex } from "@radix-ui/themes";
 import SideNav from "../components/SideNav";
+import { fetchWithAuth } from "../utils/auth-fetch";
 
 const RequestStatus = {
   PENDING: "pending",
@@ -27,21 +28,9 @@ const CompanyProfile: React.FC = () => {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const token = localStorage.getItem("jwt");
-        if (!token) {
-          throw new Error("No token found");
-        }
+        const response = await fetchWithAuth(`/companies/profile/${id}`);
 
-        const response = await fetch(
-          `${import.meta.env.VITE_DIRECTORY_API_URL}/companies/profile/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!response.ok) {
+        if (!response || !response.ok) {
           throw new Error("Failed to fetch profile data");
         }
 
@@ -75,21 +64,15 @@ const CompanyProfile: React.FC = () => {
         throw new Error("No token found");
       }
 
-      const response = await fetch(
-        `${
-          import.meta.env.VITE_DIRECTORY_API_URL
-        }/companies/create-connection-request`,
+      const response = await fetchWithAuth(
+        "/companies/create-connection-request",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
           body: JSON.stringify({ companyId: id }),
         }
       );
 
-      if (!response.ok) {
+      if (!response || !response.ok) {
         throw new Error("Failed to create connection request");
       }
 

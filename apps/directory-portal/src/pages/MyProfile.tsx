@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Flex } from "@radix-ui/themes";
 import { useNavigate } from "react-router-dom";
 import SideNav from "../components/SideNav";
+import { fetchWithAuth } from "../utils/auth-fetch";
 
 const MyProfile: React.FC = () => {
   const navigate = useNavigate();
@@ -31,24 +32,9 @@ const MyProfile: React.FC = () => {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        // TODO use hook, implement redirect when token expires
-        const token = localStorage.getItem("jwt");
-        if (!token) {
-          navigate("/login");
-        }
-        // TODO: store api url properly in .env
-        // TODO handle token expiration/unauthenticated error, redirect to login.
-        const response = await fetch(
-          `${import.meta.env.VITE_DIRECTORY_API_URL}/companies/my-profile`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await fetchWithAuth("/companies/my-profile");
 
-        if (!response.ok) {
-          // TODO show error message to user or redirect to login
+        if (!response || !response.ok) {
           throw new Error("Failed to fetch profile data");
         }
 

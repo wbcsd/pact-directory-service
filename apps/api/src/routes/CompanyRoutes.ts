@@ -6,6 +6,7 @@ import { connectionRequestStatus } from "@src/common/types";
 import { db } from "@src/database/db";
 import { IReq, IRes } from "./common/types";
 import { generateCredentials } from "@src/util/credentials";
+import logger from "jet-logger";
 
 /**
  *
@@ -132,7 +133,17 @@ async function myProfile(req: IReq, res: IRes) {
   }
 
   const token = authHeader.split(" ")[1];
-  const decoded = jwt.verify(token, EnvVars.Jwt.Secret);
+  let decoded = {};
+
+  try {
+    decoded = jwt.verify(token, EnvVars.Jwt.Secret);
+  } catch (error) {
+    logger.err(error, true);
+
+    res.status(HttpStatusCodes.UNAUTHORIZED).json({ message: "Invalid token" });
+
+    return;
+  }
 
   const user = decoded;
 
