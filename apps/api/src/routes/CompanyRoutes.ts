@@ -6,7 +6,6 @@ import { connectionRequestStatus } from "@src/common/types";
 import { db } from "@src/database/db";
 import { IReq, IRes } from "./common/types";
 import { generateCredentials } from "@src/util/credentials";
-import logger from "jet-logger";
 
 /**
  *
@@ -122,30 +121,7 @@ async function login(req: IReq, res: IRes) {
  */
 
 async function myProfile(req: IReq, res: IRes) {
-  // TODO move to middleware
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader?.startsWith("Bearer ")) {
-    res
-      .status(HttpStatusCodes.UNAUTHORIZED)
-      .json({ message: "Token missing or malformed" });
-    return void 0;
-  }
-
-  const token = authHeader.split(" ")[1];
-  let decoded = {};
-
-  try {
-    decoded = jwt.verify(token, EnvVars.Jwt.Secret);
-  } catch (error) {
-    logger.err(error, true);
-
-    res.status(HttpStatusCodes.UNAUTHORIZED).json({ message: "Invalid token" });
-
-    return;
-  }
-
-  const user = decoded;
+  const user = res.locals.user;
 
   const { companyId } = user as { companyId: string };
 
@@ -270,20 +246,7 @@ async function myProfile(req: IReq, res: IRes) {
  * Get a company by ID
  */
 async function getCompany(req: IReq, res: IRes) {
-  // TODO Add auth middleware
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader?.startsWith("Bearer ")) {
-    res
-      .status(HttpStatusCodes.UNAUTHORIZED)
-      .json({ message: "Token missing or malformed" });
-    return void 0;
-  }
-
-  const token = authHeader.split(" ")[1];
-  const decoded = jwt.verify(token, EnvVars.Jwt.Secret);
-
-  const user = decoded;
+  const user = res.locals.user;
 
   const { companyId: currentUserCompanyId } = user as { companyId: string };
 
@@ -394,20 +357,11 @@ async function searchCompanies(req: IReq, res: IRes) {
  * Create a connection request
  */
 async function createConnectionRequest(req: IReq, res: IRes) {
-  const authHeader = req.headers.authorization;
+  const user = res.locals.user;
 
-  if (!authHeader) {
-    res
-      .status(HttpStatusCodes.UNAUTHORIZED)
-      .json({ error: "No authorization header" });
-    return;
-  }
-
-  const token = authHeader.split(" ")[1];
-  const decoded = jwt.verify(token, EnvVars.Jwt.Secret);
   // TODO: validate these inputs with zod,
   // then there will be no need for castings below
-  const requestingCompanyId = (decoded as { companyId: number }).companyId;
+  const requestingCompanyId = (user as { companyId: number }).companyId;
   const { companyId: requestedCompanyId } = req.body;
 
   if (!requestedCompanyId) {
@@ -447,18 +401,8 @@ async function createConnectionRequest(req: IReq, res: IRes) {
  * Handle connection request action
  */
 async function connectionRequestAction(req: IReq, res: IRes) {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader) {
-    res
-      .status(HttpStatusCodes.UNAUTHORIZED)
-      .json({ error: "No authorization header" });
-    return;
-  }
-
-  const token = authHeader.split(" ")[1];
-  const decoded = jwt.verify(token, EnvVars.Jwt.Secret);
-  const { companyId: currentCompanyId } = decoded as { companyId: number };
+  const user = res.locals.user;
+  const { companyId: currentCompanyId } = user as { companyId: number };
   const { requestId } = req.body;
 
   if (!requestId) {

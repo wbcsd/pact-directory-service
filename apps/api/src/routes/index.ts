@@ -3,6 +3,7 @@ import { Router } from "express";
 import Paths from "../common/Paths";
 import UserRoutes from "./UserRoutes";
 import CompanyRoutes from "./CompanyRoutes";
+import jwtAuthMiddleware from "./common/jwt-auth-middleware";
 
 // **** Variables **** //
 
@@ -20,19 +21,33 @@ userRouter.post(Paths.Users.Add, UserRoutes.add);
 userRouter.put(Paths.Users.Update, UserRoutes.update);
 userRouter.delete(Paths.Users.Delete, UserRoutes.delete);
 
-// Signup
+// Signup & Login
 companyRouter.post(Paths.Companies.Signup, CompanyRoutes.signup);
 companyRouter.post(Paths.Companies.Login, CompanyRoutes.login);
-// TODO: the following routes should be protected with the jwt auth middleware
-companyRouter.get(Paths.Companies.MyProfile, CompanyRoutes.myProfile);
-companyRouter.get(Paths.Companies.Profile, CompanyRoutes.getCompany);
-companyRouter.get(Paths.Companies.Search, CompanyRoutes.searchCompanies);
+// Private routes
+companyRouter.get(
+  Paths.Companies.MyProfile,
+  jwtAuthMiddleware,
+  CompanyRoutes.myProfile
+);
+companyRouter.get(
+  Paths.Companies.Profile,
+  jwtAuthMiddleware,
+  CompanyRoutes.getCompany
+);
+companyRouter.get(
+  Paths.Companies.Search,
+  jwtAuthMiddleware,
+  CompanyRoutes.searchCompanies
+);
 companyRouter.post(
   Paths.Companies.CreateConnectionRequest,
+  jwtAuthMiddleware,
   CompanyRoutes.createConnectionRequest
 );
 companyRouter.post(
   Paths.Companies.ConnectionRequesAction,
+  jwtAuthMiddleware,
   CompanyRoutes.connectionRequestAction
 );
 
