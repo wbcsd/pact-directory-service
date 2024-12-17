@@ -9,7 +9,7 @@ function isStr(reqObj: TReqObj, params: string): string;
 function isStr(reqObj: TReqObj, params: readonly string[]): string[];
 function isStr(
   reqObj: TReqObj,
-  params: string | readonly string[],
+  params: string | readonly string[]
 ): string | string[] {
   return _checkWrapper(reqObj, params, _checkStr);
 }
@@ -32,7 +32,7 @@ function isNum(reqObj: TReqObj, params: string): number;
 function isNum(reqObj: TReqObj, params: readonly string[]): number[];
 function isNum(
   reqObj: TReqObj,
-  params: string | readonly string[],
+  params: string | readonly string[]
 ): number | number[] {
   return _checkWrapper(reqObj, params, _checkNum);
 }
@@ -56,7 +56,7 @@ function isBool(reqObj: TReqObj, params: string): boolean;
 function isBool(reqObj: TReqObj, params: readonly string[]): boolean[];
 function isBool(
   reqObj: TReqObj,
-  params: string | readonly string[],
+  params: string | readonly string[]
 ): boolean | boolean[] {
   return _checkWrapper(reqObj, params, _checkBool);
 }
@@ -87,7 +87,7 @@ function _checkBool(val: unknown): boolean | undefined {
 function isValid<T>(
   reqObj: TReqObj,
   param: string,
-  validatorFn: (param: unknown) => param is T,
+  validatorFn: (param: unknown) => param is T
 ): T {
   const val = reqObj[param];
   if (validatorFn(val)) {
@@ -105,7 +105,7 @@ function isValid<T>(
 function _checkWrapper<T>(
   reqObj: TReqObj,
   params: string | readonly string[],
-  checkFn: (val: unknown) => T | undefined,
+  checkFn: (val: unknown) => T | undefined
 ): T | T[] {
   // If is array
   if (params instanceof Array) {
