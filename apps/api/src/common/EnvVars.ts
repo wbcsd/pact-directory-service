@@ -26,4 +26,12 @@ export default {
     Password: process.env.DIR_DB_PASSWORD ?? "",
     Database: process.env.DIR_DB_NAME ?? "",
   },
+  EmailNotificationTemplates: {
+    Welcome: process.env.EMAIL_WELCOME_TEMPLATE ?? "",
+    ResetPassword: process.env.EMAIL_RESET_TEMPLATE ?? "",
+  },
+  Sendgrid: {
+    ApiKey: process.env.SENDGRID_API_KEY ?? "",
+    FromEmail: process.env.SENDGRID_FROM_EMAIL ?? "",
+  },
 } as const;

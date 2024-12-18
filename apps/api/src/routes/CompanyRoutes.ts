@@ -6,6 +6,10 @@ import { connectionRequestStatus } from "@src/common/types";
 import { db } from "@src/database/db";
 import { IReq, IRes } from "./common/types";
 import { generateCredentials } from "@src/util/credentials";
+import {
+  sendConnectionRequestEmail,
+  sendWelcomeEmail,
+} from "@src/services/EmailService";
 
 /**
  *
@@ -50,10 +54,7 @@ async function signup(req: IReq, res: IRes) {
     return;
   }
 
-  // Hash the password
   const hashedPassword = await bcrypt.hash(password as string, 10);
-
-  // TODO: generate client_id and client_secret
 
   const { clientId, clientSecret, networkId } = await generateCredentials();
 
@@ -87,6 +88,13 @@ async function signup(req: IReq, res: IRes) {
 
   const token = jwt.sign(user, EnvVars.Jwt.Secret, {
     expiresIn: "6h", // Token expiration time
+  });
+
+  // Send welcome email
+  await sendWelcomeEmail({
+    to: email as string,
+    name: fullName as string,
+    companyName: companyName as string,
   });
 
   res.status(HttpStatusCodes.CREATED).json({ token });
@@ -393,6 +401,19 @@ async function createConnectionRequest(req: IReq, res: IRes) {
 
   // TODO Validate connection request doesn't exist already
 
+  const requestingCompany = await db
+    .selectFrom("companies")
+    .selectAll()
+    .where("id", "=", requestingCompanyId)
+    .executeTakeFirst();
+
+  const requestedCompany = await db
+    .selectFrom("companies")
+    .leftJoin("users", "companies.id", "users.companyId")
+    .select(["users.email", "users.fullName"])
+    .where("companies.id", "=", requestedCompanyId as number)
+    .executeTakeFirst();
+
   const result = await db
     .insertInto("connection_requests")
     .values({
@@ -406,6 +427,18 @@ async function createConnectionRequest(req: IReq, res: IRes) {
     .executeTakeFirstOrThrow();
 
   // TODO: send email to requested company
+  if (
+    requestedCompany &&
+    requestingCompany &&
+    requestedCompany.email &&
+    requestedCompany.fullName
+  ) {
+    sendConnectionRequestEmail({
+      to: requestedCompany.email,
+      name: requestedCompany.fullName,
+      companyName: requestingCompany.companyName,
+    });
+  }
 
   res.status(HttpStatusCodes.CREATED).json({ id: result.id });
 }
