@@ -36,6 +36,20 @@ async function signup(req: IReq, res: IRes) {
     return void 0;
   }
 
+  // Check if registration code is valid
+  const registrationCodeExists = await db
+    .selectFrom("registration_codes")
+    .where("code", "=", registrationCode as string)
+    .executeTakeFirst();
+
+  if (!registrationCodeExists) {
+    res
+      .status(HttpStatusCodes.BAD_REQUEST)
+      .json({ error: "Invalid registration code" });
+
+    return;
+  }
+
   // Hash the password
   const hashedPassword = await bcrypt.hash(password as string, 10);
 
@@ -43,7 +57,6 @@ async function signup(req: IReq, res: IRes) {
 
   const { clientId, clientSecret, networkId } = await generateCredentials();
 
-  // Insert into companies table
   // TODO do in transaction and rollback if user insert fails
   const company = await db
     .insertInto("companies")

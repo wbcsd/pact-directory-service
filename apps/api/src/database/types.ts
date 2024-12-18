@@ -5,6 +5,7 @@ export interface Database {
   users: UserTable;
   connection_requests: ConnectionRequestTable;
   connections: ConnectionTable;
+  registration_codes: RegistrationCodeTable;
 }
 
 export interface CompanyTable {
@@ -41,4 +42,8 @@ export interface ConnectionTable {
   connectedCompanyTwoId: number;
   createdAt: Date;
   requestedAt: Date;
+}
+
+export interface RegistrationCodeTable {
+  code: string;
 }
