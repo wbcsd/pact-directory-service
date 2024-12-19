@@ -4,6 +4,7 @@
 
 export default {
   DirectoryBase: "/api/directory",
+  IdentityProviderBase: "/api/im",
   Companies: {
     Base: "/companies",
     Signup: "/signup",
@@ -20,5 +21,9 @@ export default {
     Add: "/add",
     Update: "/update",
     Delete: "/delete/:id",
+  },
+  Auth: {
+    Base: "/auth",
+    Token: "/token",
   },
 } as const;

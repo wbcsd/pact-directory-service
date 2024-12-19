@@ -7,6 +7,7 @@ import "express-async-errors";
 import cors from "cors";
 
 import BaseRouter from "@src/routes";
+import AuthRouter from "@src/routes/AuthRouter";
 
 import Paths from "@src/common/Paths";
 import EnvVars from "@src/common/EnvVars";
@@ -37,6 +38,7 @@ if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf()) {
 
 // Add APIs, must be after middleware
 app.use(Paths.DirectoryBase, BaseRouter);
+app.use(Paths.IdentityProviderBase, AuthRouter);
 
 // Add error handler
 app.use((err: Error, _: Request, res: Response, next: NextFunction) => {
