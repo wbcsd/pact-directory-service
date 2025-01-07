@@ -64,6 +64,9 @@ Following our PACT design principles, we are building an Identity Management sol
 **Will PACT issue Company identifiers?**  
 No. PACT will enable organizations to leverage their existing standardized company identifiers (such as LEI by GLEIF, DUNS by Dun & Bradstreet, GLN by GS1, etc.). To ensure company identifiers can be trusted and interoperable, PACT may maintain a set of accredited providers using a federated model. PACT is establishing partnerships with the relevant organizations accordingly.
 
+**How will different organizational “hierarchy” levels be accommodated?**  
+PCFs are often calculated by one business “entity” (business unit, legal entity, parent entity, geographic entity) yet sold by a different business “entity”. The relationship between these entities will be critical to know, maintain accurately, and trust to ensure seamless PCF exchange on the PACT Network. PACT Identity Management service will leverage identity-provider organizations like GLEIF, DUNS, GS1, etc. responsible for maintaining such hierarchical relationships, to ensure the latest and most accurate information is maintained. 
+
 **How does PACT Identity Management conduct KYC (Know Your Customer) processes?**  
 Ensuring the integrity of identities on the PACT Network is critical to achieve our vision. Company identities will always be verified, yet processes will be established in a fit-for-purpose way that does not post unnecessary cost and/or burden. PACT envisions leveraging existing KYC processes companies must complete before receiving a company identifier; PACT does not envision conducting Know Your Customer processes ourselves.
 
