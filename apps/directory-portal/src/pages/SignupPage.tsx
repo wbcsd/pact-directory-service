@@ -147,8 +147,9 @@ const SignupPage: React.FC = () => {
                       align="center"
                       sideOffset={5}
                     >
-                      This is the identifier for your company within the PACT
-                      Network.
+                      This can be any identifier of your choosing, it will be
+                      used to identify your company when other organizations
+                      discover it through the PACT Network.
                     </Tooltip.Content>
                   </Tooltip.Root>
                 </Tooltip.Provider>
@@ -289,7 +290,7 @@ const SignupPage: React.FC = () => {
                       align="center"
                       sideOffset={5}
                     >
-                      Your password must be at least 8 characters long.
+                      Your password must be at least 6 characters long.
                     </Tooltip.Content>
                   </Tooltip.Root>
                 </Tooltip.Provider>

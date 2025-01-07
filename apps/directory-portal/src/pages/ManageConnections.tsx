@@ -120,8 +120,8 @@ const ManageConnections: React.FC = () => {
         <Box
           style={{
             padding: "20px",
-            maxWidth: "600px",
-            width: "600px",
+            maxWidth: "800px",
+            width: "800px",
           }}
         >
           <Box>

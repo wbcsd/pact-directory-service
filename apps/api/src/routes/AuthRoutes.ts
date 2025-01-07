@@ -78,7 +78,7 @@ async function token(req: IReq, res: IRes) {
       iss: "https://im.carbon-transparency.org",
       sub: clientCompany.networkId.toString(),
       aud: networkCompany.networkId,
-      exp: Math.floor(Date.now() / 1000) + 60 * 60, // 1 hour expiration
+      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 3,
       iat: Math.floor(Date.now() / 1000),
       name: clientCompany.companyName,
       email: clientCompany.email,
