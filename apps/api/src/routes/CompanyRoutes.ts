@@ -72,36 +72,37 @@ async function signup(req: IReq, res: IRes) {
 
   const { clientId, clientSecret, networkId } = await generateCredentials();
 
-  // TODO do in transaction and rollback if user insert fails
-  const company = await db
-    .insertInto("companies")
-    .values({
-      // TODO casts will be removed when the input is typed and validated
-      companyName: companyName as string,
-      companyIdentifier: companyIdentifier as string,
-      solutionApiUrl: solutionApiUrl as string,
-      registrationCode: registrationCode as string,
-      clientId,
-      clientSecret,
-      networkId,
-    })
-    .returning("id")
-    .executeTakeFirstOrThrow();
+  const user = await db.transaction().execute(async (trx) => {
+    const company = await trx
+      .insertInto("companies")
+      .values({
+        // TODO casts will be removed when the input is typed and validated
+        companyName: companyName as string,
+        companyIdentifier: companyIdentifier as string,
+        solutionApiUrl: solutionApiUrl as string,
+        registrationCode: registrationCode as string,
+        clientId,
+        clientSecret,
+        networkId,
+      })
+      .returning("id")
+      .executeTakeFirstOrThrow();
 
-  // Insert into users table
-  const user = await db
-    .insertInto("users")
-    .values({
-      fullName: fullName as string,
-      email: email as string,
-      password: hashedPassword,
-      companyId: company.id,
-    })
-    .returning(["id as userId", "email", "companyId"])
-    .executeTakeFirstOrThrow();
+    // Insert into users table
+    return await trx
+      .insertInto("users")
+      .values({
+        fullName: fullName as string,
+        email: email as string,
+        password: hashedPassword,
+        companyId: company.id,
+      })
+      .returning(["id as userId", "email", "companyId"])
+      .executeTakeFirstOrThrow();
+  });
 
   const token = jwt.sign(user, EnvVars.Jwt.Secret, {
-    expiresIn: "6h", // Token expiration time
+    expiresIn: "6h",
   });
 
   // Send welcome email
