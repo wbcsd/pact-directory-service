@@ -274,6 +274,7 @@ const SignupPage: React.FC = () => {
               required
               placeholder="Password"
               onChange={handleChange}
+              minLength={6}
             >
               <TextField.Slot side="right">
                 <Tooltip.Provider delayDuration={0}>
@@ -311,6 +312,15 @@ const SignupPage: React.FC = () => {
             }}
           >
             Password is required.
+          </Form.Message>
+          <Form.Message
+            match="tooShort"
+            style={{
+              color: "var(--base-color-brand--light-blue)",
+              fontSize: "0.85em",
+            }}
+          >
+            Password needs to be at least 6 characters long.
           </Form.Message>
         </Form.Field>
         <Form.Field name="confirmPassword">

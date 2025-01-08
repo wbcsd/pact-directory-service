@@ -10,6 +10,8 @@ import {
   sendConnectionRequestEmail,
   sendWelcomeEmail,
 } from "@src/services/EmailService";
+import { validate } from "@src/models/validation";
+import { SignUpInputSchema } from "@src/models/SignUpInput";
 
 /**
  *
@@ -17,7 +19,16 @@ import {
  */
 
 async function signup(req: IReq, res: IRes) {
-  // TODO: validate input with zod
+  const validationResult = validate(req.body, SignUpInputSchema);
+
+  if (!validationResult.success) {
+    res
+      .status(HttpStatusCodes.BAD_REQUEST)
+      .json({ error: "Invalid data, please review." });
+
+    return;
+  }
+
   const {
     companyName,
     companyIdentifier,
@@ -27,9 +38,7 @@ async function signup(req: IReq, res: IRes) {
     confirmPassword,
     solutionApiUrl,
     registrationCode,
-  } = req.body;
-
-  // TODO: validations: email already exists, registration code is valid
+  } = validationResult.value;
 
   // Check if passwords match
   if (password !== confirmPassword) {
@@ -37,13 +46,13 @@ async function signup(req: IReq, res: IRes) {
       .status(HttpStatusCodes.BAD_REQUEST)
       .json({ error: "Passwords do not match" });
 
-    return void 0;
+    return;
   }
 
   // Check if registration code is valid
   const registrationCodeExists = await db
     .selectFrom("registration_codes")
-    .where("code", "=", registrationCode as string)
+    .where("code", "=", registrationCode)
     .executeTakeFirst();
 
   if (!registrationCodeExists) {
@@ -57,7 +66,7 @@ async function signup(req: IReq, res: IRes) {
   // Check if email already exists
   const emailExists = await db
     .selectFrom("users")
-    .where("email", "=", email as string)
+    .where("email", "=", email)
     .executeTakeFirst();
 
   if (emailExists) {
@@ -68,7 +77,7 @@ async function signup(req: IReq, res: IRes) {
     return;
   }
 
-  const hashedPassword = await bcrypt.hash(password as string, 10);
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   const { clientId, clientSecret, networkId } = await generateCredentials();
 
@@ -76,11 +85,10 @@ async function signup(req: IReq, res: IRes) {
     const company = await trx
       .insertInto("companies")
       .values({
-        // TODO casts will be removed when the input is typed and validated
-        companyName: companyName as string,
-        companyIdentifier: companyIdentifier as string,
-        solutionApiUrl: solutionApiUrl as string,
-        registrationCode: registrationCode as string,
+        companyName: companyName,
+        companyIdentifier: companyIdentifier,
+        solutionApiUrl: solutionApiUrl,
+        registrationCode: registrationCode,
         clientId,
         clientSecret,
         networkId,
@@ -88,12 +96,11 @@ async function signup(req: IReq, res: IRes) {
       .returning("id")
       .executeTakeFirstOrThrow();
 
-    // Insert into users table
     return await trx
       .insertInto("users")
       .values({
-        fullName: fullName as string,
-        email: email as string,
+        fullName: fullName,
+        email: email,
         password: hashedPassword,
         companyId: company.id,
       })
@@ -107,9 +114,9 @@ async function signup(req: IReq, res: IRes) {
 
   // Send welcome email
   await sendWelcomeEmail({
-    to: email as string,
-    name: fullName as string,
-    companyName: companyName as string,
+    to: email,
+    name: fullName,
+    companyName: companyName,
   });
 
   res.status(HttpStatusCodes.CREATED).json({ token });
