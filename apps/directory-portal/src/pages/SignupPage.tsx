@@ -20,6 +20,8 @@ const SignupPage: React.FC = () => {
   });
   const [status, setStatus] = useState<null | "success" | "error">(null);
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -43,12 +45,16 @@ const SignupPage: React.FC = () => {
         localStorage.setItem("jwt", token);
 
         setStatus("success");
-        console.log("Registration successful");
 
         navigate("/my-profile");
       } else {
+        const errorResponse = await response.json();
+
+        if (errorResponse.error) {
+          setErrorMessage(errorResponse.error);
+        }
+
         setStatus("error");
-        console.error("Registration failed");
       }
     } catch (error) {
       setStatus("error");
@@ -486,7 +492,7 @@ const SignupPage: React.FC = () => {
             <ExclamationTriangleIcon />
           </Callout.Icon>
           <Callout.Text>
-            Error during sign up, please check your data.
+            {errorMessage || "Error during sign up, please check your data."}
           </Callout.Text>
         </Callout.Root>
       )}

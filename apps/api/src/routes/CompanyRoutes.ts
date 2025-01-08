@@ -49,7 +49,21 @@ async function signup(req: IReq, res: IRes) {
   if (!registrationCodeExists) {
     res
       .status(HttpStatusCodes.BAD_REQUEST)
-      .json({ error: "Invalid registration code" });
+      .json({ error: "Invalid registration code." });
+
+    return;
+  }
+
+  // Check if email already exists
+  const emailExists = await db
+    .selectFrom("users")
+    .where("email", "=", email as string)
+    .executeTakeFirst();
+
+  if (emailExists) {
+    res
+      .status(HttpStatusCodes.BAD_REQUEST)
+      .json({ error: "Email already in use." });
 
     return;
   }
