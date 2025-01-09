@@ -26,6 +26,11 @@ const SignupPage: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
+    const cleanedFormData = {
+      ...formData,
+      email: formData.email.replace(/\s+/g, ""),
+    };
+
     try {
       const response = await fetch(
         `${import.meta.env.VITE_DIRECTORY_API_URL}/companies/signup`,
@@ -34,7 +39,7 @@ const SignupPage: React.FC = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(cleanedFormData),
         }
       );
 
@@ -272,6 +277,7 @@ const SignupPage: React.FC = () => {
             <TextField.Root
               value={formData.email}
               required
+              type="email"
               placeholder="Email"
               onChange={handleChange}
             >
@@ -312,6 +318,15 @@ const SignupPage: React.FC = () => {
             }}
           >
             Email is required.
+          </Form.Message>
+          <Form.Message
+            match="typeMismatch"
+            style={{
+              color: "var(--base-color-brand--light-blue)",
+              fontSize: "0.85em",
+            }}
+          >
+            Invalid email.
           </Form.Message>
         </Form.Field>
         <Form.Field name="password">
