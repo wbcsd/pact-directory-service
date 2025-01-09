@@ -16,7 +16,7 @@ const MyProfile: React.FC = () => {
     registrationCode: "",
     clientId: "",
     clientSecret: "",
-    networkId: "",
+    networkKey: "",
   });
 
   const [showCredentials, setShowCredentials] = useState(false);
@@ -104,8 +104,8 @@ const MyProfile: React.FC = () => {
           </Box>
         </Flex>
         <div>
-          <h3>Network Identifier</h3>
-          <p>{profileData.networkId}</p>
+          <h3>Network Key</h3>
+          <p>{profileData.networkKey}</p>
         </div>
         <div>
           <h3>ClientId</h3>

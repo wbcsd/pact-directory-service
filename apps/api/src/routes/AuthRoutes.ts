@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import HttpStatusCodes from "@src/common/HttpStatusCodes";
 import { IReq, IRes } from "./common/types";
-import { db } from "../database/db";
+import { db } from "@src/database/db";
 
 async function token(req: IReq, res: IRes) {
   const { client_id, client_secret, network_id } = req.body;
@@ -13,7 +13,7 @@ async function token(req: IReq, res: IRes) {
     .select([
       "companies.id",
       "companies.clientSecret",
-      "companies.networkId",
+      "companies.networkKey",
       "companies.companyName",
       "users.email",
     ])
@@ -23,7 +23,7 @@ async function token(req: IReq, res: IRes) {
   const networkCompany = await db
     .selectFrom("companies")
     .selectAll()
-    .where("networkId", "=", network_id as string)
+    .where("networkKey", "=", network_id as string)
     .executeTakeFirst();
 
   // Check if both companies exist
@@ -76,8 +76,8 @@ async function token(req: IReq, res: IRes) {
   const token = jwt.sign(
     {
       iss: "https://im.carbon-transparency.org",
-      sub: clientCompany.networkId.toString(),
-      aud: networkCompany.networkId,
+      sub: clientCompany.networkKey,
+      aud: networkCompany.networkKey,
       exp: Math.floor(Date.now() / 1000) + 60 * 60 * 3,
       iat: Math.floor(Date.now() / 1000),
       name: clientCompany.companyName,

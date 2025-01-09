@@ -79,7 +79,7 @@ async function signup(req: IReq, res: IRes) {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const { clientId, clientSecret, networkId } = await generateCredentials();
+  const { clientId, clientSecret, networkKey } = await generateCredentials();
 
   const user = await db.transaction().execute(async (trx) => {
     const company = await trx
@@ -91,7 +91,7 @@ async function signup(req: IReq, res: IRes) {
         registrationCode: registrationCode,
         clientId,
         clientSecret,
-        networkId,
+        networkKey,
       })
       .returning("id")
       .executeTakeFirstOrThrow();
@@ -178,7 +178,7 @@ async function myProfile(req: IReq, res: IRes) {
       "companies.solutionApiUrl",
       "companies.clientId",
       "companies.clientSecret",
-      "companies.networkId",
+      "companies.networkKey",
       "users.fullName",
       "users.email",
     ])
@@ -304,7 +304,7 @@ async function getCompany(req: IReq, res: IRes) {
       "companies.id",
       "companyName",
       "companyIdentifier",
-      "networkId",
+      "networkKey",
       "solutionApiUrl",
       "users.fullName",
       "users.email",

@@ -22,7 +22,7 @@ const CompanyProfile: React.FC = () => {
     email: "",
     solutionApiUrl: "",
     registrationCode: "",
-    networkId: "",
+    networkKey: "",
   });
 
   useEffect(() => {
@@ -172,8 +172,8 @@ const CompanyProfile: React.FC = () => {
                 Api Configuration
               </h2>
               <div>
-                <h3>Network Identifier</h3>
-                <p>{profileData.networkId}</p>
+                <h3>Network Key</h3>
+                <p>{profileData.networkKey}</p>
               </div>
               <div>
                 <h3>Solution API URL</h3>

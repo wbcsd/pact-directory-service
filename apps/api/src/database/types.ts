@@ -16,7 +16,7 @@ export interface CompanyTable {
   registrationCode: string;
   clientId: string;
   clientSecret: string;
-  networkId: string;
+  networkKey: string;
 }
 
 export interface UserTable {

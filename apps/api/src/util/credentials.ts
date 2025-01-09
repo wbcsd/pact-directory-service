@@ -11,11 +11,11 @@ async function generateRandomString(length: number): Promise<string> {
 export async function generateCredentials(): Promise<{
   clientId: string;
   clientSecret: string;
-  networkId: string;
+  networkKey: string;
 }> {
-  const networkId = await generateRandomString(16);
+  const networkKey = await generateRandomString(16);
   const clientId = await generateRandomString(16);
   const clientSecret = await generateRandomString(32);
 
-  return { clientId, clientSecret, networkId };
+  return { clientId, clientSecret, networkKey };
 }
