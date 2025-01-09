@@ -18,6 +18,7 @@ const CompanyProfile: React.FC = () => {
   const [profileData, setProfileData] = useState({
     companyName: "",
     companyIdentifier: "",
+    companyIdentifierDescription: "",
     fullName: "",
     email: "",
     solutionApiUrl: "",
@@ -157,6 +158,10 @@ const CompanyProfile: React.FC = () => {
           <div>
             <h3>Company Identifier</h3>
             <p>{profileData.companyIdentifier}</p>
+          </div>
+          <div>
+            <h3>Company Identifier Description</h3>
+            <p>{profileData.companyIdentifierDescription}</p>
           </div>
           <div>
             <h3>Contact's Name</h3>

@@ -11,6 +11,7 @@ const SignupPage: React.FC = () => {
   const [formData, setFormData] = useState({
     companyName: "",
     companyIdentifier: "",
+    companyIdentifierDescription: "",
     fullName: "",
     email: "",
     password: "",
@@ -170,6 +171,53 @@ const SignupPage: React.FC = () => {
             }}
           >
             Company identifier is required.
+          </Form.Message>
+        </Form.Field>
+        <Form.Field name="companyIdentifierDescription">
+          <Form.Control asChild>
+            <TextField.Root
+              value={formData.companyIdentifierDescription}
+              required
+              placeholder="Company Identifier Description"
+              onChange={handleChange}
+            >
+              <TextField.Slot side="right">
+                <Tooltip.Provider delayDuration={0}>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <span
+                        style={{
+                          marginLeft: "8px",
+                          cursor: "pointer",
+                          fontSize: "16px",
+                          color: "#888",
+                        }}
+                      >
+                        ℹ️
+                      </span>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content
+                      className="TooltipContent"
+                      side="right"
+                      align="center"
+                      sideOffset={5}
+                    >
+                      Please provide a brief description of your company
+                      identifier.
+                    </Tooltip.Content>
+                  </Tooltip.Root>
+                </Tooltip.Provider>
+              </TextField.Slot>
+            </TextField.Root>
+          </Form.Control>
+          <Form.Message
+            match="valueMissing"
+            style={{
+              color: "var(--base-color-brand--light-blue)",
+              fontSize: "0.85em",
+            }}
+          >
+            Company identifier description is required.
           </Form.Message>
         </Form.Field>
         <Form.Field name="fullName">

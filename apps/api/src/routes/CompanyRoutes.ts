@@ -32,6 +32,7 @@ async function signup(req: IReq, res: IRes) {
   const {
     companyName,
     companyIdentifier,
+    companyIdentifierDescription,
     fullName,
     email,
     password,
@@ -85,10 +86,11 @@ async function signup(req: IReq, res: IRes) {
     const company = await trx
       .insertInto("companies")
       .values({
-        companyName: companyName,
-        companyIdentifier: companyIdentifier,
-        solutionApiUrl: solutionApiUrl,
-        registrationCode: registrationCode,
+        companyName,
+        companyIdentifier,
+        companyIdentifierDescription,
+        solutionApiUrl,
+        registrationCode,
         clientId,
         clientSecret,
         networkKey,
@@ -179,6 +181,7 @@ async function myProfile(req: IReq, res: IRes) {
       "companies.clientId",
       "companies.clientSecret",
       "companies.networkKey",
+      "companies.companyIdentifierDescription",
       "users.fullName",
       "users.email",
     ])
@@ -304,6 +307,7 @@ async function getCompany(req: IReq, res: IRes) {
       "companies.id",
       "companyName",
       "companyIdentifier",
+      "companyIdentifierDescription",
       "networkKey",
       "solutionApiUrl",
       "users.fullName",
@@ -367,6 +371,10 @@ async function getCompany(req: IReq, res: IRes) {
  * Search companies by companyName
  */
 async function searchCompanies(req: IReq, res: IRes) {
+  const user = res.locals.user;
+
+  const { companyId: currentUserCompanyId } = user as { companyId: string };
+
   // TODO validate with zod
   const { searchQuery } = req.query;
 
@@ -391,6 +399,7 @@ async function searchCompanies(req: IReq, res: IRes) {
       "users.fullName",
     ])
     .where("companies.companyName", "ilike", `%${searchQuery as string}%`)
+    .where("companies.id", "!=", Number(currentUserCompanyId))
     .execute();
 
   res.json(companies);

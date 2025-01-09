@@ -12,6 +12,7 @@ export interface CompanyTable {
   id: Generated<number>;
   companyName: string;
   companyIdentifier: string;
+  companyIdentifierDescription: string;
   solutionApiUrl: string;
   registrationCode: string;
   clientId: string;

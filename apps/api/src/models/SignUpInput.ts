@@ -4,6 +4,7 @@ export const SignUpInputSchema = z
   .object({
     companyName: z.string(),
     companyIdentifier: z.string(),
+    companyIdentifierDescription: z.string(),
     fullName: z.string(),
     email: z.string().email("Invalid email address"),
     password: z.string().min(6, "Password must be at least 6 characters long"),
