@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Box, Button, Flex } from "@radix-ui/themes";
+import { Box, Button, Flex, Spinner } from "@radix-ui/themes";
 import SideNav from "../components/SideNav";
 import { fetchWithAuth } from "../utils/auth-fetch";
 
@@ -14,6 +14,8 @@ const RequestStatus = {
 const CompanyProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [requestStatus, setRequestStatus] = useState(RequestStatus.NOREQUEST);
+
+  const [loadingData, setLoadingData] = useState(true);
 
   const [profileData, setProfileData] = useState({
     companyName: "",
@@ -36,6 +38,8 @@ const CompanyProfile: React.FC = () => {
         }
 
         const data = await response.json();
+
+        setLoadingData(false);
 
         setProfileData(data.company);
 
@@ -104,90 +108,103 @@ const CompanyProfile: React.FC = () => {
       <Box>
         <SideNav />
       </Box>
-      <Box
-        style={{
-          padding: "20px",
-          maxWidth: "800px",
-          width: "800px",
-        }}
-      >
-        {requestStatus === RequestStatus.RECEIVED ? (
-          <Box
-            style={{
-              marginBottom: "20px",
-            }}
-          >
-            {connectionStatusTextMapping[RequestStatus.RECEIVED]}
-          </Box>
-        ) : (
-          <Box
-            style={{
-              marginBottom: "20px",
-              display: "flex",
-              gap: "16px",
-            }}
-          >
-            <Box>
-              <Button
-                onClick={handleConnect}
-                style={
-                  requestStatus !== RequestStatus.NOREQUEST
-                    ? { backgroundColor: "gray" }
-                    : {}
-                }
-              >
-                {statusLabelMapping[requestStatus]}
-              </Button>
-            </Box>
+      {loadingData && (
+        <Box
+          style={{
+            padding: "20px",
+            maxWidth: "800px",
+            width: "800px",
+          }}
+        >
+          <Spinner size="3" />
+        </Box>
+      )}
+      {!loadingData && (
+        <Box
+          style={{
+            padding: "20px",
+            maxWidth: "800px",
+            width: "800px",
+          }}
+        >
+          {requestStatus === RequestStatus.RECEIVED ? (
             <Box
               style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
+                marginBottom: "20px",
               }}
             >
-              {connectionStatusTextMapping[requestStatus]}
+              {connectionStatusTextMapping[RequestStatus.RECEIVED]}
             </Box>
-          </Box>
-        )}
-
-        <Box>
-          <h2>{profileData.companyName}</h2>
-
-          <div>
-            <h3>Company Identifier</h3>
-            <p>{profileData.companyIdentifier}</p>
-          </div>
-          <div>
-            <h3>Company Identifier Description</h3>
-            <p>{profileData.companyIdentifierDescription}</p>
-          </div>
-          <div>
-            <h3>Contact's Name</h3>
-            <p>{profileData.fullName}</p>
-          </div>
-          <div>
-            <h3>Contact's Email</h3>
-            <p>{profileData.email}</p>
-          </div>
-          {requestStatus === RequestStatus.ACCEPTED && (
-            <>
-              <h2 style={{ margin: 0, marginTop: "20px" }}>
-                Api Configuration
-              </h2>
-              <div>
-                <h3>Network Key</h3>
-                <p>{profileData.networkKey}</p>
-              </div>
-              <div>
-                <h3>Solution API URL</h3>
-                <p>{profileData.solutionApiUrl}</p>
-              </div>
-            </>
+          ) : (
+            <Box
+              style={{
+                marginBottom: "20px",
+                display: "flex",
+                gap: "16px",
+              }}
+            >
+              <Box>
+                <Button
+                  onClick={handleConnect}
+                  style={
+                    requestStatus !== RequestStatus.NOREQUEST
+                      ? { backgroundColor: "gray" }
+                      : {}
+                  }
+                >
+                  {statusLabelMapping[requestStatus]}
+                </Button>
+              </Box>
+              <Box
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                {connectionStatusTextMapping[requestStatus]}
+              </Box>
+            </Box>
           )}
+
+          <Box>
+            <h2>{profileData.companyName}</h2>
+
+            <div>
+              <h3>Company Identifier</h3>
+              <p>{profileData.companyIdentifier}</p>
+            </div>
+            <div>
+              <h3>Company Identifier Description</h3>
+              <p>{profileData.companyIdentifierDescription}</p>
+            </div>
+            <div>
+              <h3>Contact's Name</h3>
+              <p>{profileData.fullName}</p>
+            </div>
+            <div>
+              <h3>Contact's Email</h3>
+              <p>{profileData.email}</p>
+            </div>
+            {requestStatus === RequestStatus.ACCEPTED && (
+              <>
+                <h2 style={{ margin: 0, marginTop: "20px" }}>
+                  Api Configuration
+                </h2>
+                <div>
+                  <h3>Network Key</h3>
+                  <p>{profileData.networkKey}</p>
+                </div>
+                <div>
+                  <h3>Solution API URL</h3>
+                  <p>{profileData.solutionApiUrl}</p>
+                </div>
+              </>
+            )}
+          </Box>
         </Box>
-      </Box>
+      )}
     </Flex>
   );
 };
