@@ -1,20 +1,22 @@
 # Integration Guide for PACT Authentication Service
 
-This integration guide provides instructions on how to integrate your solution with the PACT Authentication Service, ensuring secure and seamless authentication for your users. The steps this guide outline the process to set up and configure your PACT conformant api to work with the service, and leverage the authentication mechanism to connect with other PACT conformant apis in the network.
+This integration guide provides instructions on how to integrate your solution with the PACT Authentication Service, ensuring secure and seamless authentication for your users. The steps in this guide detail the process to set up and configure your PACT Conformant Solution to work with the service, and leverage the authentication mechanism to connect with other PACT Conformant Solutions in the PACT Network.
 
-## 1. Register your organization in the PACT Directory
+Note this service is in MVP testing phase. Please share feedback and questions to PACT by raising an issue on the github repo (https://github.com/wbcsd/pact-directory) or by writing to Beth Hadley (hadley@wbcsd.org).
+
+## 1. Register your organization to the PACT Network
 
 Go to https://pact-directory-portal.onrender.com/signup and register your organization using the registration code provided by PACT. Once you have registered, your account will be active immediately and you will be able to start testing.
 
 ## 2. Configure your solution with your PACT Authentication Service credentials
 
-To be able to obtain an access token from the PACT Authentication Service, you need to configure your solution with the following credentials: `client_id` and `client_secret`. These credentials are unique to your organization and are used to authenticate your solution with the PACT Authentication Service. You get these credentials from the My Profile tab in the PACT Directory Portal.
+To be able to obtain an access token from the PACT Authentication Service, you need to configure your solution with the following credentials: `client_id` and `client_secret`. These credentials are unique to your organization and are used to authenticate your solution with the PACT Authentication Service. You get these credentials from the My Profile tab in the PACT Network Portal.
 
 ![](integration_guide_credentials.png)
 
-## 3. Connect to an organization in the PACT Directory
+## 3. Connect to an organization in the PACT Network
 
-Use the search tab in the PACT Directory Portal to find the organization you want to connect to. Once you have found the organization, go to the organization's profile, and click on the Connect button to send a connection request. The organization will receive the request and can accept or reject it.
+Use the search tab in the PACT Network Portal to find the organization you want to connect to. Once you have found the organization, go to the organization's profile, and click on the Connect button to send a connection request. The organization will receive the request and can accept or reject it.
 
 ![](integration_guide_search.png)
 
@@ -22,11 +24,11 @@ Organization's profile page:
 
 ![](integration_guide_profile.png)
 
-## 4. Request PCF data from the organization's PACT conformant api
+## 4. Request PCF data from the organization's PACT Conformant Solution
 
-Once you have connected to an organization, you can request data from their PACT conformant api. To do this, you first need to obtain an access token from the PACT Authentication Service. You can do this by sending a POST request to the PACT Authentication Service's token endpoint with your `client_id`, `client_secret` credentials, and the `network_key` from the organization you want to request PCF data from. The service will return an access token that you can use to authenticate your requests to the organization's api.
+Once you have connected to an organization, you can request data from their PACT Conformant Solution. To do this, you first need to obtain an access token from the PACT Authentication Service. You can do this by sending a POST request to the PACT Authentication Service's token endpoint with your `client_id`, `client_secret` credentials, and the `network_key` from the organization you want to request PCF data from. The service will return an access token that you can use to authenticate your requests to the organization's PACT Conformant Solution.
 
-You can get the `network_key` from the organization's profile page in the PACT Directory Portal:
+You can get the `network_key` from the organization's profile page in the PACT Network Portal:
 
 ![](integration_guide_api_config.png)
 
@@ -51,7 +53,7 @@ The service will return a JSON response with the access token:
 }
 ```
 
-Then use that token to request PCF data from the organization's api:
+Then use that token to request PCF data from the organization's PACT Conformant Solution:
 
 ```bash
 curl -X GET https://organization-api.onrender.com/pcf-data \
@@ -60,9 +62,9 @@ curl -X GET https://organization-api.onrender.com/pcf-data \
 
 ## 5. Verify an access token
 
-If your organization is a data owner, clients connecting to your api will request an access token from the PACT authentication service, and send it in a request header as shown in step 4. You need to verify the token to ensure its validdity and confirm the client has the necessary permissions to access the requested resource. The token is a JSON Web Token (JWT) that contains the client organization's identity. To verify the token you need the `client_secret` you obtained on step 2 from the My Profile tab.
+If your organization is a data owner (i.e. has PCF data to share), clients connecting to your PACT Conformant Solution will request an access token from the PACT Authentication Service, and send it in a request header as shown in step 4. You need to verify the token to ensure its validity and confirm the client has the necessary permissions to access the requested resource. The token is a JSON Web Token (JWT) that contains the client organization's identity. To verify the token you need the `client_secret` you obtained on step 2 from the My Profile tab.
 
-Depending on the programing language and modules you are using, you can use the following code snippets to verify the token:
+Depending on the programming language and modules you are using, you can use the following code snippets to verify the token:
 
 ### Node.js Example
 
