@@ -4,7 +4,7 @@ import { IReq, IRes } from "./common/types";
 import { db } from "@src/database/db";
 
 async function token(req: IReq, res: IRes) {
-  const { client_id, client_secret, network_id } = req.body;
+  const { client_id, client_secret, network_key } = req.body;
 
   // 1. Load both companies from the db. One company through the client_id and the other through the network_id
   const clientCompany = await db
@@ -23,7 +23,7 @@ async function token(req: IReq, res: IRes) {
   const networkCompany = await db
     .selectFrom("companies")
     .selectAll()
-    .where("networkKey", "=", network_id as string)
+    .where("networkKey", "=", network_key as string)
     .executeTakeFirst();
 
   // Check if both companies exist
