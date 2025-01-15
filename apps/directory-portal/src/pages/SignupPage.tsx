@@ -159,9 +159,9 @@ const SignupPage: React.FC = () => {
                       align="center"
                       sideOffset={5}
                     >
-                      This can be any identifier of your choosing, it will be
-                      used to identify your company when other organizations
-                      discover it through the PACT Network.
+                      Any unique identifier your company uses, which other
+                      organizations can use to identify your company on the PACT
+                      Network (i.e. DUNS, LEI, GLN, etc.)
                     </Tooltip.Content>
                   </Tooltip.Root>
                 </Tooltip.Provider>
@@ -207,8 +207,10 @@ const SignupPage: React.FC = () => {
                       align="center"
                       sideOffset={5}
                     >
-                      Please provide a brief description of your company
-                      identifier.
+                      Name of the organization which issued the company
+                      identifier you listed above, and/or the name of the
+                      identifier (i.e. Dun & Bradstreet DUNS, GLEIF LEI, GS1
+                      GLN, etc.)
                     </Tooltip.Content>
                   </Tooltip.Root>
                 </Tooltip.Provider>
@@ -230,7 +232,7 @@ const SignupPage: React.FC = () => {
             <TextField.Root
               value={formData.fullName}
               required
-              placeholder="Full Name"
+              placeholder="Account Admin Full Name"
               onChange={handleChange}
             >
               <TextField.Slot side="right">
@@ -254,8 +256,8 @@ const SignupPage: React.FC = () => {
                       align="center"
                       sideOffset={5}
                     >
-                      Your name as will show up as a point of contact for your
-                      organization.
+                      Name of the person who will serve as account admin and
+                      point of contact for your PACT Network account.
                     </Tooltip.Content>
                   </Tooltip.Root>
                 </Tooltip.Provider>
@@ -278,7 +280,7 @@ const SignupPage: React.FC = () => {
               value={formData.email}
               required
               type="email"
-              placeholder="Email"
+              placeholder="Account Admin Email"
               onChange={handleChange}
             >
               <TextField.Slot side="right">
@@ -302,8 +304,8 @@ const SignupPage: React.FC = () => {
                       align="center"
                       sideOffset={5}
                     >
-                      Your email address will be used to log in to the PACT
-                      Network, and to receive important notifications.
+                      Email address of account admin, to be used to log in to
+                      PACT Network and receive notifications.
                     </Tooltip.Content>
                   </Tooltip.Root>
                 </Tooltip.Provider>
@@ -471,7 +473,9 @@ const SignupPage: React.FC = () => {
                       align="center"
                       sideOffset={5}
                     >
-                      The URL for your solution's API.
+                      The URL of your PACT Conformant Solution's API (non-prod
+                      environment). Ask your solution provider if you need help
+                      finding this.
                     </Tooltip.Content>
                   </Tooltip.Root>
                 </Tooltip.Provider>
@@ -517,7 +521,7 @@ const SignupPage: React.FC = () => {
                       align="center"
                       sideOffset={5}
                     >
-                      The registration code provided by the PACT Network.
+                      The registration code provided by PACT.
                     </Tooltip.Content>
                   </Tooltip.Root>
                 </Tooltip.Provider>

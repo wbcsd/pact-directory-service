@@ -180,11 +180,11 @@ const CompanyProfile: React.FC = () => {
               <p>{profileData.companyIdentifierDescription}</p>
             </div>
             <div>
-              <h3>Contact's Name</h3>
+              <h3>Account Admin Full Name</h3>
               <p>{profileData.fullName}</p>
             </div>
             <div>
-              <h3>Contact's Email</h3>
+              <h3>Account Admin Email</h3>
               <p>{profileData.email}</p>
             </div>
             {requestStatus === RequestStatus.ACCEPTED && (

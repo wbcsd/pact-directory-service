@@ -87,11 +87,11 @@ const MyProfile: React.FC = () => {
             <p>{profileData.companyIdentifierDescription}</p>
           </div>
           <div>
-            <h3>Full Name</h3>
+            <h3>Account Admin Full Name</h3>
             <p>{profileData.fullName}</p>
           </div>
           <div>
-            <h3>Email</h3>
+            <h3>Account Admin Email</h3>
             <p>{profileData.email}</p>
           </div>
           <div>

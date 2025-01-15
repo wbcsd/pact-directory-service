@@ -136,6 +136,7 @@ button.rt-Button {
   background-color: var(--base-color-brand--blue);
   padding: 20px;
   min-height: 55px;
+  cursor: pointer;
 }
 
 .side-nav a {
