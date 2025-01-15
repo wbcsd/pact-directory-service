@@ -1,7 +1,15 @@
 // src/pages/SignupPage.tsx
 import React, { useState } from "react";
 import * as Form from "@radix-ui/react-form";
-import { Box, Button, TextField, Text, Flex, Callout } from "@radix-ui/themes";
+import {
+  Box,
+  Button,
+  TextField,
+  Text,
+  Flex,
+  Callout,
+  Spinner,
+} from "@radix-ui/themes";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { Link, useNavigate } from "react-router-dom";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
@@ -23,6 +31,8 @@ const SignupPage: React.FC = () => {
 
   const [errorMessage, setErrorMessage] = useState("");
 
+  const [creatingAccount, setCreatingAccount] = useState(false);
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -32,6 +42,8 @@ const SignupPage: React.FC = () => {
     };
 
     try {
+      setCreatingAccount(true);
+
       const response = await fetch(
         `${import.meta.env.VITE_DIRECTORY_API_URL}/companies/signup`,
         {
@@ -43,11 +55,12 @@ const SignupPage: React.FC = () => {
         }
       );
 
+      setCreatingAccount(false);
+
       if (response.ok) {
         const data = await response.json();
         const { token } = data;
 
-        // Save the token to local storage
         localStorage.setItem("jwt", token);
 
         setStatus("success");
@@ -541,7 +554,10 @@ const SignupPage: React.FC = () => {
         <Flex gap={"3"}>
           <Box>
             <Form.Submit asChild>
-              <Button>Join the network!</Button>
+              <Button disabled={creatingAccount}>
+                {creatingAccount && <Spinner loading />}
+                {creatingAccount ? "Creating Account" : "Join the network!"}
+              </Button>
             </Form.Submit>
           </Box>
           <Box

@@ -98,8 +98,8 @@ const ManageConnections: React.FC = () => {
         <AlertDialog.Content maxWidth="450px">
           <AlertDialog.Title>Connection request accepted</AlertDialog.Title>
           <AlertDialog.Description size="2">
-            Now both companies are able to exchange PCF data through PACT
-            conformant apis using the authentication service.
+            Now you are able to exchange PCF data using your PACT Conformant
+            Solution with the company you just connected with
           </AlertDialog.Description>
 
           <Flex mt="4" justify="center">
@@ -196,12 +196,9 @@ const ManageConnections: React.FC = () => {
                           alignItems: "center",
                         }}
                       >
-                        <a
-                          style={{ fontSize: "0.85em", cursor: "pointer" }}
-                          onClick={() => handleAccept(request.id)}
-                        >
+                        <Button onClick={() => handleAccept(request.id)}>
                           Accept request
-                        </a>
+                        </Button>
                       </Box>
                     </Flex>
                   </div>

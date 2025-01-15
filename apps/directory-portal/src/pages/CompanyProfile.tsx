@@ -97,7 +97,7 @@ const CompanyProfile: React.FC = () => {
     [RequestStatus.PENDING]:
       "Your connection request is pending approval from this organization.",
     [RequestStatus.NOREQUEST]:
-      "When you click Connect, PACT Identity Management Service will send a request to this supplier, requesting their permission to create an authenticated connection between your PACT Conformant Solution and theirs.",
+      "When you click Connect, PACT Identity Management Service will send a request to this company, requesting their permission to create an authenticated connection between your PACT Conformant Solution and theirs.",
     [RequestStatus.ACCEPTED]: "You are connected with this organization.",
     [RequestStatus.RECEIVED]:
       "This organization has sent you a connection request, you can accept it in the Manage Connections page.",

@@ -1,6 +1,7 @@
 :root {
   --base-color-brand--light-blue: #3c3c68;
   --base-color-brand--light-grey: #8a8a8a;
+  --base-color-brand--disabled-grey: #d4d4d4;
   --base-color-brand--blue: #09094e;
 }
 
@@ -130,6 +131,11 @@ input.rt-TextFieldInput {
 
 input.rt-TextFieldInput::placeholder {
   color: var(--base-color-brand--light-blue);
+}
+
+button.rt-Button:disabled {
+  background-color: var(--base-color-brand--disabled-grey);
+  cursor: default;
 }
 
 button.rt-Button {

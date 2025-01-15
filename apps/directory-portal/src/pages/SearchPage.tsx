@@ -77,6 +77,9 @@ const SearchPage: React.FC = () => {
           }}
         >
           <TextField.Root
+            style={{
+              minWidth: "250",
+            }}
             placeholder="Search by company name"
             onChange={handleSearchInputChange}
             onKeyDown={handleKeyDown}
@@ -100,7 +103,9 @@ const SearchPage: React.FC = () => {
                 <Table.ColumnHeaderCell>
                   Company Identifier
                 </Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>
+                  Account Admin Email
+                </Table.ColumnHeaderCell>
               </Table.Row>
             </Table.Header>
             <Table.Body>
