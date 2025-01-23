@@ -35,7 +35,7 @@ You can get the `network_key` from the organization's profile page in the PACT N
 Getting an access token:
 
 ```bash
-curl -X POST https://pact-authentication-service.onrender.com/token \
+curl -X POST https://pact-directory-api.onrender.com/api/im/auth/token \
   -H 'Content-Type: application/json' \
   -d '{
     "client_id": "your_client_id",
