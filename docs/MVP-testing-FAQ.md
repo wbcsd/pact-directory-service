@@ -4,6 +4,9 @@ Please find below a brief FAQ to help you get started with MVP testing.
 
 ## Getting started
 
+**Who can participate in testing?**  
+Any organization globally is invited to test Identity Management MVP. There is no cost. The only pre-requisite is to build (or be building) a PACT Conformant Solution. Write to Beth Hadley (hadley@wbcsd.org) if you would like to join testing.
+
 **What should we test?**  
 You will test the three main functionalities of the Identity Management MVP:
 
