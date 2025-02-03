@@ -41,5 +41,8 @@ The PACT community is now working to address these challenges by creating an ope
 ### FAQ
 We maintain an [FAQ page here.](https://github.com/wbcsd/pact-directory/blob/main/docs/FAQ.md)
 
+### License
+[MIT](https://opensource.org/license/mit)
+
 ### How to get involved
 - We welcome any organization globally to get involved in this project. Write to Beth Hadley (hadley@wbcsd.org) to learn more.
