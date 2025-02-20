@@ -237,3 +237,9 @@ public class JwtVerifier
     }
 }
 ```
+
+## PACT's demo solution
+
+PACT provides a demo solution that you can use to test the integration with the PACT Authentication Service. You can search for the organization "WBCSD" in the PACT Network Portal and connect to it to test the authentication mechanism.
+
+You can find the demo solution's API url and network key in the organization's profile page. Use the demo solution's network key to obtain an access token and request PCF data from the solution.
