@@ -7,7 +7,7 @@
 Identity Management is a foundational service of the PACT Network. Identity Management enables organizations to securely and efficiently identify and establish trust connections with each other at scale, facilitating PCF exchange between solutions.
 
 ### What is IM?
-In its initial form, PACT Identity Management Service will enable organizations the following capabilities:
+In its initial form, PACT Identity Management Service will provide organizations with the following capabilities:
 - Register to PACT Network
 - Find others on the PACT Network
 - Connect to eachother and authentication eachother's PACT Conformant Solutions
