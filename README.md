@@ -18,14 +18,16 @@ See the [technical design](https://github.com/wbcsd/pact-directory/blob/main/doc
 
 ### Timeline
 - A working group was formed in September 2024 to co-create PACT Identity Management service
-- A Vision Paper is currently being drafted and evolved by the community, planned for publication February 2025
 - An MVP was developed from October - December 2024
-- MVP Testing phase is ongoing from January - March 2025
+- Alpha MVP Testing phase launched January 2025
+- Beta MVP Testing phase launched March 2025
+- [PACT Identity Management Vision Paper](https://www.carbon-transparency.org/resources/pact-identity-management-vision-paper) was published March 2025
+- V1 of Identity Managment is being planned, pending learnings from MVP testing phase
 
 ### How to test MVP
 - Any organization globally may participate in testing Identity Management MVP, provided the organization has built or is buiding a PACT Conformant Solution implementing [PACT Tech Specs](https://wbcsd.github.io/data-exchange-protocol/v2/). There is no cost to participate in testing.
-- Testing is estimated to take up to 10 hours throughout January and February 2025.
-- Why test? Gain early access to the service, provide feedback to influence the direction of the service post MVP, particpate in marketing efforts related to Identity Management
+- Testing is estimated to take up to 10 hours; organizations are requested to complete testing by April 30, 2025.
+- Why test? Gain early access to the service, provide feedback to influence the direction of the service post MVP, be promoted as an early tester of the MVP
 - Useful links: [Testing instructions](https://github.com/wbcsd/pact-directory/blob/main/docs/integration-guide.md), [Live MVP](https://pact-directory-portal.onrender.com/)
 - Write to Beth (hadley@wbcsd.org) to join MVP testing
 
