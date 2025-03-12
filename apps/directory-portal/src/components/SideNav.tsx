@@ -21,6 +21,9 @@ const SideNav: React.FC = () => {
         <NavLink to="/manage-connections" style={{ textDecoration: "none" }}>
           <Text size="4">Manage Connections</Text>
         </NavLink>
+        <NavLink to="/conformance-testing" style={{ textDecoration: "none" }}>
+          <Text size="4">Conformance Testing</Text>
+        </NavLink>
       </Flex>
     </Box>
   );

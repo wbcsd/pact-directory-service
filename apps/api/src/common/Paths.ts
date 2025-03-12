@@ -5,6 +5,7 @@
 export default {
   DirectoryBase: "/api/directory",
   IdentityProviderBase: "/api/im",
+  ProxyBase: "/api/proxy",
   Companies: {
     Base: "/companies",
     Signup: "/signup",
@@ -25,5 +26,10 @@ export default {
   Auth: {
     Base: "/auth",
     Token: "/token",
+  },
+  Proxy: {
+    Base: "/",
+    Test: "/test",
+    TestResults: "/test-results",
   },
 } as const;

@@ -3,11 +3,12 @@ const logoutUser = () => {
   window.location.href = "/login";
 };
 
-export const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
-  const apiBasePath = `${import.meta.env.VITE_DIRECTORY_API_URL}`;
-
+const authFetch = async (
+  apiBasePath: string,
+  url: string,
+  options: RequestInit = {}
+) => {
   const accessToken = localStorage.getItem("jwt");
-
   if (!accessToken) {
     return logoutUser();
   }
@@ -24,4 +25,14 @@ export const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
   }
 
   return response;
+};
+
+export const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
+  const apiBasePath = `${import.meta.env.VITE_DIRECTORY_API_URL}`;
+  return authFetch(apiBasePath, url, options);
+};
+
+export const proxyWithAuth = async (url: string, options: RequestInit = {}) => {
+  const apiBasePath = `${import.meta.env.VITE_PROXY_API_URL}`;
+  return authFetch(apiBasePath, url, options);
 };
