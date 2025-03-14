@@ -3,13 +3,18 @@ import { Router } from "express";
 import Paths from "../common/Paths";
 
 import ProxyRouter from "./ProxyRoutes";
+import jwtAuthMiddleware from "./common/jwt-auth-middleware";
 
 const apiRouter = Router();
 
 const proxyRouter = Router();
 
-proxyRouter.post(Paths.Proxy.Test, ProxyRouter.runTestCases);
-proxyRouter.get(Paths.Proxy.TestResults, ProxyRouter.getTestResults);
+proxyRouter.post(Paths.Proxy.Test, jwtAuthMiddleware, ProxyRouter.runTestCases);
+proxyRouter.get(
+  Paths.Proxy.TestResults,
+  jwtAuthMiddleware,
+  ProxyRouter.getTestResults
+);
 
 apiRouter.use(Paths.Proxy.Base, proxyRouter);
 

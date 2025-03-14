@@ -24,8 +24,11 @@ export interface TestCase {
   testKey: string;
 }
 
-const getStatusColor = (status: TestCase["status"]) => {
-  switch (status) {
+const getStatusColor = (testCase: TestCase) => {
+  if (testCase.status === "FAILURE" && testCase.mandatory === "NO")
+    return "orange";
+
+  switch (testCase.status) {
     case "SUCCESS":
       return "green";
     case "FAILURE":
@@ -37,8 +40,11 @@ const getStatusColor = (status: TestCase["status"]) => {
   }
 };
 
-const getStatusText = (status: TestCase["status"]) => {
-  switch (status) {
+const getStatusText = (testCase: TestCase) => {
+  if (testCase.status === "FAILURE" && testCase.mandatory === "NO")
+    return "Warning";
+
+  switch (testCase.status) {
     case "SUCCESS":
       return "Passed";
     case "FAILURE":
@@ -204,8 +210,8 @@ const ConformanceTestResult: React.FC = () => {
                       {test.name}
                     </Table.Cell>
                     <Table.Cell>
-                      <Badge color={getStatusColor(test.status)}>
-                        {getStatusText(test.status)}
+                      <Badge color={getStatusColor(test)}>
+                        {getStatusText(test)}
                       </Badge>
                     </Table.Cell>
                     <Table.Cell>{test.mandatory}</Table.Cell>
