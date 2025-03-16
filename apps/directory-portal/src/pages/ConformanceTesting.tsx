@@ -117,13 +117,6 @@ const ConformanceTesting: React.FC = () => {
             </Form.Control>
           </Form.Field>
 
-          <Form.Field name="agreeTerms">
-            <Form.Label>
-              <input type="checkbox" required style={{ marginRight: "8px" }} />I
-              agree to the T&amp;Cs
-            </Form.Label>
-          </Form.Field>
-
           <Form.Submit asChild>
             <Button type="submit">Run tests</Button>
           </Form.Submit>
