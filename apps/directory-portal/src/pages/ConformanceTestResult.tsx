@@ -9,7 +9,9 @@ import {
   Flex,
   Badge,
   Spinner,
+  Callout,
 } from "@radix-ui/themes";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import SideNav from "../components/SideNav";
 import { useNavigate } from "react-router-dom";
 import { useConformanceTesting } from "../components/ConformanceTesting";
@@ -100,18 +102,23 @@ const ConformanceTestResult: React.FC = () => {
     apiResponse?: string;
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const { apiUrl, clientId, clientSecret, version } = useConformanceTesting();
+  const { apiUrl, authBaseUrl, clientId, clientSecret, version } =
+    useConformanceTesting();
 
   const [testCases, setTestCases] = useState<TestCase[]>([]);
 
   const [passingPercentage, setPassingPercentage] = useState(0);
 
   useEffect(() => {
-    console.log(apiUrl, clientId, clientSecret);
-
     let cancelled = false;
     const isCancelled = () => cancelled;
+
+    if (!apiUrl || !clientId || !clientSecret || !version) {
+      navigate("/conformance-testing");
+      return;
+    }
 
     const fetchTestResponse = async () => {
       try {
@@ -121,6 +128,7 @@ const ConformanceTestResult: React.FC = () => {
             clientId,
             clientSecret,
             apiUrl,
+            authBaseUrl,
             version,
           }),
         });
@@ -130,15 +138,24 @@ const ConformanceTestResult: React.FC = () => {
         }
 
         const data = await response.json();
+
+        if (data.error) {
+          setError(data.error);
+          setIsLoading(false);
+          return;
+        }
+
         setTestCases(data.results.map(mapTestCases));
-
         setPassingPercentage(data.passingPercentage);
-
         setIsLoading(false);
 
         pollTestResults(1, setTestCases, data.testRunId, isCancelled);
       } catch (error) {
         console.error("Error fetching test response:", error);
+        setError(
+          "An unexpected error occurred while running tests. Please try again."
+        );
+        setIsLoading(false);
       }
     };
 
@@ -147,7 +164,7 @@ const ConformanceTestResult: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [clientId, clientSecret, apiUrl, version]);
+  }, [clientId, clientSecret, apiUrl, authBaseUrl, version, navigate]);
 
   return (
     <Flex gap="5" justify="center">
@@ -163,6 +180,27 @@ const ConformanceTestResult: React.FC = () => {
           }}
         >
           <Spinner size="3" />
+        </Box>
+      ) : error ? (
+        <Box
+          style={{
+            padding: "20px",
+            maxWidth: "800px",
+            width: "800px",
+          }}
+        >
+          <h2>Conformance Test Result</h2>
+          <Callout.Root color="red" size="2">
+            <Callout.Icon>
+              <ExclamationTriangleIcon />
+            </Callout.Icon>
+            <Callout.Text>{error}</Callout.Text>
+          </Callout.Root>
+          <Box mt="4">
+            <Button onClick={() => navigate("/conformance-testing")}>
+              Back to Testing Form
+            </Button>
+          </Box>
         </Box>
       ) : (
         <Box

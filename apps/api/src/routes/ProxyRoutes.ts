@@ -31,12 +31,14 @@ async function runTestCases(req: IReq, res: IRes) {
       return;
     }
 
-    const { apiUrl, clientId, clientSecret, version } = req.body as {
-      clientId: string;
-      clientSecret: string;
-      apiUrl: string;
-      version: string;
-    };
+    const { apiUrl, clientId, clientSecret, version, authBaseUrl } =
+      req.body as {
+        clientId: string;
+        clientSecret: string;
+        apiUrl: string;
+        version: string;
+        authBaseUrl?: string;
+      };
 
     // eslint-disable-next-line n/no-process-env
     const testCasesUrl: string = process.env.RUN_TEST_CASES_URL ?? "";
@@ -58,6 +60,7 @@ async function runTestCases(req: IReq, res: IRes) {
         clientId,
         clientSecret,
         baseUrl: apiUrl,
+        customAuthBaseUrl: authBaseUrl,
         version,
         companyName: company.companyName,
         companyIdentifier: company.companyIdentifier,

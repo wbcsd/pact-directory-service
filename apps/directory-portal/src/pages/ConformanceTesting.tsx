@@ -8,10 +8,12 @@ import { useConformanceTesting } from "../components/ConformanceTesting";
 const ConformanceTesting: React.FC = () => {
   const {
     setApiUrl,
+    setAuthBaseUrl,
     setClientId,
     setClientSecret,
     setVersion,
     apiUrl,
+    authBaseUrl,
     clientId,
     clientSecret,
     version,
@@ -20,6 +22,7 @@ const ConformanceTesting: React.FC = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     solutionApiUrl: apiUrl,
+    authBaseUrl: authBaseUrl,
     clientId: clientId,
     clientSecret: clientSecret,
     techSpecsVersion: version,
@@ -29,7 +32,6 @@ const ConformanceTesting: React.FC = () => {
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = event.target;
-    console.log(name, value);
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
@@ -37,13 +39,12 @@ const ConformanceTesting: React.FC = () => {
     event.preventDefault();
 
     setApiUrl(formData.solutionApiUrl);
+    setAuthBaseUrl(formData.authBaseUrl);
     setClientId(formData.clientId);
     setClientSecret(formData.clientSecret);
     setVersion(formData.techSpecsVersion);
 
     navigate("/conformance-test-result");
-
-    console.log(formData);
   };
 
   return (
@@ -66,7 +67,19 @@ const ConformanceTesting: React.FC = () => {
               <TextField.Root
                 value={formData.solutionApiUrl}
                 required
-                placeholder="Enter Solution API URL"
+                placeholder="Enter Solution API Base URL"
+                onChange={handleChange}
+              >
+                <TextField.Slot />
+              </TextField.Root>
+            </Form.Control>
+          </Form.Field>
+
+          <Form.Field name="authBaseUrl">
+            <Form.Control asChild>
+              <TextField.Root
+                value={formData.authBaseUrl}
+                placeholder="Enter Auth Base URL (optional)"
                 onChange={handleChange}
               >
                 <TextField.Slot />
