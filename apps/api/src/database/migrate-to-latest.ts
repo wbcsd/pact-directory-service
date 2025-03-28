@@ -38,10 +38,19 @@ async function migrateToLatest() {
     const { error, results } = await migrator.migrateToLatest();
 
     results?.forEach((it) => {
-      if (it.status === "Success") {
-        console.log(`migration "${it.migrationName}" was executed successfully`);
-      } else if (it.status === "Error") {
-        console.error(`failed to execute migration "${it.migrationName}"`);
+      switch (it.status) {
+        case "Success":
+          console.log(`Migration "${it.migrationName}" was executed successfully.`);
+          break;
+        case "Error":
+          console.error(`Migration "${it.migrationName}" failed to execute.`);
+          break;
+        case "NotExecuted":
+          console.warn(`Migration "${it.migrationName}" was not executed due to earlier failures.`);
+          break;
+        default:
+          // Type safety - handle potential future statuses
+          console.log(`Migration "${it.migrationName}" has status: ${it.status}`);
       }
     });
 
