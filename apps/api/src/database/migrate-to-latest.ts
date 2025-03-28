@@ -24,34 +24,42 @@ async function migrateToLatest() {
     }),
   });
 
-  const migrator = new Migrator({
-    db,
-    provider: new FileMigrationProvider({
-      fs,
-      path,
-      // This needs to be an absolute path.
-      migrationFolder: path.join(__dirname, "migrations"),
-    }),
-  });
+  try {
+    const migrator = new Migrator({
+      db,
+      provider: new FileMigrationProvider({
+        fs,
+        path,
+        // This needs to be an absolute path.
+        migrationFolder: path.join(__dirname, "migrations"),
+      }),
+    });
 
-  const { error, results } = await migrator.migrateToLatest();
+    const { error, results } = await migrator.migrateToLatest();
 
-  results?.forEach((it) => {
-    if (it.status === "Success") {
-      console.log(`migration "${it.migrationName}" was executed successfully`);
-    } else if (it.status === "Error") {
-      console.error(`failed to execute migration "${it.migrationName}"`);
+    results?.forEach((it) => {
+      if (it.status === "Success") {
+        console.log(`migration "${it.migrationName}" was executed successfully`);
+      } else if (it.status === "Error") {
+        console.error(`failed to execute migration "${it.migrationName}"`);
+      }
+    });
+
+    if (error) {
+      console.error("failed to migrate");
+      console.error(error);
+      process.exitCode = 1;
     }
-  });
-
-  if (error) {
-    console.error("failed to migrate");
-    console.error(error);
-    // eslint-disable-next-line n/no-process-exit
-    process.exit(1);
+  } catch (error: unknown) {
+    console.error("Unexpected error during migration:", error);
+    process.exitCode = 1;
+  } finally {
+    // Ensure the database connection is always closed.
+    await db.destroy()
   }
-
-  await db.destroy();
 }
 
-migrateToLatest();
+migrateToLatest().catch((error: unknown) => {
+  console.error("Fatal error during migration process:", error);
+  process.exitCode = 1;
+});
