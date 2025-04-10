@@ -16,6 +16,7 @@ import ConformanceTestResult from "./pages/ConformanceTestResult";
 import pactLogo from "./assets/pact-logo.svg";
 import { Box } from "@radix-ui/themes";
 import { ConformanceTestingProvider } from "./components/ConformanceTesting";
+import ConformanceTestRuns from "./pages/ConformanceTestRuns";
 
 const App: React.FC = () => {
   return (
@@ -50,6 +51,10 @@ const App: React.FC = () => {
             <Route
               path="/conformance-test-result"
               element={<ConformanceTestResult />}
+            />
+            <Route
+              path="/conformance-test-runs"
+              element={<ConformanceTestRuns />}
             />
             <Route path="/" element={<Navigate to="/signup" />} />
           </Routes>

@@ -31,5 +31,6 @@ export default {
     Base: "/",
     Test: "/test",
     TestResults: "/test-results",
+    recentTestRuns: "/test-runs",
   },
 } as const;
