@@ -119,7 +119,56 @@ async function getTestResults(req: IReq, res: IRes) {
   }
 }
 
+async function getRecentTestRuns(req: IReq, res: IRes) {
+  const { userId } = res.locals.user as {
+    userId: string;
+  };
+
+  try {
+    // Get user data to fetch email
+    const user = await db
+      .selectFrom("users")
+      .select("email")
+      .where("id", "=", Number(userId))
+      .executeTakeFirst();
+
+    if (!user) {
+      res.status(HttpStatusCodes.NOT_FOUND).json({ error: "User not found." });
+      return;
+    }
+
+    // eslint-disable-next-line n/no-process-env
+    const recentTestRunsUrl: string = process.env.RECENT_TEST_RUNS_URL ?? "";
+    if (!recentTestRunsUrl) {
+      res
+        .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ error: "Recent test runs URL not configured." });
+      return;
+    }
+
+    const url = new URL(recentTestRunsUrl);
+    url.searchParams.append("adminEmail", user.email);
+
+    // eslint-disable-next-line n/no-unsupported-features/node-builtins
+    const response = await fetch(url.toString(), {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data: unknown = await response.json();
+    res.status(HttpStatusCodes.OK).json(data);
+  } catch (error) {
+    logger.err(error);
+    res
+      .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: "Failed to fetch recent test runs." });
+  }
+}
+
 export default {
   runTestCases,
   getTestResults,
+  getRecentTestRuns,
 } as const;
