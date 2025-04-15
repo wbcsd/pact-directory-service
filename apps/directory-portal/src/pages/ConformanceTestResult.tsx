@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {
-  Card,
   Heading,
   Text,
-  Table,
   Button,
   Box,
-  Flex,
   Badge,
   Spinner,
   Callout,
@@ -215,10 +212,10 @@ const ConformanceTestResult: React.FC = () => {
   ]);
 
   return (
-    <Flex gap="5" justify="center">
-      <Box>
+    <>
+      <aside className="sidebar">
         <SideNav />
-      </Box>
+      </aside>
       {isLoading ? (
         <Box
           style={{
@@ -251,42 +248,31 @@ const ConformanceTestResult: React.FC = () => {
           </Box>
         </Box>
       ) : (
-        <Box
-          style={{
-            padding: "20px",
-            maxWidth: "800px",
-            width: "800px",
-          }}
-        >
-          <h2>Conformance Test Result</h2>
-          <Card size="3" style={{ maxWidth: 800, margin: "40px auto" }}>
-            {/* Main heading */}
-            <Heading as="h1" size="5" mb="3">
-              Test Results
-            </Heading>
-
-            {/* Summary text */}
-            <Text size="2" mb="4" style={{ fontWeight: "bold" }}>
-              {passingPercentage}% Mandatory Tests Pass
-            </Text>
-
-            {/* Table of test cases */}
-            <Table.Root>
-              <Table.Header>
-                <Table.Row>
-                  <Table.ColumnHeaderCell style={{ width: "60%" }}>
-                    Test Case
-                  </Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>Status</Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>
-                    Mandatory Test?
-                  </Table.ColumnHeaderCell>
-                </Table.Row>
-              </Table.Header>
-              <Table.Body>
+        <main className="main">
+          <div className="header">
+            <div>
+              <h2>Conformance Test Result</h2>
+              <p style={{ color: "#888", fontSize: "0.875rem" }}>
+                {passingPercentage}% Mandatory Tests Pass
+              </p>
+            </div>
+            <Button onClick={() => navigate("/conformance-testing")}>
+              Retest Conformance
+            </Button>
+          </div>
+          <div className="table-container">
+            <table className="test-runs-table">
+              <thead>
+                <tr>
+                  <th style={{ width: "60%" }}>Test Case</th>
+                  <th>Status</th>
+                  <th>Mandatory Test?</th>
+                </tr>
+              </thead>
+              <tbody>
                 {testCases.sort(sortTestCases).map((test) => (
-                  <Table.Row key={test.testKey}>
-                    <Table.Cell
+                  <tr key={test.testKey}>
+                    <td
                       onClick={() => setSelectedTest(test)}
                       style={{
                         cursor: "pointer",
@@ -294,17 +280,17 @@ const ConformanceTestResult: React.FC = () => {
                       }}
                     >
                       {test.name}
-                    </Table.Cell>
-                    <Table.Cell>
+                    </td>
+                    <td>
                       <Badge color={getStatusColor(test)}>
                         {getStatusText(test)}
                       </Badge>
-                    </Table.Cell>
-                    <Table.Cell>{test.mandatory}</Table.Cell>
-                  </Table.Row>
+                    </td>
+                    <td>{test.mandatory}</td>
+                  </tr>
                 ))}
-              </Table.Body>
-            </Table.Root>
+              </tbody>
+            </table>
 
             {selectedTest && (
               <Box mt="4">
@@ -336,13 +322,10 @@ const ConformanceTestResult: React.FC = () => {
                 </Box>
               </Box>
             )}
-          </Card>
-          <Button onClick={() => navigate("/conformance-testing")}>
-            Retest Conformance
-          </Button>
-        </Box>
+          </div>
+        </main>
       )}
-    </Flex>
+    </>
   );
 };
 
