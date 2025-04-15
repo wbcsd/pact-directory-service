@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Flex, Button, TextField } from "@radix-ui/themes";
+import { Button, TextField } from "@radix-ui/themes";
 import * as Form from "@radix-ui/react-form";
 import SideNav from "../components/SideNav";
 import { useNavigate } from "react-router-dom";
@@ -48,18 +48,14 @@ const ConformanceTesting: React.FC = () => {
   };
 
   return (
-    <Flex gap="5" justify="center">
-      <Box>
+    <>
+      <aside className="sidebar">
         <SideNav />
-      </Box>
-      <Box
-        style={{
-          padding: "20px",
-          maxWidth: "800px",
-          width: "800px",
-        }}
-      >
-        <h2>Conformance Testing</h2>
+      </aside>
+      <main className="main">
+        <div className="header">
+          <h2>Conformance Testing</h2>
+        </div>
 
         <Form.Root onSubmit={handleSubmit}>
           <Form.Field name="solutionApiUrl">
@@ -134,8 +130,8 @@ const ConformanceTesting: React.FC = () => {
             <Button type="submit">Run tests</Button>
           </Form.Submit>
         </Form.Root>
-      </Box>
-    </Flex>
+      </main>
+    </>
   );
 };
 

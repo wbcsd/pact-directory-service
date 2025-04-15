@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Box, Button, Flex, Spinner } from "@radix-ui/themes";
+import { Box, Button, Spinner } from "@radix-ui/themes";
 import SideNav from "../components/SideNav";
 import { fetchWithAuth } from "../utils/auth-fetch";
 
@@ -104,11 +104,11 @@ const CompanyProfile: React.FC = () => {
   };
 
   return (
-    <Flex gap={"5"} justify={"center"}>
-      <Box>
+    <>
+      <aside className="sidebar">
         <SideNav />
-      </Box>
-      {loadingData && (
+      </aside>
+      {loadingData ? (
         <Box
           style={{
             padding: "20px",
@@ -118,15 +118,12 @@ const CompanyProfile: React.FC = () => {
         >
           <Spinner size="3" />
         </Box>
-      )}
-      {!loadingData && (
-        <Box
-          style={{
-            padding: "20px",
-            maxWidth: "800px",
-            width: "800px",
-          }}
-        >
+      ) : (
+        <main className="main">
+          <div className="header">
+            <h2>{profileData.companyName}</h2>
+          </div>
+
           {requestStatus === RequestStatus.RECEIVED ? (
             <Box
               style={{
@@ -169,8 +166,6 @@ const CompanyProfile: React.FC = () => {
           )}
 
           <Box>
-            <h2>{profileData.companyName}</h2>
-
             <div>
               <h3>Company Identifier</h3>
               <p>{profileData.companyIdentifier}</p>
@@ -203,9 +198,9 @@ const CompanyProfile: React.FC = () => {
               </>
             )}
           </Box>
-        </Box>
+        </main>
       )}
-    </Flex>
+    </>
   );
 };
 

@@ -1,6 +1,6 @@
 // src/pages/SearchPage.tsx
 import React, { useState } from "react";
-import { Box, Table, Button, TextField, Flex } from "@radix-ui/themes";
+import { Box, Button, TextField } from "@radix-ui/themes";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Link } from "react-router-dom";
 import SideNav from "../components/SideNav";
@@ -58,18 +58,15 @@ const SearchPage: React.FC = () => {
   };
 
   return (
-    <Flex gap={"5"} justify={"center"}>
-      <Box>
+    <>
+      <aside className="sidebar">
         <SideNav />
-      </Box>
-      <Box
-        style={{
-          padding: "20px",
-          maxWidth: "800px",
-          width: "800px",
-        }}
-      >
-        <h2>Search Companies</h2>
+      </aside>
+      <main className="main">
+        <div className="header">
+          <h2>Search Companies</h2>
+        </div>
+
         <Box
           style={{
             display: "flex",
@@ -96,35 +93,33 @@ const SearchPage: React.FC = () => {
         {noResults && <Box>No results found.</Box>}
 
         {searchResults.length > 0 && (
-          <Table.Root>
-            <Table.Header>
-              <Table.Row>
-                <Table.ColumnHeaderCell>Company Name</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>
-                  Company Identifier
-                </Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>
-                  Account Admin Email
-                </Table.ColumnHeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {searchResults.map((result) => (
-                <Table.Row key={result.id}>
-                  <Table.Cell>
-                    <Link to={`/company/${result.id}`}>
-                      {result.companyName}
-                    </Link>
-                  </Table.Cell>
-                  <Table.Cell>{result.companyIdentifier}</Table.Cell>
-                  <Table.Cell>{result.email}</Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table.Root>
+          <div className="table-container">
+            <table className="test-runs-table">
+              <thead>
+                <tr>
+                  <th>Company Name</th>
+                  <th>Company Identifier</th>
+                  <th>Account Admin Email</th>
+                </tr>
+              </thead>
+              <tbody>
+                {searchResults.map((result) => (
+                  <tr key={result.id}>
+                    <td>
+                      <Link to={`/company/${result.id}`}>
+                        {result.companyName}
+                      </Link>
+                    </td>
+                    <td>{result.companyIdentifier}</td>
+                    <td>{result.email}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
-      </Box>
-    </Flex>
+      </main>
+    </>
   );
 };
 

@@ -54,11 +54,11 @@ const MyProfile: React.FC = () => {
   }, [navigate]);
 
   return (
-    <Flex gap={"5"} justify={"center"}>
-      <Box>
+    <>
+      <aside className="sidebar">
         <SideNav />
-      </Box>
-      {loadingData && (
+      </aside>
+      {loadingData ? (
         <Box
           style={{
             padding: "20px",
@@ -68,16 +68,12 @@ const MyProfile: React.FC = () => {
         >
           <Spinner size="3" />
         </Box>
-      )}
-      {!loadingData && (
-        <Box
-          style={{
-            padding: "20px",
-            maxWidth: "800px",
-            width: "800px",
-          }}
-        >
-          <h2>{profileData.companyName}</h2>
+      ) : (
+        <main className="main">
+          <div className="header">
+            <h2>My Profile: {profileData.companyName}</h2>
+          </div>
+
           <div>
             <h3>Company Identifier</h3>
             <p>{profileData.companyIdentifier}</p>
@@ -144,9 +140,9 @@ const MyProfile: React.FC = () => {
                 : maskValue(profileData.clientSecret)}
             </p>
           </div>
-        </Box>
+        </main>
       )}
-    </Flex>
+    </>
   );
 };
 
