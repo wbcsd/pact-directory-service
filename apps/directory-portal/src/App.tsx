@@ -25,9 +25,7 @@ const App: React.FC = () => {
           <div className="logo">
             <img width={96} src={pactLogo} alt="Pact Logo" />
           </div>
-          <div className="search-bar">
-            <input type="text" placeholder="Search companies... ⌘K" />
-          </div>
+          <div className="search-bar"></div>
         </div>
         <div className="container">
           <Routes>
