@@ -100,6 +100,7 @@ const ConformanceTestResult: React.FC = () => {
     name: string;
     errorMessage: string;
     apiResponse?: string;
+    curlRequest?: string;
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -330,34 +331,33 @@ const ConformanceTestResult: React.FC = () => {
                   }}
                 />
                 <br />
-                <Box
-                  mt={"5"}
-                  style={{
-                    color: "#0A0552",
-                    background: "#fff",
-                    padding: "20px",
-                    borderRadius: "8px",
-                    border: "1px solid #EBF0F5",
-                  }}
-                >
-                  <div
+                {selectedTest.curlRequest && (
+                  <Box
+                    mt={"5"}
                     style={{
-                      maxHeight: 300,
-                      overflowY: "auto",
+                      color: "#0A0552",
+                      background: "#fff",
+                      padding: "20px",
+                      borderRadius: "8px",
+                      border: "1px solid #EBF0F5",
                     }}
                   >
-                    <Text
-                      size="2"
-                      mb="4"
-                      dangerouslySetInnerHTML={{
-                        __html: `curl -X POST 
-https://7u6ai5b3yg.execute-api.eu-north-1.amazonaws.com/runTestCases \\<br>
--H "Content-Type: application/json" \\<br>
--d '{"baseUrl": "https://ie8onambsh.execute-api.eu-north-1.amazonaws.com/prod", "clientId": "test_client_id", "clientSecret": "test_client_secret", "version":"V2.1", "companyName":"WBCSD", "companyIdentifier":"001123", "adminEmail":"admin@example.com", "adminName":"John Doe"}' | jq`,
+                    <div
+                      style={{
+                        maxHeight: 300,
+                        overflowY: "auto",
                       }}
-                    />
-                  </div>
-                </Box>
+                    >
+                      <Text
+                        size="2"
+                        mb="4"
+                        dangerouslySetInnerHTML={{
+                          __html: selectedTest.curlRequest ?? "",
+                        }}
+                      />
+                    </div>
+                  </Box>
+                )}
                 {selectedTest.apiResponse && (
                   <Box
                     mt={"5"}
