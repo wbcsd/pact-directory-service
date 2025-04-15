@@ -248,52 +248,69 @@ const ConformanceTestResult: React.FC = () => {
           </Box>
         </Box>
       ) : (
-        <main className="main">
-          <div className="header">
-            <div>
-              <h2>Conformance Test Result</h2>
-              <p style={{ color: "#888", fontSize: "0.875rem" }}>
-                {passingPercentage}% Mandatory Tests Pass
-              </p>
+        <>
+          <main
+            className="main"
+            style={{
+              width: selectedTest ? "50%" : "100%",
+              transition: "width 0.3s ease",
+            }}
+          >
+            <div className="header">
+              <div>
+                <h2>Conformance Test Result</h2>
+                <p style={{ color: "#888", fontSize: "0.875rem" }}>
+                  {passingPercentage}% Mandatory Tests Pass
+                </p>
+              </div>
+              <Button onClick={() => navigate("/conformance-testing")}>
+                Retest Conformance
+              </Button>
             </div>
-            <Button onClick={() => navigate("/conformance-testing")}>
-              Retest Conformance
-            </Button>
-          </div>
-          <div className="table-container">
-            <table className="test-runs-table">
-              <thead>
-                <tr>
-                  <th style={{ width: "60%" }}>Test Case</th>
-                  <th>Status</th>
-                  <th>Mandatory Test?</th>
-                </tr>
-              </thead>
-              <tbody>
-                {testCases.sort(sortTestCases).map((test) => (
-                  <tr key={test.testKey}>
-                    <td
-                      onClick={() => setSelectedTest(test)}
-                      style={{
-                        cursor: "pointer",
-                        textDecoration: "underline",
-                      }}
-                    >
-                      {test.name}
-                    </td>
-                    <td>
-                      <Badge color={getStatusColor(test)}>
-                        {getStatusText(test)}
-                      </Badge>
-                    </td>
-                    <td>{test.mandatory}</td>
+            <div className="table-container">
+              <table className="test-runs-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: "60%" }}>Test Case</th>
+                    <th>Status</th>
+                    <th>Mandatory Test?</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {testCases.sort(sortTestCases).map((test) => (
+                    <tr key={test.testKey}>
+                      <td
+                        onClick={() => setSelectedTest(test)}
+                        style={{
+                          cursor: "pointer",
+                          textDecoration: "underline",
+                        }}
+                      >
+                        {test.name}
+                      </td>
+                      <td>
+                        <Badge color={getStatusColor(test)}>
+                          {getStatusText(test)}
+                        </Badge>
+                      </td>
+                      <td>{test.mandatory}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </main>
 
-            {selectedTest && (
-              <Box mt="4">
+          {selectedTest && (
+            <div className="test-details-container" style={{ width: "50%" }}>
+              <Box
+                id="test-details"
+                style={{
+                  padding: "20px",
+                  height: "100%",
+                  overflowY: "auto",
+                }}
+              >
                 <Heading as="h2" size="4" mb="2">
                   {selectedTest.name}
                 </Heading>
@@ -305,25 +322,65 @@ const ConformanceTestResult: React.FC = () => {
                   }}
                 />
                 <br />
-                {selectedTest.apiResponse && (
-                  <Text size="2" style={{ fontWeight: "bold" }}>
-                    API Response:
-                  </Text>
-                )}
-                <br />
-                <Box style={{ maxHeight: 300, overflowY: "auto" }}>
-                  <Text
-                    size="2"
-                    mb="4"
-                    dangerouslySetInnerHTML={{
-                      __html: selectedTest.apiResponse ?? "",
+                <Box
+                  mt={"5"}
+                  style={{
+                    color: "#0A0552",
+                    background: "#fff",
+                    padding: "20px",
+                    borderRadius: "8px",
+                    border: "1px solid #EBF0F5",
+                  }}
+                >
+                  <div
+                    style={{
+                      maxHeight: 300,
+                      overflowY: "auto",
                     }}
-                  />
+                  >
+                    <Text
+                      size="2"
+                      mb="4"
+                      dangerouslySetInnerHTML={{
+                        __html: `curl -X POST 
+https://7u6ai5b3yg.execute-api.eu-north-1.amazonaws.com/runTestCases \\<br>
+-H "Content-Type: application/json" \\<br>
+-d '{"baseUrl": "https://ie8onambsh.execute-api.eu-north-1.amazonaws.com/prod", "clientId": "test_client_id", "clientSecret": "test_client_secret", "version":"V2.1", "companyName":"WBCSD", "companyIdentifier":"001123", "adminEmail":"admin@example.com", "adminName":"John Doe"}' | jq`,
+                      }}
+                    />
+                  </div>
                 </Box>
+                {selectedTest.apiResponse && (
+                  <Box
+                    mt={"5"}
+                    style={{
+                      color: "#0A0552",
+                      background: "#fff",
+                      padding: "20px",
+                      borderRadius: "8px",
+                      border: "1px solid #EBF0F5",
+                    }}
+                  >
+                    <div
+                      style={{
+                        maxHeight: 300,
+                        overflowY: "auto",
+                      }}
+                    >
+                      <Text
+                        size="2"
+                        mb="4"
+                        dangerouslySetInnerHTML={{
+                          __html: selectedTest.apiResponse ?? "",
+                        }}
+                      />
+                    </div>
+                  </Box>
+                )}
               </Box>
-            )}
-          </div>
-        </main>
+            </div>
+          )}
+        </>
       )}
     </>
   );

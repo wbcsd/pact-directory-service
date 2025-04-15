@@ -320,6 +320,11 @@ tbody tr {
   font-weight: bold;
   cursor: pointer;
 }
+.test-details-container {
+  border-left: 1px solid #ececf0;
+  background: #f9f9fb;
+}
+
 @media (max-width: 768px) {
   .container {
     flex-direction: column;

@@ -8,29 +8,30 @@ const SideNav: React.FC = () => {
       <div className="nav-group">
         <div className="nav-title">Services</div>
         <nav>
-          <a className="active" href="#">
-            Conformance Testing
-          </a>
-          <a href="#">Identity Management</a>
-          <a href="#">...</a>
-          <NavLink to="/my-profile">
-            <Text>My Profile</Text>
+          <NavLink to="/conformance-test-runs">
+            <Text>Conformance Testing</Text>
           </NavLink>
-          <NavLink to="/search" style={{ textDecoration: "none" }}>
+          <a href="#">Identity Management</a>
+          <NavLink
+            to="/search"
+            style={{ textDecoration: "none", paddingLeft: "2em" }}
+          >
             <Text>Search</Text>
           </NavLink>
-          <NavLink to="/manage-connections" style={{ textDecoration: "none" }}>
+          <NavLink
+            to="/manage-connections"
+            style={{ textDecoration: "none", paddingLeft: "2em" }}
+          >
             <Text>Manage Connections</Text>
-          </NavLink>
-          <NavLink to="/conformance-testing" style={{ textDecoration: "none" }}>
-            <Text>Conformance Testing</Text>
           </NavLink>
         </nav>
       </div>
       <div className="nav-group">
         <div className="nav-title">Settings</div>
         <nav>
-          <a href="#">Profile</a>
+          <NavLink to="/my-profile">
+            <Text>Profile</Text>
+          </NavLink>
         </nav>
       </div>
     </>
