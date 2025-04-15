@@ -14,7 +14,6 @@ import ManageConnections from "./pages/ManageConnections";
 import ConformanceTesting from "./pages/ConformanceTesting";
 import ConformanceTestResult from "./pages/ConformanceTestResult";
 import pactLogo from "./assets/pact-logo.svg";
-import { Box } from "@radix-ui/themes";
 import { ConformanceTestingProvider } from "./components/ConformanceTesting";
 import ConformanceTestRuns from "./pages/ConformanceTestRuns";
 
@@ -22,21 +21,15 @@ const App: React.FC = () => {
   return (
     <Router>
       <ConformanceTestingProvider>
-        <Box
-          style={{
-            paddingLeft: "35px",
-            height: "88px",
-            flexDirection: "column",
-            justifyContent: "center",
-            display: "flex",
-            borderBottom: "1px solid #d9d9d9",
-            width: "100%",
-            maxWidth: "100%",
-          }}
-        >
-          <img width={96} src={pactLogo} alt="Pact Logo" />
-        </Box>
-        <div style={{ padding: "20px" }}>
+        <div className="top-bar">
+          <div className="logo">
+            <img width={96} src={pactLogo} alt="Pact Logo" />
+          </div>
+          <div className="search-bar">
+            <input type="text" placeholder="Search companies... ⌘K" />
+          </div>
+        </div>
+        <div className="container">
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />

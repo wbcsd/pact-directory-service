@@ -13,7 +13,7 @@ import {
 } from "@radix-ui/themes";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import SideNav from "../components/SideNav";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useConformanceTesting } from "../components/ConformanceTesting";
 import { proxyWithAuth } from "../utils/auth-fetch";
 
@@ -96,6 +96,9 @@ const pollTestResults = (
 
 const ConformanceTestResult: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const testRunId = searchParams.get("testRunId");
+
   const [selectedTest, setSelectedTest] = useState<{
     name: string;
     errorMessage: string;
@@ -108,19 +111,46 @@ const ConformanceTestResult: React.FC = () => {
     useConformanceTesting();
 
   const [testCases, setTestCases] = useState<TestCase[]>([]);
-
   const [passingPercentage, setPassingPercentage] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
     const isCancelled = () => cancelled;
 
-    if (!apiUrl || !clientId || !clientSecret || !version) {
-      navigate("/conformance-testing");
-      return;
-    }
+    const fetchTestResults = async (id: string) => {
+      try {
+        const response = await proxyWithAuth(`/test-results?testRunId=${id}`);
 
-    const fetchTestResponse = async () => {
+        if (!response || !response.ok) {
+          throw new Error("Failed to fetch test results");
+        }
+
+        const data = await response.json();
+
+        if (data.error) {
+          setError(data.error);
+          setIsLoading(false);
+          return;
+        }
+
+        setTestCases(data.results.map(mapTestCases));
+        setPassingPercentage(data.passingPercentage);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching test results:", error);
+        setError(
+          "An unexpected error occurred while fetching test results. Please try again."
+        );
+        setIsLoading(false);
+      }
+    };
+
+    const runNewTest = async () => {
+      if (!apiUrl || !clientId || !clientSecret || !version) {
+        navigate("/conformance-testing");
+        return;
+      }
+
       try {
         const response = await proxyWithAuth(`/test`, {
           method: "POST",
@@ -149,6 +179,11 @@ const ConformanceTestResult: React.FC = () => {
         setPassingPercentage(data.passingPercentage);
         setIsLoading(false);
 
+        // Update URL with the test run ID without reloading the page
+        navigate(`/conformance-test-result?testRunId=${data.testRunId}`, {
+          replace: true,
+        });
+
         pollTestResults(1, setTestCases, data.testRunId, isCancelled);
       } catch (error) {
         console.error("Error fetching test response:", error);
@@ -159,12 +194,25 @@ const ConformanceTestResult: React.FC = () => {
       }
     };
 
-    fetchTestResponse();
+    // Check if we have a testRunId in the URL
+    if (testRunId) {
+      fetchTestResults(testRunId);
+    } else {
+      runNewTest();
+    }
 
     return () => {
       cancelled = true;
     };
-  }, [clientId, clientSecret, apiUrl, authBaseUrl, version, navigate]);
+  }, [
+    testRunId,
+    clientId,
+    clientSecret,
+    apiUrl,
+    authBaseUrl,
+    version,
+    navigate,
+  ]);
 
   return (
     <Flex gap="5" justify="center">
