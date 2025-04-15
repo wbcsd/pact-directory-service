@@ -280,7 +280,15 @@ const ConformanceTestResult: React.FC = () => {
                   {testCases.sort(sortTestCases).map((test) => (
                     <tr key={test.testKey}>
                       <td
-                        onClick={() => setSelectedTest(test)}
+                        onClick={() => {
+                          setSelectedTest(test);
+                          setTimeout(() => {
+                            window.scrollTo({
+                              top: 0,
+                              behavior: "smooth",
+                            });
+                          }, 0);
+                        }}
                         style={{
                           cursor: "pointer",
                           textDecoration: "underline",
