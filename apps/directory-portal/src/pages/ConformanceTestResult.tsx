@@ -57,7 +57,7 @@ const getStatusText = (testCase: TestCase) => {
 
 const mapTestCases = (test: { status: string; mandatory: boolean }) => ({
   ...test,
-  mandatory: test.mandatory ? "YES" : "NO",
+  mandatory: test.mandatory ? "Yes" : "No",
 });
 
 const sortTestCases = (a: TestCase, b: TestCase) => {
@@ -215,6 +215,7 @@ const ConformanceTestResult: React.FC = () => {
   return (
     <>
       <aside className="sidebar">
+        <div className="marker-divider"></div>
         <SideNav />
       </aside>
       {isLoading ? (
@@ -261,13 +262,88 @@ const ConformanceTestResult: React.FC = () => {
               <div>
                 <h2>Conformance Test Result</h2>
                 <p style={{ color: "#888", fontSize: "0.875rem" }}>
-                  {passingPercentage}% Mandatory Tests Pass
+                  Review the test cases that were executed against your API
                 </p>
               </div>
               <Button onClick={() => navigate("/conformance-testing")}>
                 Retest Conformance
               </Button>
             </div>
+
+            {/* Test Summary Cards */}
+            <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
+              <Box
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  padding: "20px",
+                  borderRadius: "8px",
+                  border: "1px solid #EBF0F5",
+                  backgroundColor: "#fff",
+                }}
+              >
+                <Box width={"80%"}>
+                  <Text size="2" style={{ color: "#888" }}>
+                    Mandatory Tests
+                  </Text>
+                  <Heading as="h3" style={{ color: "#000080" }}>
+                    {passingPercentage}%
+                  </Heading>
+                </Box>
+                <Box
+                  style={{
+                    textAlign: "right",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <Badge
+                    color={passingPercentage === 100 ? "green" : "red"}
+                    style={{ fontWeight: "normal", fontSize: "14px" }}
+                  >
+                    {passingPercentage === 100 ? "Passed" : "Failed"}
+                  </Badge>
+                </Box>
+              </Box>
+              <Box
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  padding: "20px",
+                  borderRadius: "8px",
+                  border: "1px solid #EBF0F5",
+                  backgroundColor: "#fff",
+                }}
+              >
+                <Box width={"80%"}>
+                  <Text size="2" style={{ color: "#888" }}>
+                    Optional Tests
+                  </Text>
+                  <Heading as="h3" style={{ color: "#000080" }}>
+                    0%
+                  </Heading>
+                </Box>
+                <Box
+                  style={{
+                    textAlign: "right",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <Badge
+                    color={"red"}
+                    style={{ fontWeight: "normal", fontSize: "14px" }}
+                  >
+                    Failed
+                  </Badge>
+                </Box>
+              </Box>
+            </div>
+
             <div className="table-container">
               <table className="test-runs-table">
                 <thead>

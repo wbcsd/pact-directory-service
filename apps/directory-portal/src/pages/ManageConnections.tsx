@@ -113,6 +113,7 @@ const ManageConnections: React.FC = () => {
       </AlertDialog.Root>
 
       <aside className="sidebar">
+        <div className="marker-divider"></div>
         <SideNav />
       </aside>
       <main className="main">

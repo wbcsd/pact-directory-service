@@ -88,6 +88,7 @@ const ConformanceTestRuns: React.FC = () => {
   return (
     <>
       <aside className="sidebar">
+        <div className="marker-divider"></div>
         <SideNav />
       </aside>
       {isLoading ? (

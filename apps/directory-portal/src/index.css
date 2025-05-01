@@ -2,7 +2,7 @@
   --base-color-brand--light-blue: #3c3c68;
   --base-color-brand--light-grey: #8a8a8a;
   --base-color-brand--disabled-grey: #d4d4d4;
-  --base-color-brand--blue: #09094e;
+  --base-color-brand--blue: #0a0552;
 }
 
 body {
@@ -140,8 +140,8 @@ button.rt-Button:disabled {
 
 button.rt-Button {
   background-color: var(--base-color-brand--blue);
-  padding: 20px;
-  min-height: 55px;
+  padding: 8px 12px;
+  min-height: 40px;
   cursor: pointer;
 }
 
@@ -223,6 +223,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  position: relative;
 }
 .nav-group {
   display: flex;
@@ -250,7 +251,7 @@ body {
 .main {
   flex: 1;
   padding: 2rem 3rem;
-  background: #f9f9fb;
+  background: #fcfdff;
 }
 .header {
   display: flex;
@@ -264,7 +265,7 @@ body {
 }
 .btn {
   padding: 0.5rem 1rem;
-  background: #100f44;
+  background: var(--base-color-brand--blue);
   color: white;
   border: none;
   cursor: pointer;
@@ -281,10 +282,14 @@ table {
   border-collapse: collapse;
 }
 thead {
-  background: #100f44;
+  background: var(--base-color-brand--blue);
   color: white;
 }
-th,
+th {
+  padding: 0.5rem 1rem;
+  text-align: left;
+  font-size: 0.875rem;
+}
 td {
   padding: 1rem;
   text-align: left;
@@ -323,6 +328,16 @@ tbody tr {
 .test-details-container {
   border-left: 1px solid #ececf0;
   background: #f9f9fb;
+}
+.marker-divider {
+  width: 8px;
+  height: 8px;
+  background-color: #ebf0f5;
+  transform: rotate(45deg);
+  position: absolute;
+  right: -4px;
+  top: -4px;
+  z-index: 999999;
 }
 
 @media (max-width: 768px) {

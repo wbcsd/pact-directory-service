@@ -60,6 +60,7 @@ const SearchPage: React.FC = () => {
   return (
     <>
       <aside className="sidebar">
+        <div className="marker-divider"></div>
         <SideNav />
       </aside>
       <main className="main">
