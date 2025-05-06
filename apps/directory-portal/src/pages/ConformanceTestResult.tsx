@@ -1,18 +1,11 @@
 import React, { useState, useEffect } from "react";
-import {
-  Heading,
-  Text,
-  Button,
-  Box,
-  Badge,
-  Spinner,
-  Callout,
-} from "@radix-ui/themes";
+import { Heading, Text, Button, Box, Badge, Callout } from "@radix-ui/themes";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import SideNav from "../components/SideNav";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useConformanceTesting } from "../components/ConformanceTesting";
 import { proxyWithAuth } from "../utils/auth-fetch";
+import Spinner from "../components/LoadingSpinner";
 
 export interface TestCase {
   name: string;
@@ -20,6 +13,7 @@ export interface TestCase {
   mandatory: string;
   errorMessage: string;
   apiResponse?: string;
+  curlRequest?: string;
   testKey: string;
 }
 
@@ -96,12 +90,7 @@ const ConformanceTestResult: React.FC = () => {
   const [searchParams] = useSearchParams();
   const testRunId = searchParams.get("testRunId");
 
-  const [selectedTest, setSelectedTest] = useState<{
-    name: string;
-    errorMessage: string;
-    apiResponse?: string;
-    curlRequest?: string;
-  } | null>(null);
+  const [selectedTest, setSelectedTest] = useState<TestCase | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -222,11 +211,13 @@ const ConformanceTestResult: React.FC = () => {
         <Box
           style={{
             padding: "20px",
-            maxWidth: "800px",
-            width: "800px",
+            verticalAlign: "middle",
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
           }}
         >
-          <Spinner size="3" />
+          <Spinner />
         </Box>
       ) : error ? (
         <Box
@@ -396,9 +387,21 @@ const ConformanceTestResult: React.FC = () => {
                   overflowY: "auto",
                 }}
               >
-                <Heading as="h2" size="4" mb="2">
-                  {selectedTest.name}
-                </Heading>
+                <Box
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "12px",
+                  }}
+                >
+                  <Heading as="h2" size="4">
+                    {selectedTest.name}
+                  </Heading>
+                  <Badge color={getStatusColor(selectedTest)}>
+                    {getStatusText(selectedTest)}
+                  </Badge>
+                </Box>
                 <Text
                   size="2"
                   mb="4"
