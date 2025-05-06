@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Box, Button, Spinner } from "@radix-ui/themes";
+import { Box, Button } from "@radix-ui/themes";
 import SideNav from "../components/SideNav";
 import { fetchWithAuth } from "../utils/auth-fetch";
+import Spinner from "../components/LoadingSpinner";
 
 const RequestStatus = {
   PENDING: "pending",
@@ -113,11 +114,13 @@ const CompanyProfile: React.FC = () => {
         <Box
           style={{
             padding: "20px",
-            maxWidth: "800px",
-            width: "800px",
+            verticalAlign: "middle",
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
           }}
         >
-          <Spinner size="3" />
+          <Spinner />
         </Box>
       ) : (
         <main className="main">

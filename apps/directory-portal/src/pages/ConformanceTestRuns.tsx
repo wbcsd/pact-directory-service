@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Text, Button, Box, Spinner, Callout } from "@radix-ui/themes";
+import { Text, Button, Box, Callout } from "@radix-ui/themes";
 import { ExclamationTriangleIcon, CalendarIcon } from "@radix-ui/react-icons";
 import { useNavigate, NavLink } from "react-router-dom";
 import SideNav from "../components/SideNav";
 import StatusBadge from "../components/StatusBadge";
 import { proxyWithAuth } from "../utils/auth-fetch";
+import Spinner from "../components/LoadingSpinner";
 
 interface TestRun {
   testId: string;
@@ -95,11 +96,13 @@ const ConformanceTestRuns: React.FC = () => {
         <Box
           style={{
             padding: "20px",
-            maxWidth: "800px",
-            width: "800px",
+            verticalAlign: "middle",
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
           }}
         >
-          <Spinner size="3" />
+          <Spinner />
         </Box>
       ) : error ? (
         <Box

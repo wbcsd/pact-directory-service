@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Box, Flex, Spinner } from "@radix-ui/themes";
+import { Box, Flex } from "@radix-ui/themes";
 import { useNavigate } from "react-router-dom";
 import SideNav from "../components/SideNav";
 import { fetchWithAuth } from "../utils/auth-fetch";
+import Spinner from "../components/LoadingSpinner";
 
 const MyProfile: React.FC = () => {
   const navigate = useNavigate();
@@ -63,11 +64,13 @@ const MyProfile: React.FC = () => {
         <Box
           style={{
             padding: "20px",
-            maxWidth: "800px",
-            width: "800px",
+            verticalAlign: "middle",
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
           }}
         >
-          <Spinner size="3" />
+          <Spinner />
         </Box>
       ) : (
         <main className="main">
