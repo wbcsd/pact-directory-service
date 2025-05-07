@@ -6,6 +6,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useConformanceTesting } from "../components/ConformanceTesting";
 import { proxyWithAuth } from "../utils/auth-fetch";
 import Spinner from "../components/LoadingSpinner";
+import CodeIcon from "../components/CodeIcon";
 
 export interface TestCase {
   name: string;
@@ -86,19 +87,17 @@ const pollTestResults = (
 };
 
 const ConformanceTestResult: React.FC = () => {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const testRunId = searchParams.get("testRunId");
-
   const [selectedTest, setSelectedTest] = useState<TestCase | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const { apiUrl, authBaseUrl, clientId, clientSecret, version } =
-    useConformanceTesting();
-
   const [testCases, setTestCases] = useState<TestCase[]>([]);
   const [passingPercentage, setPassingPercentage] = useState(0);
+
+  const navigate = useNavigate();
+  const { apiUrl, authBaseUrl, clientId, clientSecret, version } =
+    useConformanceTesting();
+  const testRunId = searchParams.get("testRunId");
 
   useEffect(() => {
     let cancelled = false;
@@ -201,6 +200,15 @@ const ConformanceTestResult: React.FC = () => {
     navigate,
   ]);
 
+  const selectTestAndScroll = (test: TestCase) => {
+    setSelectedTest(test);
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }, 0);
+  };
   return (
     <>
       <aside className="sidebar">
@@ -251,13 +259,24 @@ const ConformanceTestResult: React.FC = () => {
           >
             <div className="header">
               <div>
-                <h2>Conformance Test Result</h2>
+                <h2>
+                  ID {testRunId}{" "}
+                  <Badge
+                    style={{
+                      verticalAlign: "middle",
+                      color: "#84A0FF",
+                      marginLeft: "10px",
+                    }}
+                  >
+                    Conformant {version}
+                  </Badge>
+                </h2>
                 <p style={{ color: "#888", fontSize: "0.875rem" }}>
                   Review the test cases that were executed against your API
                 </p>
               </div>
               <Button onClick={() => navigate("/conformance-testing")}>
-                Retest Conformance
+                Re-test Conformance
               </Button>
             </div>
 
@@ -340,36 +359,57 @@ const ConformanceTestResult: React.FC = () => {
                 <thead>
                   <tr>
                     <th style={{ width: "60%" }}>Test Case</th>
-                    <th>Status</th>
-                    <th>Mandatory Test?</th>
+                    {!selectedTest && (
+                      <>
+                        <th>Status</th>
+                        <th>Mandatory Test?</th>
+                        <th></th>
+                      </>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
                   {testCases.sort(sortTestCases).map((test) => (
                     <tr key={test.testKey}>
                       <td
-                        onClick={() => {
-                          setSelectedTest(test);
-                          setTimeout(() => {
-                            window.scrollTo({
-                              top: 0,
-                              behavior: "smooth",
-                            });
-                          }, 0);
-                        }}
+                        onClick={() => selectTestAndScroll(test)}
                         style={{
                           cursor: "pointer",
                           textDecoration: "underline",
+                          backgroundColor:
+                            selectedTest &&
+                            selectedTest.testKey === test.testKey
+                              ? "#F6F9FF"
+                              : "transparent",
                         }}
                       >
                         {test.name}
                       </td>
-                      <td>
-                        <Badge color={getStatusColor(test)}>
-                          {getStatusText(test)}
-                        </Badge>
-                      </td>
-                      <td>{test.mandatory}</td>
+                      {!selectedTest && (
+                        <>
+                          <td>
+                            <Badge color={getStatusColor(test)}>
+                              {getStatusText(test)}
+                            </Badge>
+                          </td>
+                          <td>{test.mandatory}</td>
+                          <td style={{ textAlign: "right" }}>
+                            <Button
+                              onClick={() => selectTestAndScroll(test)}
+                              style={{
+                                background: "transparent",
+                                color: "#0A0552",
+                                border: "1px solid #EBF0F5",
+                                padding: "8px 12px",
+                                minHeight: "0",
+                              }}
+                            >
+                              <CodeIcon />
+                              Details
+                            </Button>
+                          </td>
+                        </>
+                      )}
                     </tr>
                   ))}
                 </tbody>
