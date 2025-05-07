@@ -217,7 +217,7 @@ const ConformanceTestResult: React.FC = () => {
             justifyContent: "center",
           }}
         >
-          <Spinner />
+          <Spinner loadingText="Tests in progress ..." />
         </Box>
       ) : error ? (
         <Box

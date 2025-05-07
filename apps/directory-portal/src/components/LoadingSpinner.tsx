@@ -1,12 +1,18 @@
 import React from "react";
 
-const Spinner = (): React.ReactElement => {
+interface SpinnerProps {
+  loadingText?: string;
+}
+
+const Spinner = ({
+  loadingText = "Loading data...",
+}: SpinnerProps): React.ReactElement => {
   return (
     <div style={styles.container}>
       <div style={styles.spinnerContainer}>
         <div style={styles.spinnerBar} className="spinner-bar"></div>
       </div>
-      <div style={styles.text}>Tests in progress...</div>
+      <div style={styles.text}>{loadingText}</div>
     </div>
   );
 };
