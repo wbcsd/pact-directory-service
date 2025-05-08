@@ -280,7 +280,6 @@ const ConformanceTestResult: React.FC = () => {
               </Button>
             </div>
 
-            {/* Test Summary Cards */}
             <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
               <Box
                 style={{

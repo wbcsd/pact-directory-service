@@ -135,7 +135,7 @@ const ConformanceTestRuns: React.FC = () => {
               </p>
             </div>
             <Button onClick={() => navigate("/conformance-testing")}>
-              Run New Test
+              Run Tests
             </Button>
           </div>
           <div className="table-container">

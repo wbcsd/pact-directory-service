@@ -377,3 +377,24 @@ tbody tr {
 .spinner-bar {
   animation: slide 1.5s infinite ease-in-out;
 }
+
+.rt-TextFieldRoot input.rt-TextFieldInput {
+  padding: 0;
+}
+
+.rt-TextFieldRoot {
+  box-shadow: none !important;
+}
+
+form {
+  @supports selector(:has(*)) {
+    .rt-TextFieldRoot:where(:has(.rt-TextFieldInput:focus)) {
+      outline: 2px solid var(--base-color-brand--blue);
+      outline-offset: -1px;
+    }
+  }
+
+  input.rt-TextFieldInput::placeholder {
+    color: #9d9db8;
+  }
+}
