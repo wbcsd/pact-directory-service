@@ -100,12 +100,20 @@ const SignupPage: React.FC = () => {
             height: "100%",
             backgroundImage: `url(${HeroImage})`,
             backgroundPosition: "bottom",
-            backgroundSize: "150% auto",
+            backgroundSize: "290% auto",
             backgroundRepeat: "no-repeat",
             textAlign: "center",
           }}
         >
-          <h2 style={{ color: "#FFFFFF", width: "300px" }}>
+          <h2
+            style={{
+              color: "#FFFFFF",
+              width: "360px",
+              margin: "0 auto",
+              marginTop: "200px",
+              fontSize: "1.8em",
+            }}
+          >
             Helping you adopt PACT standards with ease
           </h2>
         </Box>
