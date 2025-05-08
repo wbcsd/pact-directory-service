@@ -80,7 +80,7 @@ const LoginPage: React.FC = () => {
               fontSize: "1.8em",
             }}
           >
-            Welcome Back to PACT Network
+            Helping you adopt PACT standards with ease
           </h2>
         </Box>
         <Box
