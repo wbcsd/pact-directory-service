@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Text, Button, Box, Callout } from "@radix-ui/themes";
+import { Button, Box, Callout } from "@radix-ui/themes";
 import { ExclamationTriangleIcon, CalendarIcon } from "@radix-ui/react-icons";
 import { useNavigate, NavLink } from "react-router-dom";
 import SideNav from "../components/SideNav";
 import StatusBadge from "../components/StatusBadge";
 import { proxyWithAuth } from "../utils/auth-fetch";
 import Spinner from "../components/LoadingSpinner";
+import EmptyImage from "../assets/pact-logistics-center-8.png";
 
 interface TestRun {
   testId: string;
@@ -127,60 +128,87 @@ const ConformanceTestRuns: React.FC = () => {
         </Box>
       ) : (
         <main className="main">
-          <div className="header">
-            <div>
-              <h2>Overview</h2>
-              <p style={{ color: "#888", fontSize: "0.875rem" }}>
-                Showing runs from all conformance tests
+          {testRuns.length === 0 ? (
+            <div
+              style={{
+                textAlign: "center",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+              }}
+            >
+              <img src={EmptyImage}></img>
+              <h2>You currently have no tests</h2>
+              <p
+                style={{
+                  color: "#9D9DB8",
+                  fontSize: "0.875rem",
+                  marginTop: "10px",
+                  marginBottom: "20px",
+                }}
+              >
+                Start automated testing to ensure a PACT conformant solution
               </p>
+              <Button onClick={() => navigate("/conformance-testing")}>
+                Run Tests
+              </Button>
             </div>
-            <Button onClick={() => navigate("/conformance-testing")}>
-              Run Tests
-            </Button>
-          </div>
-          <div className="table-container">
-            {testRuns.length === 0 ? (
-              <Text size="2">No test runs found.</Text>
-            ) : (
-              <table className="test-runs-table">
-                <thead>
-                  <tr>
-                    <th>Test identifier</th>
-                    <th>Status</th>
-                    <th>Version</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {testRuns.map((run) => (
-                    <tr key={run.testId}>
-                      <td>
-                        <NavLink
-                          to={`/conformance-test-result?testRunId=${run.testId}`}
-                          style={{ color: "#0066cc", textDecoration: "none" }}
-                        >
-                          {run.testId}
-                        </NavLink>
-                      </td>
-                      <td>
-                        <StatusBadge status={run.status} />
-                      </td>
-                      <td>{run.techSpecVersion}</td>
-                      <td>
-                        <CalendarIcon
-                          style={{
-                            marginRight: "3px",
-                            verticalAlign: "middle",
-                          }}
-                        />
-                        <span>{getTimeAgo(run.timestamp)}</span>
-                      </td>
+          ) : (
+            <>
+              <div className="header">
+                <div>
+                  <h2>Overview</h2>
+                  <p style={{ color: "#888", fontSize: "0.875rem" }}>
+                    Showing runs from all conformance tests
+                  </p>
+                </div>
+                <Button onClick={() => navigate("/conformance-testing")}>
+                  Run Tests
+                </Button>
+              </div>
+              <div className="table-container">
+                <table className="test-runs-table">
+                  <thead>
+                    <tr>
+                      <th>Test identifier</th>
+                      <th>Status</th>
+                      <th>Version</th>
+                      <th></th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
+                  </thead>
+                  <tbody>
+                    {testRuns.map((run) => (
+                      <tr key={run.testId}>
+                        <td>
+                          <NavLink
+                            to={`/conformance-test-result?testRunId=${run.testId}`}
+                            style={{ color: "#0066cc", textDecoration: "none" }}
+                          >
+                            {run.testId}
+                          </NavLink>
+                        </td>
+                        <td>
+                          <StatusBadge status={run.status} />
+                        </td>
+                        <td>{run.techSpecVersion}</td>
+                        <td>
+                          <CalendarIcon
+                            style={{
+                              marginRight: "3px",
+                              verticalAlign: "middle",
+                            }}
+                          />
+                          <span>{getTimeAgo(run.timestamp)}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
         </main>
       )}
     </>
