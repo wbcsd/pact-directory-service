@@ -100,7 +100,7 @@ const SignupPage: React.FC = () => {
             height: "100%",
             backgroundImage: `url(${HeroImage})`,
             backgroundPosition: "bottom",
-            backgroundSize: "290% auto",
+            backgroundSize: "180% auto",
             backgroundRepeat: "no-repeat",
             textAlign: "center",
           }}
@@ -190,128 +190,6 @@ const SignupPage: React.FC = () => {
                   }}
                 >
                   Company name is required.
-                </Form.Message>
-              </Form.Field>
-
-              <Form.Field name="companyIdentifier">
-                <Form.Label
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    fontWeight: "500",
-                  }}
-                >
-                  Company Identifier<span style={{ color: "red" }}>*</span>
-                </Form.Label>
-                <Form.Control asChild>
-                  <TextField.Root
-                    value={formData.companyIdentifier}
-                    required
-                    placeholder="Enter company identifier"
-                    onChange={handleChange}
-                    style={{
-                      width: "100%",
-                      border: "1px solid #ccc",
-                      padding: "12px",
-                      fontSize: "16px",
-                    }}
-                  >
-                    <TextField.Slot side="right">
-                      <Tooltip.Provider delayDuration={0}>
-                        <Tooltip.Root>
-                          <Tooltip.Trigger asChild>
-                            <InfoCircledIcon
-                              width={20}
-                              height={20}
-                              color="#0A0552"
-                              style={{ cursor: "pointer" }}
-                            />
-                          </Tooltip.Trigger>
-                          <Tooltip.Content
-                            className="TooltipContent"
-                            side="right"
-                            align="center"
-                            sideOffset={5}
-                          >
-                            Any unique identifier your company uses, which other
-                            organizations can use to identify your company on
-                            the PACT Network (i.e. DUNS, LEI, GLN, etc.)
-                          </Tooltip.Content>
-                        </Tooltip.Root>
-                      </Tooltip.Provider>
-                    </TextField.Slot>
-                  </TextField.Root>
-                </Form.Control>
-                <Form.Message
-                  match="valueMissing"
-                  style={{
-                    color: "var(--base-color-brand--light-blue)",
-                    fontSize: "0.85em",
-                  }}
-                >
-                  Company identifier is required.
-                </Form.Message>
-              </Form.Field>
-
-              <Form.Field name="companyIdentifierDescription">
-                <Form.Label
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    fontWeight: "500",
-                  }}
-                >
-                  Company Identifier Description
-                  <span style={{ color: "red" }}>*</span>
-                </Form.Label>
-                <Form.Control asChild>
-                  <TextField.Root
-                    value={formData.companyIdentifierDescription}
-                    required
-                    placeholder="Enter company identifier description"
-                    onChange={handleChange}
-                    style={{
-                      width: "100%",
-                      border: "1px solid #ccc",
-                      padding: "12px",
-                      fontSize: "16px",
-                    }}
-                  >
-                    <TextField.Slot side="right">
-                      <Tooltip.Provider delayDuration={0}>
-                        <Tooltip.Root>
-                          <Tooltip.Trigger asChild>
-                            <InfoCircledIcon
-                              width={20}
-                              height={20}
-                              color="#0A0552"
-                              style={{ cursor: "pointer" }}
-                            />
-                          </Tooltip.Trigger>
-                          <Tooltip.Content
-                            className="TooltipContent"
-                            side="right"
-                            align="center"
-                            sideOffset={5}
-                          >
-                            Name of the organization which issued the company
-                            identifier you listed above, and/or the name of the
-                            identifier (i.e. Dun & Bradstreet DUNS, GLEIF LEI,
-                            GS1 GLN, etc.)
-                          </Tooltip.Content>
-                        </Tooltip.Root>
-                      </Tooltip.Provider>
-                    </TextField.Slot>
-                  </TextField.Root>
-                </Form.Control>
-                <Form.Message
-                  match="valueMissing"
-                  style={{
-                    color: "var(--base-color-brand--light-blue)",
-                    fontSize: "0.85em",
-                  }}
-                >
-                  Company identifier description is required.
                 </Form.Message>
               </Form.Field>
 
@@ -577,66 +455,6 @@ const SignupPage: React.FC = () => {
                   }}
                 >
                   Passwords do not match.
-                </Form.Message>
-              </Form.Field>
-
-              <Form.Field name="solutionApiUrl">
-                <Form.Label
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    fontWeight: "500",
-                  }}
-                >
-                  Solution API URL<span style={{ color: "red" }}>*</span>
-                </Form.Label>
-                <Form.Control asChild>
-                  <TextField.Root
-                    value={formData.solutionApiUrl}
-                    required
-                    placeholder="Enter your solution API URL"
-                    onChange={handleChange}
-                    style={{
-                      width: "100%",
-                      border: "1px solid #ccc",
-                      padding: "12px",
-                      fontSize: "16px",
-                    }}
-                  >
-                    <TextField.Slot side="right">
-                      <Tooltip.Provider delayDuration={0}>
-                        <Tooltip.Root>
-                          <Tooltip.Trigger asChild>
-                            <InfoCircledIcon
-                              width={20}
-                              height={20}
-                              color="#0A0552"
-                              style={{ cursor: "pointer" }}
-                            />
-                          </Tooltip.Trigger>
-                          <Tooltip.Content
-                            className="TooltipContent"
-                            side="right"
-                            align="center"
-                            sideOffset={5}
-                          >
-                            The URL of your PACT Conformant Solution's API
-                            (non-prod environment). Ask your solution provider
-                            if you need help finding this.
-                          </Tooltip.Content>
-                        </Tooltip.Root>
-                      </Tooltip.Provider>
-                    </TextField.Slot>
-                  </TextField.Root>
-                </Form.Control>
-                <Form.Message
-                  match="valueMissing"
-                  style={{
-                    color: "var(--base-color-brand--light-blue)",
-                    fontSize: "0.85em",
-                  }}
-                >
-                  Solution API URL is required.
                 </Form.Message>
               </Form.Field>
 
