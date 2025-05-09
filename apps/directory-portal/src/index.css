@@ -398,3 +398,13 @@ form {
     color: #9d9db8;
   }
 }
+
+.auth-link,
+.auth-link a {
+  color: var(--base-color-brand--blue);
+
+  a {
+    text-decoration: none;
+    font-weight: bold;
+  }
+}

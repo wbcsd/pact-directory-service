@@ -16,6 +16,7 @@ import ConformanceTestResult from "./pages/ConformanceTestResult";
 import pactLogo from "./assets/pact-logo.svg";
 import { ConformanceTestingProvider } from "./components/ConformanceTesting";
 import ConformanceTestRuns from "./pages/ConformanceTestRuns";
+import SignUp from "./components/SignUp";
 
 const App: React.FC = () => {
   return (
@@ -23,9 +24,11 @@ const App: React.FC = () => {
       <ConformanceTestingProvider>
         <div className="top-bar">
           <div className="logo">
-            <img width={96} src={pactLogo} alt="Pact Logo" />
+            <img width={153} src={pactLogo} alt="Pact Logo" />
           </div>
-          <div className="search-bar"></div>
+          <div className="search-bar">
+            <SignUp />
+          </div>
         </div>
         <div className="container">
           <Routes>
