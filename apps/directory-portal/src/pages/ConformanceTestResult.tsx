@@ -93,6 +93,7 @@ const ConformanceTestResult: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [testCases, setTestCases] = useState<TestCase[]>([]);
   const [passingPercentage, setPassingPercentage] = useState(0);
+  const [isNewTestRun, setIsNewTestRun] = useState(false);
 
   const navigate = useNavigate();
   const { apiUrl, authBaseUrl, clientId, clientSecret, version } =
@@ -136,6 +137,8 @@ const ConformanceTestResult: React.FC = () => {
         navigate("/conformance-testing");
         return;
       }
+
+      setIsNewTestRun(true);
 
       try {
         const response = await proxyWithAuth(`/test`, {
@@ -225,7 +228,13 @@ const ConformanceTestResult: React.FC = () => {
             justifyContent: "center",
           }}
         >
-          <Spinner loadingText="Tests in progress ..." />
+          <Spinner
+            loadingText={
+              isNewTestRun
+                ? "Tests in progress ..."
+                : "Loading test results ..."
+            }
+          />
         </Box>
       ) : error ? (
         <Box
