@@ -174,8 +174,7 @@ const SignupPage: React.FC = () => {
                             align="center"
                             sideOffset={5}
                           >
-                            Your company name as it will appear on the PACT
-                            Network (i.e. search, profile pages).
+                            The full registered/legal name of your company.
                           </Tooltip.Content>
                         </Tooltip.Root>
                       </Tooltip.Provider>
@@ -233,8 +232,8 @@ const SignupPage: React.FC = () => {
                             align="center"
                             sideOffset={5}
                           >
-                            Name of the person who will serve as account admin
-                            and point of contact for your PACT Network account.
+                            Name of the person / mailbox to serve as account
+                            admin and point of contact for your account.
                           </Tooltip.Content>
                         </Tooltip.Root>
                       </Tooltip.Provider>
@@ -294,7 +293,7 @@ const SignupPage: React.FC = () => {
                             sideOffset={5}
                           >
                             Email address of account admin, to be used to log in
-                            to PACT Network and receive notifications.
+                            and receive notifications.
                           </Tooltip.Content>
                         </Tooltip.Root>
                       </Tooltip.Provider>

@@ -196,9 +196,7 @@ body {
   align-items: center;
   gap: 0.5rem;
 }
-.logo img {
-  height: 28px;
-}
+
 .logo span {
   font-size: 1.25rem;
   font-weight: 700;

@@ -62,6 +62,7 @@ const LoginPage: React.FC = () => {
           style={{
             width: "589px",
             minWidth: "589px",
+            minHeight: "800px",
             background: "#0A0552",
             height: "100%",
             backgroundImage: `url(${HeroImage})`,
@@ -76,7 +77,7 @@ const LoginPage: React.FC = () => {
               color: "#FFFFFF",
               width: "360px",
               margin: "0 auto",
-              marginTop: "200px",
+              marginTop: "16%",
               fontSize: "1.8em",
             }}
           >
