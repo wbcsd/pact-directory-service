@@ -383,7 +383,6 @@ const ConformanceTestResult: React.FC = () => {
                         onClick={() => selectTestAndScroll(test)}
                         style={{
                           cursor: "pointer",
-                          textDecoration: "underline",
                           backgroundColor:
                             selectedTest &&
                             selectedTest.testKey === test.testKey

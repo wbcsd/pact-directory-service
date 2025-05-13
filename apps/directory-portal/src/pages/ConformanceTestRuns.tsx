@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Box, Callout } from "@radix-ui/themes";
-import { ExclamationTriangleIcon, CalendarIcon } from "@radix-ui/react-icons";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { useNavigate, NavLink } from "react-router-dom";
 import SideNav from "../components/SideNav";
 import StatusBadge from "../components/StatusBadge";
@@ -17,37 +17,16 @@ interface TestRun {
   status: "PASS" | "FAIL" | "PENDING";
 }
 
-const getTimeAgo = (timestamp: string): string => {
-  const now = new Date();
+const formatDate = (timestamp: string): string => {
   const date = new Date(timestamp);
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-  if (diffInSeconds < 60) {
-    return `${diffInSeconds} seconds ago`;
-  }
+  const month = date.toLocaleString("en-US", { month: "long" });
+  const day = date.getDate();
+  const year = date.getFullYear();
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
 
-  const diffInMinutes = Math.floor(diffInSeconds / 60);
-  if (diffInMinutes < 60) {
-    return `${diffInMinutes} minute${diffInMinutes > 1 ? "s" : ""} ago`;
-  }
-
-  const diffInHours = Math.floor(diffInMinutes / 60);
-  if (diffInHours < 24) {
-    return `${diffInHours} hour${diffInHours > 1 ? "s" : ""} ago`;
-  }
-
-  const diffInDays = Math.floor(diffInHours / 24);
-  if (diffInDays < 30) {
-    return `${diffInDays} day${diffInDays > 1 ? "s" : ""} ago`;
-  }
-
-  const diffInMonths = Math.floor(diffInDays / 30);
-  if (diffInMonths < 12) {
-    return `${diffInMonths} month${diffInMonths > 1 ? "s" : ""} ago`;
-  }
-
-  const diffInYears = Math.floor(diffInDays / 365);
-  return `${diffInYears} year${diffInYears > 1 ? "s" : ""} ago`;
+  return `${month} ${day}, ${year} ${hours}:${minutes}`;
 };
 
 const ConformanceTestRuns: React.FC = () => {
@@ -175,7 +154,7 @@ const ConformanceTestRuns: React.FC = () => {
                       <th>Test identifier</th>
                       <th>Status</th>
                       <th>Version</th>
-                      <th></th>
+                      <th>Run Date/Time CET</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -184,7 +163,6 @@ const ConformanceTestRuns: React.FC = () => {
                         <td>
                           <NavLink
                             to={`/conformance-test-result?testRunId=${run.testId}`}
-                            style={{ color: "#0066cc", textDecoration: "none" }}
                           >
                             {run.testId}
                           </NavLink>
@@ -194,13 +172,7 @@ const ConformanceTestRuns: React.FC = () => {
                         </td>
                         <td>{run.techSpecVersion}</td>
                         <td>
-                          <CalendarIcon
-                            style={{
-                              marginRight: "3px",
-                              verticalAlign: "middle",
-                            }}
-                          />
-                          <span>{getTimeAgo(run.timestamp)}</span>
+                          <span>{formatDate(run.timestamp)}</span>
                         </td>
                       </tr>
                     ))}

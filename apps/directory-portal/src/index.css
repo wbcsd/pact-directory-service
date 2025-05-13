@@ -1,3 +1,43 @@
+@font-face {
+  font-family: Axiforma;
+  src: url(/fonts/Axiforma-Light.woff2) format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Axiforma;
+  src: url(/fonts/Axiforma-SemiBold.woff2) format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Axiforma;
+  src: url(/fonts/Axiforma-Regular.woff2) format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Axiforma;
+  src: url(/fonts/Axiforma-ExtraBold.woff2) format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Axiforma;
+  src: url(/fonts/Axiforma-Bold.woff2) format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --base-color-brand--light-blue: #3c3c68;
   --base-color-brand--light-grey: #8a8a8a;
@@ -174,11 +214,14 @@ button.rt-Button {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Inter", sans-serif;
+  font-family: Axiforma, sans-serif;
 }
 body {
   background: #f9f9fb;
   color: #1a1a1a;
+}
+h2 {
+  font-family: Axiforma, sans-serif;
 }
 .top-bar {
   width: 100%;
@@ -235,6 +278,7 @@ body {
   color: #9ca3af;
   margin-bottom: 0.75rem;
   padding-left: 0.25rem;
+  font-family: "Geist Mono", monospace;
 }
 .sidebar nav a {
   display: block;
@@ -288,6 +332,7 @@ th {
   padding: 0.5rem 1rem;
   text-align: left;
   font-size: 0.875rem;
+  font-family: "Geist Mono", monospace;
 }
 td {
   padding: 1rem;
@@ -405,4 +450,9 @@ form {
     text-decoration: none;
     font-weight: bold;
   }
+}
+
+a {
+  text-decoration: none;
+  color: var(--base-color-brand--blue);
 }
