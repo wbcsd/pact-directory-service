@@ -521,8 +521,20 @@ const SignupPage: React.FC = () => {
                     fontSize: "0.90em",
                   }}
                 >
-                  By signing up you agree to our <a href="#">Terms of Use</a>{" "}
-                  and <a href="#">Privacy Policy</a>
+                  By signing up you agree to our{" "}
+                  <a
+                    style={{ fontWeight: "bold" }}
+                    href="https://www.carbon-transparency.org/pact-network-services-terms-of-use"
+                  >
+                    Terms of Use
+                  </a>{" "}
+                  and{" "}
+                  <a
+                    style={{ fontWeight: "bold" }}
+                    href="https://www.wbcsd.org/privacy-policy/"
+                  >
+                    Privacy Policy
+                  </a>
                 </Text>
               </Box>
               <Box>

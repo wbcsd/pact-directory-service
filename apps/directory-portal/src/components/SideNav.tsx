@@ -34,6 +34,17 @@ const SideNav: React.FC = () => {
           </NavLink>
         </nav>
       </div>
+
+      <div className="nav-group">
+        <p style={{ fontSize: "0.8em" }}>
+          <div className="nav-title">Support</div>
+          Need help? Contact us at:
+          <br />
+          <a style={{ fontWeight: "bold" }} href="mailto:pact-suppor@wbcsd.org">
+            pact-suppor@wbcsd.org
+          </a>
+        </p>
+      </div>
     </>
   );
 };
