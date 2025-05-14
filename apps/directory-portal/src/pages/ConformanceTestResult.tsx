@@ -269,7 +269,7 @@ const ConformanceTestResult: React.FC = () => {
             <div className="header">
               <div>
                 <h2>
-                  ID {testRunId}{" "}
+                  Test Run ID {testRunId}{" "}
                   <Badge
                     style={{
                       verticalAlign: "middle",

@@ -254,7 +254,7 @@ const ConformanceTesting: React.FC = () => {
 
           <h3 style={styles.subheading}>Solution API Base URL</h3>
           <p style={styles.paragraphText}>
-            Enter the base URL of your PACT-conformant API implementation. This
+            Enter the base URL of your PACT conformant API implementation. This
             URL will be used as the root endpoint for all API requests during
             the conformance testing process.
           </p>
@@ -274,8 +274,10 @@ const ConformanceTesting: React.FC = () => {
 
           <p style={styles.paragraphText}>
             The authentication service should support the OAuth 2.0 protocol
-            with client credentials flow as specified in the PACT Technical
-            Specifications.
+            with client credentials flow as specified in the{" "}
+            <a href="https://docs.carbon-transparency.org/">
+              PACT Technical Specifications.
+            </a>
           </p>
 
           <h3 style={styles.subheading}>Client ID</h3>
@@ -293,11 +295,15 @@ const ConformanceTesting: React.FC = () => {
             authenticated API requests during testing.
           </p>
 
-          <h3 style={styles.subheading}>PACT Technical Specifications</h3>
+          <h3 style={styles.subheading}>Tech Specs Version</h3>
           <p style={styles.paragraphText}>
-            The PACT Technical Specifications describe the PCF data model and
-            API requirements that your implementation must conform to. Select
-            the version that your solution implements.
+            The{" "}
+            <a href="https://docs.carbon-transparency.org/">
+              PACT Technical Specifications
+            </a>{" "}
+            describe the PCF data model and API requirements that your
+            implementation must conform to. Select the version that your
+            solution implements.
           </p>
         </Box>
       </div>

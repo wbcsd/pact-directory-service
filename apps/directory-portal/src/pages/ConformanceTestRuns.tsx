@@ -151,7 +151,7 @@ const ConformanceTestRuns: React.FC = () => {
                 <table className="test-runs-table">
                   <thead>
                     <tr>
-                      <th>Test identifier</th>
+                      <th>Test Run ID</th>
                       <th>Status</th>
                       <th>Version</th>
                       <th>Run Date/Time CET</th>
