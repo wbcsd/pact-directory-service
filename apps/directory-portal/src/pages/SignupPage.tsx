@@ -547,6 +547,16 @@ const SignupPage: React.FC = () => {
                     {creatingAccount ? "Creating Account" : "Join"}
                   </Button>
                 </Form.Submit>
+
+                <p style={{ fontSize: "0.9em", marginTop: "20px" }}>
+                  Need help? Contact us at:{" "}
+                  <a
+                    style={{ fontWeight: "bold" }}
+                    href="mailto:pact-support@wbcsd.org"
+                  >
+                    pact-support@wbcsd.org
+                  </a>
+                </p>
               </Box>
             </Form.Root>
             {status === "error" && (

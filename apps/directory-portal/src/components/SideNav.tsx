@@ -40,8 +40,11 @@ const SideNav: React.FC = () => {
           <div className="nav-title">Support</div>
           Need help? Contact us at:
           <br />
-          <a style={{ fontWeight: "bold" }} href="mailto:pact-suppor@wbcsd.org">
-            pact-suppor@wbcsd.org
+          <a
+            style={{ fontWeight: "bold" }}
+            href="mailto:pact-support@wbcsd.org"
+          >
+            pact-support@wbcsd.org
           </a>
         </p>
       </div>
