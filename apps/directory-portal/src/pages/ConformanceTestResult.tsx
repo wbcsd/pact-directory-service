@@ -277,7 +277,7 @@ const ConformanceTestResult: React.FC = () => {
                       marginLeft: "10px",
                     }}
                   >
-                    Conformant {version}
+                    Testing conformance to {version}
                   </Badge>
                 </h2>
                 <p style={{ color: "#888", fontSize: "0.875rem" }}>
