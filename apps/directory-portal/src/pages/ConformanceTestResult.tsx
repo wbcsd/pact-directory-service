@@ -93,6 +93,9 @@ const ConformanceTestResult: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [testCases, setTestCases] = useState<TestCase[]>([]);
   const [passingPercentage, setPassingPercentage] = useState(0);
+  const [nonMandatoryPassingPercentage, setNonMandatoryPassingPercentage] =
+    useState(0);
+  const [techSpecVersion, setTechSpecVersion] = useState("");
   const [isNewTestRun, setIsNewTestRun] = useState(false);
 
   const navigate = useNavigate();
@@ -122,6 +125,8 @@ const ConformanceTestResult: React.FC = () => {
 
         setTestCases(data.results.map(mapTestCases));
         setPassingPercentage(data.passingPercentage);
+        setNonMandatoryPassingPercentage(data.nonMandatoryPassingPercentage);
+        setTechSpecVersion(data.techSpecVersion);
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching test results:", error);
@@ -166,6 +171,8 @@ const ConformanceTestResult: React.FC = () => {
 
         setTestCases(data.results.map(mapTestCases));
         setPassingPercentage(data.passingPercentage);
+        setNonMandatoryPassingPercentage(data.nonMandatoryPassingPercentage);
+        setTechSpecVersion(data.techSpecVersion);
         setIsLoading(false);
 
         // Update URL with the test run ID without reloading the page
@@ -277,7 +284,7 @@ const ConformanceTestResult: React.FC = () => {
                       marginLeft: "10px",
                     }}
                   >
-                    Testing conformance to {version}
+                    Testing conformance to {techSpecVersion}
                   </Badge>
                 </h2>
                 <p style={{ color: "#888", fontSize: "0.875rem" }}>
@@ -341,7 +348,7 @@ const ConformanceTestResult: React.FC = () => {
                     Optional Tests
                   </Text>
                   <Heading as="h3" style={{ color: "#000080" }}>
-                    0%
+                    {nonMandatoryPassingPercentage}%
                   </Heading>
                 </Box>
                 <Box
@@ -353,10 +360,14 @@ const ConformanceTestResult: React.FC = () => {
                   }}
                 >
                   <Badge
-                    color={"red"}
+                    color={
+                      nonMandatoryPassingPercentage === 100 ? "green" : "red"
+                    }
                     style={{ fontWeight: "normal", fontSize: "14px" }}
                   >
-                    Failed
+                    {nonMandatoryPassingPercentage === 100
+                      ? "Passed"
+                      : "Failed"}
                   </Badge>
                 </Box>
               </Box>
@@ -421,6 +432,17 @@ const ConformanceTestResult: React.FC = () => {
                   ))}
                 </tbody>
               </table>
+              {testCases.length === 0 && (
+                <div
+                  style={{
+                    padding: "20px",
+                    textAlign: "center",
+                    color: "#888",
+                  }}
+                >
+                  No test cases available.
+                </div>
+              )}
             </div>
           </main>
 
