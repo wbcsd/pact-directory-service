@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Heading, Text, Button, Box, Badge, Callout } from "@radix-ui/themes";
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { ExclamationTriangleIcon, ReaderIcon } from "@radix-ui/react-icons";
 import SideNav from "../components/SideNav";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useConformanceTesting } from "../components/ConformanceTesting";
@@ -16,6 +16,7 @@ export interface TestCase {
   apiResponse?: string;
   curlRequest?: string;
   testKey: string;
+  documentationUrl?: string;
 }
 
 const getStatusColor = (testCase: TestCase) => {
@@ -471,6 +472,17 @@ const ConformanceTestResult: React.FC = () => {
                     {getStatusText(selectedTest)}
                   </Badge>
                 </Box>
+                {selectedTest.documentationUrl && (
+                  <div style={{ paddingBottom: "20px" }}>
+                    <ReaderIcon />{" "}
+                    <a
+                      style={{ textDecoration: "underline" }}
+                      href={selectedTest.documentationUrl}
+                    >
+                      View test documentation
+                    </a>
+                  </div>
+                )}
                 <Text
                   size="2"
                   mb="4"
