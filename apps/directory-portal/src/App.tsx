@@ -17,6 +17,7 @@ import pactLogo from "./assets/pact-logo.svg";
 import { ConformanceTestingProvider } from "./components/ConformanceTesting";
 import ConformanceTestRuns from "./pages/ConformanceTestRuns";
 import SignUp from "./components/SignUp";
+import { featureFlags } from "./utils/feature-flags";
 
 const App: React.FC = () => {
   return (
@@ -35,9 +36,16 @@ const App: React.FC = () => {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/my-profile" element={<MyProfile />} />
-            <Route path="/search" element={<SearchPage />} />
-            <Route path="/company/:id" element={<CompanyProfile />} />
-            <Route path="/manage-connections" element={<ManageConnections />} />
+            {featureFlags.enableIdentityManagement && (
+              <>
+                <Route path="/search" element={<SearchPage />} />
+                <Route path="/company/:id" element={<CompanyProfile />} />
+                <Route
+                  path="/manage-connections"
+                  element={<ManageConnections />}
+                />
+              </>
+            )}
             <Route
               path="/conformance-testing"
               element={<ConformanceTesting />}

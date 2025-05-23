@@ -68,7 +68,7 @@ const SignupPage: React.FC = () => {
 
         setStatus("success");
 
-        navigate("/my-profile");
+        navigate("/conformance-test-runs");
       } else {
         const errorResponse = await response.json();
 

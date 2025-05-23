@@ -40,7 +40,7 @@ const LoginPage: React.FC = () => {
 
         if (token) {
           localStorage.setItem("jwt", token);
-          navigate("/my-profile");
+          navigate("/conformance-test-runs");
         } else {
           throw new Error("Token not found in response");
         }
