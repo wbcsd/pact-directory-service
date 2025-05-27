@@ -47,7 +47,7 @@ const LoginPage: React.FC = () => {
           // 1. Store the token
           // 2. Fetch and store the profile data
           await login(token);
-          navigate("/my-profile");
+          navigate("/conformance-test-runs");
         } else {
           throw new Error("Token not found in response");
         }

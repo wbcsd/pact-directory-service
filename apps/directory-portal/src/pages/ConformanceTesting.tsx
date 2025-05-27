@@ -209,12 +209,28 @@ const ConformanceTesting: React.FC = () => {
                 }}
                 defaultValue={formData.techSpecsVersion}
               >
-                <option value="V2.0">2.0</option>
-                <option value="V2.1">2.1</option>
-                <option value="V2.2">2.2</option>
-                <option value="V2.3">2.3</option>
+                <option value="V2.0">2.0 (beta)</option>
+                <option value="V2.1">2.1 (beta)</option>
+                <option value="V2.2">2.2 (beta)</option>
+                <option value="V2.3">2.3 (beta)</option>
+                <option value="V3.0">3.0 (beta)</option>
               </select>
             </Form.Control>
+
+            <p style={{ marginTop: "10px", fontSize: "0.85em" }}>
+              A given version is in beta if the testing suite has not yet been
+              tested by a sufficient number of organizations for that version;
+              the tool can nevertheless still be used to grant PACT Conformance
+              status, but organizations may be subject to mandatory retesting,
+              as per our{" "}
+              <a
+                style={{ fontWeight: "bold" }}
+                href="https://github.com/wbcsd/pact-conformance-service/blob/main/docs/beta_retesting_policy.md"
+              >
+                policy
+              </a>
+              .
+            </p>
           </Form.Field>
 
           <div
