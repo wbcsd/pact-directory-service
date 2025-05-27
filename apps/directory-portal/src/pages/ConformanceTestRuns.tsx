@@ -13,6 +13,7 @@ interface TestRun {
   techSpecVersion: string;
   timestamp: string;
   companyName: string;
+  adminEmail: string;
   passingPercentage: number;
   status: "PASS" | "FAIL" | "PENDING";
 }
@@ -152,6 +153,8 @@ const ConformanceTestRuns: React.FC = () => {
                   <thead>
                     <tr>
                       <th>Test Run ID</th>
+                      <th>Company</th>
+                      <th>Email</th>
                       <th>Status</th>
                       <th>Version</th>
                       <th>Run Date/Time CET</th>
@@ -164,9 +167,11 @@ const ConformanceTestRuns: React.FC = () => {
                           <NavLink
                             to={`/conformance-test-result?testRunId=${run.testId}`}
                           >
-                            {run.testId}
+                            {run.testId.substring(25)}
                           </NavLink>
                         </td>
+                        <td>{run.companyName}</td>
+                        <td>{run.adminEmail}</td>
                         <td>
                           <StatusBadge status={run.status} />
                         </td>

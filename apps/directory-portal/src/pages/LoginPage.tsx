@@ -5,14 +5,17 @@ import { Box, Button, TextField, Callout } from "@radix-ui/themes";
 import { useNavigate } from "react-router-dom";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import HeroImage from "../assets/providers-header.webp";
+import { useAuth } from "../contexts/AuthContext";
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -21,6 +24,7 @@ const LoginPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
 
     try {
       const response = await fetch(
@@ -39,7 +43,10 @@ const LoginPage: React.FC = () => {
         const { token } = data;
 
         if (token) {
-          localStorage.setItem("jwt", token);
+          // Use the login function from AuthContext which will:
+          // 1. Store the token
+          // 2. Fetch and store the profile data
+          await login(token);
           navigate("/my-profile");
         } else {
           throw new Error("Token not found in response");
@@ -52,6 +59,8 @@ const LoginPage: React.FC = () => {
     } catch (error) {
       console.error("Error during login:", error);
       setErrorMessage("An error occurred during login");
+    } finally {
+        setIsLoading(false);
     }
   };
 
