@@ -57,7 +57,7 @@ const ConformanceTesting: React.FC = () => {
         <div className="header">
           <div>
             <h2>Run conformance tests</h2>
-            <p style={{ color: "#888", fontSize: "0.875rem" }}>
+            <p style={{ color: "#888" }}>
               Enter the required information to run the conformance tests
               against your API implementation.
             </p>
@@ -216,21 +216,6 @@ const ConformanceTesting: React.FC = () => {
                 <option value="V3.0">3.0 (beta)</option>
               </select>
             </Form.Control>
-
-            <p style={{ marginTop: "10px", fontSize: "0.85em" }}>
-              A given version is in beta if the testing suite has not yet been
-              tested by a sufficient number of organizations for that version;
-              the tool can nevertheless still be used to grant PACT Conformance
-              status, but organizations may be subject to mandatory retesting,
-              as per our{" "}
-              <a
-                style={{ fontWeight: "bold" }}
-                href="https://github.com/wbcsd/pact-conformance-service/blob/main/docs/beta_retesting_policy.md"
-              >
-                policy
-              </a>
-              .
-            </p>
           </Form.Field>
 
           <div
@@ -261,7 +246,7 @@ const ConformanceTesting: React.FC = () => {
       <div className="test-details-container" style={{ width: "50%" }}>
         <Box
           style={{
-            padding: "20px 30px",
+            padding: "2rem 3rem",
             height: "100%",
             overflowY: "auto",
           }}
@@ -270,15 +255,16 @@ const ConformanceTesting: React.FC = () => {
 
           <h3 style={styles.subheading}>Solution API Base URL</h3>
           <p style={styles.paragraphText}>
-            Enter the base URL of your PACT conformant API implementation. This
+            Enter the base URL of your PACT Conformant API implementation. This
             URL will be used as the root endpoint for all API requests during
             the conformance testing process.
           </p>
 
           <p style={styles.paragraphText}>
-            The URL should be in the format https://yourdomain.com/api (without
-            a trailing slash). Make sure your endpoint is accessible from the
-            internet and has valid SSL certification.
+            The URL should be in the format{" "}
+            <span className="inline-url">https://yourdomain.com/api</span>{" "}
+            (without a trailing slash). Make sure your endpoint is accessible
+            from the internet and has valid SSL certification.
           </p>
 
           <h3 style={styles.subheading}>Auth Base URL (optional)</h3>
@@ -320,6 +306,21 @@ const ConformanceTesting: React.FC = () => {
             describe the PCF data model and API requirements that your
             implementation must conform to. Select the version that your
             solution implements.
+          </p>
+
+          <p style={styles.paragraphText}>
+            A given version is in beta if the testing suite has not yet been
+            tested by a sufficient number of organizations for that version; the
+            tool can nevertheless still be used to grant PACT Conformance
+            status, but organizations may be subject to mandatory retesting, as
+            per our{" "}
+            <a
+              style={{ fontWeight: "bold" }}
+              href="https://github.com/wbcsd/pact-conformance-service/blob/main/docs/beta_retesting_policy.md"
+            >
+              policy
+            </a>
+            .
           </p>
         </Box>
       </div>
