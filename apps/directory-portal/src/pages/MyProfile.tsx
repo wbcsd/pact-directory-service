@@ -15,7 +15,6 @@ const MyProfile: React.FC = () => {
     fullName: "",
     email: "",
     solutionApiUrl: "",
-    registrationCode: "",
     clientId: "",
     clientSecret: "",
     networkKey: "",

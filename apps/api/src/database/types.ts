@@ -5,7 +5,6 @@ export interface Database {
   users: UserTable;
   connection_requests: ConnectionRequestTable;
   connections: ConnectionTable;
-  registration_codes: RegistrationCodeTable;
 }
 
 export interface CompanyTable {
@@ -14,7 +13,6 @@ export interface CompanyTable {
   companyIdentifier: string;
   companyIdentifierDescription: string;
   solutionApiUrl: string;
-  registrationCode: string;
   clientId: string;
   clientSecret: string;
   networkKey: string;
@@ -43,8 +41,4 @@ export interface ConnectionTable {
   connectedCompanyTwoId: number;
   createdAt: Date;
   requestedAt: Date;
-}
-
-export interface RegistrationCodeTable {
-  code: string;
 }

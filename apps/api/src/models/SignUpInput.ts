@@ -10,7 +10,6 @@ export const SignUpInputSchema = z
     password: z.string().min(6, "Password must be at least 6 characters long"),
     confirmPassword: z.string(),
     solutionApiUrl: z.string(),
-    registrationCode: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",

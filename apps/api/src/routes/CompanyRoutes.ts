@@ -38,7 +38,6 @@ async function signup(req: IReq, res: IRes) {
     password,
     confirmPassword,
     solutionApiUrl,
-    registrationCode,
   } = validationResult.value;
 
   // Check if passwords match
@@ -46,20 +45,6 @@ async function signup(req: IReq, res: IRes) {
     res
       .status(HttpStatusCodes.BAD_REQUEST)
       .json({ error: "Passwords do not match" });
-
-    return;
-  }
-
-  // Check if registration code is valid
-  const registrationCodeExists = await db
-    .selectFrom("registration_codes")
-    .where("code", "=", registrationCode)
-    .executeTakeFirst();
-
-  if (!registrationCodeExists) {
-    res
-      .status(HttpStatusCodes.BAD_REQUEST)
-      .json({ error: "Invalid registration code." });
 
     return;
   }
@@ -90,7 +75,6 @@ async function signup(req: IReq, res: IRes) {
         companyIdentifier,
         companyIdentifierDescription,
         solutionApiUrl,
-        registrationCode,
         clientId,
         clientSecret,
         networkKey,
@@ -394,7 +378,6 @@ async function searchCompanies(req: IReq, res: IRes) {
       "companies.companyName",
       "companies.companyIdentifier",
       "companies.solutionApiUrl",
-      "companies.registrationCode",
       "users.email",
       "users.fullName",
     ])
