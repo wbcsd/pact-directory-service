@@ -2,14 +2,17 @@
   "name": "api",
   "version": "0.0.0",
   "scripts": {
-    "build": "npx ts-node ./scripts/build.ts",
-    "dev": "NODE_ENV=development npx ts-node ./src",
-    "dev:hot": "nodemon --exec \"npm run dev\" --watch ./src -e ts",
-    "lint": "npx eslint ./src",
-    "lint:tests": "npx eslint ./spec",
-    "start": "NODE_ENV=production node -r ./preload.js ./dist",
-    "test": "NODE_ENV=test npx ts-node ./spec",
-    "test:hot": "nodemon --exec \"npm run test\" --watch ./src --watch ./spec -e ts"
+    "clean": "rimraf ./dist",
+    "build": "npm run clean && npm run lint && tsc --build tsconfig.prod.json && tsc-alias",
+    "dev": "ts-node-dev -r tsconfig-paths/register ./src",
+    "dev:hot": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only ./src",
+    "lint": "eslint ./src",
+    "lint:tests": "eslint ./spec",
+    "start": "NODE_ENV=production node ./dist",
+    "test": "NODE_ENV=test ts-node ./spec",
+    "test:hot": "nodemon --exec \"npm run test\" --watch ./src --watch ./spec -e ts",
+    "db:migrate": "ts-node ./src/database/migrate-to-latest.ts",
+    "db:add-user": "ts-node ./src/database/add-user.ts"
   },
   "engines": {
     "node": ">=20.9.0"
@@ -56,8 +59,11 @@
     "jasmine": "^5.4.0",
     "jet-paths": "^1.0.9",
     "nodemon": "^3.1.7",
+    "rimraf": "^6.0.1",
     "supertest": "^7.0.0",
     "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "tsc-alias": "^1.8.16",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.11.0"
