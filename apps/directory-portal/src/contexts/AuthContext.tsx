@@ -8,6 +8,7 @@ interface ProfileData {
   companyIdentifierDescription: string;
   fullName: string;
   email: string;
+  role: string; // 'user' | 'administrator'
   solutionApiUrl: string;
   registrationCode: string;
   clientId: string;
@@ -43,6 +44,7 @@ const emptyProfileData: ProfileData = {
   companyIdentifierDescription: "",
   fullName: "",
   email: "",
+  role: "user", // Default to 'user' role
   solutionApiUrl: "",
   registrationCode: "",
   clientId: "",
@@ -102,6 +104,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Check for token and load profile data on initial render
   React.useEffect(() => {
     const loadInitialData = async () => {
+
       const token = localStorage.getItem("jwt");
       if (token) {
         setIsAuthenticated(true);

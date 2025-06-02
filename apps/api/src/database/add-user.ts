@@ -7,14 +7,16 @@ async function main() {
     email,
     fullName,
     password,
+    role,
     companyIdentifier,
     companyName
   ] = process.argv;
 
-  if (!email || !fullName || !password || !companyIdentifier || !companyName) {
+  if (!email || !fullName || !password || !role || !companyIdentifier || !companyName) {
     console.error(
-      "Usage: ts-node add-user.ts <email> <fullName> <password> <companyIdentifier> <companyName>"
+      "Usage: ts-node add-user.ts <email> <fullName> <password> <role> <companyIdentifier> <companyName>"
     );
+    // eslint-disable-next-line n/no-process-exit
     process.exit(1);
   }
 
@@ -35,7 +37,6 @@ async function main() {
           companyName,
           companyIdentifierDescription: "",
           solutionApiUrl: "",
-          registrationCode: "",
           clientId: "",
           clientSecret: "",
           networkKey: "",
@@ -57,6 +58,7 @@ async function main() {
 
     if (userExists) {
       console.error("User with this email already exists.");
+    // eslint-disable-next-line n/no-process-exit
       process.exit(1);
     }
 
@@ -70,6 +72,7 @@ async function main() {
         fullName,
         email,
         password: hashedPassword,
+        role: role !== 'administrator' ? 'user' : role,
         companyId: company.id,
       })
       .executeTakeFirstOrThrow();
@@ -77,6 +80,7 @@ async function main() {
     console.log(`User ${email} added to company ${companyName}.`);
   } catch (err) {
     console.error("Error:", err);
+    // eslint-disable-next-line n/no-process-exit
     process.exit(1);
   } finally {
     await db.destroy();
