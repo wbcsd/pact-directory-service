@@ -1,5 +1,5 @@
 import { randomBytes } from "crypto";
-import { promisify } from "util";
+import { promisify } from "node:util";
 
 const randomBytesAsync = promisify(randomBytes);
 

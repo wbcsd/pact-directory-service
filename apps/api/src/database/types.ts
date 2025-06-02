@@ -24,6 +24,7 @@ export interface UserTable {
   fullName: string;
   email: string;
   password: string;
+  role: 'user' | 'administrator';
 }
 
 export interface ConnectionRequestTable {

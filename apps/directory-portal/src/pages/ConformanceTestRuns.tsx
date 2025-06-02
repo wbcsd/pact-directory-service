@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Box, Callout } from "@radix-ui/themes";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { useNavigate, NavLink } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import SideNav from "../components/SideNav";
 import StatusBadge from "../components/StatusBadge";
 import { proxyWithAuth } from "../utils/auth-fetch";
@@ -13,6 +14,7 @@ interface TestRun {
   techSpecVersion: string;
   timestamp: string;
   companyName: string;
+  adminEmail: string;
   passingPercentage: number;
   status: "PASS" | "FAIL" | "PENDING";
 }
@@ -34,6 +36,7 @@ const ConformanceTestRuns: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [testRuns, setTestRuns] = useState<TestRun[]>([]);
+  const { profileData } = useAuth(); 
 
   useEffect(() => {
     const fetchTestRuns = async () => {
@@ -152,6 +155,10 @@ const ConformanceTestRuns: React.FC = () => {
                   <thead>
                     <tr>
                       <th>Test Run ID</th>
+                      { profileData?.role === 'administrator' && (
+                      <th>Company</th> ) }
+                      { profileData?.role === 'administrator' && (
+                      <th>Email</th> ) }
                       <th>Status</th>
                       <th>Version</th>
                       <th>Run Date/Time CET</th>
@@ -164,9 +171,13 @@ const ConformanceTestRuns: React.FC = () => {
                           <NavLink
                             to={`/conformance-test-result?testRunId=${run.testId}`}
                           >
-                            {run.testId}
+                            {run.testId.substring(0, 8)}
                           </NavLink>
                         </td>
+                        { profileData?.role === 'administrator' && (
+                        <td>{run.companyName}</td> ) }
+                        { profileData?.role === 'administrator' && (
+                        <td>{run.adminEmail}</td> ) }
                         <td>
                           <StatusBadge status={run.status} />
                         </td>

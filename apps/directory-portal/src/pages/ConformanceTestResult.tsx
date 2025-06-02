@@ -8,6 +8,7 @@ import {
 import SideNav from "../components/SideNav";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useConformanceTesting } from "../components/ConformanceTesting";
+import { useAuth } from "../contexts/AuthContext";
 import { proxyWithAuth } from "../utils/auth-fetch";
 import Spinner from "../components/LoadingSpinner";
 import CodeIcon from "../components/CodeIcon";
@@ -104,6 +105,7 @@ const ConformanceTestResult: React.FC = () => {
   const [isNewTestRun, setIsNewTestRun] = useState(false);
 
   const navigate = useNavigate();
+  const { profileData } = useAuth();
   const { apiUrl, authBaseUrl, clientId, clientSecret, version } =
     useConformanceTesting();
   const testRunId = searchParams.get("testRunId");
@@ -281,7 +283,7 @@ const ConformanceTestResult: React.FC = () => {
             <div className="header">
               <div>
                 <h2>
-                  Test Run ID {testRunId}{" "}
+                  Test Run ID {testRunId?.substring(0,8)}{" "}
                   <Badge
                     style={{
                       verticalAlign: "middle",
@@ -296,9 +298,18 @@ const ConformanceTestResult: React.FC = () => {
                   Review the test cases that were executed against your API
                 </p>
               </div>
+              { profileData?.role === 'administrator' && (
+              <div>
+                <div>{profileData?.companyName}</div>
+                <div>{profileData?.fullName}</div>
+                <div>{profileData?.email}</div>
+              </div>
+              )}
+              { profileData?.role !== 'administrator' && (
               <Button onClick={() => navigate("/conformance-testing")}>
                 Re-test Conformance
               </Button>
+              )}
             </div>
 
             <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
