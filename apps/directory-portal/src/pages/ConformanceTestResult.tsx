@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Heading, Text, Button, Box, Badge, Callout } from "@radix-ui/themes";
-import { ExclamationTriangleIcon, ReaderIcon } from "@radix-ui/react-icons";
+import {
+  ExclamationTriangleIcon,
+  ReaderIcon,
+  DoubleArrowRightIcon,
+} from "@radix-ui/react-icons";
 import SideNav from "../components/SideNav";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useConformanceTesting } from "../components/ConformanceTesting";
@@ -468,19 +472,59 @@ const ConformanceTestResult: React.FC = () => {
                   <Heading as="h2" size="4">
                     {selectedTest.name}
                   </Heading>
-                  <Badge color={getStatusColor(selectedTest)}>
-                    {getStatusText(selectedTest)}
-                  </Badge>
+                  <Box
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    <Badge color={getStatusColor(selectedTest)}>
+                      {getStatusText(selectedTest)}
+                    </Badge>
+                    <Button
+                      onClick={() => setSelectedTest(null)}
+                      variant="ghost"
+                      size="1"
+                      style={{
+                        background: "transparent",
+                        color: "#888",
+                        border: "none",
+                        padding: "4px 8px",
+                        cursor: "pointer",
+                      }}
+                      title="Close panel"
+                    >
+                      Close Panel <DoubleArrowRightIcon />
+                    </Button>
+                  </Box>
                 </Box>
                 {selectedTest.documentationUrl && (
-                  <div style={{ paddingBottom: "20px" }}>
-                    <ReaderIcon />{" "}
-                    <a
-                      style={{ textDecoration: "underline" }}
-                      href={selectedTest.documentationUrl}
+                  <div
+                    style={{
+                      paddingBottom: "20px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "12px",
+                    }}
+                  >
+                    <div>
+                      <ReaderIcon />{" "}
+                      <a
+                        style={{ textDecoration: "underline" }}
+                        href={selectedTest.documentationUrl}
+                      >
+                        View test documentation
+                      </a>
+                    </div>
+                    <Badge
+                      color={selectedTest.mandatory === "Yes" ? "blue" : "gray"}
+                      style={{ fontSize: "12px" }}
                     >
-                      View test documentation
-                    </a>
+                      {selectedTest.mandatory === "Yes"
+                        ? "Mandatory"
+                        : "Optional"}
+                    </Badge>
                   </div>
                 )}
                 <Text

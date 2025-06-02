@@ -28,7 +28,6 @@ const SignupPage: React.FC = () => {
     password: "",
     confirmPassword: "",
     solutionApiUrl: "",
-    registrationCode: "",
   });
   const [status, setStatus] = useState<null | "success" | "error">(null);
 
@@ -454,64 +453,6 @@ const SignupPage: React.FC = () => {
                   }}
                 >
                   Passwords do not match.
-                </Form.Message>
-              </Form.Field>
-
-              <Form.Field name="registrationCode">
-                <Form.Label
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    fontWeight: "500",
-                  }}
-                >
-                  Registration Code<span style={{ color: "red" }}>*</span>
-                </Form.Label>
-                <Form.Control asChild>
-                  <TextField.Root
-                    value={formData.registrationCode}
-                    required
-                    placeholder="Enter registration code"
-                    onChange={handleChange}
-                    style={{
-                      width: "100%",
-                      border: "1px solid #ccc",
-                      padding: "12px",
-                      fontSize: "16px",
-                    }}
-                  >
-                    <TextField.Slot side="right">
-                      <Tooltip.Provider delayDuration={0}>
-                        <Tooltip.Root>
-                          <Tooltip.Trigger asChild>
-                            <InfoCircledIcon
-                              width={20}
-                              height={20}
-                              color="#0A0552"
-                              style={{ cursor: "pointer" }}
-                            />
-                          </Tooltip.Trigger>
-                          <Tooltip.Content
-                            className="TooltipContent"
-                            side="right"
-                            align="center"
-                            sideOffset={5}
-                          >
-                            The registration code provided by PACT.
-                          </Tooltip.Content>
-                        </Tooltip.Root>
-                      </Tooltip.Provider>
-                    </TextField.Slot>
-                  </TextField.Root>
-                </Form.Control>
-                <Form.Message
-                  match="valueMissing"
-                  style={{
-                    color: "var(--base-color-brand--light-blue)",
-                    fontSize: "0.85em",
-                  }}
-                >
-                  Registration code is required.
                 </Form.Message>
               </Form.Field>
               <Box>

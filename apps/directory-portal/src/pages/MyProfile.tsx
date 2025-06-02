@@ -6,6 +6,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 const MyProfile: React.FC = () => {
   const { profileData, refreshProfileData } = useAuth();
+
   const [showCredentials, setShowCredentials] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 

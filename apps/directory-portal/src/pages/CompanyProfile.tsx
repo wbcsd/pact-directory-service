@@ -25,7 +25,6 @@ const CompanyProfile: React.FC = () => {
     fullName: "",
     email: "",
     solutionApiUrl: "",
-    registrationCode: "",
     networkKey: "",
   });
 
