@@ -56,3 +56,12 @@ const values =  {
 
 export default values;
 
+if (require.main == module) {
+  // If this file is run directly, log the environment variables
+  console.log("Configuration files scanned:", [
+    path.resolve(process.cwd(), `.env`),
+    path.resolve(process.cwd(), `./env/{process.env.NODE_ENV}.env`),
+    path.resolve(__dirname, `../../env/{process.env.NODE_ENV}.env`)
+  ])
+  console.log("Configuration:", values);
+}
