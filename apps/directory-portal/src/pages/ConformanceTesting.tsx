@@ -12,11 +12,13 @@ const ConformanceTesting: React.FC = () => {
     setClientId,
     setClientSecret,
     setVersion,
+    setAuthOptions,
     apiUrl,
     authBaseUrl,
     clientId,
     clientSecret,
     version,
+    authOptions,
   } = useConformanceTesting();
 
   const navigate = useNavigate();
@@ -26,6 +28,9 @@ const ConformanceTesting: React.FC = () => {
     clientId: clientId,
     clientSecret: clientSecret,
     techSpecsVersion: version,
+    authOptionsScope: authOptions.scope,
+    authOptionsAudience: authOptions.audience,
+    authOptionsResource: authOptions.resource,
   });
 
   const handleChange = (
@@ -43,6 +48,11 @@ const ConformanceTesting: React.FC = () => {
     setClientId(formData.clientId);
     setClientSecret(formData.clientSecret);
     setVersion(formData.techSpecsVersion);
+    setAuthOptions({
+      scope: formData.authOptionsScope,
+      audience: formData.authOptionsAudience,
+      resource: formData.authOptionsResource,
+    });
 
     navigate("/conformance-test-result");
   };
@@ -173,6 +183,87 @@ const ConformanceTesting: React.FC = () => {
                 name="clientSecret"
                 required
                 placeholder="Secret used for authentication by ACT"
+                onChange={handleChange}
+                style={{
+                  width: "100%",
+                  border: "1px solid #ccc",
+                  padding: "12px",
+                  fontSize: "16px",
+                }}
+              />
+            </Form.Control>
+          </Form.Field>
+
+          <Form.Field name="scope" style={{ marginBottom: "20px" }}>
+            <Form.Label
+              style={{
+                display: "block",
+                marginBottom: "8px",
+                fontWeight: "500",
+                color: "var(--gray-12)",
+              }}
+            >
+              Scope
+            </Form.Label>
+            <Form.Control asChild>
+              <TextField.Root
+                value={formData.authOptionsScope}
+                name="scope"
+                placeholder="Scope used for authentication"
+                onChange={handleChange}
+                style={{
+                  width: "100%",
+                  border: "1px solid #ccc",
+                  padding: "12px",
+                  fontSize: "16px",
+                }}
+              />
+            </Form.Control>
+          </Form.Field>
+
+          <Form.Field name="audience" style={{ marginBottom: "20px" }}>
+            <Form.Label
+              style={{
+                display: "block",
+                marginBottom: "8px",
+                fontWeight: "500",
+                color: "var(--gray-12)",
+              }}
+            >
+              Audience
+            </Form.Label>
+            <Form.Control asChild>
+              <TextField.Root
+                value={formData.authOptionsAudience}
+                name="audience"
+                placeholder="Audience used for authentication"
+                onChange={handleChange}
+                style={{
+                  width: "100%",
+                  border: "1px solid #ccc",
+                  padding: "12px",
+                  fontSize: "16px",
+                }}
+              />
+            </Form.Control>
+          </Form.Field>
+
+          <Form.Field name="resource" style={{ marginBottom: "20px" }}>
+            <Form.Label
+              style={{
+                display: "block",
+                marginBottom: "8px",
+                fontWeight: "500",
+                color: "var(--gray-12)",
+              }}
+            >
+              Resource
+            </Form.Label>
+            <Form.Control asChild>
+              <TextField.Root
+                value={formData.authOptionsResource}
+                name="resource"
+                placeholder="Resource used for authentication"
                 onChange={handleChange}
                 style={{
                   width: "100%",

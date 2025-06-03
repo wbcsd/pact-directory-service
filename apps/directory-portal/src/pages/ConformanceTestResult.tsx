@@ -104,7 +104,7 @@ const ConformanceTestResult: React.FC = () => {
   const [isNewTestRun, setIsNewTestRun] = useState(false);
 
   const navigate = useNavigate();
-  const { apiUrl, authBaseUrl, clientId, clientSecret, version } =
+  const { apiUrl, authBaseUrl, clientId, clientSecret, version, authOptions } =
     useConformanceTesting();
   const testRunId = searchParams.get("testRunId");
 
@@ -159,6 +159,9 @@ const ConformanceTestResult: React.FC = () => {
             apiUrl,
             authBaseUrl,
             version,
+            scope: authOptions?.scope,
+            audience: authOptions?.audience,
+            resource: authOptions?.resource,
           }),
         });
 
