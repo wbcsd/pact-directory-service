@@ -2,6 +2,7 @@ import logger from "jet-logger";
 import HttpStatusCodes from "@src/common/HttpStatusCodes";
 import { IReq, IRes } from "./common/types";
 import { db } from "@src/database/db";
+import EnvVars from "@src/common/EnvVars";
 
 async function runTestCases(req: IReq, res: IRes) {
   const { companyId, userId } = res.locals.user as {
@@ -40,10 +41,7 @@ async function runTestCases(req: IReq, res: IRes) {
         authBaseUrl?: string;
       };
 
-    // eslint-disable-next-line n/no-process-env
-    const testCasesUrl: string = process.env.RUN_TEST_CASES_URL ?? "";
-
-    if (!testCasesUrl) {
+    if (!EnvVars.ConformanceApi.RunTestCasesUrl) {
       res
         .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
         .json({ error: "Test cases URL not configured." });
@@ -51,7 +49,7 @@ async function runTestCases(req: IReq, res: IRes) {
     }
 
     // eslint-disable-next-line n/no-unsupported-features/node-builtins
-    const response = await fetch(testCasesUrl, {
+    const response = await fetch(EnvVars.ConformanceApi.RunTestCasesUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -89,9 +87,7 @@ async function getTestResults(req: IReq, res: IRes) {
     return;
   }
 
-  // eslint-disable-next-line n/no-process-env
-  const testResultsUrl: string = process.env.TEST_RESULTS_URL ?? "";
-  if (!testResultsUrl) {
+  if (!EnvVars.ConformanceApi.TestResultsUrl) {
     res
       .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
       .json({ error: "Test results URL not configured." });
@@ -99,7 +95,7 @@ async function getTestResults(req: IReq, res: IRes) {
   }
 
   try {
-    const url = new URL(testResultsUrl);
+    const url = new URL(EnvVars.ConformanceApi.TestResultsUrl);
     url.searchParams.append("testRunId", testRunId as string);
 
     // eslint-disable-next-line n/no-unsupported-features/node-builtins
@@ -111,6 +107,7 @@ async function getTestResults(req: IReq, res: IRes) {
     });
     const data: unknown = await response.json();
     res.status(HttpStatusCodes.OK).json(data);
+
   } catch (error) {
     logger.err(error);
     res
@@ -128,7 +125,7 @@ async function getRecentTestRuns(req: IReq, res: IRes) {
     // Get user data to fetch email
     const user = await db
       .selectFrom("users")
-      .select("email")
+      .select(["email","role"])
       .where("id", "=", Number(userId))
       .executeTakeFirst();
 
@@ -137,18 +134,18 @@ async function getRecentTestRuns(req: IReq, res: IRes) {
       return;
     }
 
-    // eslint-disable-next-line n/no-process-env
-    const recentTestRunsUrl: string = process.env.RECENT_TEST_RUNS_URL ?? "";
-    if (!recentTestRunsUrl) {
+    if (!EnvVars.ConformanceApi.RecentTestRunsUrl) {
       res
         .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
         .json({ error: "Recent test runs URL not configured." });
       return;
     }
 
-    const url = new URL(recentTestRunsUrl);
-    url.searchParams.append("adminEmail", user.email);
-
+    const url = new URL(EnvVars.ConformanceApi.RecentTestRunsUrl);
+    if (user.role !== "administrator") {
+      url.searchParams.append("adminEmail", user.email);
+    }
+    
     // eslint-disable-next-line n/no-unsupported-features/node-builtins
     const response = await fetch(url.toString(), {
       method: "GET",
