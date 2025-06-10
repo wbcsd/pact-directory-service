@@ -5,10 +5,9 @@ import Spinner from "../components/LoadingSpinner";
 import { useAuth } from "../contexts/AuthContext";
 
 const MyProfile: React.FC = () => {
-  const { profileData, refreshProfileData } = useAuth();
+  const { profileData } = useAuth();
 
   const [showCredentials, setShowCredentials] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const toggleCredentials = () => {
     setShowCredentials((prevState) => !prevState);
@@ -16,12 +15,6 @@ const MyProfile: React.FC = () => {
 
   const maskValue = (value: string) => {
     return value ? value.replace(/.(?=.{4})/g, "*") : "";
-  };
-
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    await refreshProfileData();
-    setIsRefreshing(false);
   };
 
   return (

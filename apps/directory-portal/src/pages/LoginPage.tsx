@@ -15,7 +15,6 @@ const LoginPage: React.FC = () => {
     password: "",
   });
   const [errorMessage, setErrorMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -24,7 +23,6 @@ const LoginPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
     try {
       const response = await fetch(
@@ -59,8 +57,6 @@ const LoginPage: React.FC = () => {
     } catch (error) {
       console.error("Error during login:", error);
       setErrorMessage("An error occurred during login");
-    } finally {
-        setIsLoading(false);
     }
   };
 
