@@ -1,19 +1,19 @@
-import dotenv from 'dotenv';
-import path from 'path';
+import dotenv from "dotenv";
+import path from "path";
 
 // Load environment variables from .env files
 
 /* eslint-disable n/no-process-env */
 dotenv.config({
-  path: [ 
+  path: [
     path.resolve(process.cwd(), `.env`),
-    path.resolve(process.cwd(), `./env/{process.env.NODE_ENV}.env`),
-    path.resolve(__dirname, `../../env/{process.env.NODE_ENV}.env`)
-  ]
-})
+    path.resolve(process.cwd(), `./env/${process.env.NODE_ENV}.env`),
+    path.resolve(__dirname, `../../env/${process.env.NODE_ENV}.env`),
+  ],
+});
 
 /* eslint-disable n/no-process-env */
-const values =  {
+const values = {
   NodeEnv: process.env.NODE_ENV ?? "",
   Port: process.env.PORT ?? 0,
   CookieProps: {
@@ -51,8 +51,8 @@ const values =  {
     RunTestCasesUrl: process.env.RUN_TEST_CASES_URL ?? "",
     RecentTestRunsUrl: process.env.RECENT_TEST_RUNS_URL ?? "",
     TestResultsUrl: process.env.TEST_RESULTS_URL ?? "",
-  }
-}
+  },
+};
 
 export default values;
 
@@ -60,8 +60,8 @@ if (require.main == module) {
   // If this file is run directly, log the environment variables
   console.log("Configuration files scanned:", [
     path.resolve(process.cwd(), `.env`),
-    path.resolve(process.cwd(), `./env/{process.env.NODE_ENV}.env`),
-    path.resolve(__dirname, `../../env/{process.env.NODE_ENV}.env`)
-  ])
+    path.resolve(process.cwd(), `./env/${process.env.NODE_ENV}.env`),
+    path.resolve(__dirname, `../../env/${process.env.NODE_ENV}.env`),
+  ]);
   console.log("Configuration:", values);
 }
