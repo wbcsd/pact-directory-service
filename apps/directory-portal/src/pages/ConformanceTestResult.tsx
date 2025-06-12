@@ -103,6 +103,9 @@ const ConformanceTestResult: React.FC = () => {
     useState(0);
   const [techSpecVersion, setTechSpecVersion] = useState("");
   const [isNewTestRun, setIsNewTestRun] = useState(false);
+  const [companyName, setCompanyName] = useState("");
+  const [adminName, setAdminName] = useState("");
+  const [adminEmail, setAdminEmail] = useState("");
 
   const navigate = useNavigate();
   const { profileData } = useAuth();
@@ -134,6 +137,9 @@ const ConformanceTestResult: React.FC = () => {
         setPassingPercentage(data.passingPercentage);
         setNonMandatoryPassingPercentage(data.nonMandatoryPassingPercentage);
         setTechSpecVersion(data.techSpecVersion);
+        setCompanyName(data.companyName);
+        setAdminName(data.adminName);
+        setAdminEmail(data.adminEmail);
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching test results:", error);
@@ -180,6 +186,9 @@ const ConformanceTestResult: React.FC = () => {
         setPassingPercentage(data.passingPercentage);
         setNonMandatoryPassingPercentage(data.nonMandatoryPassingPercentage);
         setTechSpecVersion(data.techSpecVersion);
+        setCompanyName(data.companyName);
+        setAdminName(data.adminName);
+        setAdminEmail(data.adminEmail);
         setIsLoading(false);
 
         // Update URL with the test run ID without reloading the page
@@ -300,9 +309,9 @@ const ConformanceTestResult: React.FC = () => {
               </div>
               { profileData?.role === 'administrator' && (
               <div>
-                <div>{profileData?.companyName}</div>
-                <div>{profileData?.fullName}</div>
-                <div>{profileData?.email}</div>
+                <div>{companyName}</div>
+                <div>{adminName}</div>
+                <div>{adminEmail}</div>
               </div>
               )}
               { profileData?.role !== 'administrator' && (
