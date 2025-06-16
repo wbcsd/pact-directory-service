@@ -154,8 +154,8 @@ async function login(req: IReq, res: IRes) {
 
 async function myProfile(req: IReq, res: IRes) {
   const user = res.locals.user;
-  const { companyId } = user as { companyId: string };
-
+  const { email, companyId } = user as { email: string, companyId: string };
+   
   const company = await db
     .selectFrom("companies")
     .innerJoin("users", "companies.id", "users.companyId")
@@ -172,7 +172,7 @@ async function myProfile(req: IReq, res: IRes) {
       "users.email",
       "users.role", 
     ])
-    .where("companies.id", "=", Number(companyId))
+    .where("users.email", "=", email)
     .executeTakeFirst();
 
   // Connection requests
