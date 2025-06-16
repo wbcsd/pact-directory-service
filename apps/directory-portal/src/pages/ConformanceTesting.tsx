@@ -208,7 +208,7 @@ const ConformanceTesting: React.FC = () => {
             <Form.Control asChild>
               <TextField.Root
                 value={formData.authOptionsScope}
-                name="scope"
+                name="authOptionsScope"
                 placeholder="Scope used for authentication"
                 onChange={handleChange}
                 style={{
@@ -235,7 +235,7 @@ const ConformanceTesting: React.FC = () => {
             <Form.Control asChild>
               <TextField.Root
                 value={formData.authOptionsAudience}
-                name="audience"
+                name="authOptionsAudience"
                 placeholder="Audience used for authentication"
                 onChange={handleChange}
                 style={{
@@ -262,7 +262,7 @@ const ConformanceTesting: React.FC = () => {
             <Form.Control asChild>
               <TextField.Root
                 value={formData.authOptionsResource}
-                name="resource"
+                name="authOptionsResource"
                 placeholder="Resource used for authentication"
                 onChange={handleChange}
                 style={{
