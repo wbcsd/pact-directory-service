@@ -317,7 +317,7 @@ const ConformanceTestResult: React.FC = () => {
                 <div>{adminEmail}</div>
               </div>
               )}
-              { profileData?.role !== 'administrator' && (
+              { (profileData?.role !== 'administrator' || profileData?.email === adminEmail) && (
               <Button onClick={() => navigate("/conformance-testing")}>
                 Re-test Conformance
               </Button>
