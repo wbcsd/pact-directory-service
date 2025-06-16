@@ -5,9 +5,11 @@ import { Box, Button, TextField, Callout } from "@radix-ui/themes";
 import { useNavigate } from "react-router-dom";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import HeroImage from "../assets/providers-header.webp";
+import { useAuth } from "../contexts/AuthContext";
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -39,7 +41,10 @@ const LoginPage: React.FC = () => {
         const { token } = data;
 
         if (token) {
-          localStorage.setItem("jwt", token);
+          // Use the login function from AuthContext which will:
+          // 1. Store the token
+          // 2. Fetch and store the profile data
+          await login(token);
           navigate("/conformance-test-runs");
         } else {
           throw new Error("Token not found in response");

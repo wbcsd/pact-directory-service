@@ -1,6 +1,19 @@
-/* eslint-disable n/no-process-env */
+import dotenv from "dotenv";
+import path from "path";
 
-export default {
+// Load environment variables from .env files
+
+/* eslint-disable n/no-process-env */
+dotenv.config({
+  path: [
+    path.resolve(process.cwd(), `.env`),
+    path.resolve(process.cwd(), `./env/${process.env.NODE_ENV}.env`),
+    path.resolve(__dirname, `../../env/${process.env.NODE_ENV}.env`),
+  ],
+});
+
+/* eslint-disable n/no-process-env */
+const values = {
   NodeEnv: process.env.NODE_ENV ?? "",
   Port: process.env.PORT ?? 0,
   CookieProps: {
@@ -34,4 +47,21 @@ export default {
     ApiKey: process.env.SENDGRID_API_KEY ?? "",
     FromEmail: process.env.SENDGRID_FROM_EMAIL ?? "",
   },
-} as const;
+  ConformanceApi: {
+    RunTestCasesUrl: process.env.RUN_TEST_CASES_URL ?? "",
+    RecentTestRunsUrl: process.env.RECENT_TEST_RUNS_URL ?? "",
+    TestResultsUrl: process.env.TEST_RESULTS_URL ?? "",
+  },
+};
+
+export default values;
+
+if (require.main == module) {
+  // If this file is run directly, log the environment variables
+  console.log("Configuration files scanned:", [
+    path.resolve(process.cwd(), `.env`),
+    path.resolve(process.cwd(), `./env/${process.env.NODE_ENV}.env`),
+    path.resolve(__dirname, `../../env/${process.env.NODE_ENV}.env`),
+  ]);
+  console.log("Configuration:", values);
+}

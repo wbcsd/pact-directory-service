@@ -1,57 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Box, Flex } from "@radix-ui/themes";
-import { useNavigate } from "react-router-dom";
 import SideNav from "../components/SideNav";
-import { fetchWithAuth } from "../utils/auth-fetch";
 import Spinner from "../components/LoadingSpinner";
+import { useAuth } from "../contexts/AuthContext";
 
 const MyProfile: React.FC = () => {
-  const navigate = useNavigate();
-
-  const [profileData, setProfileData] = useState({
-    companyName: "",
-    companyIdentifier: "",
-    companyIdentifierDescription: "",
-    fullName: "",
-    email: "",
-    solutionApiUrl: "",
-    clientId: "",
-    clientSecret: "",
-    networkKey: "",
-  });
+  const { profileData } = useAuth();
 
   const [showCredentials, setShowCredentials] = useState(false);
-
-  const [loadingData, setLoadingData] = useState(true);
 
   const toggleCredentials = () => {
     setShowCredentials((prevState) => !prevState);
   };
 
   const maskValue = (value: string) => {
-    return value.replace(/.(?=.{4})/g, "*");
+    return value ? value.replace(/.(?=.{4})/g, "*") : "";
   };
-
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      try {
-        const response = await fetchWithAuth("/companies/my-profile");
-
-        if (!response || !response.ok) {
-          throw new Error("Failed to fetch profile data");
-        }
-
-        const data = await response.json();
-
-        setLoadingData(false);
-        setProfileData(data);
-      } catch (error) {
-        console.error("Error fetching profile data:", error);
-      }
-    };
-
-    fetchProfileData();
-  }, [navigate]);
 
   return (
     <>
@@ -59,7 +23,7 @@ const MyProfile: React.FC = () => {
         <div className="marker-divider"></div>
         <SideNav />
       </aside>
-      {loadingData ? (
+      {!profileData ? (
         <Box
           style={{
             padding: "20px",

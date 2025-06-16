@@ -87,16 +87,20 @@ async function signup(req: IReq, res: IRes) {
       .values({
         fullName: fullName,
         email: email,
+        role: 'user', // Default role
         password: hashedPassword,
         companyId: company.id,
       })
-      .returning(["id as userId", "email", "companyId"])
+      .returning(["id", "email", "companyId", "role"])
       .executeTakeFirstOrThrow();
   });
 
-  const token = jwt.sign(user, EnvVars.Jwt.Secret, {
-    expiresIn: "6h",
-  });
+  const token = jwt.sign( 
+    { userId: user.id, email: user.email, companyId: user.companyId, role: user.role },
+    EnvVars.Jwt.Secret, {
+      expiresIn: "6h",
+    }
+  );
 
   // Send welcome email
   await sendWelcomeEmail({
@@ -117,7 +121,7 @@ async function login(req: IReq, res: IRes) {
 
   const user = await db
     .selectFrom("users")
-    .select(["password", "id", "email", "companyId"])
+    .select(["password", "id", "email", "companyId", "role"])
     .where("email", "=", email as string)
     .executeTakeFirstOrThrow();
 
@@ -135,10 +139,9 @@ async function login(req: IReq, res: IRes) {
   }
 
   const token = jwt.sign(
-    { userId: user.id, email: user.email, companyId: user.companyId },
-    EnvVars.Jwt.Secret,
-    {
-      expiresIn: "6h", // Token expiration time
+    { userId: user.id, email: user.email, companyId: user.companyId, role: user.role },
+    EnvVars.Jwt.Secret, {
+      expiresIn: "6h", 
     }
   );
 
@@ -151,7 +154,6 @@ async function login(req: IReq, res: IRes) {
 
 async function myProfile(req: IReq, res: IRes) {
   const user = res.locals.user;
-
   const { companyId } = user as { companyId: string };
 
   const company = await db
@@ -168,6 +170,7 @@ async function myProfile(req: IReq, res: IRes) {
       "companies.companyIdentifierDescription",
       "users.fullName",
       "users.email",
+      "users.role", 
     ])
     .where("companies.id", "=", Number(companyId))
     .executeTakeFirst();

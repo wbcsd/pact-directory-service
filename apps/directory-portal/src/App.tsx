@@ -17,11 +17,13 @@ import pactLogo from "./assets/pact-logo.svg";
 import { ConformanceTestingProvider } from "./components/ConformanceTesting";
 import ConformanceTestRuns from "./pages/ConformanceTestRuns";
 import SignUp from "./components/SignUp";
+import { AuthProvider } from "./contexts/AuthContext";
 import { featureFlags } from "./utils/feature-flags";
 
 const App: React.FC = () => {
   return (
     <Router>
+      <AuthProvider>
       <ConformanceTestingProvider>
         <div className="top-bar">
           <div className="logo">
@@ -62,6 +64,7 @@ const App: React.FC = () => {
           </Routes>
         </div>
       </ConformanceTestingProvider>
+      </AuthProvider>
     </Router>
   );
 };
