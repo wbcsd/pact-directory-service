@@ -32,13 +32,16 @@ async function runTestCases(req: IReq, res: IRes) {
       return;
     }
 
-    const { apiUrl, clientId, clientSecret, version, authBaseUrl } =
+    const { apiUrl, clientId, clientSecret, version, authBaseUrl, scope, resource, audience } =
       req.body as {
         clientId: string;
         clientSecret: string;
         apiUrl: string;
         version: string;
         authBaseUrl?: string;
+        scope?: string;
+        resource?: string;
+        audience?: string;
       };
 
     if (!EnvVars.ConformanceApi.RunTestCasesUrl) {
@@ -64,6 +67,9 @@ async function runTestCases(req: IReq, res: IRes) {
         companyIdentifier: company.companyIdentifier,
         adminEmail: user.email,
         adminName: user.fullName,
+        scope: scope,
+        resource: resource,
+        audience: audience,
       }),
     });
 

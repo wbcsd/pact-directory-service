@@ -109,7 +109,7 @@ const ConformanceTestResult: React.FC = () => {
 
   const navigate = useNavigate();
   const { profileData } = useAuth();
-  const { apiUrl, authBaseUrl, clientId, clientSecret, version } =
+  const { apiUrl, authBaseUrl, clientId, clientSecret, version, authOptions } =
     useConformanceTesting();
   const testRunId = searchParams.get("testRunId");
 
@@ -167,6 +167,9 @@ const ConformanceTestResult: React.FC = () => {
             apiUrl,
             authBaseUrl,
             version,
+            scope: authOptions?.scope,
+            audience: authOptions?.audience,
+            resource: authOptions?.resource,
           }),
         });
 
@@ -314,7 +317,7 @@ const ConformanceTestResult: React.FC = () => {
                 <div>{adminEmail}</div>
               </div>
               )}
-              { profileData?.role !== 'administrator' && (
+              { (profileData?.role !== 'administrator' || profileData?.email === adminEmail) && (
               <Button onClick={() => navigate("/conformance-testing")}>
                 Re-test Conformance
               </Button>

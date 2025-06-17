@@ -1,16 +1,24 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
+interface AuthOptions {
+  scope: string;
+  audience: string;
+  resource: string;
+}
+
 interface ConformanceTestingContextProps {
   apiUrl: string;
   authBaseUrl: string;
   clientId: string;
   clientSecret: string;
   version: string;
+  authOptions: AuthOptions;
   setVersion: (version: string) => void;
   setApiUrl: (url: string) => void;
   setAuthBaseUrl: (url: string) => void;
   setClientId: (id: string) => void;
   setClientSecret: (secret: string) => void;
+  setAuthOptions: (options: AuthOptions) => void;
 }
 
 const ConformanceTestingContext = createContext<
@@ -28,7 +36,12 @@ export const ConformanceTestingProvider: React.FC<
   const [authBaseUrl, setAuthBaseUrl] = useState<string>("");
   const [clientId, setClientId] = useState<string>("");
   const [clientSecret, setClientSecret] = useState<string>("");
-  const [version, setVersion] = useState<string>("V2.0");
+  const [version, setVersion] = useState<string>("V3.0");
+  const [authOptions, setAuthOptions] = useState<AuthOptions>({
+    scope: "",
+    audience: "",
+    resource: "",
+  });
 
   return (
     <ConformanceTestingContext.Provider
@@ -38,11 +51,13 @@ export const ConformanceTestingProvider: React.FC<
         clientId,
         clientSecret,
         version,
+        authOptions,
         setApiUrl,
         setAuthBaseUrl,
         setClientId,
         setClientSecret,
         setVersion,
+        setAuthOptions,
       }}
     >
       {children}
