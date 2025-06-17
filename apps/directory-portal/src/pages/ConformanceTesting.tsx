@@ -388,6 +388,13 @@ const ConformanceTesting: React.FC = () => {
             authenticated API requests during testing.
           </p>
 
+          <h3 style={styles.subheading}>Other Authentication Options</h3>
+          <p style={styles.paragraphText}>
+            Common OAuth options like <code>Scope</code>, <code>Resource</code> and <code>Audience</code> are
+            also available for configuration. Make sure to set these according
+            to your API's requirements.
+          </p>
+
           <h3 style={styles.subheading}>Tech Specs Version</h3>
           <p style={styles.paragraphText}>
             The{" "}
