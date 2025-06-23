@@ -47,6 +47,9 @@ const values = {
     ApiKey: process.env.SENDGRID_API_KEY ?? "",
     FromEmail: process.env.SENDGRID_FROM_EMAIL ?? "",
   },
+  Frontend: {
+    Url: process.env.FRONTEND_URL ?? "http://localhost:5173",
+  },
   ConformanceApi: {
     RunTestCasesUrl: process.env.RUN_TEST_CASES_URL ?? "",
     RecentTestRunsUrl: process.env.RECENT_TEST_RUNS_URL ?? "",

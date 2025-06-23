@@ -10,6 +10,12 @@ interface SendNotificationEmailParams {
   companyName: string;
 }
 
+interface SendPasswordResetEmailParams {
+  to: string;
+  name: string;
+  resetUrl: string;
+}
+
 export async function sendWelcomeEmail({
   to,
   name,
@@ -47,6 +53,64 @@ export async function sendConnectionRequestEmail({
   try {
     await sgMail.send(msg);
     logger.info(`Email sent to ${name}`);
+  } catch (error) {
+    logger.err(error);
+  }
+}
+
+export async function sendPasswordResetEmail({
+  to,
+  name,
+  resetUrl,
+}: SendPasswordResetEmailParams): Promise<void> {
+  const textContent = [
+    `Hello ${name},`,
+    "",
+    "We received a request to reset your password for your PACT Network account.",
+    "",
+    "Click the link below to reset your password (expires in 15 minutes):",
+    resetUrl,
+    "",
+    "If you didn't request this reset, please ignore this email.",
+    "",
+    "Best regards,",
+    "The PACT Network Team",
+  ].join("\n");
+
+  const htmlContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #0A0552;">Password Reset Request</h2>
+      <p>Hello ${name},</p>
+      <p>We received a request to reset your password for your PACT Network account.</p>
+      <p>Click the button below to reset your password (expires in 15 minutes):</p>
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${resetUrl}" 
+           style="background-color: #0A0552; color: white; padding: 12px 24px; 
+                  text-decoration: none; border-radius: 4px; display: inline-block;">
+          Reset Password
+        </a>
+      </div>
+      <p>Or copy and paste this link into your browser:</p>
+      <p style="word-break: break-all; color: #666;">${resetUrl}</p>
+      <p style="color: #666; font-size: 14px; margin-top: 30px;">
+        If you didn't request this reset, please ignore this email. 
+        Your password will not be changed.
+      </p>
+      <p>Best regards,<br>The PACT Network Team</p>
+    </div>
+  `;
+
+  const msg = {
+    to,
+    from: EnvVars.Sendgrid.FromEmail,
+    subject: "Password Reset Request - PACT Network",
+    text: textContent,
+    html: htmlContent,
+  };
+
+  try {
+    await sgMail.send(msg);
+    logger.info(`Password reset email sent to ${to}`);
   } catch (error) {
     logger.err(error);
   }

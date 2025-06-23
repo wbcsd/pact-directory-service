@@ -5,6 +5,7 @@ export interface Database {
   users: UserTable;
   connection_requests: ConnectionRequestTable;
   connections: ConnectionTable;
+  password_reset_tokens: PasswordResetTokenTable;
 }
 
 export interface CompanyTable {
@@ -24,7 +25,7 @@ export interface UserTable {
   fullName: string;
   email: string;
   password: string;
-  role: 'user' | 'administrator';
+  role: "user" | "administrator";
 }
 
 export interface ConnectionRequestTable {
@@ -42,4 +43,13 @@ export interface ConnectionTable {
   connectedCompanyTwoId: number;
   createdAt: Date;
   requestedAt: Date;
+}
+
+export interface PasswordResetTokenTable {
+  id: Generated<number>;
+  userId: number;
+  token: string;
+  expiresAt: Date;
+  createdAt: Date;
+  usedAt: Date | null;
 }

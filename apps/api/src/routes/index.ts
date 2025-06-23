@@ -24,6 +24,18 @@ userRouter.delete(Paths.Users.Delete, UserRoutes.delete);
 // Signup & Login
 companyRouter.post(Paths.Companies.Signup, CompanyRoutes.signup);
 companyRouter.post(Paths.Companies.Login, CompanyRoutes.login);
+
+// Password reset
+companyRouter.post(
+  Paths.Companies.ForgotPassword,
+  CompanyRoutes.forgotPassword
+);
+companyRouter.post(Paths.Companies.ResetPassword, CompanyRoutes.resetPassword);
+companyRouter.get(
+  Paths.Companies.VerifyResetToken,
+  CompanyRoutes.verifyResetToken
+);
+
 // Private routes
 companyRouter.get(
   Paths.Companies.MyProfile,

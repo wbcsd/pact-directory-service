@@ -15,6 +15,9 @@ export default {
     Search: "/search",
     CreateConnectionRequest: "/create-connection-request",
     ConnectionRequesAction: "/connection-request-action",
+    ForgotPassword: "/forgot-password",
+    ResetPassword: "/reset-password",
+    VerifyResetToken: "/verify-reset-token/:token",
   },
   Users: {
     Base: "/users",
