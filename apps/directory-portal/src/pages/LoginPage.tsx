@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import * as Form from "@radix-ui/react-form";
 import { Box, Button, TextField, Callout } from "@radix-ui/themes";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import HeroImage from "../assets/providers-header.webp";
 import { useAuth } from "../contexts/AuthContext";
@@ -193,6 +193,20 @@ const LoginPage: React.FC = () => {
                     Login
                   </Button>
                 </Form.Submit>
+
+                <Box style={{ textAlign: "center", marginTop: "20px" }}>
+                  <Link
+                    to="/forgot-password"
+                    style={{
+                      color: "#0A0552",
+                      textDecoration: "underline",
+                      fontSize: "0.9em",
+                    }}
+                  >
+                    Forgot your password?
+                  </Link>
+                </Box>
+
                 <p style={{ fontSize: "0.9em", marginTop: "20px" }}>
                   Need help? Contact us at:{" "}
                   <a

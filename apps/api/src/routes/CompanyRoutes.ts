@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import logger from "jet-logger";
 import EnvVars from "@src/common/EnvVars";
 import HttpStatusCodes from "@src/common/HttpStatusCodes";
 import { connectionRequestStatus } from "@src/common/types";
@@ -9,9 +10,15 @@ import { generateCredentials } from "@src/util/credentials";
 import {
   sendConnectionRequestEmail,
   sendWelcomeEmail,
+  sendPasswordResetEmail,
 } from "@src/services/EmailService";
 import { validate } from "@src/models/validation";
 import { SignUpInputSchema } from "@src/models/SignUpInput";
+import {
+  createPasswordResetToken,
+  validateResetToken,
+  markTokenAsUsed,
+} from "@src/util/password-reset";
 
 /**
  *
@@ -87,7 +94,7 @@ async function signup(req: IReq, res: IRes) {
       .values({
         fullName: fullName,
         email: email,
-        role: 'user', // Default role
+        role: "user", // Default role
         password: hashedPassword,
         companyId: company.id,
       })
@@ -95,9 +102,15 @@ async function signup(req: IReq, res: IRes) {
       .executeTakeFirstOrThrow();
   });
 
-  const token = jwt.sign( 
-    { userId: user.id, email: user.email, companyId: user.companyId, role: user.role },
-    EnvVars.Jwt.Secret, {
+  const token = jwt.sign(
+    {
+      userId: user.id,
+      email: user.email,
+      companyId: user.companyId,
+      role: user.role,
+    },
+    EnvVars.Jwt.Secret,
+    {
       expiresIn: "6h",
     }
   );
@@ -139,9 +152,15 @@ async function login(req: IReq, res: IRes) {
   }
 
   const token = jwt.sign(
-    { userId: user.id, email: user.email, companyId: user.companyId, role: user.role },
-    EnvVars.Jwt.Secret, {
-      expiresIn: "6h", 
+    {
+      userId: user.id,
+      email: user.email,
+      companyId: user.companyId,
+      role: user.role,
+    },
+    EnvVars.Jwt.Secret,
+    {
+      expiresIn: "6h",
     }
   );
 
@@ -170,7 +189,7 @@ async function myProfile(req: IReq, res: IRes) {
       "companies.companyIdentifierDescription",
       "users.fullName",
       "users.email",
-      "users.role", 
+      "users.role",
     ])
     .where("users.email", "=", email)
     .executeTakeFirst();
@@ -519,6 +538,168 @@ async function connectionRequestAction(req: IReq, res: IRes) {
     .json({ message: "Connection created successfully" });
 }
 
+/**
+ * Forgot Password - Request password reset
+ */
+async function forgotPassword(req: IReq, res: IRes) {
+  const { email } = req.body;
+
+  if (!email || typeof email !== "string") {
+    res
+      .status(HttpStatusCodes.BAD_REQUEST)
+      .json({ error: "Email is required" });
+    return;
+  }
+
+  try {
+    // Find user by email
+    const user = await db
+      .selectFrom("users")
+      .innerJoin("companies", "users.companyId", "companies.id")
+      .select(["users.id", "users.fullName", "users.email"])
+      .where("users.email", "=", email.toLowerCase().trim())
+      .executeTakeFirst();
+
+    // Always return success to prevent email enumeration attacks
+    if (!user) {
+      res
+        .status(HttpStatusCodes.OK)
+        .json({ message: "If that email exists, a reset link has been sent." });
+      return;
+    }
+
+    // Create password reset token
+    const token = await createPasswordResetToken(user.id);
+
+    // Generate reset URL
+    const resetUrl = `${EnvVars.Frontend.Url}/reset-password/${token}`;
+
+    // Send password reset email
+    await sendPasswordResetEmail({
+      to: user.email,
+      name: user.fullName,
+      resetUrl,
+    });
+
+    res
+      .status(HttpStatusCodes.OK)
+      .json({ message: "If that email exists, a reset link has been sent." });
+  } catch (error) {
+    logger.err(error, true);
+    res
+      .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: "An error occurred. Please try again later." });
+  }
+}
+
+/**
+ * Reset Password - Reset password with token
+ */
+async function resetPassword(req: IReq, res: IRes) {
+  const { token, password, confirmPassword } = req.body;
+
+  if (
+    !token ||
+    typeof token !== "string" ||
+    !password ||
+    typeof password !== "string" ||
+    !confirmPassword ||
+    typeof confirmPassword !== "string"
+  ) {
+    res
+      .status(HttpStatusCodes.BAD_REQUEST)
+      .json({ error: "Token, password, and confirm password are required" });
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    res
+      .status(HttpStatusCodes.BAD_REQUEST)
+      .json({ error: "Passwords do not match" });
+    return;
+  }
+
+  if (password.length < 6) {
+    res
+      .status(HttpStatusCodes.BAD_REQUEST)
+      .json({ error: "Password must be at least 6 characters long" });
+    return;
+  }
+
+  try {
+    // Validate reset token
+    const tokenValidation = await validateResetToken(token);
+
+    if (!tokenValidation.isValid) {
+      res
+        .status(HttpStatusCodes.BAD_REQUEST)
+        .json({ error: tokenValidation.error });
+      return;
+    }
+
+    if (!tokenValidation.userId) {
+      res.status(HttpStatusCodes.BAD_REQUEST).json({ error: "Invalid token" });
+      return;
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Update user password
+    await db
+      .updateTable("users")
+      .set({ password: hashedPassword })
+      .where("id", "=", tokenValidation.userId)
+      .execute();
+
+    // Mark token as used
+    await markTokenAsUsed(token);
+
+    res
+      .status(HttpStatusCodes.OK)
+      .json({ message: "Password has been reset successfully" });
+  } catch (error) {
+    logger.err(error, true);
+    res
+      .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: "An error occurred. Please try again later." });
+  }
+}
+
+/**
+ * Verify Reset Token - Check if reset token is valid
+ */
+async function verifyResetToken(req: IReq, res: IRes) {
+  const { token } = req.params;
+
+  if (!token || typeof token !== "string") {
+    res
+      .status(HttpStatusCodes.BAD_REQUEST)
+      .json({ error: "Token is required" });
+    return;
+  }
+
+  try {
+    const tokenValidation = await validateResetToken(token);
+
+    if (!tokenValidation.isValid) {
+      res
+        .status(HttpStatusCodes.BAD_REQUEST)
+        .json({ error: tokenValidation.error, valid: false });
+      return;
+    }
+
+    res
+      .status(HttpStatusCodes.OK)
+      .json({ valid: true, message: "Token is valid" });
+  } catch (error) {
+    logger.err(error, true);
+    res
+      .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: "An error occurred. Please try again later." });
+  }
+}
+
 export default {
   signup,
   login,
@@ -527,4 +708,7 @@ export default {
   searchCompanies,
   createConnectionRequest,
   connectionRequestAction,
+  forgotPassword,
+  resetPassword,
+  verifyResetToken,
 } as const;
