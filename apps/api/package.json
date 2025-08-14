@@ -1,5 +1,6 @@
 {
   "name": "api",
+  "private": true,
   "version": "0.0.0",
   "scripts": {
     "clean": "rimraf ./dist",
@@ -13,10 +14,7 @@
     "test:hot": "nodemon --exec \"npm run test\" --watch ./src --watch ./spec -e ts",
     "db:migrate": "ts-node ./src/database/migrate-to-latest.ts",
     "db:add-user": "ts-node ./src/database/add-user.ts",
-    "show-config": "NODE_ENV=production ts-node ./src/common/EnvVars.ts"  
-  },
-  "engines": {
-    "node": ">=20.9.0"
+    "show-config": "NODE_ENV=production ts-node ./src/common/EnvVars.ts"
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.4",
