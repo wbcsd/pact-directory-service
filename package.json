@@ -1,7 +1,9 @@
 {
-    "name": "pact-directory",
-    "version": "1.0.0",
-    "scripts": {
-        "dev": "pnpm -r dev"
-    }
+  "name": "pact-directory",
+  "version": "1.0.0",
+  "workspaces": [
+    "apps/api",
+    "apps/directory-portal"
+  ],
+  "private": true
 }

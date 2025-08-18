@@ -24,7 +24,7 @@ Before setting up the development environment, ensure you have the following too
 ### Required Tools
 
 - **Node.js** (>= 20.9.0) - [Download here](https://nodejs.org/)
-- **pnpm** (>= 8.0.0) - Install with `npm install -g pnpm`
+- **npm** (>= 8.0.0) - Install with `npm install -g npm`
 - **Docker** (>= 20.0.0) - [Download here](https://www.docker.com/get-started)
 - **Docker Compose** (>= 2.0.0) - Usually included with Docker Desktop
 - **Git** - For version control
@@ -33,7 +33,7 @@ Before setting up the development environment, ensure you have the following too
 
 ```bash
 node --version    # Should be >= 20.9.0
-pnpm --version    # Should be >= 8.0.0
+npm --version    # Should be >= 9.0.0
 docker --version  # Should be >= 20.0.0
 docker compose version  # Should be >= 2.0.0
 ```
@@ -48,7 +48,7 @@ git clone https://github.com/wbcsd/pact-directory.git
 cd pact-directory
 
 # Install dependencies for all workspaces
-pnpm install
+npm i
 ```
 
 ### 2. Database Setup
@@ -86,20 +86,20 @@ For local development, the default `development.env` should work out of the box.
 cd apps/api
 
 # Run database migrations
-pnpm run db:migrate
+npm run db:migrate
 
 # Add a test user (required for authentication testing)
-pnpm run db:add-user test@example.com "Test User" "testpassword" "administrator" "TestCompany" "test-company-id"
+npm run db:add-user test@example.com "Test User" "testpassword" "administrator" "TestCompany" "test-company-id"
 ```
 
 #### Start the API Server
 
 ```bash
 # Run in development mode with hot reloading
-pnpm run dev
+npm run dev
 
 # Alternative: Run without hot reloading
-pnpm run dev:hot
+npm run dev:hot
 ```
 
 The API will be available at `http://localhost:3010`
@@ -128,7 +128,7 @@ VITE_ENABLE_IM=false
 
 ```bash
 # Run in development mode
-pnpm run dev
+npm run dev
 ```
 
 The frontend will be available at `http://localhost:5173`
@@ -141,7 +141,7 @@ From the project root, you can start both applications simultaneously:
 
 ```bash
 # This runs both API and frontend in development mode
-pnpm run dev
+npm run dev
 ```
 
 ### Running Tests
@@ -152,13 +152,13 @@ pnpm run dev
 cd apps/api
 
 # Run all tests
-pnpm test
+npm test
 
 # Run tests with hot reloading
-pnpm run test:hot
+npm run test:hot
 
 # Run specific test file
-pnpm test -- users
+npm test -- users
 ```
 
 #### Frontend Tests
@@ -167,7 +167,7 @@ pnpm test -- users
 cd apps/directory-portal
 
 # Run linting
-pnpm run lint
+npm run lint
 ```
 
 ## Database Management
@@ -178,13 +178,13 @@ pnpm run lint
 cd apps/api
 
 # Run migrations to latest
-pnpm run db:migrate
+npm run db:migrate
 
 # Add a new user
-pnpm run db:add-user <email> <fullName> <password> <role> <companyName> <companyIdentifier>
+npm run db:add-user <email> <fullName> <password> <role> <companyName> <companyIdentifier>
 
 # Example:
-pnpm run db:add-user user@company.com "John Doe" "password123" "administrator" "ACME Corp" "acme-corp"
+npm run db:add-user user@company.com "John Doe" "password123" "administrator" "ACME Corp" "acme-corp"
 ```
 
 ### Database Schema
@@ -316,8 +316,8 @@ docker compose down -v
 # Restart fresh
 docker compose up -d
 cd apps/api
-pnpm run db:migrate
-pnpm run db:add-user test@example.com "Test User" "testpassword" "administrator" "TestCompany" "test-company"
+npm run db:migrate
+npm run db:add-user test@example.com "Test User" "testpassword" "administrator" "TestCompany" "test-company"
 ```
 
 ## API Endpoints
