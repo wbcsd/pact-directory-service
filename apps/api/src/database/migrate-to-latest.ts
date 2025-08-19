@@ -50,7 +50,7 @@ async function migrateToLatest() {
           break;
         default:
           // Type safety - handle potential future statuses
-          console.log(`Migration "${it.migrationName}" has status: ${it.status}`);
+          console.log(`Migration "${it.migrationName}" has status: ${it.status as string}`);
       }
     });
 
