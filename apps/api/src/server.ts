@@ -56,6 +56,17 @@ if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf()) {
   app.use(helmet());
 }
 
+// Define health check route
+app.get("/health-check", (_, res) => {
+  res.status(200).send({
+    status: "OK",
+    service: process.env.SERVICE_NAME,
+    git_commit: process.env.RENDER_GIT_COMMIT || "N/A",
+    render_service_name: process.env.RENDER_SERVICE_NAME || "N/A",
+    render_service_type: process.env.RENDER_SERVICE_TYPE || "N/A",
+  });
+});
+
 // Add APIs, must be after middleware
 app.use(Paths.DirectoryBase, BaseRouter);
 app.use(Paths.IdentityProviderBase, AuthRouter);
