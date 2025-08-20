@@ -40,24 +40,24 @@ async function migrateToLatest() {
 
     results?.forEach((it) => {
       switch (it.status) {
-      case "Success":
-        logger.info(
-          `Migration "${it.migrationName}" was executed successfully.`
-        );
-        break;
-      case "Error":
-        logger.error(`Migration "${it.migrationName}" failed to execute.`);
-        break;
-      case "NotExecuted":
-        console.warn(
-          `Migration "${it.migrationName}" was not executed due to earlier failures.`
-        );
-        break;
-      default:
-        // Type safety - handle potential future statuses
-        logger.info(
-          `Migration "${it.migrationName}" has status: ${it.status as string}`
-        );
+        case "Success":
+          logger.info(
+            `Migration "${it.migrationName}" was executed successfully.`
+          );
+          break;
+        case "Error":
+          logger.error(`Migration "${it.migrationName}" failed to execute.`);
+          break;
+        case "NotExecuted":
+          console.warn(
+            `Migration "${it.migrationName}" was not executed due to earlier failures.`
+          );
+          break;
+        default:
+          // Type safety - handle potential future statuses
+          logger.info(
+            `Migration "${it.migrationName}" has status: ${it.status as string}`
+          );
       }
     });
 
@@ -67,10 +67,7 @@ async function migrateToLatest() {
       process.exitCode = 1;
     }
   } catch (error) {
-    logger.error<string | undefined>(
-      "Unexpected error during migration:",
-      (error as Error).message
-    );
+    logger.error(error, "Unexpected error during migration");
     process.exitCode = 1;
   } finally {
     // Ensure the database connection is always closed.
@@ -79,9 +76,6 @@ async function migrateToLatest() {
 }
 
 migrateToLatest().catch((error: unknown) => {
-  logger.error<string | undefined>(
-    "Fatal error during migration process:",
-    (error as Error).message
-  );
+  logger.error(error, "Fatal error during migration process:");
   process.exitCode = 1;
 });
