@@ -1,28 +1,12 @@
 import dotenv from "dotenv";
-import path from "path";
+// import path from "path";
 
 // Load environment variables from .env files
-
-const nodeEnv = getEnvVarDefaultOrThrow("NODE_ENV");
-
-/* eslint-disable n/no-process-env */
-dotenv.config({
-  path: [
-    path.resolve(process.cwd(), `.env`),
-    path.resolve(process.cwd(), `./env/${nodeEnv}.env`),
-    path.resolve(__dirname, `../../env/${nodeEnv}.env`),
-  ],
-});
-
-// Use only in case of development or testing
-const conformanceAPIBaseUrl = getEnvVarDefaultOrThrow(
-  "CONFORMANCE_API",
-  nodeEnv === "production" ? "" : undefined
-);
+dotenv.config();
 
 /* eslint-disable n/no-process-env */
 const values = {
-  NodeEnv: nodeEnv,
+  NodeEnv: getEnvVarDefaultOrThrow("NODE_ENV"),
   Port: getEnvVarDefaultOrThrow("PORT"),
   CookieProps: {
     Key: "ExpressGeneratorTs",
@@ -59,9 +43,9 @@ const values = {
     Url: process.env.FRONTEND_URL ?? "http://localhost:5173",
   },
   ConformanceApi: {
-    RunTestCasesUrl: `${conformanceAPIBaseUrl}/runTestCases`,
-    RecentTestRunsUrl: `${conformanceAPIBaseUrl}/getRecentTestRuns`,
-    TestResultsUrl: `${conformanceAPIBaseUrl}/getTestResults`,
+    RunTestCasesUrl: `${getEnvVarDefaultOrThrow("CONFORMANCE_API")}/runTestCases`,
+    RecentTestRunsUrl: `${getEnvVarDefaultOrThrow("CONFORMANCE_API")}/getRecentTestRuns`,
+    TestResultsUrl: `${getEnvVarDefaultOrThrow("CONFORMANCE_API")}/getTestResults`,
   },
 };
 
@@ -80,11 +64,5 @@ function getEnvVarDefaultOrThrow(key: string, defaultValue?: string): string {
 export default values;
 
 if (require.main == module) {
-  // If this file is run directly, log the environment variables
-  console.log("Configuration files scanned:", [
-    path.resolve(process.cwd(), `.env`),
-    path.resolve(process.cwd(), `./env/${process.env.NODE_ENV}.env`),
-    path.resolve(__dirname, `../../env/${process.env.NODE_ENV}.env`),
-  ]);
   console.log("Configuration:", values);
 }
