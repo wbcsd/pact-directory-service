@@ -233,6 +233,7 @@ Key variables include:
 - `DIR_DB_USER` - Database user (default: postgres)
 - `DIR_DB_PASSWORD` - Database password (default: postgres)
 - `DIR_DB_NAME` - Database name (default: pact_directory_local)
+- `DIR_DB_SSL` - Enable SSL/TLS for database connection (default: false)
 
 #### Authentication Configuration
 

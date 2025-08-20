@@ -12,6 +12,7 @@ const dialect = new PostgresDialect({
     password: EnvVars.DirectoryDatabase.Password,
     port: 5432,
     max: 10,
+    ssl: EnvVars.DirectoryDatabase.Ssl,
   }),
 });
 
