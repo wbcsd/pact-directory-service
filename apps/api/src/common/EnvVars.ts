@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-import logger from "@src/util/logger";
 
 // Load environment variables from .env files
 dotenv.config();
@@ -71,8 +70,5 @@ export default values;
 
 if (require.main == module) {
   // If this file is run directly, log the environment variables
-  logger.info<string | undefined>(
-    "Configuration:",
-    JSON.stringify(values, null, 2)
-  );
+  console.log("Configuration", values);
 }
