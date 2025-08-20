@@ -71,5 +71,8 @@ export default values;
 
 if (require.main == module) {
   // If this file is run directly, log the environment variables
-  logger.info("Configuration:", JSON.stringify(values, null, 2) as any);
+  logger.info<string | undefined>(
+    "Configuration:",
+    JSON.stringify(values, null, 2)
+  );
 }

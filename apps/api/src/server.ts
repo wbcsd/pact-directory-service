@@ -61,9 +61,9 @@ app.get("/health-check", (_, res) => {
   res.status(200).send({
     status: "OK",
     service: process.env.SERVICE_NAME,
-    git_commit: process.env.RENDER_GIT_COMMIT || "N/A",
-    render_service_name: process.env.RENDER_SERVICE_NAME || "N/A",
-    render_service_type: process.env.RENDER_SERVICE_TYPE || "N/A",
+    git_commit: process.env.RENDER_GIT_COMMIT ?? "N/A",
+    render_service_name: process.env.RENDER_SERVICE_NAME ?? "N/A",
+    render_service_type: process.env.RENDER_SERVICE_TYPE ?? "N/A",
   });
 });
 

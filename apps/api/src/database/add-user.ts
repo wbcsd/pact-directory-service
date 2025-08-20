@@ -79,8 +79,8 @@ async function main() {
       .executeTakeFirstOrThrow();
 
     logger.info(`User ${email} added to company ${companyName}.`);
-  } catch (err) {
-    logger.error("Error:", err.message);
+  } catch (error) {
+    logger.error<string | undefined>("Error:", (error as Error).message);
     // eslint-disable-next-line n/no-process-exit
     process.exit(1);
   } finally {
