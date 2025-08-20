@@ -30,6 +30,7 @@ const values = {
     User: getEnvVarDefaultOrThrow("DIR_DB_USER"),
     Password: getEnvVarDefaultOrThrow("DIR_DB_PASSWORD"),
     Database: getEnvVarDefaultOrThrow("DIR_DB_NAME"),
+    Ssl: process.env.DIR_DB_SSL === "true",
   },
   EmailNotificationTemplates: {
     Welcome: process.env.EMAIL_WELCOME_TEMPLATE ?? "",
