@@ -40,24 +40,24 @@ async function migrateToLatest() {
 
     results?.forEach((it) => {
       switch (it.status) {
-        case "Success":
-          logger.info(
-            `Migration "${it.migrationName}" was executed successfully.`
-          );
-          break;
-        case "Error":
-          logger.error(`Migration "${it.migrationName}" failed to execute.`);
-          break;
-        case "NotExecuted":
-          console.warn(
-            `Migration "${it.migrationName}" was not executed due to earlier failures.`
-          );
-          break;
-        default:
-          // Type safety - handle potential future statuses
-          logger.info(
-            `Migration "${it.migrationName}" has status: ${it.status as string}`
-          );
+      case "Success":
+        logger.info(
+          `Migration "${it.migrationName}" was executed successfully.`
+        );
+        break;
+      case "Error":
+        logger.error(`Migration "${it.migrationName}" failed to execute.`);
+        break;
+      case "NotExecuted":
+        console.warn(
+          `Migration "${it.migrationName}" was not executed due to earlier failures.`
+        );
+        break;
+      default:
+        // Type safety - handle potential future statuses
+        logger.info(
+          `Migration "${it.migrationName}" has status: ${it.status as string}`
+        );
       }
     });
 

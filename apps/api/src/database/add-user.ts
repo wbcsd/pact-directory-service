@@ -80,7 +80,7 @@ async function main() {
 
     logger.info(`User ${email} added to company ${companyName}.`);
   } catch (err) {
-    logger.error("Error:", err.message as any);
+    logger.error("Error:", err.message);
     // eslint-disable-next-line n/no-process-exit
     process.exit(1);
   } finally {
