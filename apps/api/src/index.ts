@@ -6,6 +6,6 @@ import server from "./server";
 // **** Run **** //
 
 const SERVER_START_MSG =
-  "Express server started on port: " + EnvVars.Port.toString();
+  "Express server started on port: " + EnvVars.Port;
 
 server.listen(EnvVars.Port, () => logger.info(SERVER_START_MSG));

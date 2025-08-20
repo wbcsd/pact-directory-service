@@ -32,24 +32,25 @@ async function runTestCases(req: IReq, res: IRes) {
       return;
     }
 
-    const { apiUrl, clientId, clientSecret, version, authBaseUrl, scope, resource, audience } =
-      req.body as {
-        clientId: string;
-        clientSecret: string;
-        apiUrl: string;
-        version: string;
-        authBaseUrl?: string;
-        scope?: string;
-        resource?: string;
-        audience?: string;
-      };
-
-    if (!EnvVars.ConformanceApi.RunTestCasesUrl) {
-      res
-        .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ error: "Test cases URL not configured." });
-      return;
-    }
+    const {
+      apiUrl,
+      clientId,
+      clientSecret,
+      version,
+      authBaseUrl,
+      scope,
+      resource,
+      audience,
+    } = req.body as {
+      clientId: string;
+      clientSecret: string;
+      apiUrl: string;
+      version: string;
+      authBaseUrl?: string;
+      scope?: string;
+      resource?: string;
+      audience?: string;
+    };
 
     // eslint-disable-next-line n/no-unsupported-features/node-builtins
     const response = await fetch(EnvVars.ConformanceApi.RunTestCasesUrl, {
@@ -93,13 +94,6 @@ async function getTestResults(req: IReq, res: IRes) {
     return;
   }
 
-  if (!EnvVars.ConformanceApi.TestResultsUrl) {
-    res
-      .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ error: "Test results URL not configured." });
-    return;
-  }
-
   try {
     const url = new URL(EnvVars.ConformanceApi.TestResultsUrl);
     url.searchParams.append("testRunId", testRunId as string);
@@ -113,7 +107,6 @@ async function getTestResults(req: IReq, res: IRes) {
     });
     const data: unknown = await response.json();
     res.status(HttpStatusCodes.OK).json(data);
-
   } catch (error) {
     logger.err(error);
     res
@@ -131,7 +124,7 @@ async function getRecentTestRuns(req: IReq, res: IRes) {
     // Get user data to fetch email
     const user = await db
       .selectFrom("users")
-      .select(["email","role"])
+      .select(["email", "role"])
       .where("id", "=", Number(userId))
       .executeTakeFirst();
 
@@ -140,18 +133,11 @@ async function getRecentTestRuns(req: IReq, res: IRes) {
       return;
     }
 
-    if (!EnvVars.ConformanceApi.RecentTestRunsUrl) {
-      res
-        .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ error: "Recent test runs URL not configured." });
-      return;
-    }
-
     const url = new URL(EnvVars.ConformanceApi.RecentTestRunsUrl);
     if (user.role !== "administrator") {
       url.searchParams.append("adminEmail", user.email);
     }
-    
+
     // eslint-disable-next-line n/no-unsupported-features/node-builtins
     const response = await fetch(url.toString(), {
       method: "GET",
