@@ -67,7 +67,7 @@ async function migrateToLatest() {
       process.exitCode = 1;
     }
   } catch (error: unknown) {
-    logger.error("Unexpected error during migration:", error);
+    logger.error("Unexpected error during migration:", error as any);
     process.exitCode = 1;
   } finally {
     // Ensure the database connection is always closed.
@@ -76,6 +76,6 @@ async function migrateToLatest() {
 }
 
 migrateToLatest().catch((error: unknown) => {
-  logger.error("Fatal error during migration process:", error);
+  logger.error("Fatal error during migration process:", error as any);
   process.exitCode = 1;
 });
