@@ -1,4 +1,4 @@
-import logger from "jet-logger";
+import logger from "@src/util/logger";
 import sgMail from "@sendgrid/mail";
 import EnvVars from "@src/common/EnvVars";
 
@@ -33,7 +33,7 @@ export async function sendWelcomeEmail({
     await sgMail.send(msg);
     logger.info(`Email sent to ${name}`);
   } catch (error) {
-    logger.err(error);
+    logger.error(error);
   }
 }
 
@@ -54,7 +54,7 @@ export async function sendConnectionRequestEmail({
     await sgMail.send(msg);
     logger.info(`Email sent to ${name}`);
   } catch (error) {
-    logger.err(error);
+    logger.error(error);
   }
 }
 
@@ -112,6 +112,6 @@ export async function sendPasswordResetEmail({
     await sgMail.send(msg);
     logger.info(`Password reset email sent to ${to}`);
   } catch (error) {
-    logger.err(error);
+    logger.error(error);
   }
 }

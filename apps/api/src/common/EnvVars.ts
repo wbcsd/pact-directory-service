@@ -1,5 +1,7 @@
 import dotenv from "dotenv";
 // import path from "path";
+import path from "path";
+import logger from "@src/util/logger";
 
 // Load environment variables from .env files
 dotenv.config();
@@ -43,9 +45,15 @@ const values = {
     Url: process.env.FRONTEND_URL ?? "http://localhost:5173",
   },
   ConformanceApi: {
-    RunTestCasesUrl: `${getEnvVarDefaultOrThrow("CONFORMANCE_API")}/runTestCases`,
-    RecentTestRunsUrl: `${getEnvVarDefaultOrThrow("CONFORMANCE_API")}/getRecentTestRuns`,
-    TestResultsUrl: `${getEnvVarDefaultOrThrow("CONFORMANCE_API")}/getTestResults`,
+    RunTestCasesUrl: `${getEnvVarDefaultOrThrow(
+      "CONFORMANCE_API"
+    )}/runTestCases`,
+    RecentTestRunsUrl: `${getEnvVarDefaultOrThrow(
+      "CONFORMANCE_API"
+    )}/getRecentTestRuns`,
+    TestResultsUrl: `${getEnvVarDefaultOrThrow(
+      "CONFORMANCE_API"
+    )}/getTestResults`,
   },
 };
 
@@ -65,4 +73,14 @@ export default values;
 
 if (require.main == module) {
   console.log("Configuration:", values);
+  // If this file is run directly, log the environment variables
+  logger.info(
+    "Configuration files scanned:",
+    [
+      path.resolve(process.cwd(), `.env`),
+      path.resolve(process.cwd(), `./env/${process.env.NODE_ENV}.env`),
+      path.resolve(__dirname, `../../env/${process.env.NODE_ENV}.env`),
+    ].join(",") as any
+  );
+  logger.info("Configuration:", JSON.stringify(values, null, 2) as any);
 }

@@ -84,9 +84,9 @@ const clientSecret = "your_client_secret";
 
 try {
   const decoded = jwt.verify(token, clientSecret);
-  console.log("Token is valid:", decoded);
+  logger.info("Token is valid:", decoded);
 } catch (err) {
-  console.error("Token verification failed:", err);
+  logger.error("Token verification failed:", err as any);
 }
 ```
 

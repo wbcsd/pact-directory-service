@@ -1,6 +1,6 @@
 import { CallbackHandler } from "supertest";
 import moment from "moment";
-import logger from "jet-logger";
+import logger from "@src/util/logger";
 
 import { TApiCb, TRes } from "spec/types/misc";
 
@@ -10,11 +10,11 @@ import { TApiCb, TRes } from "spec/types/misc";
 function apiCb(
   cb: TApiCb,
   dateParam = "created",
-  printErr?: boolean,
+  printErr?: boolean
 ): CallbackHandler {
   return (err: Error, res: TRes) => {
     if (printErr) {
-      logger.err(err);
+      logger.error(err);
     }
     _strToDate(res.body, dateParam);
     return cb(res);
