@@ -36,13 +36,6 @@ app.use(
     name: process.env.SERVICE_NAME,
     // Log debug information for anything lower than production
     level: process.env.NODE_ENV === "prod" ? "info" : "debug",
-    transport: {
-      target: "pino-pretty",
-      options: {
-        colorize: true,
-        translateTime: "SYS:standard",
-      },
-    },
   })
 );
 

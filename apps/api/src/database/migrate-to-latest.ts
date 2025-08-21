@@ -9,7 +9,6 @@ import {
 } from "kysely";
 import { Database } from "./types";
 import EnvVars from "../common/EnvVars";
-import logger from "../util/logger";
 
 async function migrateToLatest() {
   const db = new Kysely<Database>({
@@ -41,29 +40,26 @@ async function migrateToLatest() {
     results?.forEach((it) => {
       switch (it.status) {
       case "Success":
-        logger.info(`Migration "${it.migrationName}" was executed successfully.`);
+        console.info(`Migration "${it.migrationName}" was executed successfully.`);
         break;
       case "Error":
-        logger.error(`Migration "${it.migrationName}" failed to execute.`);
+        console.error(`Migration "${it.migrationName}" failed to execute.`);
         break;
       case "NotExecuted":
-        logger.warn(`Migration "${it.migrationName}" was not executed due to earlier failures.`);
+        console.warn(`Migration "${it.migrationName}" was not executed due to earlier failures.`);
         break;
       default:
         // Type safety - handle potential future statuses
-        logger.info(
-          `Migration "${it.migrationName}" has status: ${it.status as string}`
-        );
+        console.info(`Migration "${it.migrationName}" has status: ${it.status as string}`);
       }
     });
 
     if (error) {
-      logger.error("failed to migrate");
-      logger.error(error);
+      console.error("failed to migrate", error);
       process.exitCode = 1;
     }
   } catch (error) {
-    logger.error(error, "Unexpected error during migration");
+    console.error("Unexpected error during migration", error);
     process.exitCode = 1;
   } finally {
     // Ensure the database connection is always closed.
@@ -72,6 +68,6 @@ async function migrateToLatest() {
 }
 
 migrateToLatest().catch((error: unknown) => {
-  logger.error(error, "Fatal error during migration process:");
+  console.error("Fatal error during migration process:", error);
   process.exitCode = 1;
 });
