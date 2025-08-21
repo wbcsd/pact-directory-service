@@ -1,4 +1,4 @@
-import logger from "jet-logger";
+import logger from "@src/util/logger";
 import HttpStatusCodes from "@src/common/HttpStatusCodes";
 import { IReq, IRes } from "./common/types";
 import { db } from "@src/database/db";
@@ -77,7 +77,7 @@ async function runTestCases(req: IReq, res: IRes) {
     const data: unknown = await response.json();
     res.status(HttpStatusCodes.OK).json(data);
   } catch (error) {
-    logger.err(error);
+    logger.error(error);
     res
       .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
       .json({ error: "Failed to execute test cases." });
@@ -108,7 +108,7 @@ async function getTestResults(req: IReq, res: IRes) {
     const data: unknown = await response.json();
     res.status(HttpStatusCodes.OK).json(data);
   } catch (error) {
-    logger.err(error);
+    logger.error(error);
     res
       .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
       .json({ error: "Failed to fetch test results." });
@@ -149,7 +149,7 @@ async function getRecentTestRuns(req: IReq, res: IRes) {
     const data: unknown = await response.json();
     res.status(HttpStatusCodes.OK).json(data);
   } catch (error) {
-    logger.err(error);
+    logger.error(error);
     res
       .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
       .json({ error: "Failed to fetch recent test runs." });

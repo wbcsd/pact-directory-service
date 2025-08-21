@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import logger from "jet-logger";
+import logger from "@src/util/logger";
 import EnvVars from "@src/common/EnvVars";
 import HttpStatusCodes from "@src/common/HttpStatusCodes";
 
@@ -21,7 +21,7 @@ const jwtAuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
     res.locals.user = decoded;
     next();
   } catch (error) {
-    logger.err(error, true);
+    logger.error(error);
     res.status(HttpStatusCodes.UNAUTHORIZED).json({ message: "Invalid token" });
 
     return;

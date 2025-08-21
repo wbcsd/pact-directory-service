@@ -24,7 +24,7 @@ function new_(
   name?: string,
   email?: string,
   created?: Date,
-  id?: number, // id last cause usually set by db
+  id?: number // id last cause usually set by db
 ): IUser {
   return {
     id: id ?? -1,

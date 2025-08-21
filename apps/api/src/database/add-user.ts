@@ -1,19 +1,20 @@
 import bcrypt from "bcrypt";
 import { db } from "@src/database/db";
+import logger from "@src/util/logger";
 
 async function main() {
-  const [
-    ,,
-    email,
-    fullName,
-    password,
-    role,
-    companyIdentifier,
-    companyName
-  ] = process.argv;
+  const [, , email, fullName, password, role, companyIdentifier, companyName] =
+    process.argv;
 
-  if (!email || !fullName || !password || !role || !companyIdentifier || !companyName) {
-    console.error(
+  if (
+    !email ||
+    !fullName ||
+    !password ||
+    !role ||
+    !companyIdentifier ||
+    !companyName
+  ) {
+    logger.error(
       "Usage: ts-node add-user.ts <email> <fullName> <password> <role> <companyIdentifier> <companyName>"
     );
     // eslint-disable-next-line n/no-process-exit
@@ -44,9 +45,9 @@ async function main() {
         .returningAll()
         .executeTakeFirstOrThrow();
       company = inserted;
-      console.log(`Created company: ${companyName}`);
+      logger.info(`Created company: ${companyName}`);
     } else {
-      console.log(`Company already exists: ${companyName}`);
+      logger.info(`Company already exists: ${companyName}`);
     }
 
     // Check if user exists
@@ -57,8 +58,8 @@ async function main() {
       .executeTakeFirst();
 
     if (userExists) {
-      console.error("User with this email already exists.");
-    // eslint-disable-next-line n/no-process-exit
+      logger.error("User with this email already exists.");
+      // eslint-disable-next-line n/no-process-exit
       process.exit(1);
     }
 
@@ -72,14 +73,14 @@ async function main() {
         fullName,
         email,
         password: hashedPassword,
-        role: role !== 'administrator' ? 'user' : role,
+        role: role !== "administrator" ? "user" : role,
         companyId: company.id,
       })
       .executeTakeFirstOrThrow();
 
-    console.log(`User ${email} added to company ${companyName}.`);
-  } catch (err) {
-    console.error("Error:", err);
+    logger.info(`User ${email} added to company ${companyName}.`);
+  } catch (error) {
+    logger.error(error, "Error");
     // eslint-disable-next-line n/no-process-exit
     process.exit(1);
   } finally {

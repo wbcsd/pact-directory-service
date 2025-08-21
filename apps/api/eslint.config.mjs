@@ -15,6 +15,7 @@ export default tseslint.config(
     languageOptions: {
       parserOptions: {
         project: "./tsconfig.json",
+        tsconfigRootDir: import.meta.dirname,
         warnOnUnsupportedTypeScriptVersion: false,
       },
     },
@@ -38,7 +39,7 @@ export default tseslint.config(
       "max-len": [
         "warn",
         {
-          code: 80,
+          code: 120,
         },
       ],
       "@stylistic/ts/semi": ["warn"],
@@ -55,7 +56,7 @@ export default tseslint.config(
       "no-console": 1,
       "no-extra-boolean-cast": 0,
       indent: ["warn", 2],
-      "n/no-process-env": 1,
+      "n/no-process-env": 0,
       "n/no-missing-import": 0,
       "n/no-unpublished-import": 0,
     },

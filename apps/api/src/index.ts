@@ -1,4 +1,4 @@
-import logger from "jet-logger";
+import logger from "@src/util/logger";
 
 import EnvVars from "@src/common/EnvVars";
 import server from "./server";

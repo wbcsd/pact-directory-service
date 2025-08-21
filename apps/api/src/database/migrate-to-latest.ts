@@ -9,6 +9,7 @@ import {
 } from "kysely";
 import { Database } from "./types";
 import EnvVars from "../common/EnvVars";
+import logger from "../util/logger";
 
 async function migrateToLatest() {
   const db = new Kysely<Database>({
@@ -39,36 +40,38 @@ async function migrateToLatest() {
 
     results?.forEach((it) => {
       switch (it.status) {
-        case "Success":
-          console.log(`Migration "${it.migrationName}" was executed successfully.`);
-          break;
-        case "Error":
-          console.error(`Migration "${it.migrationName}" failed to execute.`);
-          break;
-        case "NotExecuted":
-          console.warn(`Migration "${it.migrationName}" was not executed due to earlier failures.`);
-          break;
-        default:
-          // Type safety - handle potential future statuses
-          console.log(`Migration "${it.migrationName}" has status: ${it.status as string}`);
+      case "Success":
+        logger.info(`Migration "${it.migrationName}" was executed successfully.`);
+        break;
+      case "Error":
+        logger.error(`Migration "${it.migrationName}" failed to execute.`);
+        break;
+      case "NotExecuted":
+        logger.warn(`Migration "${it.migrationName}" was not executed due to earlier failures.`);
+        break;
+      default:
+        // Type safety - handle potential future statuses
+        logger.info(
+          `Migration "${it.migrationName}" has status: ${it.status as string}`
+        );
       }
     });
 
     if (error) {
-      console.error("failed to migrate");
-      console.error(error);
+      logger.error("failed to migrate");
+      logger.error(error);
       process.exitCode = 1;
     }
-  } catch (error: unknown) {
-    console.error("Unexpected error during migration:", error);
+  } catch (error) {
+    logger.error(error, "Unexpected error during migration");
     process.exitCode = 1;
   } finally {
     // Ensure the database connection is always closed.
-    await db.destroy()
+    await db.destroy();
   }
 }
 
 migrateToLatest().catch((error: unknown) => {
-  console.error("Fatal error during migration process:", error);
+  logger.error(error, "Fatal error during migration process:");
   process.exitCode = 1;
 });

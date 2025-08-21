@@ -1,6 +1,6 @@
 import find from "find";
 import Jasmine from "jasmine";
-import logger from "jet-logger";
+import logger from "@src/util/logger";
 import { argv } from "process";
 
 // Init Jasmine
@@ -23,7 +23,7 @@ if (!!argv[2]) {
     if (files.length === 1) {
       jasmine.execute([files[0]]);
     } else {
-      logger.err("Test file not found!");
+      logger.error("Test file not found!");
     }
   });
 } else {
@@ -37,7 +37,7 @@ if (!!argv[2]) {
     if (info.overallStatus === "passed") {
       logger.info("All tests have passed :)");
     } else {
-      logger.err("At least one test has failed :(");
+      logger.error("At least one test has failed :(");
     }
   }
 })();
