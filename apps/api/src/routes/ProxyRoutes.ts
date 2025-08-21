@@ -52,7 +52,6 @@ async function runTestCases(req: IReq, res: IRes) {
       audience?: string;
     };
 
-    // eslint-disable-next-line n/no-unsupported-features/node-builtins
     const response = await fetch(EnvVars.ConformanceApi.RunTestCasesUrl, {
       method: "POST",
       headers: {
@@ -98,7 +97,6 @@ async function getTestResults(req: IReq, res: IRes) {
     const url = new URL(EnvVars.ConformanceApi.TestResultsUrl);
     url.searchParams.append("testRunId", testRunId as string);
 
-    // eslint-disable-next-line n/no-unsupported-features/node-builtins
     const response = await fetch(url.toString(), {
       method: "GET",
       headers: {
@@ -138,7 +136,6 @@ async function getRecentTestRuns(req: IReq, res: IRes) {
       url.searchParams.append("adminEmail", user.email);
     }
 
-    // eslint-disable-next-line n/no-unsupported-features/node-builtins
     const response = await fetch(url.toString(), {
       method: "GET",
       headers: {
