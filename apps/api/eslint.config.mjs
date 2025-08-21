@@ -57,8 +57,14 @@ export default tseslint.config(
       "no-extra-boolean-cast": 0,
       indent: ["warn", 2],
       "n/no-process-env": 0,
+      "n/no-process-exit": 0,
       "n/no-missing-import": 0,
       "n/no-unpublished-import": 0,
     },
+    settings: {
+      node: {
+        version: ">=21.0.0"
+      }
+    }
   }
 );
