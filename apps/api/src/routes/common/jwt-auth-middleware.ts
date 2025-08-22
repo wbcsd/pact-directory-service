@@ -21,7 +21,7 @@ const jwtAuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
     res.locals.user = decoded;
     next();
   } catch (error) {
-    logger.error(error);
+    logger.error("jwtAuthMiddleware error", error);
     res.status(HttpStatusCodes.UNAUTHORIZED).json({ message: "Invalid token" });
 
     return;

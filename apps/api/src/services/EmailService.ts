@@ -33,7 +33,7 @@ export async function sendWelcomeEmail({
     await sgMail.send(msg);
     logger.info(`Email sent to ${name}`);
   } catch (error) {
-    logger.error(error);
+    logger.error("sendWelcomeEmail error", error);
   }
 }
 
@@ -54,7 +54,7 @@ export async function sendConnectionRequestEmail({
     await sgMail.send(msg);
     logger.info(`Email sent to ${name}`);
   } catch (error) {
-    logger.error(error);
+    logger.error("sendConnectionRequestEmail error", error);
   }
 }
 
@@ -112,6 +112,6 @@ export async function sendPasswordResetEmail({
     await sgMail.send(msg);
     logger.info(`Password reset email sent to ${to}`);
   } catch (error) {
-    logger.error(error);
+    logger.error("sendPasswordResetEmail error", error);
   }
 }

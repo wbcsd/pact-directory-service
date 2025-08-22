@@ -585,7 +585,7 @@ async function forgotPassword(req: IReq, res: IRes) {
       .status(HttpStatusCodes.OK)
       .json({ message: "If that email exists, a reset link has been sent." });
   } catch (error) {
-    logger.error(error);
+    logger.error("forgotPassword error", error);
     res
       .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
       .json({ error: "An error occurred. Please try again later." });
@@ -659,7 +659,7 @@ async function resetPassword(req: IReq, res: IRes) {
       .status(HttpStatusCodes.OK)
       .json({ message: "Password has been reset successfully" });
   } catch (error) {
-    logger.error(error);
+    logger.error("resetPassword error", error);
     res
       .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
       .json({ error: "An error occurred. Please try again later." });
@@ -693,7 +693,7 @@ async function verifyResetToken(req: IReq, res: IRes) {
       .status(HttpStatusCodes.OK)
       .json({ valid: true, message: "Token is valid" });
   } catch (error) {
-    logger.error(error);
+    logger.error("verifyResetToken error", error);
     res
       .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
       .json({ error: "An error occurred. Please try again later." });
