@@ -61,8 +61,7 @@ async function migrateToLatest() {
     });
 
     if (error) {
-      console.error("failed to migrate");
-      console.error("error", error);
+      console.error("Failed to migrate", error);
       process.exitCode = 1;
     }
   } catch (error) {

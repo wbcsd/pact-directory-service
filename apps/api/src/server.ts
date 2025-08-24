@@ -60,7 +60,7 @@ app.use(Paths.ProxyBase, ProxyRouter);
 // Add error handler
 app.use((err: Error, _: Request, res: Response, next: NextFunction) => {
   if (EnvVars.NodeEnv !== NodeEnvs.Test.valueOf()) {
-    logger.error("server error", err);
+    logger.error(err);
   }
   let status = HttpStatusCodes.INTERNAL_SERVER_ERROR;
   if (err instanceof RouteError) {
