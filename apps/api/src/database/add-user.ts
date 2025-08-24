@@ -1,6 +1,5 @@
 import bcrypt from "bcrypt";
 import { db } from "@src/database/db";
-import logger from "@src/util/logger";
 
 async function main() {
   const [, , email, fullName, password, role, companyIdentifier, companyName] =
@@ -14,7 +13,7 @@ async function main() {
     !companyIdentifier ||
     !companyName
   ) {
-    logger.error(
+    console.error(
       "Usage: ts-node add-user.ts <email> <fullName> <password> <role> <companyIdentifier> <companyName>"
     );
     process.exit(1);
@@ -44,9 +43,9 @@ async function main() {
         .returningAll()
         .executeTakeFirstOrThrow();
       company = inserted;
-      logger.info(`Created company: ${companyName}`);
+      console.info(`Created company: ${companyName}`);
     } else {
-      logger.info(`Company already exists: ${companyName}`);
+      console.info(`Company already exists: ${companyName}`);
     }
 
     // Check if user exists
@@ -57,7 +56,7 @@ async function main() {
       .executeTakeFirst();
 
     if (userExists) {
-      logger.error("User with this email already exists.");
+      console.error("User with this email already exists.");
       process.exit(1);
     }
 
@@ -76,9 +75,9 @@ async function main() {
       })
       .executeTakeFirstOrThrow();
 
-    logger.info(`User ${email} added to company ${companyName}.`);
+    console.info(`User ${email} added to company ${companyName}.`);
   } catch (error) {
-    logger.error("Error", error);
+    console.error("Error", error);
     // eslint-disable-next-line n/no-process-exit
     process.exit(1);
   } finally {

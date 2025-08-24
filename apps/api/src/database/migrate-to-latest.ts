@@ -9,7 +9,6 @@ import {
 } from "kysely";
 import { Database } from "./types";
 import EnvVars from "../common/EnvVars";
-import logger from "@src/util/logger";
 
 async function migrateToLatest() {
   const db = new Kysely<Database>({
@@ -62,12 +61,12 @@ async function migrateToLatest() {
     });
 
     if (error) {
-      logger.error("failed to migrate");
-      logger.error("error", error);
+      console.error("failed to migrate");
+      console.error("error", error);
       process.exitCode = 1;
     }
   } catch (error) {
-    logger.error("Unexpected error during migration", error);
+    console.error("Unexpected error during migration", error);
     process.exitCode = 1;
   } finally {
     // Ensure the database connection is always closed.
@@ -76,6 +75,6 @@ async function migrateToLatest() {
 }
 
 migrateToLatest().catch((error: unknown) => {
-  logger.error("Fatal error during migration process:", error);
+  console.error("Fatal error during migration process:", error);
   process.exitCode = 1;
 });
