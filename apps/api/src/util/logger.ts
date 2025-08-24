@@ -18,7 +18,7 @@ const pinoInstance = pino({
 
 const wrap =
   (method: "info" | "error" | "warn" | "debug") =>
-  (message: string, meta?: unknown) => {
+  (message: any, meta?: unknown) => {
     if (meta) {
       pinoInstance[method](meta, message);
     } else {
