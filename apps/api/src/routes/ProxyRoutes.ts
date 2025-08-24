@@ -76,7 +76,7 @@ async function runTestCases(req: IReq, res: IRes) {
     const data: unknown = await response.json();
     res.status(HttpStatusCodes.OK).json(data);
   } catch (error) {
-    logger.error(error);
+    logger.error("runTestCases error", error);
     res
       .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
       .json({ error: "Failed to execute test cases." });
@@ -106,7 +106,7 @@ async function getTestResults(req: IReq, res: IRes) {
     const data: unknown = await response.json();
     res.status(HttpStatusCodes.OK).json(data);
   } catch (error) {
-    logger.error(error);
+    logger.error("getTestResults error", error);
     res
       .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
       .json({ error: "Failed to fetch test results." });
@@ -146,7 +146,7 @@ async function getRecentTestRuns(req: IReq, res: IRes) {
     const data: unknown = await response.json();
     res.status(HttpStatusCodes.OK).json(data);
   } catch (error) {
-    logger.error(error);
+    logger.error("getRecentTestRuns error", error);
     res
       .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
       .json({ error: "Failed to fetch recent test runs." });
