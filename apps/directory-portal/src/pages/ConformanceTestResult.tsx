@@ -266,8 +266,7 @@ const ConformanceTestResult: React.FC = () => {
         <Box
           style={{
             padding: "20px",
-            maxWidth: "800px",
-            width: "800px",
+            width: "30%",
           }}
         >
           <h2>Conformance Test Result</h2>
@@ -288,14 +287,17 @@ const ConformanceTestResult: React.FC = () => {
           <main
             className="main"
             style={{
-              width: selectedTest ? "50%" : "100%",
+              width: selectedTest ? "70%" : "100%",
+              height: "100vh",
+              overflowY: "auto",
+              overflowX: "hidden",
               transition: "width 0.3s ease",
             }}
           >
             <div className="header">
               <div>
                 <h2>
-                  Test Run ID {testRunId?.substring(0,8)}{" "}
+                  Test Run ID {testRunId?.substring(0, 8)}{" "}
                   <Badge
                     style={{
                       verticalAlign: "middle",
@@ -310,17 +312,18 @@ const ConformanceTestResult: React.FC = () => {
                   Review the test cases that were executed against your API
                 </p>
               </div>
-              { profileData?.role === 'administrator' && (
-              <div>
-                <div>{companyName}</div>
-                <div>{adminName}</div>
-                <div>{adminEmail}</div>
-              </div>
+              {profileData?.role === "administrator" && (
+                <div>
+                  <div>{companyName}</div>
+                  <div>{adminName}</div>
+                  <div>{adminEmail}</div>
+                </div>
               )}
-              { (profileData?.role !== 'administrator' || profileData?.email === adminEmail) && (
-              <Button onClick={() => navigate("/conformance-testing")}>
-                Re-test Conformance
-              </Button>
+              {(profileData?.role !== "administrator" ||
+                profileData?.email === adminEmail) && (
+                <Button onClick={() => navigate("/conformance-testing")}>
+                  Re-test Conformance
+                </Button>
               )}
             </div>
 
@@ -475,7 +478,7 @@ const ConformanceTestResult: React.FC = () => {
           </main>
 
           {selectedTest && (
-            <div className="test-details-container" style={{ width: "50%" }}>
+            <div className="test-details-container">
               <Box
                 id="test-details"
                 style={{
