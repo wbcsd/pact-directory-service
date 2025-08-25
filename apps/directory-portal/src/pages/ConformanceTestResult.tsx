@@ -478,7 +478,7 @@ const ConformanceTestResult: React.FC = () => {
           </main>
 
           {selectedTest && (
-            <div className="test-details-container" style={{ width: "30%" }}>
+            <div className="test-details-container">
               <Box
                 id="test-details"
                 style={{
