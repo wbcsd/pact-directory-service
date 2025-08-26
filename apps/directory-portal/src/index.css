@@ -366,6 +366,7 @@ tbody tr {
 .test-details-container {
   border-left: 1px solid #ececf0;
   background: #f6f9ff;
+  width: 30%;
 }
 .marker-divider {
   width: 8px;
@@ -395,6 +396,9 @@ tbody tr {
   th,
   td {
     padding: 0.75rem;
+  }
+  .test-details-container {
+    width: 100%;
   }
 }
 
