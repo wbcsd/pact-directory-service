@@ -42,17 +42,7 @@ const values = {
   Frontend: {
     Url: process.env.FRONTEND_URL ?? "http://localhost:5173",
   },
-  ConformanceApi: {
-    RunTestCasesUrl: `${getEnvVarDefaultOrThrow(
-      "CONFORMANCE_API"
-    )}/runTestCases`,
-    RecentTestRunsUrl: `${getEnvVarDefaultOrThrow(
-      "CONFORMANCE_API"
-    )}/getRecentTestRuns`,
-    TestResultsUrl: `${getEnvVarDefaultOrThrow(
-      "CONFORMANCE_API"
-    )}/getTestResults`,
-  },
+  ConformanceApi: getEnvVarDefaultOrThrow("CONFORMANCE_API")
 };
 
 // Function to get environment variable or throw an error if not se

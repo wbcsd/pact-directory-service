@@ -52,7 +52,7 @@ async function runTestCases(req: IReq, res: IRes) {
       audience?: string;
     };
 
-    const response = await fetch(EnvVars.ConformanceApi.RunTestCasesUrl, {
+    const response = await fetch(`${EnvVars.ConformanceApi}/testruns`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -94,8 +94,7 @@ async function getTestResults(req: IReq, res: IRes) {
   }
 
   try {
-    const url = new URL(EnvVars.ConformanceApi.TestResultsUrl);
-    url.searchParams.append("testRunId", testRunId as string);
+    const url = new URL(`${EnvVars.ConformanceApi}/testruns/${testRunId as string}`);
 
     const response = await fetch(url.toString(), {
       method: "GET",
@@ -131,7 +130,7 @@ async function getRecentTestRuns(req: IReq, res: IRes) {
       return;
     }
 
-    const url = new URL(EnvVars.ConformanceApi.RecentTestRunsUrl);
+    const url = new URL(`${EnvVars.ConformanceApi}/testruns`);
     if (user.role !== "administrator") {
       url.searchParams.append("adminEmail", user.email);
     }
