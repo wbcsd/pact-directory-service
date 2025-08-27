@@ -20,6 +20,11 @@ proxyRouter.get(
   jwtAuthMiddleware,
   ProxyRouter.getRecentTestRuns
 );
+proxyRouter.get(
+  Paths.Proxy.searchTestRuns,
+  jwtAuthMiddleware,
+  ProxyRouter.searchTestRuns
+);
 
 apiRouter.use(Paths.Proxy.Base, proxyRouter);
 

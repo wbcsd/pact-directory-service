@@ -42,7 +42,7 @@ const values = {
   Frontend: {
     Url: process.env.FRONTEND_URL ?? "http://localhost:5173",
   },
-  ConformanceApi: getEnvVarDefaultOrThrow("CONFORMANCE_API")
+  ConformanceApi: getEnvVarDefaultOrThrow("CONFORMANCE_API"),
 };
 
 // Function to get environment variable or throw an error if not se

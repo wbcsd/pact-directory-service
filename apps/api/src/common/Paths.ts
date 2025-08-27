@@ -35,5 +35,6 @@ export default {
     Test: "/test",
     TestResults: "/test-results",
     recentTestRuns: "/test-runs",
+    searchTestRuns: "/search-test-runs",
   },
 } as const;

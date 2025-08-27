@@ -94,7 +94,9 @@ async function getTestResults(req: IReq, res: IRes) {
   }
 
   try {
-    const url = new URL(`${EnvVars.ConformanceApi}/testruns/${testRunId as string}`);
+    const url = new URL(
+      `${EnvVars.ConformanceApi}/testruns/${testRunId as string}`
+    );
 
     const response = await fetch(url.toString(), {
       method: "GET",
@@ -109,6 +111,37 @@ async function getTestResults(req: IReq, res: IRes) {
     res
       .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
       .json({ error: "Failed to fetch test results." });
+  }
+}
+
+// Search for test runs, in the form of /testruns?query=term
+async function searchTestRuns(req: IReq, res: IRes) {
+  const { query } = req.query;
+  if (!query) {
+    res
+      .status(HttpStatusCodes.BAD_REQUEST)
+      .json({ error: "Missing 'query' parameter." });
+    return;
+  }
+
+  try {
+    const url = new URL(`${EnvVars.ConformanceApi}/searchtestruns`);
+    url.searchParams.append("query", query as string);
+
+    const response = await fetch(url.toString(), {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data: unknown = await response.json();
+    res.status(HttpStatusCodes.OK).json(data);
+  } catch (error) {
+    logger.error("searchTestRuns error", error);
+    res
+      .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: "Failed to search test runs." });
   }
 }
 
@@ -156,4 +189,5 @@ export default {
   runTestCases,
   getTestResults,
   getRecentTestRuns,
+  searchTestRuns,
 } as const;
