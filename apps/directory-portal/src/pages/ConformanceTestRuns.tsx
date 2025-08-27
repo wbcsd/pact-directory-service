@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button, Box, Callout } from "@radix-ui/themes";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import { useNavigate, NavLink } from "react-router-dom";
+import { useNavigate, NavLink, useSearchParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import SideNav from "../components/SideNav";
 import StatusBadge from "../components/StatusBadge";
@@ -22,53 +22,93 @@ interface TestRun {
 
 const formatDate = (timestamp: string): string => {
   const date = new Date(timestamp);
-
   const month = date.toLocaleString("en-US", { month: "long" });
   const day = date.getDate();
   const year = date.getFullYear();
   const hours = date.getHours().toString().padStart(2, "0");
   const minutes = date.getMinutes().toString().padStart(2, "0");
-
   return `${month} ${day}, ${year} ${hours}:${minutes}`;
 };
 
 const ConformanceTestRuns: React.FC = () => {
   const navigate = useNavigate();
+  const { profileData } = useAuth();
+
+  // URL-driven state
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialQuery = searchParams.get("q") ?? "";
+
+  // UI state
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [testRuns, setTestRuns] = useState<TestRun[]>([]);
-  const { profileData } = useAuth();
+  const [searchTerm, setSearchTerm] = useState<string>(initialQuery);
 
-  useEffect(() => {
-    const fetchTestRuns = async () => {
-      try {
-        const response = await proxyWithAuth(`/test-runs`);
+  // (Optional) tiny in-memory cache so going "back" doesn't refetch if we've already seen this query.
+  // Keyed by query string ("" for all).
+  const cacheRef = useRef<Map<string, TestRun[]>>(new Map());
 
-        if (!response || !response.ok) {
-          throw new Error("Failed to fetch test runs");
-        }
+  const fetchRuns = async (query: string) => {
+    // Serve instantly from cache if available
+    if (cacheRef.current.has(query)) {
+      setTestRuns(cacheRef.current.get(query)!);
+      setIsLoading(false);
+      setError(null);
+      return;
+    }
 
-        const data = await response.json();
+    setIsLoading(true);
+    setError(null);
 
-        if (data.error) {
-          setError(data.error);
-          setIsLoading(false);
-          return;
-        }
+    try {
+      const url = `/test-runs${
+        query ? `?query=${encodeURIComponent(query)}` : ""
+      }`;
+      const response = await proxyWithAuth(url);
+      if (!response || !response.ok)
+        throw new Error("Failed to fetch test runs");
 
-        setTestRuns(data.testRuns || []);
+      const data = await response.json();
+      if (data.error) {
+        setError(data.error);
         setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching test runs:", error);
-        setError(
-          "An unexpected error occurred while fetching test runs. Please try again."
-        );
-        setIsLoading(false);
+        return;
       }
-    };
 
-    fetchTestRuns();
-  }, []);
+      const runs: TestRun[] = data.testRuns || [];
+      cacheRef.current.set(query, runs);
+      setTestRuns(runs);
+      setIsLoading(false);
+    } catch (err) {
+      console.error("Error fetching test runs:", err);
+      setError(
+        "An unexpected error occurred while fetching test runs. Please try again."
+      );
+      setIsLoading(false);
+    }
+  };
+
+  // On mount + whenever ?q changes, fetch using the URL as the source of truth.
+  useEffect(() => {
+    const q = searchParams.get("q") ?? "";
+    setSearchTerm(q); // keep input in sync with URL
+    fetchRuns(q);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  // Enter-to-search: update the URL (which triggers the effect above)
+  const onKeyUpSearch: React.KeyboardEventHandler<HTMLInputElement> = (
+    event
+  ) => {
+    if (event.key !== "Enter") return;
+    const val = event.currentTarget.value.trim();
+    if (val.length === 0) {
+      // clear search -> show all
+      setSearchParams({}, { replace: true });
+    } else if (val.length > 3) {
+      setSearchParams({ q: val }, { replace: true });
+    }
+  };
 
   return (
     <>
@@ -76,6 +116,7 @@ const ConformanceTestRuns: React.FC = () => {
         <div className="marker-divider"></div>
         <SideNav />
       </aside>
+
       {isLoading ? (
         <Box className="loadingBox">
           <Spinner />
@@ -122,15 +163,16 @@ const ConformanceTestRuns: React.FC = () => {
                     type="text"
                     placeholder="Press enter to search by company name, email address or user name"
                     className="searchInput"
-                    onKeyUp={(event) => {
-                      console.log(event.key);
-                    }}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyUp={onKeyUpSearch}
                   />
                 </div>
                 <Button onClick={() => navigate("/conformance-testing")}>
                   Run Tests
                 </Button>
               </div>
+
               <div className="table-container">
                 <table className="test-runs-table">
                   <thead>
