@@ -16,14 +16,14 @@ proxyRouter.get(
   ProxyRouter.getTestResults
 );
 proxyRouter.get(
-  Paths.Proxy.recentTestRuns,
+  Paths.Proxy.getOrSearchTestRuns,
   jwtAuthMiddleware,
-  ProxyRouter.getRecentTestRuns
+  ProxyRouter.getOrSearchTestRuns
 );
 proxyRouter.get(
-  Paths.Proxy.searchTestRuns,
+  Paths.Proxy.getOrSearchTestRuns,
   jwtAuthMiddleware,
-  ProxyRouter.searchTestRuns
+  ProxyRouter.getOrSearchTestRuns
 );
 
 apiRouter.use(Paths.Proxy.Base, proxyRouter);

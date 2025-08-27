@@ -34,7 +34,6 @@ export default {
     Base: "/",
     Test: "/test",
     TestResults: "/test-results",
-    recentTestRuns: "/test-runs",
-    searchTestRuns: "/search-test-runs",
+    getOrSearchTestRuns: "/test-runs",
   },
 } as const;
