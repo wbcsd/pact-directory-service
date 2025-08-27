@@ -139,16 +139,36 @@ const ConformanceTestRuns: React.FC = () => {
       ) : (
         <main className="main">
           {testRuns.length === 0 ? (
-            <div className="emptyState">
-              <img src={EmptyImage} alt="No tests yet" />
-              <h2>You currently have no tests</h2>
-              <p className="emptyHint">
-                Start automated testing to ensure a PACT conformant solution
-              </p>
-              <Button onClick={() => navigate("/conformance-testing")}>
-                Run Tests
-              </Button>
-            </div>
+            searchTerm.length > 0 ? (
+              <div className="emptyState">
+                <img src={EmptyImage} alt="No results" />
+                <h2>No results for “{initialQuery}”</h2>
+                <p className="emptyHint">
+                  Try a different term, or clear your search to see all test
+                  runs.
+                </p>
+                <Button
+                  onClick={() => {
+                    // clear input + URL -> triggers fetch of all runs
+                    setSearchTerm("");
+                    setSearchParams({}, { replace: true });
+                  }}
+                >
+                  Clear search
+                </Button>
+              </div>
+            ) : (
+              <div className="emptyState">
+                <img src={EmptyImage} alt="No tests yet" />
+                <h2>You currently have no tests</h2>
+                <p className="emptyHint">
+                  Start automated testing to ensure a PACT conformant solution
+                </p>
+                <Button onClick={() => navigate("/conformance-testing")}>
+                  Run Tests
+                </Button>
+              </div>
+            )
           ) : (
             <>
               <div className="header">
@@ -167,6 +187,19 @@ const ConformanceTestRuns: React.FC = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onKeyUp={onKeyUpSearch}
                   />
+                  {searchTerm && (
+                    <button
+                      type="button"
+                      className="clearButton"
+                      aria-label="Clear search"
+                      onClick={() => {
+                        setSearchTerm("");
+                        setSearchParams({}, { replace: true });
+                      }}
+                    >
+                      ×
+                    </button>
+                  )}
                 </div>
                 <Button onClick={() => navigate("/conformance-testing")}>
                   Run Tests

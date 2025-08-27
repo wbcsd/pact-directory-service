@@ -34,6 +34,7 @@
 }
 
 .searchWrapper {
+  position: relative;
   flex-grow: 1;
   padding: 0 2rem;
   width: 100%;
@@ -41,11 +42,29 @@
 
 .searchInput {
   width: 100%;
-  padding: 1rem 0.5rem;
+  padding: 1rem 2.5rem 1rem 0.5rem; /* add right padding for the clear icon */
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-right: 1rem;
+}
+
+.clearButton {
+  position: absolute;
+  right: 3rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.25rem;
+  color: #888;
+  line-height: 1;
+  padding: 0;
+}
+
+.clearButton:hover {
+  color: #000;
 }
 
 @media (max-width: 768px) {

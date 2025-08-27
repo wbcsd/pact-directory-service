@@ -1,6 +1,6 @@
-// ConformanceTestRuns.test.tsx
+// src/pages/ConformanceTestRuns.test.tsx
 import React from "react";
-import { describe, it, expect, vi, beforeEach } from "vitest"; // or jest if you're using Jest
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   render,
   screen,
@@ -36,7 +36,7 @@ vi.mock("../assets/pact-logistics-center-8.png", () => ({
   default: "empty.png",
 }));
 
-// If Radix CSS-in-JS shenanigans bother tests, you can noop the theme
+// Optionally noop Radix primitives if needed in your env
 vi.mock("@radix-ui/themes", async (orig) => {
   const actual: any = await (orig as any)();
   return {
@@ -56,13 +56,11 @@ vi.mock("@radix-ui/themes", async (orig) => {
 import { proxyWithAuth } from "../utils/auth-fetch";
 import ConformanceTestRuns from "./ConformanceTestRuns";
 
-// ------- helpers -------
 function renderWithRouter(path = "/runs", initialEntries?: string[]) {
   return render(
     <MemoryRouter initialEntries={initialEntries ?? [path]}>
       <Routes>
         <Route path="/runs" element={<ConformanceTestRuns />} />
-        {/* detail page dummy to allow <NavLink /> to navigate if needed */}
         <Route path="/conformance-test-result" element={<div>Detail</div>} />
         <Route path="/conformance-testing" element={<div>Form</div>} />
       </Routes>
@@ -97,38 +95,32 @@ const ok = (body: any) =>
     json: () => Promise.resolve(body),
   } as Response);
 
-// Reset mock between tests
 beforeEach(() => {
   vi.clearAllMocks();
 });
 
-// ------- tests -------
 describe("<ConformanceTestRuns />", () => {
   it("fetches all runs on mount when there is no query and renders rows", async () => {
     (proxyWithAuth as vi.Mock).mockImplementation((url: string) => {
-      expect(url).toBe("/test-runs"); // no ?query=
+      expect(url).toBe("/test-runs");
       return ok({
         testRuns: [
           mkRun(),
-          mkRun({ testId: "zzzz9999yyyy8888", companyName: "Globex" }),
+          mkRun({ testId: "zzzz9999", companyName: "Globex" }),
         ],
       });
     });
 
     renderWithRouter("/runs");
 
-    // Initially shows loading
     expect(screen.getByText(/Loading…/i)).toBeInTheDocument();
 
-    // Table renders with admin columns "Company" and "Email"
     const companyHeader = await screen.findByRole("columnheader", {
       name: /company/i,
     });
     expect(companyHeader).toBeInTheDocument();
 
-    // Two rows rendered
-    const rows = screen.getAllByRole("row");
-    // rows[0] is header; ensure at least one data row contains Acme
+    // At least one data row contains Acme
     const acmeRow = screen.getByText("Acme Corp").closest("tr")!;
     expect(within(acmeRow).getByText(/PASS/i)).toBeInTheDocument();
 
@@ -137,6 +129,10 @@ describe("<ConformanceTestRuns />", () => {
       /Press enter to search/i
     ) as HTMLInputElement;
     expect(input.value).toBe("");
+    // Clear icon shouldn't be visible
+    expect(
+      screen.queryByRole("button", { name: /clear search/i })
+    ).not.toBeInTheDocument();
   });
 
   it("reads ?q= from URL, pre-fills input, and fetches filtered runs", async () => {
@@ -150,18 +146,21 @@ describe("<ConformanceTestRuns />", () => {
     const input = await screen.findByPlaceholderText(/Press enter to search/i);
     expect((input as HTMLInputElement).value).toBe("acme");
 
-    // Row for Acme is shown
+    // Clear icon should be visible when there is text
+    expect(
+      screen.getByRole("button", { name: /clear search/i })
+    ).toBeInTheDocument();
+
     expect(await screen.findByText("Acme Corp")).toBeInTheDocument();
   });
 
   it("on Enter (≥4 chars) updates URL and refetches with the query", async () => {
-    // First mount: no query
+    // Initial fetch (no query)
     (proxyWithAuth as vi.Mock).mockImplementationOnce((url: string) => {
       expect(url).toBe("/test-runs");
       return ok({ testRuns: [mkRun({ companyName: "Globex" })] });
     });
-
-    // After search: with ?query=acme
+    // After searching "acme"
     (proxyWithAuth as vi.Mock).mockImplementationOnce((url: string) => {
       expect(url).toBe("/test-runs?query=acme");
       return ok({
@@ -171,7 +170,6 @@ describe("<ConformanceTestRuns />", () => {
 
     renderWithRouter("/runs");
 
-    // Wait for initial data
     await screen.findByText("Globex");
 
     const input = screen.getByPlaceholderText(/Press enter to search/i);
@@ -179,23 +177,19 @@ describe("<ConformanceTestRuns />", () => {
     await userEvent.type(input, "acme");
     fireEvent.keyUp(input, { key: "Enter", code: "Enter", charCode: 13 });
 
-    // Should render the filtered result
     expect(await screen.findByText("Acme Corp")).toBeInTheDocument();
-
-    // Admin columns still present
     expect(
-      screen.getByRole("columnheader", { name: /email/i })
+      screen.getByRole("button", { name: /clear search/i })
     ).toBeInTheDocument();
   });
 
-  it("clears query on empty Enter and shows all again", async () => {
-    // Mount with a query first
+  it("clear ✕ button resets input and refetches all runs", async () => {
+    // Mount with a query and a single result
     (proxyWithAuth as vi.Mock).mockImplementationOnce((url: string) => {
       expect(url).toBe("/test-runs?query=acme");
       return ok({ testRuns: [mkRun({ companyName: "Acme Corp" })] });
     });
-
-    // After clearing, should fetch all
+    // After clearing, fetch all
     (proxyWithAuth as vi.Mock).mockImplementationOnce((url: string) => {
       expect(url).toBe("/test-runs");
       return ok({ testRuns: [mkRun({ companyName: "Globex" })] });
@@ -206,16 +200,52 @@ describe("<ConformanceTestRuns />", () => {
     const input = await screen.findByPlaceholderText(/Press enter to search/i);
     expect((input as HTMLInputElement).value).toBe("acme");
 
-    // Clear and press Enter
-    await userEvent.clear(input);
-    fireEvent.keyUp(input, { key: "Enter", code: "Enter", charCode: 13 });
+    const clearBtn = screen.getByRole("button", { name: /clear search/i });
+    await userEvent.click(clearBtn);
 
-    // Now shows Globex (all runs)
+    // Input should be empty and all runs visible now
+    await waitFor(() =>
+      expect(
+        (
+          screen.getByPlaceholderText(
+            /Press enter to search/i
+          ) as HTMLInputElement
+        ).value
+      ).toBe("")
+    );
+    expect(await screen.findByText("Globex")).toBeInTheDocument();
+    // Clear icon should disappear after clearing
+    expect(
+      screen.queryByRole("button", { name: /clear search/i })
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows 'No results' empty state when searching yields nothing and Clear search restores all runs", async () => {
+    // First, with query: empty results
+    (proxyWithAuth as vi.Mock).mockImplementationOnce((url: string) => {
+      expect(url).toBe("/test-runs?query=acme");
+      return ok({ testRuns: [] });
+    });
+    // After clearing: fetch all
+    (proxyWithAuth as vi.Mock).mockImplementationOnce((url: string) => {
+      expect(url).toBe("/test-runs");
+      return ok({ testRuns: [mkRun({ companyName: "Globex" })] });
+    });
+
+    renderWithRouter("/runs?q=acme", ["/runs?q=acme"]);
+
+    // No results state for an active search
+    expect(await screen.findByText(/No results for/i)).toBeInTheDocument();
+    const clearButton = screen.getByRole("button", { name: /Clear search/i });
+    await userEvent.click(clearButton);
+
+    // Should render "all runs" after clearing
     expect(await screen.findByText("Globex")).toBeInTheDocument();
   });
 
-  it("renders empty state when no runs returned", async () => {
+  it("renders initial 'no tests yet' empty state when no query and no runs", async () => {
     (proxyWithAuth as vi.Mock).mockResolvedValue(ok({ testRuns: [] }));
+
     renderWithRouter("/runs");
 
     await waitFor(() => {
@@ -226,6 +256,10 @@ describe("<ConformanceTestRuns />", () => {
     expect(
       screen.getByRole("button", { name: /Run Tests/i })
     ).toBeInTheDocument();
+    // No Clear search button in the initial (no-query) empty state
+    expect(
+      screen.queryByRole("button", { name: /Clear search/i })
+    ).not.toBeInTheDocument();
   });
 
   it("shows error callout when API returns error", async () => {
