@@ -8,6 +8,7 @@ import StatusBadge from "../components/StatusBadge";
 import { proxyWithAuth } from "../utils/auth-fetch";
 import Spinner from "../components/LoadingSpinner";
 import EmptyImage from "../assets/pact-logistics-center-8.png";
+import "./ConformanceTestRuns.css";
 
 interface TestRun {
   testId: string;
@@ -36,7 +37,7 @@ const ConformanceTestRuns: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [testRuns, setTestRuns] = useState<TestRun[]>([]);
-  const { profileData } = useAuth(); 
+  const { profileData } = useAuth();
 
   useEffect(() => {
     const fetchTestRuns = async () => {
@@ -76,25 +77,11 @@ const ConformanceTestRuns: React.FC = () => {
         <SideNav />
       </aside>
       {isLoading ? (
-        <Box
-          style={{
-            padding: "20px",
-            verticalAlign: "middle",
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
+        <Box className="loadingBox">
           <Spinner />
         </Box>
       ) : error ? (
-        <Box
-          style={{
-            padding: "20px",
-            maxWidth: "800px",
-            width: "800px",
-          }}
-        >
+        <Box className="errorBox">
           <h2>Conformance Test Runs</h2>
           <Callout.Root color="red" size="2">
             <Callout.Icon>
@@ -111,26 +98,10 @@ const ConformanceTestRuns: React.FC = () => {
       ) : (
         <main className="main">
           {testRuns.length === 0 ? (
-            <div
-              style={{
-                textAlign: "center",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "100%",
-              }}
-            >
-              <img src={EmptyImage}></img>
+            <div className="emptyState">
+              <img src={EmptyImage} alt="No tests yet" />
               <h2>You currently have no tests</h2>
-              <p
-                style={{
-                  color: "#9D9DB8",
-                  fontSize: "0.875rem",
-                  marginTop: "10px",
-                  marginBottom: "20px",
-                }}
-              >
+              <p className="emptyHint">
                 Start automated testing to ensure a PACT conformant solution
               </p>
               <Button onClick={() => navigate("/conformance-testing")}>
@@ -142,9 +113,19 @@ const ConformanceTestRuns: React.FC = () => {
               <div className="header">
                 <div>
                   <h2>Overview</h2>
-                  <p style={{ color: "#888", fontSize: "0.875rem" }}>
+                  <p className="headerSubtext">
                     Showing runs from all conformance tests
                   </p>
+                </div>
+                <div className="searchWrapper">
+                  <input
+                    type="text"
+                    placeholder="Press enter to search by company name, email address or user name"
+                    className="searchInput"
+                    onKeyUp={(event) => {
+                      console.log(event.key);
+                    }}
+                  />
                 </div>
                 <Button onClick={() => navigate("/conformance-testing")}>
                   Run Tests
@@ -155,10 +136,10 @@ const ConformanceTestRuns: React.FC = () => {
                   <thead>
                     <tr>
                       <th>Test Run ID</th>
-                      { profileData?.role === 'administrator' && (
-                      <th>Company</th> ) }
-                      { profileData?.role === 'administrator' && (
-                      <th>Email</th> ) }
+                      {profileData?.role === "administrator" && (
+                        <th>Company</th>
+                      )}
+                      {profileData?.role === "administrator" && <th>Email</th>}
                       <th>Status</th>
                       <th>Version</th>
                       <th>Run Date/Time CET</th>
@@ -174,10 +155,12 @@ const ConformanceTestRuns: React.FC = () => {
                             {run.testId.substring(0, 8)}
                           </NavLink>
                         </td>
-                        { profileData?.role === 'administrator' && (
-                        <td>{run.companyName}</td> ) }
-                        { profileData?.role === 'administrator' && (
-                        <td>{run.adminEmail}</td> ) }
+                        {profileData?.role === "administrator" && (
+                          <td>{run.companyName}</td>
+                        )}
+                        {profileData?.role === "administrator" && (
+                          <td>{run.adminEmail}</td>
+                        )}
                         <td>
                           <StatusBadge status={run.status} />
                         </td>

@@ -1,0 +1,55 @@
+.loadingBox {
+  padding: 20px;
+  vertical-align: middle;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.errorBox {
+  padding: 20px;
+  max-width: 800px;
+  width: 800px;
+}
+
+.emptyState {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.emptyHint {
+  color: #9d9db8;
+  font-size: 0.875rem;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.headerSubtext {
+  color: #888;
+  font-size: 0.875rem;
+}
+
+.searchWrapper {
+  flex-grow: 1;
+  padding: 0 2rem;
+  width: 100%;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 1rem 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 1rem;
+}
+
+@media (max-width: 768px) {
+  .searchWrapper {
+    padding: 0;
+  }
+}
