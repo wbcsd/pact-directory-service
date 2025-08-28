@@ -502,6 +502,7 @@ const ConformanceTestResult: React.FC = () => {
                     style={{
                       display: "flex",
                       alignItems: "center",
+                      flexDirection: "column",
                       gap: "8px",
                     }}
                   >
