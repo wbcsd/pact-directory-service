@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Box, Callout } from "@radix-ui/themes";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { useNavigate, NavLink, useSearchParams } from "react-router-dom";
@@ -44,19 +44,7 @@ const ConformanceTestRuns: React.FC = () => {
   const [testRuns, setTestRuns] = useState<TestRun[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>(initialQuery);
 
-  // (Optional) tiny in-memory cache so going "back" doesn't refetch if we've already seen this query.
-  // Keyed by query string ("" for all).
-  const cacheRef = useRef<Map<string, TestRun[]>>(new Map());
-
   const fetchRuns = async (query: string) => {
-    // Serve instantly from cache if available
-    if (cacheRef.current.has(query)) {
-      setTestRuns(cacheRef.current.get(query)!);
-      setIsLoading(false);
-      setError(null);
-      return;
-    }
-
     setIsLoading(true);
     setError(null);
 
@@ -76,7 +64,6 @@ const ConformanceTestRuns: React.FC = () => {
       }
 
       const runs: TestRun[] = data.testRuns || [];
-      cacheRef.current.set(query, runs);
       setTestRuns(runs);
       setIsLoading(false);
     } catch (err) {
@@ -100,13 +87,26 @@ const ConformanceTestRuns: React.FC = () => {
   const onKeyUpSearch: React.KeyboardEventHandler<HTMLInputElement> = (
     event
   ) => {
-    if (event.key !== "Enter") return;
     const val = event.currentTarget.value.trim();
-    if (val.length === 0) {
-      // clear search -> show all
-      setSearchParams({}, { replace: true });
-    } else if (val.length > 3) {
-      setSearchParams({ q: val }, { replace: true });
+    switch (event.key) {
+      case "Enter":
+        if (val.length === 0) {
+          // clear search -> show all
+          setSearchParams({}, { replace: true });
+        } else if (val.length > 3) {
+          setSearchParams({ q: val }, { replace: true });
+        }
+        break;
+      case "Backspace":
+        if (val.length === 0) {
+          // clear search -> show all
+          if (searchParams.get("q") === null) return;
+          setSearchParams({}, { replace: true });
+          fetchRuns("");
+        }
+        break;
+      default:
+        break;
     }
   };
 
@@ -180,6 +180,7 @@ const ConformanceTestRuns: React.FC = () => {
                 </div>
                 <div className="searchWrapper">
                   <input
+                    autoFocus
                     type="text"
                     placeholder="Press enter to search by company name, email address or user name"
                     className="searchInput"
