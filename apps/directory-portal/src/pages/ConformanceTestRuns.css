@@ -73,7 +73,7 @@
   }
 
   .table-container {
-    overflow: scroll;
+    overflow-x: scroll;
   }
 }
 
