@@ -13,8 +13,7 @@
     "test": "NODE_ENV=test ts-node ./spec",
     "test:hot": "nodemon --exec \"npm run test\" --watch ./src --watch ./spec -e ts",
     "db:migrate": "ts-node ./src/database/migrate-to-latest.ts",
-    "db:add-user": "ts-node ./src/database/add-user.ts",
-    "show-config": "NODE_ENV=production ts-node ./src/common/EnvVars.ts"
+    "db:add-user": "ts-node ./src/database/add-user.ts"
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.4",

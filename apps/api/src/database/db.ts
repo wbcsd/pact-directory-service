@@ -1,18 +1,13 @@
 import { Database } from "./types";
 import { Pool } from "pg";
 import { CamelCasePlugin, Kysely, PostgresDialect } from "kysely";
-import EnvVars from "@src/common/EnvVars";
+import config from "@src/common/config";
 
 const dialect = new PostgresDialect({
   /*@typescript-eslint/no-unsafe-call */
   pool: new Pool({
-    database: EnvVars.DirectoryDatabase.Database,
-    host: EnvVars.DirectoryDatabase.Host,
-    user: EnvVars.DirectoryDatabase.User,
-    password: EnvVars.DirectoryDatabase.Password,
-    port: 5432,
+    connectionString: config.DB_CONNECTION_STRING,
     max: 10,
-    ssl: EnvVars.DirectoryDatabase.Ssl,
   }),
 });
 

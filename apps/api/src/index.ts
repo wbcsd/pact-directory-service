@@ -1,11 +1,11 @@
 import logger from "@src/util/logger";
 
-import EnvVars from "@src/common/EnvVars";
+import config from "@src/common/config";
 import server from "./server";
 
 // **** Run **** //
 
 const SERVER_START_MSG =
-  "Express server started on port: " + EnvVars.Port;
+  "Express server started on port: " + config.PORT;
 
-server.listen(EnvVars.Port, () => logger.info(SERVER_START_MSG));
+server.listen(config.PORT, () => logger.info(SERVER_START_MSG));
