@@ -12,10 +12,9 @@ import AuthRouter from "@src/routes/AuthRouter";
 import ProxyRouter from "@src/routes/ProxyRouter";
 
 import Paths from "@src/common/Paths";
-import EnvVars from "@src/common/EnvVars";
+import config from "@src/common/config";
 import HttpStatusCodes from "@src/common/HttpStatusCodes";
 import { RouteError } from "@src/common/classes";
-import { NodeEnvs } from "@src/common/misc";
 
 // **** Variables **** //
 
@@ -32,12 +31,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(loggerMiddleware);
 
 // Show routes called in console during development
-if (EnvVars.NodeEnv === NodeEnvs.Dev.valueOf()) {
+if (config.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
 // Security
-if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf()) {
+if (config.NODE_ENV === "production") {
   app.use(helmet());
 }
 
@@ -59,7 +58,7 @@ app.use(Paths.ProxyBase, ProxyRouter);
 
 // Add error handler
 app.use((err: Error, _: Request, res: Response, next: NextFunction) => {
-  if (EnvVars.NodeEnv !== NodeEnvs.Test.valueOf()) {
+  if (config.NODE_ENV !== "test") {
     logger.error(err);
   }
   let status = HttpStatusCodes.INTERNAL_SERVER_ERROR;

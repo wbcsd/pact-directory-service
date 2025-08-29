@@ -2,7 +2,7 @@ import logger from "@src/util/logger";
 import HttpStatusCodes from "@src/common/HttpStatusCodes";
 import { IReq, IRes } from "./common/types";
 import { db } from "@src/database/db";
-import EnvVars from "@src/common/EnvVars";
+import config from "@src/common/config";
 
 async function runTestCases(req: IReq, res: IRes) {
   const { companyId, userId } = res.locals.user as {
@@ -52,7 +52,7 @@ async function runTestCases(req: IReq, res: IRes) {
       audience?: string;
     };
 
-    const response = await fetch(`${EnvVars.ConformanceApi}/testruns`, {
+    const response = await fetch(`${config.CONFORMANCE_API}/testruns`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -94,7 +94,7 @@ async function getTestResults(req: IReq, res: IRes) {
   }
 
   try {
-    const url = new URL(`${EnvVars.ConformanceApi}/testruns/${testRunId as string}`);
+    const url = new URL(`${config.CONFORMANCE_API}/testruns/${testRunId as string}`);
 
     const response = await fetch(url.toString(), {
       method: "GET",
@@ -130,7 +130,7 @@ async function getRecentTestRuns(req: IReq, res: IRes) {
       return;
     }
 
-    const url = new URL(`${EnvVars.ConformanceApi}/testruns`);
+    const url = new URL(`${config.CONFORMANCE_API}/testruns`);
     if (user.role !== "administrator") {
       url.searchParams.append("adminEmail", user.email);
     }

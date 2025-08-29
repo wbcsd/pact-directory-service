@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import logger from "@src/util/logger";
-import EnvVars from "@src/common/EnvVars";
+import config from "@src/common/config";
 import HttpStatusCodes from "@src/common/HttpStatusCodes";
 
 const jwtAuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
@@ -17,7 +17,7 @@ const jwtAuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, EnvVars.Jwt.Secret);
+    const decoded = jwt.verify(token, config.JWT_SECRET);
     res.locals.user = decoded;
     next();
   } catch (error) {

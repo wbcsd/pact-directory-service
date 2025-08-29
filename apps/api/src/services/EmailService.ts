@@ -1,8 +1,8 @@
+import config from "@src/common/config";
 import logger from "@src/util/logger";
 import sgMail from "@sendgrid/mail";
-import EnvVars from "@src/common/EnvVars";
 
-sgMail.setApiKey(EnvVars.Sendgrid.ApiKey);
+sgMail.setApiKey(config.SENDGRID_API_KEY);
 
 interface SendNotificationEmailParams {
   to: string;
@@ -23,7 +23,7 @@ export async function sendWelcomeEmail({
 }: SendNotificationEmailParams): Promise<void> {
   const msg = {
     to,
-    from: EnvVars.Sendgrid.FromEmail, // Use the email address or domain you verified with SendGrid
+    from: config.SENDGRID_FROM_EMAIL, // Use the email address or domain you verified with SendGrid
     subject: "Welcome to PACT Network",
     text: `Hello ${name},\n\nWelcome to PACT Network! We're excited to have you on board. Thank you for registering your organization, ${companyName}.\n\nBest regards,\nThe PACT Network Team`,
     html: `<p>Hello ${name},</p><p>Welcome to PACT Network! We're excited to have you on board. Thank you for registering your organization, ${companyName}.</p><p>Best regards,<br>The PACT Network</p>`,
@@ -44,7 +44,7 @@ export async function sendConnectionRequestEmail({
 }: SendNotificationEmailParams): Promise<void> {
   const msg = {
     to,
-    from: EnvVars.Sendgrid.FromEmail, // Use the email address or domain you verified with SendGrid
+    from: config.SENDGRID_FROM_EMAIL, // Use the email address or domain you verified with SendGrid
     subject: "Connection Request from PACT Network",
     text: `Hello ${name},\n\n${companyName} has requested to connect with your organization on the PACT Network. Please log in to your account to accept or reject the request.\n\nBest regards,\nThe PACT Network Team`,
     html: `<p>Hello ${name},</p><p>${companyName} has requested to connect with your organization on the PACT Network. Please log in to your account to accept or reject the request.</p><p>You can manage your connections from https://pact-directory-portal.onrender.com/manage-connections</p><p>Best regards,<br>The PACT Network</p>`,
@@ -102,7 +102,7 @@ export async function sendPasswordResetEmail({
 
   const msg = {
     to,
-    from: EnvVars.Sendgrid.FromEmail,
+    from: config.SENDGRID_FROM_EMAIL,
     subject: "Password Reset Request - PACT Network",
     text: textContent,
     html: htmlContent,
