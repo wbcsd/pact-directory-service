@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 import { fetchWithAuth } from "../utils/auth-fetch";
 
 // Define our profile data type
-interface ProfileData {
+export interface ProfileData {
   companyName: string;
   companyIdentifier: string;
   companyIdentifierDescription: string;
@@ -53,7 +53,9 @@ const emptyProfileData: ProfileData = {
 };
 
 // Create the provider component
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
     !!localStorage.getItem("jwt")
   );
@@ -63,11 +65,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const fetchProfileData = async (): Promise<ProfileData> => {
     try {
       const response = await fetchWithAuth("/companies/my-profile");
-      
+
       if (!response || !response.ok) {
         throw new Error("Failed to fetch profile data");
       }
-      
+
       const data = await response.json();
       return data;
     } catch (error) {
@@ -80,7 +82,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const login = async (token: string): Promise<void> => {
     localStorage.setItem("jwt", token);
     setIsAuthenticated(true);
-    
+
     // Fetch profile data immediately after login
     const userData = await fetchProfileData();
     setProfileData(userData);
@@ -104,7 +106,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Check for token and load profile data on initial render
   React.useEffect(() => {
     const loadInitialData = async () => {
-
       const token = localStorage.getItem("jwt");
       if (token) {
         setIsAuthenticated(true);
@@ -112,13 +113,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setProfileData(userData);
       }
     };
-    
+
     loadInitialData();
   }, []);
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, profileData, login, logout, refreshProfileData }}
+      value={{
+        isAuthenticated,
+        profileData,
+        login,
+        logout,
+        refreshProfileData,
+      }}
     >
       {children}
     </AuthContext.Provider>

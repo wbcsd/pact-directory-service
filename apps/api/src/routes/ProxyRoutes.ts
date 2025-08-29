@@ -94,7 +94,9 @@ async function getTestResults(req: IReq, res: IRes) {
   }
 
   try {
-    const url = new URL(`${EnvVars.ConformanceApi}/testruns/${testRunId as string}`);
+    const url = new URL(
+      `${EnvVars.ConformanceApi}/testruns/${testRunId as string}`
+    );
 
     const response = await fetch(url.toString(), {
       method: "GET",
@@ -112,27 +114,83 @@ async function getTestResults(req: IReq, res: IRes) {
   }
 }
 
+/*
+endpoint: /test-runs?query={query}&adminEmail={adminEmail}&limit={limit}
+*/
+async function searchTestRuns(req: IReq, res: IRes) {
+  const { query, limit } = req.query;
+  if (!query) {
+    res
+      .status(HttpStatusCodes.BAD_REQUEST)
+      .json({ error: "Missing 'query' parameter." });
+    return;
+  }
+
+  const { userId } = res.locals.user as {
+    userId: string;
+  };
+
+  try {
+    const url = new URL(`${EnvVars.ConformanceApi}/testruns`);
+    url.searchParams.append("query", query as string);
+
+    const { email, role } = await getUserEmailAndRole(userId);
+
+    if (!email) {
+      res.status(HttpStatusCodes.NOT_FOUND).json({ error: "User not found." });
+      return;
+    }
+
+    if (role !== "administrator") {
+      url.searchParams.append("adminEmail", email);
+    }
+
+    if (limit) {
+      url.searchParams.append("limit", limit as string);
+    }
+
+    const response = await fetch(url.toString(), {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data: unknown = await response.json();
+    res.status(HttpStatusCodes.OK).json(data);
+  } catch (error) {
+    logger.error("searchTestRuns error", error);
+    res
+      .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: "Failed to search test runs." });
+  }
+}
+
+async function getOrSearchTestRuns(req: IReq, res: IRes) {
+  const { query } = req.query;
+  if (query) {
+    await searchTestRuns(req, res);
+  } else {
+    await getRecentTestRuns(req, res);
+  }
+}
+
 async function getRecentTestRuns(req: IReq, res: IRes) {
   const { userId } = res.locals.user as {
     userId: string;
   };
 
   try {
-    // Get user data to fetch email
-    const user = await db
-      .selectFrom("users")
-      .select(["email", "role"])
-      .where("id", "=", Number(userId))
-      .executeTakeFirst();
+    const { email, role } = await getUserEmailAndRole(userId);
 
-    if (!user) {
+    if (!email) {
       res.status(HttpStatusCodes.NOT_FOUND).json({ error: "User not found." });
       return;
     }
 
     const url = new URL(`${EnvVars.ConformanceApi}/testruns`);
-    if (user.role !== "administrator") {
-      url.searchParams.append("adminEmail", user.email);
+    if (role !== "administrator") {
+      url.searchParams.append("adminEmail", email);
     }
 
     const response = await fetch(url.toString(), {
@@ -152,8 +210,28 @@ async function getRecentTestRuns(req: IReq, res: IRes) {
   }
 }
 
+async function getUserEmailAndRole(
+  userId: string
+): Promise<{ email: string; role: string }> {
+  try {
+    const user = await db
+      .selectFrom("users")
+      .select(["email", "role"])
+      .where("id", "=", Number(userId))
+      .executeTakeFirst();
+
+    return {
+      email: user?.email ?? "",
+      role: user?.role ?? "",
+    };
+  } catch (error) {
+    logger.error("getUserEmailAndRole error", error);
+    throw error;
+  }
+}
+
 export default {
   runTestCases,
   getTestResults,
-  getRecentTestRuns,
+  getOrSearchTestRuns,
 } as const;
