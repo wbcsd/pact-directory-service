@@ -17,7 +17,7 @@ export default {
   NODE_ENV: getEnvVar("NODE_ENV"),
   PORT: getEnvVar("PORT"),
   DB_CONNECTION_STRING: getEnvVar("DB_CONNECTION_STRING"),
-  CONFORMANCE_API: getEnvVar("CONFORMANCE_API"),
+  CONFORMANCE_API_INTERNAL: getEnvVar("CONFORMANCE_API_INTERNAL", getEnvVar("CONFORMANCE_API")),
   LOG_OUTPUT: process.env.LOG_OUTPUT ?? "pino",
   LOG_LEVEL: process.env.LOG_LEVEL ?? "info",
   FRONTEND_URL: process.env.FRONTEND_URL ?? "http://localhost:5173",
