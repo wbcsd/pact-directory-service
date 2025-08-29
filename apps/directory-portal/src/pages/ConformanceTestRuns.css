@@ -71,4 +71,13 @@
   .searchWrapper {
     padding: 0;
   }
+
+  .table-container {
+    overflow: scroll;
+  }
+}
+
+.test-gridcell-datetime span {
+  text-wrap: nowrap;
+  white-space: nowrap;
 }

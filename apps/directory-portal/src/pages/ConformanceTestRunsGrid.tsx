@@ -118,7 +118,7 @@ const ConformanceTestRunsGrid: React.FC<Props> = ({
                 <StatusBadge status={run.status} />
               </td>
               <td>{run.techSpecVersion}</td>
-              <td>
+              <td className="test-gridcell-datetime">
                 <span>{formatDate(run.timestamp)}</span>
               </td>
             </tr>
