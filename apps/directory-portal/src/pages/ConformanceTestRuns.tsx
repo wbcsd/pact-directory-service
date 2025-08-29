@@ -80,7 +80,7 @@ const ConformanceTestRuns: React.FC = () => {
         if (val.length === 0) {
           // clear search -> show all
           setSearchParams({}, { replace: true });
-        } else if (val.length > 3) {
+        } else {
           setSearchParams({ q: val }, { replace: true });
         }
         break;
