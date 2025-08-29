@@ -38,6 +38,8 @@
   "devDependencies": {
     "@eslint/js": "^9.13.0",
     "@stylistic/eslint-plugin-ts": "^2.9.0",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.17",
     "@types/eslint__js": "^8.42.3",
@@ -66,6 +68,7 @@
     "tsc-alias": "^1.8.16",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.6.3",
-    "typescript-eslint": "^8.11.0"
+    "typescript-eslint": "^8.11.0",
+    "vitest": "^3.2.4"
   }
 }

@@ -1,0 +1,29 @@
+@baseUrl = http://localhost:3010/api
+@jwtToken = <PASTE_YOUR_JWT_TOKEN_HERE>
+@searchQuery = example
+@testRunId = e4caed81-b4a7-42ef-9fef-b569398649c5
+@testCaseId = 060efbc1-db69-4e3f-8f4a-e23e371219c2
+
+# get test runs using VSCode Rest Client
+GET {{baseUrl}}/proxy/test-runs
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+Accept: application/json
+###
+# search test runs using VSCode Rest Client
+GET {{baseUrl}}/proxy/test-runs?query={{searchQuery}}&limit=2
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+Accept: application/json
+###
+# get test results using VSCode Rest Client
+GET {{baseUrl}}/proxy/test-results?testRunId={{testRunId}}
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+Accept: application/json
+###
+# get test results for a specific test run using VSCode Rest Client
+GET {{baseUrl}}/proxy/test-results?testRunId={{testRunId}}
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+Accept: application/json
