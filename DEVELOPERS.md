@@ -119,9 +119,8 @@ cp .env.example .env
 The default `.env` configuration should work for local development:
 
 ```bash
-VITE_DIRECTORY_API_URL=http://localhost:3010/api/directory
-VITE_PROXY_API_URL=http://localhost:3010/api/proxy
-VITE_ENABLE_IM=false
+DIRECTORY_API_URL=http://localhost:3010/api
+ENABLE_IM=false
 ```
 
 #### Start the Frontend
@@ -215,9 +214,8 @@ SELECT * FROM users;  # View all users
 
 The API reads configuration from environment files in this order:
 
-1. `./env/${NODE_ENV}.env` (e.g., `./env/development.env`)
-2. `./.env` (if present)
-3. System environment variables
+1. `./.env`
+2. System environment variables
 
 Key variables include:
 
@@ -227,13 +225,19 @@ Key variables include:
 - `PORT` - Server port (default: 3010)
 - `HOST` - Server host (default: localhost)
 
+#### Conformance API
+
+- `CONFORMANCE_API` - External service URL for running conformance test cases
+- `CONFORMANCE_API_INTERNAL` - Internal service URL for retrieving test results
+
+### Frontend Environment Variables
+
+- `DIRECTORY_API_URL` - Directory API endpoint URL
+- `ENABLE_IM` - Enable identity management features
+
 #### Database Configuration
 
-- `DIR_DB_HOST` - Database host (default: localhost)
-- `DIR_DB_USER` - Database user (default: postgres)
-- `DIR_DB_PASSWORD` - Database password (default: postgres)
-- `DIR_DB_NAME` - Database name (default: pact_directory_local)
-- `DIR_DB_SSL` - Enable SSL/TLS for database connection (default: false)
+- `DB_CONNECTION_STRING` - Database connection string
 
 #### Authentication Configuration
 
@@ -247,18 +251,6 @@ Key variables include:
 - `SENDGRID_FROM_EMAIL` - From email address
 - `EMAIL_WELCOME_TEMPLATE` - Welcome email template ID
 - `EMAIL_RESET_TEMPLATE` - Password reset email template ID
-
-#### Conformance API Configuration
-
-- `RUN_TEST_CASES_URL` - External service URL for running conformance test cases
-- `TEST_RESULTS_URL` - External service URL for retrieving test results
-- `RECENT_TEST_RUNS_URL` - External service URL for getting recent test runs
-
-### Frontend Environment Variables
-
-- `VITE_DIRECTORY_API_URL` - API endpoint URL
-- `VITE_PROXY_API_URL` - Proxy API endpoint URL
-- `VITE_ENABLE_IM` - Enable identity management features
 
 ## Troubleshooting
 
