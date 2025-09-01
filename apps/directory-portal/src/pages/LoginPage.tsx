@@ -26,7 +26,7 @@ const LoginPage: React.FC = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_DIRECTORY_API_URL}/companies/login`,
+        `${import.meta.env.VITE_DIRECTORY_API}/directory/companies/login`,
         {
           method: "POST",
           headers: {

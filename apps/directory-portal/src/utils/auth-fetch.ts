@@ -28,11 +28,11 @@ const authFetch = async (
 };
 
 export const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
-  const apiBasePath = `${import.meta.env.VITE_DIRECTORY_API_URL}`;
+  const apiBasePath = `${import.meta.env.VITE_DIRECTORY_API}/directory`;
   return authFetch(apiBasePath, url, options);
 };
 
 export const proxyWithAuth = async (url: string, options: RequestInit = {}) => {
-  const apiBasePath = `${import.meta.env.VITE_PROXY_API_URL}`;
+  const apiBasePath = `${import.meta.env.VITE_DIRECTORY_API}/proxy`;
   return authFetch(apiBasePath, url, options);
 };

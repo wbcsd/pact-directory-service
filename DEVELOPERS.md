@@ -119,8 +119,8 @@ cp .env.example .env
 The default `.env` configuration should work for local development:
 
 ```bash
-DIRECTORY_API_URL=http://localhost:3010/api
-ENABLE_IM=false
+VITE_DIRECTORY_API=http://localhost:3010/api
+VITE_ENABLE_IM=false
 ```
 
 #### Start the Frontend
@@ -232,8 +232,8 @@ Key variables include:
 
 ### Frontend Environment Variables
 
-- `DIRECTORY_API_URL` - Directory API endpoint URL
-- `ENABLE_IM` - Enable identity management features
+- `VITE_DIRECTORY_API` - Directory API endpoint URL
+- `VITE_ENABLE_IM` - Enable identity management features
 
 #### Database Configuration
 
@@ -360,16 +360,6 @@ Retrieves detailed test results for a specific test run, including pass/fail sta
 
 Gets recent test runs for the authenticated user based on their email address.
 
-### Configuration
-
-Requires these environment variables:
-
-- `RUN_TEST_CASES_URL` - External service URL for running test cases
-- `TEST_RESULTS_URL` - External service URL for retrieving test results
-- `RECENT_TEST_RUNS_URL` - External service URL for getting recent test runs
-
-For local development, these URLs are typically left empty in `development.env`.
-
 ### Security & Error Handling
 
 - All endpoints require JWT authentication and validate user/company relationships
@@ -378,7 +368,7 @@ For local development, these URLs are typically left empty in `development.env`.
 
 ### Frontend Integration
 
-The frontend uses these endpoints via `VITE_PROXY_API_URL` to initiate testing, display results, and show historical test runs. This proxy architecture centralizes authentication, authorization, and error handling while abstracting external service details from the frontend.
+The frontend uses these endpoints via `VITE_DIRECTORY_API`/proxy to initiate testing, display results, and show historical test runs. This proxy architecture centralizes authentication, authorization, and error handling while abstracting external service details from the frontend.
 
 ```
 
