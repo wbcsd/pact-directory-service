@@ -30,9 +30,7 @@ const ResetPasswordPage: React.FC = () => {
 
       try {
         const response = await fetch(
-          `${
-            import.meta.env.VITE_DIRECTORY_API_URL
-          }/companies/verify-reset-token/${token}`
+          `${import.meta.env.VITE_DIRECTORY_API}/directory/companies/verify-reset-token/${token}`
         );
 
         if (response.ok) {
@@ -71,7 +69,7 @@ const ResetPasswordPage: React.FC = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_DIRECTORY_API_URL}/companies/reset-password`,
+        `${import.meta.env.VITE_DIRECTORY_API}/directory/companies/reset-password`,
         {
           method: "POST",
           headers: {

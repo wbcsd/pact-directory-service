@@ -19,7 +19,7 @@ const ForgotPasswordPage: React.FC = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_DIRECTORY_API_URL}/companies/forgot-password`,
+        `${import.meta.env.VITE_DIRECTORY_API}/directory/companies/forgot-password`,
         {
           method: "POST",
           headers: {
