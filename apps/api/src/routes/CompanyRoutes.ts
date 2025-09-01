@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import logger from "@src/util/logger";
-import EnvVars from "@src/common/EnvVars";
+import config from "@src/common/config";
 import HttpStatusCodes from "@src/common/HttpStatusCodes";
 import { connectionRequestStatus } from "@src/common/types";
 import { db } from "@src/database/db";
@@ -109,7 +109,7 @@ async function signup(req: IReq, res: IRes) {
       companyId: user.companyId,
       role: user.role,
     },
-    EnvVars.Jwt.Secret,
+    config.JWT_SECRET,
     {
       expiresIn: "6h",
     }
@@ -158,7 +158,7 @@ async function login(req: IReq, res: IRes) {
       companyId: user.companyId,
       role: user.role,
     },
-    EnvVars.Jwt.Secret,
+    config.JWT_SECRET,
     {
       expiresIn: "6h",
     }
@@ -572,7 +572,7 @@ async function forgotPassword(req: IReq, res: IRes) {
     const token = await createPasswordResetToken(user.id);
 
     // Generate reset URL
-    const resetUrl = `${EnvVars.Frontend.Url}/reset-password/${token}`;
+    const resetUrl = `${config.FRONTEND_URL}/reset-password/${token}`;
 
     // Send password reset email
     await sendPasswordResetEmail({
