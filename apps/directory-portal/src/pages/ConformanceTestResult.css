@@ -1,0 +1,119 @@
+.sidebar {
+}
+
+.marker-divider {
+}
+
+.main {
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: width 0.3s ease;
+}
+
+.main.full-width {
+  width: 100%;
+}
+
+.main.split {
+  width: 70%;
+}
+
+.spinner-container {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.error-container {
+  padding: 20px;
+  width: 30%;
+}
+
+.result-summary {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.summary-card {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #ebf0f5;
+  background-color: #fff;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.test-runs-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.test-runs-table th,
+.test-runs-table td {
+  padding: 12px;
+}
+
+.test-runs-table td.clickable {
+  cursor: pointer;
+}
+
+.test-runs-table td.selected {
+  background-color: #f6f9ff;
+}
+
+.no-tests {
+  padding: 20px;
+  text-align: center;
+  color: #888;
+}
+
+.test-details-container {
+  width: 30%;
+}
+
+.test-box {
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.test-box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.test-box-actions {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.documentation-section {
+  padding-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.code-block {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #ebf0f5;
+  margin-top: 20px;
+}
+
+.code-content {
+  max-height: 300px;
+  overflow-y: auto;
+}
