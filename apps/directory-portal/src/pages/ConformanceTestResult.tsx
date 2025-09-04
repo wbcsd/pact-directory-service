@@ -12,6 +12,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { proxyWithAuth } from "../utils/auth-fetch";
 import Spinner from "../components/LoadingSpinner";
 import CodeIcon from "../components/CodeIcon";
+import "./ConformanceTestResult.css";
 
 export interface TestCase {
   name: string;
@@ -120,19 +121,15 @@ const ConformanceTestResult: React.FC = () => {
     const fetchTestResults = async (id: string) => {
       try {
         const response = await proxyWithAuth(`/test-results?testRunId=${id}`);
-
         if (!response || !response.ok) {
           throw new Error("Failed to fetch test results");
         }
-
         const data = await response.json();
-
         if (data.error) {
           setError(data.error);
           setIsLoading(false);
           return;
         }
-
         setTestCases(data.results.map(mapTestCases));
         setPassingPercentage(data.passingPercentage);
         setNonMandatoryPassingPercentage(data.nonMandatoryPassingPercentage);
@@ -178,7 +175,6 @@ const ConformanceTestResult: React.FC = () => {
         }
 
         const data = await response.json();
-
         if (data.error) {
           setError(data.error);
           setIsLoading(false);
@@ -194,7 +190,6 @@ const ConformanceTestResult: React.FC = () => {
         setAdminEmail(data.adminEmail);
         setIsLoading(false);
 
-        // Update URL with the test run ID without reloading the page
         navigate(`/conformance-test-result?testRunId=${data.testRunId}`, {
           replace: true,
         });
@@ -209,7 +204,6 @@ const ConformanceTestResult: React.FC = () => {
       }
     };
 
-    // Check if we have a testRunId in the URL
     if (testRunId) {
       fetchTestResults(testRunId);
     } else {
@@ -232,28 +226,19 @@ const ConformanceTestResult: React.FC = () => {
   const selectTestAndScroll = (test: TestCase) => {
     setSelectedTest(test);
     setTimeout(() => {
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }, 0);
   };
+
   return (
     <>
       <aside className="sidebar">
         <div className="marker-divider"></div>
         <SideNav />
       </aside>
+
       {isLoading ? (
-        <Box
-          style={{
-            padding: "20px",
-            verticalAlign: "middle",
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
+        <Box className="spinner-container">
           <Spinner
             loadingText={
               isNewTestRun
@@ -263,12 +248,7 @@ const ConformanceTestResult: React.FC = () => {
           />
         </Box>
       ) : error ? (
-        <Box
-          style={{
-            padding: "20px",
-            width: "30%",
-          }}
-        >
+        <Box className="error-container">
           <h2>Conformance Test Result</h2>
           <Callout.Root color="red" size="2">
             <Callout.Icon>
@@ -284,16 +264,7 @@ const ConformanceTestResult: React.FC = () => {
         </Box>
       ) : (
         <>
-          <main
-            className="main"
-            style={{
-              width: selectedTest ? "70%" : "100%",
-              height: "100vh",
-              overflowY: "auto",
-              overflowX: "hidden",
-              transition: "width 0.3s ease",
-            }}
-          >
+          <main className={`main ${selectedTest ? "split" : "full-width"}`}>
             <div className="header">
               <div>
                 <h2>
@@ -327,18 +298,8 @@ const ConformanceTestResult: React.FC = () => {
               )}
             </div>
 
-            <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
-              <Box
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  justifyContent: "space-between",
-                  padding: "20px",
-                  borderRadius: "8px",
-                  border: "1px solid #EBF0F5",
-                  backgroundColor: "#fff",
-                }}
-              >
+            <div className="result-summary">
+              <Box className="summary-card">
                 <Box width={"80%"}>
                   <Text size="2" style={{ color: "#888" }}>
                     Mandatory Tests
@@ -347,14 +308,7 @@ const ConformanceTestResult: React.FC = () => {
                     {passingPercentage}%
                   </Heading>
                 </Box>
-                <Box
-                  style={{
-                    textAlign: "right",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "flex-end",
-                  }}
-                >
+                <Box style={{ textAlign: "right" }}>
                   <Badge
                     color={passingPercentage === 100 ? "green" : "red"}
                     style={{ fontWeight: "normal", fontSize: "14px" }}
@@ -363,17 +317,8 @@ const ConformanceTestResult: React.FC = () => {
                   </Badge>
                 </Box>
               </Box>
-              <Box
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  justifyContent: "space-between",
-                  padding: "20px",
-                  borderRadius: "8px",
-                  border: "1px solid #EBF0F5",
-                  backgroundColor: "#fff",
-                }}
-              >
+
+              <Box className="summary-card">
                 <Box width={"80%"}>
                   <Text size="2" style={{ color: "#888" }}>
                     Optional Tests
@@ -382,14 +327,7 @@ const ConformanceTestResult: React.FC = () => {
                     {nonMandatoryPassingPercentage}%
                   </Heading>
                 </Box>
-                <Box
-                  style={{
-                    textAlign: "right",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "flex-end",
-                  }}
-                >
+                <Box style={{ textAlign: "right" }}>
                   <Badge
                     color={
                       nonMandatoryPassingPercentage === 100 ? "green" : "red"
@@ -423,14 +361,11 @@ const ConformanceTestResult: React.FC = () => {
                     <tr key={test.testKey}>
                       <td
                         onClick={() => selectTestAndScroll(test)}
-                        style={{
-                          cursor: "pointer",
-                          backgroundColor:
-                            selectedTest &&
-                            selectedTest.testKey === test.testKey
-                              ? "#F6F9FF"
-                              : "transparent",
-                        }}
+                        className={`clickable ${
+                          selectedTest?.testKey === test.testKey
+                            ? "selected"
+                            : ""
+                        }`}
                       >
                         {test.name}
                       </td>
@@ -464,48 +399,19 @@ const ConformanceTestResult: React.FC = () => {
                 </tbody>
               </table>
               {testCases.length === 0 && (
-                <div
-                  style={{
-                    padding: "20px",
-                    textAlign: "center",
-                    color: "#888",
-                  }}
-                >
-                  No test cases available.
-                </div>
+                <div className="no-tests">No test cases available.</div>
               )}
             </div>
           </main>
 
           {selectedTest && (
             <div className="test-details-container">
-              <Box
-                id="test-details"
-                style={{
-                  padding: "20px",
-                  height: "100%",
-                  overflowY: "auto",
-                }}
-              >
-                <Box
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "12px",
-                  }}
-                >
+              <Box id="test-details" className="test-box">
+                <Box className="test-box-header">
                   <Heading as="h2" size="4">
                     {selectedTest.name}
                   </Heading>
-                  <Box
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      flexDirection: "column",
-                      gap: "8px",
-                    }}
-                  >
+                  <Box className="test-box-actions">
                     <Badge color={getStatusColor(selectedTest)}>
                       {getStatusText(selectedTest)}
                     </Badge>
@@ -526,15 +432,9 @@ const ConformanceTestResult: React.FC = () => {
                     </Button>
                   </Box>
                 </Box>
+
                 {selectedTest.documentationUrl && (
-                  <div
-                    style={{
-                      paddingBottom: "20px",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "12px",
-                    }}
-                  >
+                  <div className="documentation-section">
                     <div>
                       <ReaderIcon />{" "}
                       <a
@@ -554,6 +454,7 @@ const ConformanceTestResult: React.FC = () => {
                     </Badge>
                   </div>
                 )}
+
                 <Text
                   size="2"
                   mb="4"
@@ -562,23 +463,10 @@ const ConformanceTestResult: React.FC = () => {
                   }}
                 />
                 <br />
+
                 {selectedTest.curlRequest && (
-                  <Box
-                    mt={"5"}
-                    style={{
-                      color: "#0A0552",
-                      background: "#fff",
-                      padding: "20px",
-                      borderRadius: "8px",
-                      border: "1px solid #EBF0F5",
-                    }}
-                  >
-                    <div
-                      style={{
-                        maxHeight: 300,
-                        overflowY: "auto",
-                      }}
-                    >
+                  <Box className="code-block">
+                    <div className="code-content">
                       <Text
                         size="2"
                         mb="4"
@@ -589,23 +477,10 @@ const ConformanceTestResult: React.FC = () => {
                     </div>
                   </Box>
                 )}
+
                 {selectedTest.apiResponse && (
-                  <Box
-                    mt={"5"}
-                    style={{
-                      color: "#0A0552",
-                      background: "#fff",
-                      padding: "20px",
-                      borderRadius: "8px",
-                      border: "1px solid #EBF0F5",
-                    }}
-                  >
-                    <div
-                      style={{
-                        maxHeight: 300,
-                        overflowY: "auto",
-                      }}
-                    >
+                  <Box className="code-block">
+                    <div className="code-content">
                       <Text
                         size="2"
                         mb="4"

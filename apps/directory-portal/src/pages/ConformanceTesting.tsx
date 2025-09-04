@@ -4,6 +4,7 @@ import * as Form from "@radix-ui/react-form";
 import SideNav from "../components/SideNav";
 import { useNavigate } from "react-router-dom";
 import { useConformanceTesting } from "../components/ConformanceTesting";
+import "./ConformanceTesting.css";
 
 const ConformanceTesting: React.FC = () => {
   const {
@@ -67,32 +68,17 @@ const ConformanceTesting: React.FC = () => {
         <div className="header">
           <div>
             <h2>Run conformance tests</h2>
-            <p style={{ color: "#888" }}>
+            <p>
               Enter the required information to run the conformance tests
               against your API implementation.
             </p>
           </div>
         </div>
 
-        <Form.Root
-          onSubmit={handleSubmit}
-          style={{
-            maxWidth: "720px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "20px",
-          }}
-        >
-          <Form.Field name="solutionApiUrl" style={{ marginBottom: "20px" }}>
-            <Form.Label
-              style={{
-                display: "block",
-                marginBottom: "8px",
-                fontWeight: "500",
-                color: "var(--gray-12)",
-              }}
-            >
-              Solution API Base URL<span style={{ color: "red" }}>*</span>
+        <Form.Root onSubmit={handleSubmit} className="form-root">
+          <Form.Field name="solutionApiUrl" className="form-field">
+            <Form.Label className="form-label">
+              Solution API Base URL<span className="required">*</span>
             </Form.Label>
             <Form.Control asChild>
               <TextField.Root
@@ -101,53 +87,27 @@ const ConformanceTesting: React.FC = () => {
                 required
                 placeholder="https://api.example.com"
                 onChange={handleChange}
-                style={{
-                  width: "100%",
-                  border: "1px solid #ccc",
-                  padding: "12px",
-                  fontSize: "16px",
-                }}
+                className="input"
               />
             </Form.Control>
           </Form.Field>
 
-          <Form.Field name="authBaseUrl" style={{ marginBottom: "20px" }}>
-            <Form.Label
-              style={{
-                display: "block",
-                marginBottom: "8px",
-                fontWeight: "500",
-                color: "var(--gray-12)",
-              }}
-            >
-              Auth Base URL
-            </Form.Label>
+          <Form.Field name="authBaseUrl" className="form-field">
+            <Form.Label className="form-label">Auth Base URL</Form.Label>
             <Form.Control asChild>
               <TextField.Root
                 value={formData.authBaseUrl}
                 name="authBaseUrl"
                 placeholder="https://auth.example.com"
                 onChange={handleChange}
-                style={{
-                  width: "100%",
-                  border: "1px solid #ccc",
-                  padding: "12px",
-                  fontSize: "16px",
-                }}
+                className="input"
               />
             </Form.Control>
           </Form.Field>
 
-          <Form.Field name="clientId" style={{ marginBottom: "20px" }}>
-            <Form.Label
-              style={{
-                display: "block",
-                marginBottom: "8px",
-                fontWeight: "500",
-                color: "var(--gray-12)",
-              }}
-            >
-              Client ID<span style={{ color: "red" }}>*</span>
+          <Form.Field name="clientId" className="form-field">
+            <Form.Label className="form-label">
+              Client ID<span className="required">*</span>
             </Form.Label>
             <Form.Control asChild>
               <TextField.Root
@@ -156,26 +116,14 @@ const ConformanceTesting: React.FC = () => {
                 required
                 placeholder="Client ID used for authentication by ACT"
                 onChange={handleChange}
-                style={{
-                  width: "100%",
-                  border: "1px solid #ccc",
-                  padding: "12px",
-                  fontSize: "16px",
-                }}
+                className="input"
               />
             </Form.Control>
           </Form.Field>
 
-          <Form.Field name="clientSecret" style={{ marginBottom: "20px" }}>
-            <Form.Label
-              style={{
-                display: "block",
-                marginBottom: "8px",
-                fontWeight: "500",
-                color: "var(--gray-12)",
-              }}
-            >
-              Client Secret<span style={{ color: "red" }}>*</span>
+          <Form.Field name="clientSecret" className="form-field">
+            <Form.Label className="form-label">
+              Client Secret<span className="required">*</span>
             </Form.Label>
             <Form.Control asChild>
               <TextField.Root
@@ -184,120 +132,60 @@ const ConformanceTesting: React.FC = () => {
                 required
                 placeholder="Secret used for authentication by ACT"
                 onChange={handleChange}
-                style={{
-                  width: "100%",
-                  border: "1px solid #ccc",
-                  padding: "12px",
-                  fontSize: "16px",
-                }}
+                className="input"
               />
             </Form.Control>
           </Form.Field>
 
-          <Form.Field name="scope" style={{ marginBottom: "20px" }}>
-            <Form.Label
-              style={{
-                display: "block",
-                marginBottom: "8px",
-                fontWeight: "500",
-                color: "var(--gray-12)",
-              }}
-            >
-              Scope
-            </Form.Label>
+          <Form.Field name="scope" className="form-field">
+            <Form.Label className="form-label">Scope</Form.Label>
             <Form.Control asChild>
               <TextField.Root
                 value={formData.authOptionsScope}
                 name="authOptionsScope"
                 placeholder="Scope used for authentication"
                 onChange={handleChange}
-                style={{
-                  width: "100%",
-                  border: "1px solid #ccc",
-                  padding: "12px",
-                  fontSize: "16px",
-                }}
+                className="input"
               />
             </Form.Control>
           </Form.Field>
 
-          <Form.Field name="audience" style={{ marginBottom: "20px" }}>
-            <Form.Label
-              style={{
-                display: "block",
-                marginBottom: "8px",
-                fontWeight: "500",
-                color: "var(--gray-12)",
-              }}
-            >
-              Audience
-            </Form.Label>
+          <Form.Field name="audience" className="form-field">
+            <Form.Label className="form-label">Audience</Form.Label>
             <Form.Control asChild>
               <TextField.Root
                 value={formData.authOptionsAudience}
                 name="authOptionsAudience"
                 placeholder="Audience used for authentication"
                 onChange={handleChange}
-                style={{
-                  width: "100%",
-                  border: "1px solid #ccc",
-                  padding: "12px",
-                  fontSize: "16px",
-                }}
+                className="input"
               />
             </Form.Control>
           </Form.Field>
 
-          <Form.Field name="resource" style={{ marginBottom: "20px" }}>
-            <Form.Label
-              style={{
-                display: "block",
-                marginBottom: "8px",
-                fontWeight: "500",
-                color: "var(--gray-12)",
-              }}
-            >
-              Resource
-            </Form.Label>
+          <Form.Field name="resource" className="form-field">
+            <Form.Label className="form-label">Resource</Form.Label>
             <Form.Control asChild>
               <TextField.Root
                 value={formData.authOptionsResource}
                 name="authOptionsResource"
                 placeholder="Resource used for authentication"
                 onChange={handleChange}
-                style={{
-                  width: "100%",
-                  border: "1px solid #ccc",
-                  padding: "12px",
-                  fontSize: "16px",
-                }}
+                className="input"
               />
             </Form.Control>
           </Form.Field>
 
-          <Form.Field name="techSpecsVersion" style={{ marginBottom: "20px" }}>
-            <Form.Label
-              style={{
-                display: "block",
-                marginBottom: "8px",
-                fontWeight: "500",
-                color: "var(--gray-12)",
-              }}
-            >
-              Tech Specs Version<span style={{ color: "red" }}>*</span>
+          <Form.Field name="techSpecsVersion" className="form-field">
+            <Form.Label className="form-label">
+              Tech Specs Version<span className="required">*</span>
             </Form.Label>
             <Form.Control asChild>
               <select
                 name="techSpecsVersion"
                 onChange={handleChange}
                 required
-                style={{
-                  width: "100%",
-                  padding: "12px",
-                  borderRadius: "0",
-                  border: "1px solid #ccc",
-                  fontSize: "16px",
-                }}
+                className="select"
                 defaultValue={formData.techSpecsVersion}
               >
                 <option value="V2.0">2.0 (beta)</option>
@@ -309,63 +197,41 @@ const ConformanceTesting: React.FC = () => {
             </Form.Control>
           </Form.Field>
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              gap: "10px",
-            }}
-          >
+          <div className="form-actions">
             <Form.Submit asChild>
-              <Button
-                type="submit"
-                style={{
-                  background: "#14144B",
-                  color: "white",
-                  padding: "10px 20px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                  border: "none",
-                }}
-              >
+              <Button type="submit" className="submit-button">
                 Run tests
               </Button>
             </Form.Submit>
           </div>
         </Form.Root>
       </main>
-      <div className="test-details-container" style={{ width: "50%" }}>
-        <Box
-          style={{
-            padding: "2rem 3rem",
-            height: "100%",
-            overflowY: "auto",
-          }}
-        >
-          <h2 style={styles.heading}>Tech guidance</h2>
+      <div className="test-details-container">
+        <Box className="test-box">
+          <h2 className="heading">Tech guidance</h2>
 
-          <h3 style={styles.subheading}>Solution API Base URL</h3>
-          <p style={styles.paragraphText}>
+          <h3 className="subheading">Solution API Base URL</h3>
+          <p className="paragraph-text">
             Enter the base URL of your PACT Conformant API implementation. This
             URL will be used as the root endpoint for all API requests during
             the conformance testing process.
           </p>
 
-          <p style={styles.paragraphText}>
+          <p className="paragraph-text">
             The URL should be in the format{" "}
             <span className="inline-url">https://yourdomain.com/api</span>{" "}
             (without a trailing slash). Make sure your endpoint is accessible
             from the internet and has valid SSL certification.
           </p>
 
-          <h3 style={styles.subheading}>Auth Base URL (optional)</h3>
-          <p style={styles.paragraphText}>
+          <h3 className="subheading">Auth Base URL (optional)</h3>
+          <p className="paragraph-text">
             If your implementation uses a separate authentication service,
             provide its base URL here. This field is optional if your
             authentication endpoints are part of the main API URL.
           </p>
 
-          <p style={styles.paragraphText}>
+          <p className="paragraph-text">
             The authentication service should support the OAuth 2.0 protocol
             with client credentials flow as specified in the{" "}
             <a href="https://docs.carbon-transparency.org/">
@@ -373,30 +239,30 @@ const ConformanceTesting: React.FC = () => {
             </a>
           </p>
 
-          <h3 style={styles.subheading}>Client ID</h3>
-          <p style={styles.paragraphText}>
+          <h3 className="subheading">Client ID</h3>
+          <p className="paragraph-text">
             Provide the Client ID that will be used to authenticate API requests
             during conformance testing. This ID should have sufficient
             permissions to access all endpoints required by the PACT
             specification.
           </p>
 
-          <h3 style={styles.subheading}>Client Secret</h3>
-          <p style={styles.paragraphText}>
+          <h3 className="subheading">Client Secret</h3>
+          <p className="paragraph-text">
             Enter the Client Secret associated with your Client ID. This will be
             used along with the Client ID to obtain access tokens for
             authenticated API requests during testing.
           </p>
 
-          <h3 style={styles.subheading}>Other Authentication Options</h3>
-          <p style={styles.paragraphText}>
-            Common OAuth options like <code>Scope</code>, <code>Resource</code> and <code>Audience</code> are
-            also available for configuration. Make sure to set these according
-            to your API's requirements.
+          <h3 className="subheading">Other Authentication Options</h3>
+          <p className="paragraph-text">
+            Common OAuth options like <code>Scope</code>, <code>Resource</code>{" "}
+            and <code>Audience</code> are also available for configuration. Make
+            sure to set these according to your API's requirements.
           </p>
 
-          <h3 style={styles.subheading}>Tech Specs Version</h3>
-          <p style={styles.paragraphText}>
+          <h3 className="subheading">Tech Specs Version</h3>
+          <p className="paragraph-text">
             The{" "}
             <a href="https://docs.carbon-transparency.org/">
               PACT Technical Specifications
@@ -406,15 +272,15 @@ const ConformanceTesting: React.FC = () => {
             solution implements.
           </p>
 
-          <p style={styles.paragraphText}>
+          <p className="paragraph-text">
             A given version is in beta if the testing suite has not yet been
             tested by a sufficient number of organizations for that version; the
             tool can nevertheless still be used to grant PACT Conformance
             status, but organizations may be subject to mandatory retesting, as
             per our{" "}
             <a
-              style={{ fontWeight: "bold" }}
               href="https://github.com/wbcsd/pact-conformance-service/blob/main/docs/beta_retesting_policy.md"
+              className="link-bold"
             >
               policy
             </a>
@@ -424,20 +290,6 @@ const ConformanceTesting: React.FC = () => {
       </div>
     </>
   );
-};
-
-const styles = {
-  heading: {
-    marginBottom: "10px",
-  },
-  subheading: {
-    marginTop: "20px",
-    marginBottom: "8px",
-  },
-  paragraphText: {
-    color: "#9D9DB8",
-    marginTop: "15px",
-  },
 };
 
 export default ConformanceTesting;
