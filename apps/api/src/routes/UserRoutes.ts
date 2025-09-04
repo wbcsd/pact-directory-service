@@ -1,52 +1,57 @@
-import HttpStatusCodes from "@src/common/HttpStatusCodes";
-import UserService from "@src/services/UserService";
-import User from "@src/models/User";
+// import HttpStatusCodes from "@src/common/HttpStatusCodes";
+// import UserService from "@src/services/UserService";
+// import { User, UserSchema } from "@src/models/User";
 
-import { IReq, IRes } from "./common/types";
-import check from "./common/check";
+// import { IReq, IRes } from "./common/types";
+// import check from "./common/check";
+// import { Response, Request } from "express";
 
-// **** Functions **** //
+// // **** Functions **** //
 
-/**
- * Get all users.
- */
-async function getAll(_: IReq, res: IRes) {
-  const users = await UserService.getAll();
-  res.status(HttpStatusCodes.OK).json({ users });
-}
+// /**
+//  * Get all users.
+//  */
+// async function getAll(_: IReq, res: IRes) {
+//   const users = await UserService.getAll();
+//   res.status(HttpStatusCodes.OK).json({ users });
+// }
 
-/**
- * Add one user.
- */
-async function add(req: IReq, res: IRes) {
-  const user = check.isValid(req.body, "user", User.isUser);
-  await UserService.addOne(user);
-  res.status(HttpStatusCodes.CREATED).end();
-}
+// /**
+//  * Add one user.
+//  */
+// async function add(req: Request, res: Response) {
 
-/**
- * Update one user.
- */
-async function update(req: IReq, res: IRes) {
-  const user = check.isValid(req.body, "user", User.isUser);
-  await UserService.updateOne(user);
-  res.status(HttpStatusCodes.OK).end();
-}
+//   try {
+//     await UserService.addOne(UserSchema.parse(req.body));
+//     res.status(HttpStatusCodes.CREATED).end();
+//   } catch (error) {
+//     res.status(HttpStatusCodes.BAD_REQUEST).json({ error: error.message });
+//   }
+// }
 
-/**
- * Delete one user.
- */
-async function delete_(req: IReq, res: IRes) {
-  const id = check.isNum(req.params, "id");
-  await UserService.delete(id);
-  res.status(HttpStatusCodes.OK).end();
-}
+// /**
+//  * Update one user.
+//  */
+// async function update(req: IReq, res: IRes) {
+//   const user = UserSchema.parse(req.body);
+//   await UserService.updateOne(user);
+//   res.status(HttpStatusCodes.OK).end();
+// }
 
-// **** Export default **** //
+// /**
+//  * Delete one user.
+//  */
+// async function delete_(req: IReq, res: IRes) {
+//   const id = check.isNum(req.params, "id");
+//   await UserService.delete(id);
+//   res.status(HttpStatusCodes.OK).end();
+// }
 
-export default {
-  getAll,
-  add,
-  update,
-  delete: delete_,
-} as const;
+// // **** Export default **** //
+
+// export default {
+//   getAll,
+//   add,
+//   update,
+//   delete: delete_,
+// } as const;

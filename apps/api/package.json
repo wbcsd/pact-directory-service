@@ -10,7 +10,7 @@
     "lint": "eslint ./src",
     "lint:tests": "eslint ./spec",
     "start": "NODE_ENV=production node ./dist",
-    "test": "NODE_ENV=test ts-node ./spec",
+    "test": "NODE_ENV=test",
     "test:hot": "nodemon --exec \"npm run test\" --watch ./src --watch ./spec -e ts",
     "db:migrate": "ts-node ./src/database/migrate-to-latest.ts",
     "db:add-user": "ts-node ./src/database/add-user.ts"

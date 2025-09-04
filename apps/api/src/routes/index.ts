@@ -1,74 +1,23 @@
 import { Router } from "express";
-
-import Paths from "../common/Paths";
-import UserRoutes from "./UserRoutes";
+import authenticate from "../middleware/jwt-auth-middleware";
 import CompanyRoutes from "./CompanyRoutes";
-import jwtAuthMiddleware from "./common/jwt-auth-middleware";
 
-// **** Variables **** //
-
-const apiRouter = Router();
-
-// ** Add UserRouter ** //
-const userRouter = Router();
-
-// ** Add CompanyRouter ** //
-const companyRouter = Router();
-
-// Get all users
-userRouter.get(Paths.Users.Get, UserRoutes.getAll);
-userRouter.post(Paths.Users.Add, UserRoutes.add);
-userRouter.put(Paths.Users.Update, UserRoutes.update);
-userRouter.delete(Paths.Users.Delete, UserRoutes.delete);
+const router = Router();
 
 // Signup & Login
-companyRouter.post(Paths.Companies.Signup, CompanyRoutes.signup);
-companyRouter.post(Paths.Companies.Login, CompanyRoutes.login);
+router.post("/companies/signup", CompanyRoutes.signup);
+router.post("/companies/login", CompanyRoutes.login);
 
 // Password reset
-companyRouter.post(
-  Paths.Companies.ForgotPassword,
-  CompanyRoutes.forgotPassword
-);
-companyRouter.post(Paths.Companies.ResetPassword, CompanyRoutes.resetPassword);
-companyRouter.get(
-  Paths.Companies.VerifyResetToken,
-  CompanyRoutes.verifyResetToken
-);
+router.post("/companies/forgot-password", CompanyRoutes.forgotPassword);
+router.post("/companies/reset-password", CompanyRoutes.resetPassword);
+router.get("/companies/verify-reset-token", CompanyRoutes.verifyResetToken);
 
 // Private routes
-companyRouter.get(
-  Paths.Companies.MyProfile,
-  jwtAuthMiddleware,
-  CompanyRoutes.myProfile
-);
-companyRouter.get(
-  Paths.Companies.Profile,
-  jwtAuthMiddleware,
-  CompanyRoutes.getCompany
-);
-companyRouter.get(
-  Paths.Companies.Search,
-  jwtAuthMiddleware,
-  CompanyRoutes.searchCompanies
-);
-companyRouter.post(
-  Paths.Companies.CreateConnectionRequest,
-  jwtAuthMiddleware,
-  CompanyRoutes.createConnectionRequest
-);
-companyRouter.post(
-  Paths.Companies.ConnectionRequesAction,
-  jwtAuthMiddleware,
-  CompanyRoutes.connectionRequestAction
-);
+router.get("/companies/my-profile", authenticate, CompanyRoutes.myProfile);
+router.get("/companies/profile", authenticate, CompanyRoutes.getCompany);
+router.get("/companies/search", authenticate, CompanyRoutes.searchCompanies);
+router.post("/companies/create-connection-request", authenticate, CompanyRoutes.createConnectionRequest);
+router.post("/companies/connection-request-action", authenticate, CompanyRoutes.connectionRequestAction);
 
-// Add UserRouter
-apiRouter.use(Paths.Users.Base, userRouter);
-
-// Add CompanyRouter
-apiRouter.use(Paths.Companies.Base, companyRouter);
-
-// **** Export default **** //
-
-export default apiRouter;
+export default router;

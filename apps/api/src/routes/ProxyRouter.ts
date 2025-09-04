@@ -1,31 +1,11 @@
 import { Router } from "express";
+import authenticate from "../middleware/jwt-auth-middleware";
+import ProxyRoutes from "./ProxyRoutes";
 
-import Paths from "../common/Paths";
+const router = Router();
 
-import ProxyRouter from "./ProxyRoutes";
-import jwtAuthMiddleware from "./common/jwt-auth-middleware";
+router.post("/proxy/test", authenticate, ProxyRoutes.runTestCases);
+router.get("/proxy/test-results", authenticate, ProxyRoutes.getTestResults);
+router.get("/proxy/test-runs", authenticate, ProxyRoutes.getOrSearchTestRuns);
 
-const apiRouter = Router();
-
-const proxyRouter = Router();
-
-proxyRouter.post(Paths.Proxy.Test, jwtAuthMiddleware, ProxyRouter.runTestCases);
-proxyRouter.get(
-  Paths.Proxy.TestResults,
-  jwtAuthMiddleware,
-  ProxyRouter.getTestResults
-);
-proxyRouter.get(
-  Paths.Proxy.getOrSearchTestRuns,
-  jwtAuthMiddleware,
-  ProxyRouter.getOrSearchTestRuns
-);
-proxyRouter.get(
-  Paths.Proxy.getOrSearchTestRuns,
-  jwtAuthMiddleware,
-  ProxyRouter.getOrSearchTestRuns
-);
-
-apiRouter.use(Paths.Proxy.Base, proxyRouter);
-
-export default apiRouter;
+export default router;
