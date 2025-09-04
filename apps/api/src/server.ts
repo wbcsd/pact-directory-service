@@ -9,8 +9,6 @@ import "express-async-errors";
 import cors from "cors";
 
 import BaseRouter from "@src/routes";
-import AuthRouter from "@src/routes/AuthRouter";
-import ProxyRouter from "@src/routes/ProxyRouter";
 
 const app = express();
 
@@ -45,10 +43,8 @@ app.get("/health-check", (_, res) => {
   });
 });
 
-// Add APIs, must be after middleware
-app.use("/api/directory", BaseRouter);
-app.use("/api/im", AuthRouter);
-app.use("/api", ProxyRouter);
+// Add API routes
+app.use("/api", BaseRouter);
 
 
 export default app;
