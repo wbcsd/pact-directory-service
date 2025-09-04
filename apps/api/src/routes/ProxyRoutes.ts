@@ -1,10 +1,10 @@
+import { Response, Request } from "express";
 import logger from "@src/util/logger";
 import HttpStatusCodes from "@src/common/HttpStatusCodes";
-import { IReq, IRes } from "./common/types";
 import { db } from "@src/database/db";
 import config from "@src/common/config";
 
-async function runTestCases(req: IReq, res: IRes) {
+async function runTestCases(req: Request, res: Response) {
   const { companyId, userId } = res.locals.user as {
     companyId: string;
     userId: string;
@@ -83,7 +83,7 @@ async function runTestCases(req: IReq, res: IRes) {
   }
 }
 
-async function getTestResults(req: IReq, res: IRes) {
+async function getTestResults(req: Request, res: Response) {
   const { testRunId } = req.query;
 
   if (!testRunId) {
@@ -115,7 +115,7 @@ async function getTestResults(req: IReq, res: IRes) {
 /*
 endpoint: /test-runs?query={query}&adminEmail={adminEmail}&limit={limit}
 */
-async function searchTestRuns(req: IReq, res: IRes) {
+async function searchTestRuns(req: Request, res: Response) {
   const { query, limit } = req.query;
   if (!query) {
     res
@@ -164,7 +164,7 @@ async function searchTestRuns(req: IReq, res: IRes) {
   }
 }
 
-async function getOrSearchTestRuns(req: IReq, res: IRes) {
+async function getOrSearchTestRuns(req: Request, res: Response) {
   const { query } = req.query;
   if (query) {
     await searchTestRuns(req, res);
@@ -173,7 +173,7 @@ async function getOrSearchTestRuns(req: IReq, res: IRes) {
   }
 }
 
-async function getRecentTestRuns(req: IReq, res: IRes) {
+async function getRecentTestRuns(req: Request, res: Response) {
   const { userId } = res.locals.user as {
     userId: string;
   };

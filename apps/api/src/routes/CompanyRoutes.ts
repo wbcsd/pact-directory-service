@@ -1,41 +1,54 @@
+import { Response, Request } from "express";
+import { z } from "zod";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import logger from "@src/util/logger";
 import config from "@src/common/config";
 import HttpStatusCodes from "@src/common/HttpStatusCodes";
-import { connectionRequestStatus } from "@src/common/types";
 import { db } from "@src/database/db";
-import { IReq, IRes } from "./common/types";
 import { generateCredentials } from "@src/util/credentials";
 import {
   sendConnectionRequestEmail,
   sendWelcomeEmail,
   sendPasswordResetEmail,
 } from "@src/services/EmailService";
-import { validate } from "@src/models/validation";
-import { SignUpInputSchema } from "@src/models/SignUpInput";
 import {
   createPasswordResetToken,
   validateResetToken,
   markTokenAsUsed,
 } from "@src/util/password-reset";
 
+// Input validation schema
+const SignUpInputSchema = z
+  .object({
+    companyName: z.string(),
+    companyIdentifier: z.string(),
+    companyIdentifierDescription: z.string(),
+    fullName: z.string(),
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters long"),
+    confirmPassword: z.string(),
+    solutionApiUrl: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+// Possible statuses for connection requests
+const connectionRequestStatus = {
+  PENDING: "pending",
+  ACCEPTED: "accepted",
+  REJECTED: "rejected",
+} as const;
+
+
 /**
  *
  * Signup a company
  */
 
-async function signup(req: IReq, res: IRes) {
-  const validationResult = validate(req.body, SignUpInputSchema);
-
-  if (!validationResult.success) {
-    res
-      .status(HttpStatusCodes.BAD_REQUEST)
-      .json({ error: "Invalid data, please review." });
-
-    return;
-  }
-
+async function signup(req: Request, res: Response) {
   const {
     companyName,
     companyIdentifier,
@@ -45,7 +58,7 @@ async function signup(req: IReq, res: IRes) {
     password,
     confirmPassword,
     solutionApiUrl,
-  } = validationResult.value;
+  } = SignUpInputSchema.parse(req.body);
 
   // Check if passwords match
   if (password !== confirmPassword) {
@@ -129,9 +142,8 @@ async function signup(req: IReq, res: IRes) {
  * Login
  */
 
-async function login(req: IReq, res: IRes) {
+async function login(req: Request, res: Response) {
   const { email, password } = req.body;
-
   const user = await db
     .selectFrom("users")
     .select(["password", "id", "email", "companyId", "role"])
@@ -171,7 +183,7 @@ async function login(req: IReq, res: IRes) {
  * My Profile
  */
 
-async function myProfile(req: IReq, res: IRes) {
+async function myProfile(req: Request, res: Response) {
   const user = res.locals.user;
   const { email, companyId } = user as { email: string; companyId: string };
 
@@ -297,7 +309,7 @@ async function myProfile(req: IReq, res: IRes) {
 /**
  * Get a company by ID
  */
-async function getCompany(req: IReq, res: IRes) {
+async function getCompany(req: Request, res: Response) {
   const user = res.locals.user;
 
   const { companyId: currentUserCompanyId } = user as { companyId: string };
@@ -376,7 +388,7 @@ async function getCompany(req: IReq, res: IRes) {
 /**
  * Search companies by companyName
  */
-async function searchCompanies(req: IReq, res: IRes) {
+async function searchCompanies(req: Request, res: Response) {
   const user = res.locals.user;
 
   const { companyId: currentUserCompanyId } = user as { companyId: string };
@@ -413,7 +425,7 @@ async function searchCompanies(req: IReq, res: IRes) {
 /**
  * Create a connection request
  */
-async function createConnectionRequest(req: IReq, res: IRes) {
+async function createConnectionRequest(req: Request, res: Response) {
   const user = res.locals.user;
 
   // TODO: validate these inputs with zod,
@@ -482,7 +494,7 @@ async function createConnectionRequest(req: IReq, res: IRes) {
 /**
  * Handle connection request action
  */
-async function connectionRequestAction(req: IReq, res: IRes) {
+async function connectionRequestAction(req: Request, res: Response) {
   const user = res.locals.user;
   const { companyId: currentCompanyId } = user as { companyId: number };
   const { requestId } = req.body;
@@ -541,7 +553,7 @@ async function connectionRequestAction(req: IReq, res: IRes) {
 /**
  * Forgot Password - Request password reset
  */
-async function forgotPassword(req: IReq, res: IRes) {
+async function forgotPassword(req: Request, res: Response) {
   const { email } = req.body;
 
   if (!email || typeof email !== "string") {
@@ -595,7 +607,7 @@ async function forgotPassword(req: IReq, res: IRes) {
 /**
  * Reset Password - Reset password with token
  */
-async function resetPassword(req: IReq, res: IRes) {
+async function resetPassword(req: Request, res: Response) {
   const { token, password, confirmPassword } = req.body;
 
   if (
@@ -669,7 +681,7 @@ async function resetPassword(req: IReq, res: IRes) {
 /**
  * Verify Reset Token - Check if reset token is valid
  */
-async function verifyResetToken(req: IReq, res: IRes) {
+async function verifyResetToken(req: Request, res: Response) {
   const { token } = req.params;
 
   if (!token || typeof token !== "string") {

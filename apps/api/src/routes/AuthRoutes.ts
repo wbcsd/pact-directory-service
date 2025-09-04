@@ -1,9 +1,9 @@
+import { Response, Request } from "express";
 import jwt from "jsonwebtoken";
 import HttpStatusCodes from "@src/common/HttpStatusCodes";
-import { IReq, IRes } from "./common/types";
 import { db } from "@src/database/db";
 
-async function token(req: IReq, res: IRes) {
+async function token(req: Request, res: Response) {
   const { client_id, client_secret, network_key } = req.body;
 
   // 1. Load both companies from the db. One company through the client_id and the other through the network_id

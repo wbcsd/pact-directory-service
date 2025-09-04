@@ -1,15 +1,7 @@
 import { Router } from "express";
+import AuthRoutes from "./AuthRoutes";
 
-import Paths from "../common/Paths";
+const router = Router();
+router.post("auth/token", AuthRoutes.token);
 
-import AuthRouter from "./AuthRoutes";
-
-const apiRouter = Router();
-
-const authRouter = Router();
-
-authRouter.post(Paths.Auth.Token, AuthRouter.token);
-
-apiRouter.use(Paths.Auth.Base, authRouter);
-
-export default apiRouter;
+export default router;

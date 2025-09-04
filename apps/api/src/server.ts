@@ -1,7 +1,8 @@
 import morgan from "morgan";
 import helmet from "helmet";
-import express, { Request, Response, NextFunction } from "express";
+import express from "express";
 
+import config from "@src/common/config";
 import logger, { loggerMiddleware } from "@src/util/logger";
 
 import "express-async-errors";
@@ -10,13 +11,6 @@ import cors from "cors";
 import BaseRouter from "@src/routes";
 import AuthRouter from "@src/routes/AuthRouter";
 import ProxyRouter from "@src/routes/ProxyRouter";
-
-import Paths from "@src/common/Paths";
-import config from "@src/common/config";
-import HttpStatusCodes from "@src/common/HttpStatusCodes";
-import { RouteError } from "@src/common/classes";
-
-// **** Variables **** //
 
 const app = express();
 
@@ -52,23 +46,9 @@ app.get("/health-check", (_, res) => {
 });
 
 // Add APIs, must be after middleware
-app.use(Paths.DirectoryBase, BaseRouter);
-app.use(Paths.IdentityProviderBase, AuthRouter);
-app.use(Paths.ProxyBase, ProxyRouter);
+app.use("/api/directory", BaseRouter);
+app.use("/api/im", AuthRouter);
+app.use("/api", ProxyRouter);
 
-// Add error handler
-app.use((err: Error, _: Request, res: Response, next: NextFunction) => {
-  if (config.NODE_ENV !== "test") {
-    logger.error(err);
-  }
-  let status = HttpStatusCodes.INTERNAL_SERVER_ERROR;
-  if (err instanceof RouteError) {
-    status = err.status;
-    res.status(status).json({ error: err.message });
-  }
-  return next(err);
-});
-
-// **** Export default **** //
 
 export default app;
