@@ -4,6 +4,7 @@ import { Box, Button } from "@radix-ui/themes";
 import SideNav from "../components/SideNav";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import Spinner from "../components/LoadingSpinner";
+import { useTranslation } from "react-i18next";
 
 const RequestStatus = {
   PENDING: "pending",
@@ -27,6 +28,8 @@ const CompanyProfile: React.FC = () => {
     solutionApiUrl: "",
     networkKey: "",
   });
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -88,19 +91,16 @@ const CompanyProfile: React.FC = () => {
   };
 
   const statusLabelMapping = {
-    [RequestStatus.PENDING]: "Pending",
-    [RequestStatus.NOREQUEST]: "Connect",
-    [RequestStatus.ACCEPTED]: "Connected",
+    [RequestStatus.PENDING]: "companyprofile.status.pending",
+    [RequestStatus.NOREQUEST]: "companyprofile.status.norequest",
+    [RequestStatus.ACCEPTED]: "companyprofile.status.accepted",
   };
 
   const connectionStatusTextMapping = {
-    [RequestStatus.PENDING]:
-      "Your connection request is pending approval from this organization.",
-    [RequestStatus.NOREQUEST]:
-      "When you click Connect, PACT Identity Management Service will send a request to this company, requesting their permission to create an authenticated connection between your PACT Conformant Solution and theirs.",
-    [RequestStatus.ACCEPTED]: "You are connected with this organization.",
-    [RequestStatus.RECEIVED]:
-      "This organization has sent you a connection request, you can accept it in the Manage Connections page.",
+    [RequestStatus.PENDING]: "companyprofile.requeststatus.pending",
+    [RequestStatus.NOREQUEST]: "companyprofile.requeststatus.norequest",
+    [RequestStatus.ACCEPTED]: "companyprofile.requeststatus.accepted",
+    [RequestStatus.RECEIVED]: "companyprofile.requeststatus.received",
   };
 
   return (
@@ -133,7 +133,7 @@ const CompanyProfile: React.FC = () => {
                 marginBottom: "20px",
               }}
             >
-              {connectionStatusTextMapping[RequestStatus.RECEIVED]}
+              {t(connectionStatusTextMapping[RequestStatus.RECEIVED])}
             </Box>
           ) : (
             <Box
@@ -152,7 +152,7 @@ const CompanyProfile: React.FC = () => {
                       : {}
                   }
                 >
-                  {statusLabelMapping[requestStatus]}
+                  {t(statusLabelMapping[requestStatus])}
                 </Button>
               </Box>
               <Box
@@ -163,26 +163,28 @@ const CompanyProfile: React.FC = () => {
                   alignItems: "center",
                 }}
               >
-                {connectionStatusTextMapping[requestStatus]}
+                {t(connectionStatusTextMapping[requestStatus])}
               </Box>
             </Box>
           )}
 
           <Box>
             <div>
-              <h3>Company Identifier</h3>
+              <h3>{t("companyprofile.profile.companyIdentifier")}</h3>
               <p>{profileData.companyIdentifier}</p>
             </div>
             <div>
-              <h3>Company Identifier Description</h3>
+              <h3>
+                {t("companyprofile.profile.companyIdentifierDescription")}
+              </h3>
               <p>{profileData.companyIdentifierDescription}</p>
             </div>
             <div>
-              <h3>Account Admin Full Name</h3>
+              <h3>{t("companyprofile.profile.fullName")}</h3>
               <p>{profileData.fullName}</p>
             </div>
             <div>
-              <h3>Account Admin Email</h3>
+              <h3>{t("companyprofile.profile.adminEmail")}</h3>
               <p>{profileData.email}</p>
             </div>
             {requestStatus === RequestStatus.ACCEPTED && (
@@ -191,11 +193,11 @@ const CompanyProfile: React.FC = () => {
                   Api Configuration
                 </h2>
                 <div>
-                  <h3>Network Key</h3>
+                  <h3>{t("companyprofile.profile.networKey")}</h3>
                   <p>{profileData.networkKey}</p>
                 </div>
                 <div>
-                  <h3>Solution API URL</h3>
+                  <h3>{t("companyprofile.profile.solutionApiUrl")}</h3>
                   <p>{profileData.solutionApiUrl}</p>
                 </div>
               </>
