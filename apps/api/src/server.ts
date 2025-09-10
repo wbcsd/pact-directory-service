@@ -3,7 +3,7 @@ import helmet from "helmet";
 import express from "express";
 
 import config from "@src/common/config";
-import logger, { loggerMiddleware } from "@src/util/logger";
+import { loggerMiddleware } from "@src/util/logger";
 
 import "express-async-errors";
 import cors from "cors";
