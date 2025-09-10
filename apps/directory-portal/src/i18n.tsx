@@ -102,6 +102,27 @@ const resources = {
         "The PACT Technical Specifications describe the PCF data model and API requirements that your implementation must conform to. Select the version that your solution implements.",
       "conformancetesting.guidance.techSpecsVersion.text2":
         "A given version is in beta if the testing suite has not yet been tested by a sufficient number of organizations for that version; the tool can nevertheless still be used to grant PACT Conformance status, but organizations may be subject to mandatory retesting, as per our policy.",
+
+      "conformancetestresult.mandatoryYes": "Yes",
+      "conformancetestresult.mandatoryNo": "No",
+
+      "conformancetestruns.header.title": "Overview",
+      "conformancetestruns.header.subtitle":
+        "Showing runs from all conformance tests",
+
+      "conformancetestruns.search.placeholder":
+        "Press enter to search by company name, email address or user name",
+      "conformancetestruns.search.clear": "Clear search",
+
+      "conformancetestruns.actions.runTests": "Run Tests",
+
+      "conformancetestruns.empty.alt": "No results",
+      "conformancetestruns.empty.noResults": "No results for “{{query}}”",
+      "conformancetestruns.empty.hint":
+        "Try a different term, or clear your search to see all test runs.",
+
+      "conformancetestruns.errors.fetch":
+        "An unexpected error occurred while fetching test runs. Please try again.",
     },
   },
   fr: {

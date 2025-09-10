@@ -6,6 +6,7 @@ import SideNav from "../components/SideNav";
 import { proxyWithAuth } from "../utils/auth-fetch";
 import EmptyImage from "../assets/pact-logistics-center-8.png";
 import ConformanceTestRunsGrid from "./ConformanceTestRunsGrid";
+import { useTranslation } from "react-i18next";
 import "./ConformanceTestRuns.css";
 
 interface TestRun {
@@ -21,6 +22,8 @@ interface TestRun {
 const ConformanceTestRuns: React.FC = () => {
   const navigate = useNavigate();
   const { profileData } = useAuth();
+
+  const { t } = useTranslation();
 
   // URL-driven state
   const [searchParams, setSearchParams] = useSearchParams();
@@ -54,9 +57,7 @@ const ConformanceTestRuns: React.FC = () => {
       setTestRuns(runs);
     } catch (err) {
       console.error("Error fetching test runs:", err);
-      setError(
-        "An unexpected error occurred while fetching test runs. Please try again."
-      );
+      setError(t("conformancetestruns.errors.fetch"));
     } finally {
       setIsLoading(false);
     }
@@ -100,14 +101,16 @@ const ConformanceTestRuns: React.FC = () => {
   const gridHeader = (
     <div className="header">
       <div>
-        <h2>Overview</h2>
-        <p className="headerSubtext">Showing runs from all conformance tests</p>
+        <h2>{t("conformancetestruns.header.title")}</h2>
+        <p className="headerSubtext">
+          {t("conformancetestruns.header.subtitle")}
+        </p>
       </div>
       <div className="searchWrapper">
         <input
           autoFocus
           type="text"
-          placeholder="Press enter to search by company name, email address or user name"
+          placeholder={t("conformancetestruns.search.placeholder")}
           className="searchInput"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -117,7 +120,7 @@ const ConformanceTestRuns: React.FC = () => {
           <button
             type="button"
             className="clearButton"
-            aria-label="Clear search"
+            aria-label={t("conformancetestruns.search.clear")}
             onClick={() => {
               setSearchTerm("");
               setSearchParams({}, { replace: true });
@@ -131,7 +134,7 @@ const ConformanceTestRuns: React.FC = () => {
         disabled={testRuns.length === 0}
         onClick={() => navigate("/conformance-testing")}
       >
-        Run Tests
+        {t("conformancetestruns.actions.runTests")}
       </Button>
     </div>
   );
@@ -146,11 +149,13 @@ const ConformanceTestRuns: React.FC = () => {
         {Boolean(isLoading || error) === false && gridHeader}
         {testRuns.length === 0 && searchTerm.length > 0 ? (
           <div className="emptyState">
-            <img src={EmptyImage} alt="No results" />
-            <h2>No results for “{initialQuery}”</h2>
-            <p className="emptyHint">
-              Try a different term, or clear your search to see all test runs.
-            </p>
+            <img src={EmptyImage} alt={t("conformancetestruns.empty.alt")} />
+            <h2>
+              {t("conformancetestruns.empty.noResults", {
+                query: initialQuery,
+              })}
+            </h2>
+            <p className="emptyHint">{t("conformancetestruns.empty.hint")}</p>
           </div>
         ) : (
           <ConformanceTestRunsGrid
