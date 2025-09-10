@@ -124,6 +124,7 @@ const LoginPage: React.FC = () => {
                 </Form.Label>
                 <Form.Control asChild>
                   <TextField.Root
+                    data-testid="login-email"
                     type="email"
                     value={formData.email}
                     required
@@ -160,6 +161,7 @@ const LoginPage: React.FC = () => {
                 </Form.Label>
                 <Form.Control asChild>
                   <TextField.Root
+                    data-testid="login-password"
                     type="password"
                     value={formData.password}
                     required
@@ -185,7 +187,7 @@ const LoginPage: React.FC = () => {
               </Form.Field>
 
               <Box>
-                <Form.Submit asChild>
+                <Form.Submit data-testid="login-submit" asChild>
                   <Button
                     style={{ width: "100%", marginTop: "40px" }}
                     type="submit"
