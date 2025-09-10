@@ -218,6 +218,31 @@ const resources = {
       "login.errors.generic": "An error occurred during login",
 
       "login.help.text": "Need help? Contact us at:",
+
+      "manageconnections.title": "Manage Connections",
+
+      "manageconnections.dialog.acceptedTitle": "Connection request accepted",
+      "manageconnections.dialog.acceptedDescription":
+        "Now you are able to exchange PCF data using your PACT Conformant Solution with the company you just connected with",
+      "manageconnections.dialog.ok": "Ok",
+
+      "manageconnections.connectedOrgs.title": "Connected organizations",
+      "manageconnections.connectedOrgs.connectedOn": "Connected on {{date}}",
+      "manageconnections.connectedOrgs.empty": "No connected organizations.",
+
+      "manageconnections.sentRequests.title": "Sent Connection Requests",
+      "manageconnections.sentRequests.status":
+        "Status: {{status}} | Sent on {{date}}",
+      "manageconnections.sentRequests.empty": "No sent connection requests.",
+      "manageconnections.sentRequests.searchLink": "Search for companies",
+
+      "manageconnections.receivedRequests.title":
+        "Received Connection Requests",
+      "manageconnections.receivedRequests.status":
+        "Status: {{status}} | Received on {{date}}",
+      "manageconnections.receivedRequests.accept": "Accept request",
+      "manageconnections.receivedRequests.empty":
+        "No received connection requests.",
     },
   },
   fr: {
