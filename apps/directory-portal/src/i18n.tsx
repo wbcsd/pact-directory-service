@@ -172,6 +172,52 @@ const resources = {
       "conformancetestrunsgrid.table.status": "Status",
       "conformancetestrunsgrid.table.version": "Version",
       "conformancetestrunsgrid.table.runDate": "Run Date/Time CET",
+
+      "forgotpassword.hero.title": "Helping you adopt PACT standards with ease",
+
+      "forgotpassword.success.title": "Check Your Email",
+      "forgotpassword.success.message":
+        "If an account with that email exists, we've sent you a password reset link. Please check your email and click the link to reset your password.",
+
+      "forgotpassword.form.title": "Reset Your Password",
+      "forgotpassword.form.subtitle":
+        "Enter your email address and we'll send you a link to reset your password.",
+      "forgotpassword.form.emailLabel": "Email Address",
+      "forgotpassword.form.emailPlaceholder": "Enter your email address",
+
+      "forgotpassword.validation.required": "Email is required.",
+      "forgotpassword.validation.invalid":
+        "Please enter a valid email address.",
+
+      "forgotpassword.actions.sending": "Sending...",
+      "forgotpassword.actions.sendLink": "Send Reset Link",
+      "forgotpassword.actions.backToLogin": "Back to Login",
+
+      "forgotpassword.errors.generic": "An error occurred. Please try again.",
+      "forgotpassword.errors.tryAgainLater":
+        "An error occurred. Please try again later.",
+
+      "forgotpassword.help.text": "Need help? Contact us at:",
+
+      "login.hero.title": "Helping you adopt PACT standards with ease",
+
+      "login.title": "Log in to PACT Network Services",
+
+      "login.form.emailLabel": "Email Address",
+      "login.form.emailPlaceholder": "Enter your email",
+      "login.form.passwordLabel": "Password",
+      "login.form.passwordPlaceholder": "Enter your password",
+
+      "login.validation.emailRequired": "Email is required.",
+      "login.validation.passwordRequired": "Password is required.",
+
+      "login.actions.submit": "Login",
+      "login.actions.forgotPassword": "Forgot your password?",
+
+      "login.errors.invalidCredentials": "Invalid email or password",
+      "login.errors.generic": "An error occurred during login",
+
+      "login.help.text": "Need help? Contact us at:",
     },
   },
   fr: {

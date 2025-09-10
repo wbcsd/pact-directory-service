@@ -6,10 +6,13 @@ import { useNavigate, Link } from "react-router-dom";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import HeroImage from "../assets/providers-header.webp";
 import { useAuth } from "../contexts/AuthContext";
+import { useTranslation } from "react-i18next";
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { t } = useTranslation();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -41,22 +44,19 @@ const LoginPage: React.FC = () => {
         const { token } = data;
 
         if (token) {
-          // Use the login function from AuthContext which will:
-          // 1. Store the token
-          // 2. Fetch and store the profile data
           await login(token);
           navigate("/conformance-test-runs");
         } else {
           throw new Error("Token not found in response");
         }
       } else if (response.status === 401) {
-        setErrorMessage("Invalid email or password");
+        setErrorMessage(t("login.errors.invalidCredentials"));
       } else {
         throw new Error("Failed to login");
       }
     } catch (error) {
       console.error("Error during login:", error);
-      setErrorMessage("An error occurred during login");
+      setErrorMessage(t("login.errors.generic"));
     }
   };
 
@@ -86,7 +86,7 @@ const LoginPage: React.FC = () => {
               fontSize: "1.8em",
             }}
           >
-            Helping you adopt PACT standards with ease
+            {t("login.hero.title")}
           </h2>
         </Box>
         <Box
@@ -108,9 +108,7 @@ const LoginPage: React.FC = () => {
               justifyContent: "center",
             }}
           >
-            <h2 style={{ marginBottom: "30px" }}>
-              Log in to PACT Network Services
-            </h2>
+            <h2 style={{ marginBottom: "30px" }}>{t("login.title")}</h2>
             <Form.Root onSubmit={handleSubmit}>
               <Form.Field name="email">
                 <Form.Label
@@ -120,14 +118,15 @@ const LoginPage: React.FC = () => {
                     fontWeight: "500",
                   }}
                 >
-                  Email Address<span style={{ color: "red" }}>*</span>
+                  {t("login.form.emailLabel")}
+                  <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <Form.Control asChild>
                   <TextField.Root
                     type="email"
                     value={formData.email}
                     required
-                    placeholder="Enter your email"
+                    placeholder={t("login.form.emailPlaceholder")}
                     onChange={handleChange}
                     style={{
                       width: "100%",
@@ -144,7 +143,7 @@ const LoginPage: React.FC = () => {
                     fontSize: "0.85em",
                   }}
                 >
-                  Email is required.
+                  {t("login.validation.emailRequired")}
                 </Form.Message>
               </Form.Field>
 
@@ -156,14 +155,15 @@ const LoginPage: React.FC = () => {
                     fontWeight: "500",
                   }}
                 >
-                  Password<span style={{ color: "red" }}>*</span>
+                  {t("login.form.passwordLabel")}
+                  <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <Form.Control asChild>
                   <TextField.Root
                     type="password"
                     value={formData.password}
                     required
-                    placeholder="Enter your password"
+                    placeholder={t("login.form.passwordPlaceholder")}
                     onChange={handleChange}
                     style={{
                       width: "100%",
@@ -180,7 +180,7 @@ const LoginPage: React.FC = () => {
                     fontSize: "0.85em",
                   }}
                 >
-                  Password is required.
+                  {t("login.validation.passwordRequired")}
                 </Form.Message>
               </Form.Field>
 
@@ -190,7 +190,7 @@ const LoginPage: React.FC = () => {
                     style={{ width: "100%", marginTop: "40px" }}
                     type="submit"
                   >
-                    Login
+                    {t("login.actions.submit")}
                   </Button>
                 </Form.Submit>
 
@@ -203,12 +203,12 @@ const LoginPage: React.FC = () => {
                       fontSize: "0.9em",
                     }}
                   >
-                    Forgot your password?
+                    {t("login.actions.forgotPassword")}
                   </Link>
                 </Box>
 
                 <p style={{ fontSize: "0.9em", marginTop: "20px" }}>
-                  Need help? Contact us at:{" "}
+                  {t("login.help.text")}{" "}
                   <a
                     style={{ fontWeight: "bold" }}
                     href="mailto:pact-support@wbcsd.org"
