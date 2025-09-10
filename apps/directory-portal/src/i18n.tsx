@@ -103,6 +103,38 @@ const resources = {
       "conformancetesting.guidance.techSpecsVersion.text2":
         "A given version is in beta if the testing suite has not yet been tested by a sufficient number of organizations for that version; the tool can nevertheless still be used to grant PACT Conformance status, but organizations may be subject to mandatory retesting, as per our policy.",
 
+      "conformancetestresult.title": "Conformance Test Result",
+      "conformancetestresult.loading.inProgress": "Tests in progress ...",
+      "conformancetestresult.loading.results": "Loading test results ...",
+      "conformancetestresult.errors.fetchResults":
+        "An unexpected error occurred while fetching test results. Please try again.",
+      "conformancetestresult.errors.runTests":
+        "An unexpected error occurred while running tests. Please try again.",
+      "conformancetestresult.actions.backToForm": "Back to Testing Form",
+      "conformancetestresult.actions.retest": "Re-test Conformance",
+      "conformancetestresult.actions.details": "Details",
+      "conformancetestresult.actions.closePanel": "Close Panel",
+      "conformancetestresult.actions.viewDocumentation":
+        "View test documentation",
+      "conformancetestresult.testRunId": "Test Run ID",
+      "conformancetestresult.testingConformance":
+        "Testing conformance to {{version}}",
+      "conformancetestresult.reviewMessage":
+        "Review the test cases that were executed against your API",
+      "conformancetestresult.mandatoryTests": "Mandatory Tests",
+      "conformancetestresult.optionalTests": "Optional Tests",
+      "conformancetestresult.status.passed": "Passed",
+      "conformancetestresult.status.failed": "Failed",
+      "conformancetestresult.status.pending": "Pending",
+      "conformancetestresult.status.warning": "Warning",
+      "conformancetestresult.table.testCase": "Test Case",
+      "conformancetestresult.table.status": "Status",
+      "conformancetestresult.table.mandatory": "Mandatory Test?",
+      "conformancetestresult.noTests": "No test cases available.",
+      "conformancetestresult.noErrors": "No errors.",
+      "conformancetestresult.mandatory": "Mandatory",
+      "conformancetestresult.optional": "Optional",
+
       "conformancetestresult.mandatoryYes": "Yes",
       "conformancetestresult.mandatoryNo": "No",
 
@@ -123,6 +155,23 @@ const resources = {
 
       "conformancetestruns.errors.fetch":
         "An unexpected error occurred while fetching test runs. Please try again.",
+
+      "conformancetestrunsgrid.title": "Conformance Test Runs",
+
+      "conformancetestrunsgrid.actions.backToForm": "Back to Testing Form",
+      "conformancetestrunsgrid.actions.runTests": "Run Tests",
+
+      "conformancetestrunsgrid.empty.alt": "No tests yet",
+      "conformancetestrunsgrid.empty.title": "You currently have no tests",
+      "conformancetestrunsgrid.empty.hint":
+        "Start automated testing to ensure a PACT conformant solution",
+
+      "conformancetestrunsgrid.table.testRunId": "Test Run ID",
+      "conformancetestrunsgrid.table.company": "Company",
+      "conformancetestrunsgrid.table.email": "Email",
+      "conformancetestrunsgrid.table.status": "Status",
+      "conformancetestrunsgrid.table.version": "Version",
+      "conformancetestrunsgrid.table.runDate": "Run Date/Time CET",
     },
   },
   fr: {
