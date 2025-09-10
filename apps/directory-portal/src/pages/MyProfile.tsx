@@ -3,9 +3,11 @@ import { Box, Flex } from "@radix-ui/themes";
 import SideNav from "../components/SideNav";
 import Spinner from "../components/LoadingSpinner";
 import { useAuth } from "../contexts/AuthContext";
+import { useTranslation } from "react-i18next";
 
 const MyProfile: React.FC = () => {
   const { profileData } = useAuth();
+  const { t } = useTranslation();
 
   const [showCredentials, setShowCredentials] = useState(false);
 
@@ -38,33 +40,35 @@ const MyProfile: React.FC = () => {
       ) : (
         <main className="main">
           <div className="header">
-            <h2>My Profile: {profileData.companyName}</h2>
+            <h2>
+              {t("myprofile.title")}: {profileData.companyName}
+            </h2>
           </div>
 
           <div>
-            <h3>Company Identifier</h3>
+            <h3>{t("myprofile.companyIdentifier")}</h3>
             <p>{profileData.companyIdentifier}</p>
           </div>
           <div>
-            <h3>Company Identifier Description</h3>
+            <h3>{t("myprofile.companyIdentifierDescription")}</h3>
             <p>{profileData.companyIdentifierDescription}</p>
           </div>
           <div>
-            <h3>Account Admin Full Name</h3>
+            <h3>{t("myprofile.adminFullName")}</h3>
             <p>{profileData.fullName}</p>
           </div>
           <div>
-            <h3>Account Admin Email</h3>
+            <h3>{t("myprofile.adminEmail")}</h3>
             <p>{profileData.email}</p>
           </div>
           <div>
-            <h3>Solution API URL</h3>
+            <h3>{t("myprofile.solutionApiUrl")}</h3>
             <p>{profileData.solutionApiUrl}</p>
           </div>
 
           <Flex gap={"3"} style={{ marginTop: "20px", marginBottom: "5px" }}>
             <Box>
-              <h2 style={{ margin: 0 }}>Credentials</h2>
+              <h2 style={{ margin: 0 }}>{t("myprofile.credentials.title")}</h2>
             </Box>
             <Box
               style={{
@@ -83,16 +87,18 @@ const MyProfile: React.FC = () => {
                   marginTop: "10px",
                 }}
               >
-                {showCredentials ? "Hide Credentials" : "Show Credentials"}
+                {showCredentials
+                  ? t("myprofile.credentials.hide")
+                  : t("myprofile.credentials.show")}
               </a>
             </Box>
           </Flex>
           <div>
-            <h3>Network Key</h3>
+            <h3>{t("myprofile.networkKey")}</h3>
             <p>{profileData.networkKey}</p>
           </div>
           <div>
-            <h3>ClientId</h3>
+            <h3>{t("myprofile.clientId")}</h3>
             <p>
               {showCredentials
                 ? profileData.clientId
@@ -100,7 +106,7 @@ const MyProfile: React.FC = () => {
             </p>
           </div>
           <div>
-            <h3>ClientSecret</h3>
+            <h3>{t("myprofile.clientSecret")}</h3>
             <p>
               {showCredentials
                 ? profileData.clientSecret

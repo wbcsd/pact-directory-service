@@ -243,6 +243,67 @@ const resources = {
       "manageconnections.receivedRequests.accept": "Accept request",
       "manageconnections.receivedRequests.empty":
         "No received connection requests.",
+
+      "myprofile.title": "My Profile",
+
+      "myprofile.companyIdentifier": "Company Identifier",
+      "myprofile.companyIdentifierDescription":
+        "Company Identifier Description",
+      "myprofile.adminFullName": "Account Admin Full Name",
+      "myprofile.adminEmail": "Account Admin Email",
+      "myprofile.solutionApiUrl": "Solution API URL",
+
+      "myprofile.credentials.title": "Credentials",
+      "myprofile.credentials.show": "Show Credentials",
+      "myprofile.credentials.hide": "Hide Credentials",
+
+      "myprofile.networkKey": "Network Key",
+      "myprofile.clientId": "ClientId",
+      "myprofile.clientSecret": "ClientSecret",
+
+      "resetpassword.hero.title": "Helping you adopt PACT standards with ease",
+
+      "resetpassword.verifying": "Verifying reset link...",
+
+      "resetpassword.errors.invalidLink": "Invalid reset link",
+      "resetpassword.errors.expiredLink": "Invalid or expired reset link",
+      "resetpassword.errors.verification":
+        "An error occurred while verifying the reset link",
+      "resetpassword.errors.passwordMismatch": "Passwords do not match",
+      "resetpassword.errors.passwordTooShort":
+        "Password must be at least 6 characters long",
+      "resetpassword.errors.generic": "An error occurred",
+      "resetpassword.errors.tryAgain":
+        "An error occurred. Please try again later.",
+
+      "resetpassword.invalid.title": "Invalid Reset Link",
+      "resetpassword.invalid.description":
+        "This reset link is invalid or has expired. Please request a new one.",
+      "resetpassword.invalid.requestNew": "Request New Reset Link",
+      "resetpassword.invalid.backToLogin": "Back to Login",
+
+      "resetpassword.success.title": "Password Reset Successful",
+      "resetpassword.success.description":
+        "Your password has been successfully reset. You will be redirected to the login page shortly.",
+      "resetpassword.success.goToLogin": "Go to Login",
+
+      "resetpassword.form.title": "Set New Password",
+      "resetpassword.form.subtitle": "Enter your new password below.",
+      "resetpassword.form.newPassword": "New Password",
+      "resetpassword.form.newPasswordPlaceholder": "Enter new password",
+      "resetpassword.form.confirmPassword": "Confirm New Password",
+      "resetpassword.form.confirmPasswordPlaceholder": "Confirm new password",
+
+      "resetpassword.validation.required": "Password is required.",
+      "resetpassword.validation.tooShort":
+        "Password must be at least 6 characters long.",
+      "resetpassword.validation.confirmRequired":
+        "Please confirm your password.",
+
+      "resetpassword.actions.resetting": "Resetting...",
+      "resetpassword.actions.submit": "Reset Password",
+
+      "resetpassword.help.text": "Need help? Contact us at:",
     },
   },
   fr: {
