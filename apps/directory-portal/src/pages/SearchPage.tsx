@@ -5,6 +5,7 @@ import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Link } from "react-router-dom";
 import SideNav from "../components/SideNav";
 import { fetchWithAuth } from "../utils/auth-fetch";
+import { useTranslation } from "react-i18next";
 
 interface SearchResults {
   id: number;
@@ -17,6 +18,8 @@ const SearchPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResults[]>([]);
   const [noResults, setNoResults] = useState(false);
+
+  const { t } = useTranslation();
 
   const handleSearch = async () => {
     try {
@@ -65,7 +68,7 @@ const SearchPage: React.FC = () => {
       </aside>
       <main className="main">
         <div className="header">
-          <h2>Search Companies</h2>
+          <h2>{t("searchpage.title")}</h2>
         </div>
 
         <Box
@@ -78,7 +81,7 @@ const SearchPage: React.FC = () => {
             style={{
               minWidth: "250",
             }}
-            placeholder="Search by company name"
+            placeholder={t("searchpage.placeholder")}
             onChange={handleSearchInputChange}
             onKeyDown={handleKeyDown}
           >
@@ -87,20 +90,20 @@ const SearchPage: React.FC = () => {
             </TextField.Slot>
           </TextField.Root>
           <Button ml="2" onClick={handleSearch}>
-            Search
+            {t("searchpage.actions.search")}
           </Button>
         </Box>
 
-        {noResults && <Box>No results found.</Box>}
+        {noResults && <Box>{t("searchpage.noResults")}</Box>}
 
         {searchResults.length > 0 && (
           <div className="table-container">
             <table className="test-runs-table">
               <thead>
                 <tr>
-                  <th>Company Name</th>
-                  <th>Company Identifier</th>
-                  <th>Account Admin Email</th>
+                  <th>{t("searchpage.table.companyName")}</th>
+                  <th>{t("searchpage.table.companyIdentifier")}</th>
+                  <th>{t("searchpage.table.adminEmail")}</th>
                 </tr>
               </thead>
               <tbody>

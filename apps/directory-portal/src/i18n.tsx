@@ -304,6 +304,66 @@ const resources = {
       "resetpassword.actions.submit": "Reset Password",
 
       "resetpassword.help.text": "Need help? Contact us at:",
+
+      "searchpage.title": "Search Companies",
+      "searchpage.placeholder": "Search by company name",
+      "searchpage.actions.search": "Search",
+      "searchpage.noResults": "No results found.",
+
+      "searchpage.table.companyName": "Company Name",
+      "searchpage.table.companyIdentifier": "Company Identifier",
+      "searchpage.table.adminEmail": "Account Admin Email",
+
+      "signuppage.hero.title": "Helping you adopt PACT standards with ease",
+      "signuppage.title": "Sign up to PACT Network Services",
+
+      "signuppage.fields.companyName.label": "Company Name",
+      "signuppage.fields.companyName.placeholder": "Enter company name",
+      "signuppage.fields.companyName.tooltip":
+        "The full registered/legal name of your company.",
+      "signuppage.fields.companyName.required": "Company name is required.",
+
+      "signuppage.fields.fullName.label": "Account Admin Full Name",
+      "signuppage.fields.fullName.placeholder": "Enter your full name",
+      "signuppage.fields.fullName.tooltip":
+        "Name of the person / mailbox to serve as account admin and point of contact for your account.",
+      "signuppage.fields.fullName.required": "Your name is required.",
+
+      "signuppage.fields.email.label": "Account Admin Email",
+      "signuppage.fields.email.placeholder": "Enter your email address",
+      "signuppage.fields.email.tooltip":
+        "Email address of account admin, to be used to log in and receive notifications.",
+      "signuppage.fields.email.required": "Email is required.",
+      "signuppage.fields.email.invalid": "Invalid email.",
+
+      "signuppage.fields.password.label": "Password",
+      "signuppage.fields.password.placeholder": "Enter password",
+      "signuppage.fields.password.tooltip":
+        "Your password must be at least 6 characters long.",
+      "signuppage.fields.password.required": "Password is required.",
+      "signuppage.fields.password.tooShort":
+        "Password needs to be at least 6 characters long.",
+
+      "signuppage.fields.confirmPassword.label": "Confirm Password",
+      "signuppage.fields.confirmPassword.placeholder": "Confirm your password",
+      "signuppage.fields.confirmPassword.tooltip":
+        "Please confirm your password.",
+      "signuppage.fields.confirmPassword.required":
+        "Please confirm your password.",
+      "signuppage.fields.confirmPassword.mismatch": "Passwords do not match.",
+
+      "signuppage.terms": "By signing up you agree to our",
+      "signuppage.terms.termsOfUse": "Terms of Use",
+      "signuppage.terms.and": "and",
+      "signuppage.terms.privacyPolicy": "Privacy Policy",
+
+      "signuppage.actions.creating": "Creating Account",
+      "signuppage.actions.join": "Join",
+
+      "signuppage.help": "Need help? Contact us at:",
+
+      "signuppage.error.default":
+        "Error during sign up, please check your data.",
     },
   },
   fr: {

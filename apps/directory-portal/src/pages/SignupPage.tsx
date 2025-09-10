@@ -15,10 +15,13 @@ import {
   ExclamationTriangleIcon,
   InfoCircledIcon,
 } from "@radix-ui/react-icons";
+import { useTranslation } from "react-i18next";
 import HeroImage from "../assets/providers-header.webp";
 
 const SignupPage: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
   const [formData, setFormData] = useState({
     companyName: "",
     companyIdentifier: "",
@@ -30,9 +33,7 @@ const SignupPage: React.FC = () => {
     solutionApiUrl: "",
   });
   const [status, setStatus] = useState<null | "success" | "error">(null);
-
   const [errorMessage, setErrorMessage] = useState("");
-
   const [creatingAccount, setCreatingAccount] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -113,13 +114,12 @@ const SignupPage: React.FC = () => {
               fontSize: "1.8em",
             }}
           >
-            Helping you adopt PACT standards with ease
+            {t("signuppage.hero.title")}
           </h2>
         </Box>
         <Box
           style={{
             padding: "20px",
-            // maxWidth: "650px",
             margin: "0 auto",
             flex: "1 1 100%",
             background: "#FCFDFF",
@@ -129,10 +129,9 @@ const SignupPage: React.FC = () => {
           <Box
             style={{ maxWidth: "400px", margin: "0 auto", paddingTop: "40px" }}
           >
-            <h2 style={{ marginBottom: "30px" }}>
-              Sign up to PACT Network Services
-            </h2>
+            <h2 style={{ marginBottom: "30px" }}>{t("signuppage.title")}</h2>
             <Form.Root onSubmit={handleSubmit}>
+              {/* Company Name */}
               <Form.Field name="companyName">
                 <Form.Label
                   style={{
@@ -141,13 +140,14 @@ const SignupPage: React.FC = () => {
                     fontWeight: "500",
                   }}
                 >
-                  Company Name<span style={{ color: "red" }}>*</span>
+                  {t("signuppage.fields.companyName.label")}
+                  <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <Form.Control asChild>
                   <TextField.Root
                     value={formData.companyName}
                     required
-                    placeholder="Enter company name"
+                    placeholder={t("signuppage.fields.companyName.placeholder")}
                     onChange={handleChange}
                     style={{
                       width: "100%",
@@ -173,7 +173,7 @@ const SignupPage: React.FC = () => {
                             align="center"
                             sideOffset={5}
                           >
-                            The full registered/legal name of your company.
+                            {t("signuppage.fields.companyName.tooltip")}
                           </Tooltip.Content>
                         </Tooltip.Root>
                       </Tooltip.Provider>
@@ -187,10 +187,11 @@ const SignupPage: React.FC = () => {
                     fontSize: "0.85em",
                   }}
                 >
-                  Company name is required.
+                  {t("signuppage.fields.companyName.required")}
                 </Form.Message>
               </Form.Field>
 
+              {/* Full Name */}
               <Form.Field name="fullName">
                 <Form.Label
                   style={{
@@ -199,13 +200,14 @@ const SignupPage: React.FC = () => {
                     fontWeight: "500",
                   }}
                 >
-                  Account Admin Full Name<span style={{ color: "red" }}>*</span>
+                  {t("signuppage.fields.fullName.label")}
+                  <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <Form.Control asChild>
                   <TextField.Root
                     value={formData.fullName}
                     required
-                    placeholder="Enter your full name"
+                    placeholder={t("signuppage.fields.fullName.placeholder")}
                     onChange={handleChange}
                     style={{
                       width: "100%",
@@ -231,8 +233,7 @@ const SignupPage: React.FC = () => {
                             align="center"
                             sideOffset={5}
                           >
-                            Name of the person / mailbox to serve as account
-                            admin and point of contact for your account.
+                            {t("signuppage.fields.fullName.tooltip")}
                           </Tooltip.Content>
                         </Tooltip.Root>
                       </Tooltip.Provider>
@@ -246,10 +247,11 @@ const SignupPage: React.FC = () => {
                     fontSize: "0.85em",
                   }}
                 >
-                  Your name is required.
+                  {t("signuppage.fields.fullName.required")}
                 </Form.Message>
               </Form.Field>
 
+              {/* Email */}
               <Form.Field name="email">
                 <Form.Label
                   style={{
@@ -258,14 +260,15 @@ const SignupPage: React.FC = () => {
                     fontWeight: "500",
                   }}
                 >
-                  Account Admin Email<span style={{ color: "red" }}>*</span>
+                  {t("signuppage.fields.email.label")}
+                  <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <Form.Control asChild>
                   <TextField.Root
                     value={formData.email}
                     required
                     type="email"
-                    placeholder="Enter your email address"
+                    placeholder={t("signuppage.fields.email.placeholder")}
                     onChange={handleChange}
                     style={{
                       width: "100%",
@@ -291,8 +294,7 @@ const SignupPage: React.FC = () => {
                             align="center"
                             sideOffset={5}
                           >
-                            Email address of account admin, to be used to log in
-                            and receive notifications.
+                            {t("signuppage.fields.email.tooltip")}
                           </Tooltip.Content>
                         </Tooltip.Root>
                       </Tooltip.Provider>
@@ -306,7 +308,7 @@ const SignupPage: React.FC = () => {
                     fontSize: "0.85em",
                   }}
                 >
-                  Email is required.
+                  {t("signuppage.fields.email.required")}
                 </Form.Message>
                 <Form.Message
                   match="typeMismatch"
@@ -315,10 +317,11 @@ const SignupPage: React.FC = () => {
                     fontSize: "0.85em",
                   }}
                 >
-                  Invalid email.
+                  {t("signuppage.fields.email.invalid")}
                 </Form.Message>
               </Form.Field>
 
+              {/* Password */}
               <Form.Field name="password">
                 <Form.Label
                   style={{
@@ -327,14 +330,15 @@ const SignupPage: React.FC = () => {
                     fontWeight: "500",
                   }}
                 >
-                  Password<span style={{ color: "red" }}>*</span>
+                  {t("signuppage.fields.password.label")}
+                  <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <Form.Control asChild>
                   <TextField.Root
                     type="password"
                     value={formData.password}
                     required
-                    placeholder="Enter password"
+                    placeholder={t("signuppage.fields.password.placeholder")}
                     onChange={handleChange}
                     minLength={6}
                     style={{
@@ -361,7 +365,7 @@ const SignupPage: React.FC = () => {
                             align="center"
                             sideOffset={5}
                           >
-                            Your password must be at least 6 characters long.
+                            {t("signuppage.fields.password.tooltip")}
                           </Tooltip.Content>
                         </Tooltip.Root>
                       </Tooltip.Provider>
@@ -375,7 +379,7 @@ const SignupPage: React.FC = () => {
                     fontSize: "0.85em",
                   }}
                 >
-                  Password is required.
+                  {t("signuppage.fields.password.required")}
                 </Form.Message>
                 <Form.Message
                   match="tooShort"
@@ -384,10 +388,11 @@ const SignupPage: React.FC = () => {
                     fontSize: "0.85em",
                   }}
                 >
-                  Password needs to be at least 6 characters long.
+                  {t("signuppage.fields.password.tooShort")}
                 </Form.Message>
               </Form.Field>
 
+              {/* Confirm Password */}
               <Form.Field name="confirmPassword">
                 <Form.Label
                   style={{
@@ -396,14 +401,17 @@ const SignupPage: React.FC = () => {
                     fontWeight: "500",
                   }}
                 >
-                  Confirm Password<span style={{ color: "red" }}>*</span>
+                  {t("signuppage.fields.confirmPassword.label")}
+                  <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <Form.Control asChild>
                   <TextField.Root
                     type="password"
                     value={formData.confirmPassword}
                     required
-                    placeholder="Confirm your password"
+                    placeholder={t(
+                      "signuppage.fields.confirmPassword.placeholder"
+                    )}
                     onChange={handleChange}
                     style={{
                       width: "100%",
@@ -429,7 +437,7 @@ const SignupPage: React.FC = () => {
                             align="center"
                             sideOffset={5}
                           >
-                            Please confirm your password.
+                            {t("signuppage.fields.confirmPassword.tooltip")}
                           </Tooltip.Content>
                         </Tooltip.Root>
                       </Tooltip.Provider>
@@ -443,7 +451,7 @@ const SignupPage: React.FC = () => {
                     fontSize: "0.85em",
                   }}
                 >
-                  Please confirm your password.
+                  {t("signuppage.fields.confirmPassword.required")}
                 </Form.Message>
                 <Form.Message
                   match={(value) => value !== formData.password}
@@ -452,9 +460,11 @@ const SignupPage: React.FC = () => {
                     fontSize: "0.85em",
                   }}
                 >
-                  Passwords do not match.
+                  {t("signuppage.fields.confirmPassword.mismatch")}
                 </Form.Message>
               </Form.Field>
+
+              {/* Terms */}
               <Box>
                 <Text
                   style={{
@@ -462,22 +472,24 @@ const SignupPage: React.FC = () => {
                     fontSize: "0.90em",
                   }}
                 >
-                  By signing up you agree to our{" "}
+                  {t("signuppage.terms")}{" "}
                   <a
                     style={{ fontWeight: "bold" }}
                     href="https://www.carbon-transparency.org/pact-network-services-terms-of-use"
                   >
-                    Terms of Use
+                    {t("signuppage.terms.termsOfUse")}
                   </a>{" "}
-                  and{" "}
+                  {t("signuppage.terms.and")}{" "}
                   <a
                     style={{ fontWeight: "bold" }}
                     href="https://www.wbcsd.org/privacy-policy/"
                   >
-                    Privacy Policy
+                    {t("signuppage.terms.privacyPolicy")}
                   </a>
                 </Text>
               </Box>
+
+              {/* Submit */}
               <Box>
                 <Form.Submit asChild>
                   <Button
@@ -485,12 +497,14 @@ const SignupPage: React.FC = () => {
                     style={{ width: "100%", marginTop: "40px" }}
                   >
                     {creatingAccount && <Spinner loading />}
-                    {creatingAccount ? "Creating Account" : "Join"}
+                    {creatingAccount
+                      ? t("signuppage.actions.creating")
+                      : t("signuppage.actions.join")}
                   </Button>
                 </Form.Submit>
 
                 <p style={{ fontSize: "0.9em", marginTop: "20px" }}>
-                  Need help? Contact us at:{" "}
+                  {t("signuppage.help")}{" "}
                   <a
                     style={{ fontWeight: "bold" }}
                     href="mailto:pact-support@wbcsd.org"
@@ -511,8 +525,7 @@ const SignupPage: React.FC = () => {
                   <ExclamationTriangleIcon />
                 </Callout.Icon>
                 <Callout.Text>
-                  {errorMessage ||
-                    "Error during sign up, please check your data."}
+                  {errorMessage || t("signuppage.error.default")}
                 </Callout.Text>
               </Callout.Root>
             )}
