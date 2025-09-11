@@ -58,14 +58,11 @@ const getStatusText = (testCase: TestCase) => {
   }
 };
 
-const mapTestCases = (
-  test: { status: string; mandatory: boolean },
-  t: typeof Function
-) => ({
+const mapTestCases = (test: { status: string; mandatory: boolean }) => ({
   ...test,
   mandatory: test.mandatory
-    ? t("conformancetestresult.mandatoryYes")
-    : t("conformancetestresult.mandatoryNo"),
+    ? "conformancetestresult.mandatoryYes"
+    : "conformancetestresult.mandatoryNo",
 });
 
 const sortTestCases = (a: TestCase, b: TestCase) => {
@@ -225,6 +222,7 @@ const ConformanceTestResult: React.FC = () => {
     authBaseUrl,
     version,
     navigate,
+    authOptions,
     t,
   ]);
 
@@ -388,7 +386,7 @@ const ConformanceTestResult: React.FC = () => {
                               {t(getStatusText(test))}
                             </Badge>
                           </td>
-                          <td>{test.mandatory}</td>
+                          <td>{t(test.mandatory)}</td>
                           <td style={{ textAlign: "right" }}>
                             <Button
                               onClick={() => selectTestAndScroll(test)}
