@@ -17,7 +17,7 @@ describe("smoke test", () => {
 
   it("can access a test case detail", () => {
     cy.get("table").should("exist");
-    cy.get("a[href*='conformance-test-result']").first().click({ force: true });
+    cy.get("a[href*='conformance-test-result']").first().click();
     cy.url().should("include", "conformance-test-result");
     cy.get("td[class*='clickable']").first().click();
     cy.get("a[href*='docs.carbon-transparency.org']").should("exist");

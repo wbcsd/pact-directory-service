@@ -9,7 +9,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "e2e:chrome": "cypress run --browser electron"
+    "e2e": "cypress run --headless"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.2",
