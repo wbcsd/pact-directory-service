@@ -98,7 +98,7 @@ describe("<ConformanceTestRuns /> container", () => {
       screen.getByPlaceholderText(/Press enter to search/i)
     ).toBeInTheDocument();
 
-    expect(proxyWithAuth).toHaveBeenCalledWith("/test-runs");
+    expect(proxyWithAuth).toHaveBeenCalledWith("/test-runs?page=1");
     expect(gridSpy).toHaveBeenLastCalledWith(
       expect.objectContaining({
         testRuns: expect.any(Array),
@@ -117,7 +117,7 @@ describe("<ConformanceTestRuns /> container", () => {
 
     const input = await screen.findByPlaceholderText(/Press enter to search/i);
     expect((input as HTMLInputElement).value).toBe("acme");
-    expect(proxyWithAuth).toHaveBeenCalledWith("/test-runs?query=acme");
+    expect(proxyWithAuth).toHaveBeenCalledWith("/test-runs?page=1&query=acme");
     expect(screen.getByTestId("grid")).toBeInTheDocument();
   });
 
@@ -140,7 +140,9 @@ describe("<ConformanceTestRuns /> container", () => {
     fireEvent.keyUp(input, { key: "Enter", code: "Enter", charCode: 13 });
 
     await waitFor(() =>
-      expect(proxyWithAuth).toHaveBeenLastCalledWith("/test-runs?query=acme")
+      expect(proxyWithAuth).toHaveBeenLastCalledWith(
+        "/test-runs?page=1&query=acme"
+      )
     );
     // Our mock grid prints length; ensure it re-rendered
     expect(screen.getByTestId("grid")).toHaveTextContent(/runs=1/);
@@ -166,7 +168,7 @@ describe("<ConformanceTestRuns /> container", () => {
     });
 
     await waitFor(() =>
-      expect(proxyWithAuth).toHaveBeenLastCalledWith("/test-runs")
+      expect(proxyWithAuth).toHaveBeenLastCalledWith("/test-runs?page=1")
     );
     expect(screen.getByTestId("grid")).toHaveTextContent(/runs=1/);
   });
@@ -193,7 +195,7 @@ describe("<ConformanceTestRuns /> container", () => {
         (screen.getByPlaceholderText(/Press enter/i) as HTMLInputElement).value
       ).toBe("")
     );
-    expect(proxyWithAuth).toHaveBeenLastCalledWith("/test-runs");
+    expect(proxyWithAuth).toHaveBeenLastCalledWith("/test-runs?page=1");
     expect(screen.getByTestId("grid")).toHaveTextContent(/runs=2/);
   });
 

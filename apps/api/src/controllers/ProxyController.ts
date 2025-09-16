@@ -4,6 +4,8 @@ import HttpStatusCodes from "@src/common/HttpStatusCodes";
 import { db } from "@src/database/db";
 import config from "@src/common/config";
 
+const DEFAULT_PAGE_SIZE = 10;
+
 async function runTestCases(req: Request, res: Response) {
   const { companyId, userId } = res.locals.user as {
     companyId: string;
@@ -52,26 +54,29 @@ async function runTestCases(req: Request, res: Response) {
       audience?: string;
     };
 
-    const response = await fetch(`${config.CONFORMANCE_API_INTERNAL}/testruns`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        clientId,
-        clientSecret,
-        baseUrl: apiUrl,
-        customAuthBaseUrl: authBaseUrl,
-        version,
-        companyName: company.companyName,
-        companyIdentifier: company.companyIdentifier,
-        adminEmail: user.email,
-        adminName: user.fullName,
-        scope: scope,
-        resource: resource,
-        audience: audience,
-      }),
-    });
+    const response = await fetch(
+      `${config.CONFORMANCE_API_INTERNAL}/testruns`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          clientId,
+          clientSecret,
+          baseUrl: apiUrl,
+          customAuthBaseUrl: authBaseUrl,
+          version,
+          companyName: company.companyName,
+          companyIdentifier: company.companyIdentifier,
+          adminEmail: user.email,
+          adminName: user.fullName,
+          scope: scope,
+          resource: resource,
+          audience: audience,
+        }),
+      }
+    );
 
     const data: unknown = await response.json();
     res.status(HttpStatusCodes.OK).json(data);
@@ -94,7 +99,9 @@ async function getTestResults(req: Request, res: Response) {
   }
 
   try {
-    const url = new URL(`${config.CONFORMANCE_API_INTERNAL}/testruns/${testRunId as string}`);
+    const url = new URL(
+      `${config.CONFORMANCE_API_INTERNAL}/testruns/${testRunId as string}`
+    );
 
     const response = await fetch(url.toString(), {
       method: "GET",
@@ -186,7 +193,16 @@ async function getRecentTestRuns(req: Request, res: Response) {
       return;
     }
 
+    const page = req.query.page ? Number(req.query.page) : 1;
+    const pageSize = req.query.pageSize
+      ? Number(req.query.pageSize)
+      : DEFAULT_PAGE_SIZE;
+
     const url = new URL(`${config.CONFORMANCE_API_INTERNAL}/testruns`);
+
+    url.searchParams.append("page", page.toString());
+    url.searchParams.append("pageSize", pageSize.toString());
+
     if (role !== "administrator") {
       url.searchParams.append("adminEmail", email);
     }
