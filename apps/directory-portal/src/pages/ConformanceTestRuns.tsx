@@ -173,15 +173,7 @@ const ConformanceTestRuns: React.FC = () => {
           />
         )}
         {!searchParams.get("q") && (
-          <div
-            style={{
-              marginTop: "20px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "8px",
-            }}
-          >
+          <div className="paging-wrapper">
             <Button
               type="button"
               disabled={currentPage === 1}
