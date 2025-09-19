@@ -8,6 +8,8 @@ import EmptyImage from "../assets/pact-logistics-center-8.png";
 import ConformanceTestRunsGrid from "./ConformanceTestRunsGrid";
 import "./ConformanceTestRuns.css";
 
+const MAX_PAGE_SIZE = 10;
+
 interface TestRun {
   testId: string;
   techSpecVersion: string;
@@ -25,6 +27,9 @@ const ConformanceTestRuns: React.FC = () => {
   // URL-driven state
   const [searchParams, setSearchParams] = useSearchParams();
   const initialQuery = searchParams.get("q") ?? "";
+  const initialPage = parseInt(searchParams.get("page") ?? "1", 10);
+
+  const currentPage = initialPage > 0 ? initialPage : 1;
 
   // UI state
   const [isLoading, setIsLoading] = useState(true);
@@ -32,13 +37,27 @@ const ConformanceTestRuns: React.FC = () => {
   const [testRuns, setTestRuns] = useState<TestRun[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>(initialQuery);
 
-  const fetchRuns = async (query: string) => {
+  const gotoNextPage = () => {
+    setSearchParams({
+      q: searchTerm || "",
+      page: String(currentPage + 1),
+    });
+  };
+
+  const gotoPrevPage = () => {
+    setSearchParams({
+      q: searchTerm || "",
+      page: String(Math.max(1, currentPage - 1)),
+    });
+  };
+
+  const fetchRuns = async (query: string, page: number) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const url = `/test-runs${
-        query ? `?query=${encodeURIComponent(query)}` : ""
+      const url = `/test-runs?page=${page}${
+        query ? `&query=${encodeURIComponent(query)}` : ""
       }`;
       const response = await proxyWithAuth(url);
       if (!response || !response.ok)
@@ -50,8 +69,7 @@ const ConformanceTestRuns: React.FC = () => {
         return;
       }
 
-      const runs: TestRun[] = data.testRuns || [];
-      setTestRuns(runs);
+      setTestRuns(data.testRuns || []);
     } catch (err) {
       console.error("Error fetching test runs:", err);
       setError(
@@ -65,9 +83,10 @@ const ConformanceTestRuns: React.FC = () => {
   // On mount + whenever ?q changes, fetch using the URL as the source of truth.
   useEffect(() => {
     const q = searchParams.get("q") ?? "";
-    setSearchTerm(q); // keep input in sync with URL
-    fetchRuns(q);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const page = parseInt(searchParams.get("page") ?? "1", 10);
+
+    setSearchTerm(q); // keep input in sync
+    fetchRuns(q, page > 0 ? page : 1);
   }, [searchParams]);
 
   // Enter-to-search: update the URL (which triggers the effect above)
@@ -77,19 +96,11 @@ const ConformanceTestRuns: React.FC = () => {
     const val = event.currentTarget.value.trim();
     switch (event.key) {
       case "Enter":
-        if (val.length === 0) {
-          // clear search -> show all
-          setSearchParams({}, { replace: true });
-        } else {
-          setSearchParams({ q: val }, { replace: true });
-        }
+        setSearchParams(val ? { q: val, page: "1" } : {});
         break;
       case "Backspace":
-        if (val.length === 0) {
-          // clear search -> show all
-          if (searchParams.get("q") === null) return;
-          setSearchParams({}, { replace: true });
-          fetchRuns("");
+        if (val.length === 0 && searchParams.get("q") !== null) {
+          setSearchParams({});
         }
         break;
       default:
@@ -160,6 +171,24 @@ const ConformanceTestRuns: React.FC = () => {
             isLoading={isLoading}
             error={error}
           />
+        )}
+        {!searchParams.get("q") && (
+          <div className="paging-wrapper">
+            <Button
+              type="button"
+              disabled={currentPage === 1}
+              onClick={gotoPrevPage}
+            >
+              prev
+            </Button>
+            <Button
+              disabled={testRuns.length < MAX_PAGE_SIZE}
+              type="button"
+              onClick={gotoNextPage}
+            >
+              next
+            </Button>
+          </div>
         )}
       </main>
     </>
