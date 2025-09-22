@@ -4,10 +4,13 @@ import { Box, Button, TextField, Callout, Spinner } from "@radix-ui/themes";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
 import HeroImage from "../assets/providers-header.webp";
+import { useTranslation } from "react-i18next";
 
 const ResetPasswordPage: React.FC = () => {
   const navigate = useNavigate();
   const { token } = useParams<{ token: string }>();
+  const { t } = useTranslation();
+
   const [formData, setFormData] = useState({
     password: "",
     confirmPassword: "",
@@ -24,13 +27,15 @@ const ResetPasswordPage: React.FC = () => {
     const verifyToken = async () => {
       if (!token) {
         setTokenStatus("invalid");
-        setErrorMessage("Invalid reset link");
+        setErrorMessage(t("resetpassword.errors.invalidLink"));
         return;
       }
 
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_DIRECTORY_API}/directory/companies/verify-reset-token/${token}`
+          `${
+            import.meta.env.VITE_DIRECTORY_API
+          }/directory/companies/verify-reset-token/${token}`
         );
 
         if (response.ok) {
@@ -38,17 +43,19 @@ const ResetPasswordPage: React.FC = () => {
         } else {
           const errorData = await response.json();
           setTokenStatus("invalid");
-          setErrorMessage(errorData.error || "Invalid or expired reset link");
+          setErrorMessage(
+            errorData.error || t("resetpassword.errors.expiredLink")
+          );
         }
       } catch (error) {
         console.error("Token verification error:", error);
         setTokenStatus("invalid");
-        setErrorMessage("An error occurred while verifying the reset link");
+        setErrorMessage(t("resetpassword.errors.verification"));
       }
     };
 
     verifyToken();
-  }, [token]);
+  }, [token, t]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,20 +63,22 @@ const ResetPasswordPage: React.FC = () => {
     setErrorMessage("");
 
     if (formData.password !== formData.confirmPassword) {
-      setErrorMessage("Passwords do not match");
+      setErrorMessage(t("resetpassword.errors.passwordMismatch"));
       setStatus("error");
       return;
     }
 
     if (formData.password.length < 6) {
-      setErrorMessage("Password must be at least 6 characters long");
+      setErrorMessage(t("resetpassword.errors.passwordTooShort"));
       setStatus("error");
       return;
     }
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_DIRECTORY_API}/directory/companies/reset-password`,
+        `${
+          import.meta.env.VITE_DIRECTORY_API
+        }/directory/companies/reset-password`,
         {
           method: "POST",
           headers: {
@@ -85,18 +94,17 @@ const ResetPasswordPage: React.FC = () => {
 
       if (response.ok) {
         setStatus("success");
-        // Redirect to login after 3 seconds
         setTimeout(() => {
           navigate("/login");
         }, 3000);
       } else {
         const errorData = await response.json();
-        setErrorMessage(errorData.error || "An error occurred");
+        setErrorMessage(errorData.error || t("resetpassword.errors.generic"));
         setStatus("error");
       }
     } catch (error) {
       console.error("Reset password error:", error);
-      setErrorMessage("An error occurred. Please try again later.");
+      setErrorMessage(t("resetpassword.errors.tryAgain"));
       setStatus("error");
     }
   };
@@ -132,7 +140,7 @@ const ResetPasswordPage: React.FC = () => {
               fontSize: "1.8em",
             }}
           >
-            Helping you adopt PACT standards with ease
+            {t("resetpassword.hero.title")}
           </h2>
         </Box>
         <Box
@@ -149,7 +157,7 @@ const ResetPasswordPage: React.FC = () => {
         >
           <Box style={{ textAlign: "center" }}>
             <Spinner size="3" />
-            <p style={{ marginTop: "20px" }}>Verifying reset link...</p>
+            <p style={{ marginTop: "20px" }}>{t("resetpassword.verifying")}</p>
           </Box>
         </Box>
       </Box>
@@ -182,7 +190,7 @@ const ResetPasswordPage: React.FC = () => {
               fontSize: "1.8em",
             }}
           >
-            Helping you adopt PACT standards with ease
+            {t("resetpassword.hero.title")}
           </h2>
         </Box>
         <Box
@@ -205,15 +213,14 @@ const ResetPasswordPage: React.FC = () => {
             }}
           >
             <h2 style={{ marginBottom: "20px", color: "#0A0552" }}>
-              Invalid Reset Link
+              {t("resetpassword.invalid.title")}
             </h2>
             <Callout.Root color="bronze" variant="surface">
               <Callout.Icon>
                 <ExclamationTriangleIcon />
               </Callout.Icon>
               <Callout.Text>
-                {errorMessage ||
-                  "This reset link is invalid or has expired. Please request a new one."}
+                {errorMessage || t("resetpassword.invalid.description")}
               </Callout.Text>
             </Callout.Root>
             <Box style={{ marginTop: "30px", textAlign: "center" }}>
@@ -225,7 +232,7 @@ const ResetPasswordPage: React.FC = () => {
                   fontWeight: "500",
                 }}
               >
-                Request New Reset Link
+                {t("resetpassword.invalid.requestNew")}
               </Link>
               <br />
               <Link
@@ -238,7 +245,7 @@ const ResetPasswordPage: React.FC = () => {
                   display: "inline-block",
                 }}
               >
-                Back to Login
+                {t("resetpassword.invalid.backToLogin")}
               </Link>
             </Box>
           </Box>
@@ -273,7 +280,7 @@ const ResetPasswordPage: React.FC = () => {
               fontSize: "1.8em",
             }}
           >
-            Helping you adopt PACT standards with ease
+            {t("resetpassword.hero.title")}
           </h2>
         </Box>
         <Box
@@ -298,15 +305,14 @@ const ResetPasswordPage: React.FC = () => {
             {status === "success" ? (
               <Box>
                 <h2 style={{ marginBottom: "20px", color: "#0A0552" }}>
-                  Password Reset Successful
+                  {t("resetpassword.success.title")}
                 </h2>
                 <Callout.Root color="green" variant="surface">
                   <Callout.Icon>
                     <CheckIcon />
                   </Callout.Icon>
                   <Callout.Text>
-                    Your password has been successfully reset. You will be
-                    redirected to the login page shortly.
+                    {t("resetpassword.success.description")}
                   </Callout.Text>
                 </Callout.Root>
                 <Box style={{ marginTop: "30px", textAlign: "center" }}>
@@ -318,15 +324,17 @@ const ResetPasswordPage: React.FC = () => {
                       fontWeight: "500",
                     }}
                   >
-                    Go to Login
+                    {t("resetpassword.success.goToLogin")}
                   </Link>
                 </Box>
               </Box>
             ) : (
               <>
-                <h2 style={{ marginBottom: "20px" }}>Set New Password</h2>
+                <h2 style={{ marginBottom: "20px" }}>
+                  {t("resetpassword.form.title")}
+                </h2>
                 <p style={{ marginBottom: "30px", color: "#666" }}>
-                  Enter your new password below.
+                  {t("resetpassword.form.subtitle")}
                 </p>
 
                 <Form.Root onSubmit={handleSubmit}>
@@ -338,7 +346,8 @@ const ResetPasswordPage: React.FC = () => {
                         fontWeight: "500",
                       }}
                     >
-                      New Password<span style={{ color: "red" }}>*</span>
+                      {t("resetpassword.form.newPassword")}
+                      <span style={{ color: "red" }}>*</span>
                     </Form.Label>
                     <Form.Control asChild>
                       <TextField.Root
@@ -347,7 +356,9 @@ const ResetPasswordPage: React.FC = () => {
                         value={formData.password}
                         required
                         minLength={6}
-                        placeholder="Enter new password"
+                        placeholder={t(
+                          "resetpassword.form.newPasswordPlaceholder"
+                        )}
                         onChange={handleChange}
                         disabled={status === "loading"}
                         style={{
@@ -365,7 +376,7 @@ const ResetPasswordPage: React.FC = () => {
                         fontSize: "0.85em",
                       }}
                     >
-                      Password is required.
+                      {t("resetpassword.validation.required")}
                     </Form.Message>
                     <Form.Message
                       match="tooShort"
@@ -374,7 +385,7 @@ const ResetPasswordPage: React.FC = () => {
                         fontSize: "0.85em",
                       }}
                     >
-                      Password must be at least 6 characters long.
+                      {t("resetpassword.validation.tooShort")}
                     </Form.Message>
                   </Form.Field>
 
@@ -389,7 +400,7 @@ const ResetPasswordPage: React.FC = () => {
                         fontWeight: "500",
                       }}
                     >
-                      Confirm New Password
+                      {t("resetpassword.form.confirmPassword")}
                       <span style={{ color: "red" }}>*</span>
                     </Form.Label>
                     <Form.Control asChild>
@@ -398,7 +409,9 @@ const ResetPasswordPage: React.FC = () => {
                         name="confirmPassword"
                         value={formData.confirmPassword}
                         required
-                        placeholder="Confirm new password"
+                        placeholder={t(
+                          "resetpassword.form.confirmPasswordPlaceholder"
+                        )}
                         onChange={handleChange}
                         disabled={status === "loading"}
                         style={{
@@ -416,7 +429,7 @@ const ResetPasswordPage: React.FC = () => {
                         fontSize: "0.85em",
                       }}
                     >
-                      Please confirm your password.
+                      {t("resetpassword.validation.confirmRequired")}
                     </Form.Message>
                   </Form.Field>
 
@@ -428,8 +441,8 @@ const ResetPasswordPage: React.FC = () => {
                         disabled={status === "loading"}
                       >
                         {status === "loading"
-                          ? "Resetting..."
-                          : "Reset Password"}
+                          ? t("resetpassword.actions.resetting")
+                          : t("resetpassword.actions.submit")}
                       </Button>
                     </Form.Submit>
                   </Box>
@@ -446,7 +459,7 @@ const ResetPasswordPage: React.FC = () => {
                       <ExclamationTriangleIcon />
                     </Callout.Icon>
                     <Callout.Text>
-                      {errorMessage || "An error occurred. Please try again."}
+                      {errorMessage || t("resetpassword.errors.generic")}
                     </Callout.Text>
                   </Callout.Root>
                 )}
@@ -458,7 +471,7 @@ const ResetPasswordPage: React.FC = () => {
                     textAlign: "center",
                   }}
                 >
-                  Need help? Contact us at:{" "}
+                  {t("resetpassword.help.text")}{" "}
                   <a
                     style={{ fontWeight: "bold" }}
                     href="mailto:pact-support@wbcsd.org"

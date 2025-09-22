@@ -4,6 +4,7 @@ import { Box, Button, TextField, Callout } from "@radix-ui/themes";
 import { Link } from "react-router-dom";
 import { ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
 import HeroImage from "../assets/providers-header.webp";
+import { useTranslation } from "react-i18next";
 
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -12,6 +13,8 @@ const ForgotPasswordPage: React.FC = () => {
   >("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
+  const { t } = useTranslation();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("loading");
@@ -19,7 +22,9 @@ const ForgotPasswordPage: React.FC = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_DIRECTORY_API}/directory/companies/forgot-password`,
+        `${
+          import.meta.env.VITE_DIRECTORY_API
+        }/directory/companies/forgot-password`,
         {
           method: "POST",
           headers: {
@@ -33,12 +38,12 @@ const ForgotPasswordPage: React.FC = () => {
         setStatus("success");
       } else {
         const errorData = await response.json();
-        setErrorMessage(errorData.error || "An error occurred");
+        setErrorMessage(errorData.error || t("forgotpassword.errors.generic"));
         setStatus("error");
       }
     } catch (error) {
       console.error("Forgot password error:", error);
-      setErrorMessage("An error occurred. Please try again later.");
+      setErrorMessage(t("forgotpassword.errors.tryAgainLater"));
       setStatus("error");
     }
   };
@@ -73,7 +78,7 @@ const ForgotPasswordPage: React.FC = () => {
               fontSize: "1.8em",
             }}
           >
-            Helping you adopt PACT standards with ease
+            {t("forgotpassword.hero.title")}
           </h2>
         </Box>
         <Box
@@ -98,16 +103,14 @@ const ForgotPasswordPage: React.FC = () => {
             {status === "success" ? (
               <Box>
                 <h2 style={{ marginBottom: "20px", color: "#0A0552" }}>
-                  Check Your Email
+                  {t("forgotpassword.success.title")}
                 </h2>
                 <Callout.Root color="green" variant="surface">
                   <Callout.Icon>
                     <CheckIcon />
                   </Callout.Icon>
                   <Callout.Text>
-                    If an account with that email exists, we've sent you a
-                    password reset link. Please check your email and click the
-                    link to reset your password.
+                    {t("forgotpassword.success.message")}
                   </Callout.Text>
                 </Callout.Root>
                 <Box style={{ marginTop: "30px", textAlign: "center" }}>
@@ -119,16 +122,17 @@ const ForgotPasswordPage: React.FC = () => {
                       fontSize: "0.9em",
                     }}
                   >
-                    Back to Login
+                    {t("forgotpassword.actions.backToLogin")}
                   </Link>
                 </Box>
               </Box>
             ) : (
               <>
-                <h2 style={{ marginBottom: "20px" }}>Reset Your Password</h2>
+                <h2 style={{ marginBottom: "20px" }}>
+                  {t("forgotpassword.form.title")}
+                </h2>
                 <p style={{ marginBottom: "30px", color: "#666" }}>
-                  Enter your email address and we'll send you a link to reset
-                  your password.
+                  {t("forgotpassword.form.subtitle")}
                 </p>
 
                 <Form.Root onSubmit={handleSubmit}>
@@ -140,14 +144,15 @@ const ForgotPasswordPage: React.FC = () => {
                         fontWeight: "500",
                       }}
                     >
-                      Email Address<span style={{ color: "red" }}>*</span>
+                      {t("forgotpassword.form.emailLabel")}
+                      <span style={{ color: "red" }}>*</span>
                     </Form.Label>
                     <Form.Control asChild>
                       <TextField.Root
                         type="email"
                         value={email}
                         required
-                        placeholder="Enter your email address"
+                        placeholder={t("forgotpassword.form.emailPlaceholder")}
                         onChange={handleChange}
                         disabled={status === "loading"}
                         style={{
@@ -165,7 +170,7 @@ const ForgotPasswordPage: React.FC = () => {
                         fontSize: "0.85em",
                       }}
                     >
-                      Email is required.
+                      {t("forgotpassword.validation.required")}
                     </Form.Message>
                     <Form.Message
                       match="typeMismatch"
@@ -174,7 +179,7 @@ const ForgotPasswordPage: React.FC = () => {
                         fontSize: "0.85em",
                       }}
                     >
-                      Please enter a valid email address.
+                      {t("forgotpassword.validation.invalid")}
                     </Form.Message>
                   </Form.Field>
 
@@ -186,8 +191,8 @@ const ForgotPasswordPage: React.FC = () => {
                         disabled={status === "loading"}
                       >
                         {status === "loading"
-                          ? "Sending..."
-                          : "Send Reset Link"}
+                          ? t("forgotpassword.actions.sending")
+                          : t("forgotpassword.actions.sendLink")}
                       </Button>
                     </Form.Submit>
                   </Box>
@@ -202,7 +207,7 @@ const ForgotPasswordPage: React.FC = () => {
                       fontSize: "0.9em",
                     }}
                   >
-                    Back to Login
+                    {t("forgotpassword.actions.backToLogin")}
                   </Link>
                 </Box>
 
@@ -217,7 +222,7 @@ const ForgotPasswordPage: React.FC = () => {
                       <ExclamationTriangleIcon />
                     </Callout.Icon>
                     <Callout.Text>
-                      {errorMessage || "An error occurred. Please try again."}
+                      {errorMessage || t("forgotpassword.errors.generic")}
                     </Callout.Text>
                   </Callout.Root>
                 )}
@@ -229,7 +234,7 @@ const ForgotPasswordPage: React.FC = () => {
                     textAlign: "center",
                   }}
                 >
-                  Need help? Contact us at:{" "}
+                  {t("forgotpassword.help.text")}{" "}
                   <a
                     style={{ fontWeight: "bold" }}
                     href="mailto:pact-support@wbcsd.org"

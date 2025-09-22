@@ -12,6 +12,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { proxyWithAuth } from "../utils/auth-fetch";
 import Spinner from "../components/LoadingSpinner";
 import CodeIcon from "../components/CodeIcon";
+import { useTranslation } from "react-i18next";
 import "./ConformanceTestResult.css";
 
 export interface TestCase {
@@ -43,23 +44,25 @@ const getStatusColor = (testCase: TestCase) => {
 
 const getStatusText = (testCase: TestCase) => {
   if (testCase.status === "FAILURE" && testCase.mandatory === "NO")
-    return "Warning";
+    return "conformancetestresult.status.warning";
 
   switch (testCase.status) {
     case "SUCCESS":
-      return "Passed";
+      return "conformancetestresult.status.passed";
     case "FAILURE":
-      return "Failed";
+      return "conformancetestresult.status.failed";
     case "PENDING":
-      return "Pending";
+      return "conformancetestresult.status.pending";
     default:
-      return "Pending";
+      return "conformancetestresult.status.pending";
   }
 };
 
 const mapTestCases = (test: { status: string; mandatory: boolean }) => ({
   ...test,
-  mandatory: test.mandatory ? "Yes" : "No",
+  mandatory: test.mandatory
+    ? "conformancetestresult.mandatoryYes"
+    : "conformancetestresult.mandatoryNo",
 });
 
 const sortTestCases = (a: TestCase, b: TestCase) => {
@@ -114,6 +117,8 @@ const ConformanceTestResult: React.FC = () => {
     useConformanceTesting();
   const testRunId = searchParams.get("testRunId");
 
+  const { t } = useTranslation();
+
   useEffect(() => {
     let cancelled = false;
     const isCancelled = () => cancelled;
@@ -140,9 +145,7 @@ const ConformanceTestResult: React.FC = () => {
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching test results:", error);
-        setError(
-          "An unexpected error occurred while fetching test results. Please try again."
-        );
+        setError(t("conformancetestresult.errors.fetchResults"));
         setIsLoading(false);
       }
     };
@@ -197,9 +200,7 @@ const ConformanceTestResult: React.FC = () => {
         pollTestResults(1, setTestCases, data.testRunId, isCancelled);
       } catch (error) {
         console.error("Error fetching test response:", error);
-        setError(
-          "An unexpected error occurred while running tests. Please try again."
-        );
+        setError(t("conformancetestresult.errors.runTests"));
         setIsLoading(false);
       }
     };
@@ -221,6 +222,8 @@ const ConformanceTestResult: React.FC = () => {
     authBaseUrl,
     version,
     navigate,
+    authOptions,
+    t,
   ]);
 
   const selectTestAndScroll = (test: TestCase) => {
@@ -242,14 +245,14 @@ const ConformanceTestResult: React.FC = () => {
           <Spinner
             loadingText={
               isNewTestRun
-                ? "Tests in progress ..."
-                : "Loading test results ..."
+                ? t("conformancetestresult.loading.inProgress")
+                : t("conformancetestresult.loading.results")
             }
           />
         </Box>
       ) : error ? (
         <Box className="error-container">
-          <h2>Conformance Test Result</h2>
+          <h2>{t("conformancetestresult.title")}</h2>
           <Callout.Root color="red" size="2">
             <Callout.Icon>
               <ExclamationTriangleIcon />
@@ -258,7 +261,7 @@ const ConformanceTestResult: React.FC = () => {
           </Callout.Root>
           <Box mt="4">
             <Button onClick={() => navigate("/conformance-testing")}>
-              Back to Testing Form
+              {t("conformancetestresult.actions.backToForm")}
             </Button>
           </Box>
         </Box>
@@ -268,7 +271,8 @@ const ConformanceTestResult: React.FC = () => {
             <div className="header">
               <div>
                 <h2>
-                  Test Run ID {testRunId?.substring(0, 8)}{" "}
+                  {t("conformancetestresult.testRunId")}{" "}
+                  {testRunId?.substring(0, 8)}{" "}
                   <Badge
                     style={{
                       verticalAlign: "middle",
@@ -276,11 +280,13 @@ const ConformanceTestResult: React.FC = () => {
                       marginLeft: "10px",
                     }}
                   >
-                    Testing conformance to {techSpecVersion}
+                    {t("conformancetestresult.testingConformance", {
+                      version: techSpecVersion,
+                    })}
                   </Badge>
                 </h2>
                 <p style={{ color: "#888", fontSize: "0.875rem" }}>
-                  Review the test cases that were executed against your API
+                  {t("conformancetestresult.reviewMessage")}
                 </p>
               </div>
               {profileData?.role === "administrator" && (
@@ -293,7 +299,7 @@ const ConformanceTestResult: React.FC = () => {
               {(profileData?.role !== "administrator" ||
                 profileData?.email === adminEmail) && (
                 <Button onClick={() => navigate("/conformance-testing")}>
-                  Re-test Conformance
+                  {t("conformancetestresult.actions.retest")}
                 </Button>
               )}
             </div>
@@ -302,7 +308,7 @@ const ConformanceTestResult: React.FC = () => {
               <Box className="summary-card">
                 <Box width={"80%"}>
                   <Text size="2" style={{ color: "#888" }}>
-                    Mandatory Tests
+                    {t("conformancetestresult.mandatoryTests")}
                   </Text>
                   <Heading as="h3" style={{ color: "#000080" }}>
                     {passingPercentage}%
@@ -313,7 +319,9 @@ const ConformanceTestResult: React.FC = () => {
                     color={passingPercentage === 100 ? "green" : "red"}
                     style={{ fontWeight: "normal", fontSize: "14px" }}
                   >
-                    {passingPercentage === 100 ? "Passed" : "Failed"}
+                    {passingPercentage === 100
+                      ? t("conformancetestresult.status.passed")
+                      : t("conformancetestresult.status.failed")}
                   </Badge>
                 </Box>
               </Box>
@@ -321,7 +329,7 @@ const ConformanceTestResult: React.FC = () => {
               <Box className="summary-card">
                 <Box width={"80%"}>
                   <Text size="2" style={{ color: "#888" }}>
-                    Optional Tests
+                    {t("conformancetestresult.optionalTests")}
                   </Text>
                   <Heading as="h3" style={{ color: "#000080" }}>
                     {nonMandatoryPassingPercentage}%
@@ -335,8 +343,8 @@ const ConformanceTestResult: React.FC = () => {
                     style={{ fontWeight: "normal", fontSize: "14px" }}
                   >
                     {nonMandatoryPassingPercentage === 100
-                      ? "Passed"
-                      : "Failed"}
+                      ? t("conformancetestresult.status.passed")
+                      : t("conformancetestresult.status.failed")}
                   </Badge>
                 </Box>
               </Box>
@@ -346,11 +354,13 @@ const ConformanceTestResult: React.FC = () => {
               <table className="test-runs-table">
                 <thead>
                   <tr>
-                    <th style={{ width: "60%" }}>Test Case</th>
+                    <th style={{ width: "60%" }}>
+                      {t("conformancetestresult.table.testCase")}
+                    </th>
                     {!selectedTest && (
                       <>
-                        <th>Status</th>
-                        <th>Mandatory Test?</th>
+                        <th>{t("conformancetestresult.table.status")}</th>
+                        <th>{t("conformancetestresult.table.mandatory")}</th>
                         <th></th>
                       </>
                     )}
@@ -373,10 +383,10 @@ const ConformanceTestResult: React.FC = () => {
                         <>
                           <td>
                             <Badge color={getStatusColor(test)}>
-                              {getStatusText(test)}
+                              {t(getStatusText(test))}
                             </Badge>
                           </td>
-                          <td>{test.mandatory}</td>
+                          <td>{t(test.mandatory)}</td>
                           <td style={{ textAlign: "right" }}>
                             <Button
                               onClick={() => selectTestAndScroll(test)}
@@ -389,7 +399,7 @@ const ConformanceTestResult: React.FC = () => {
                               }}
                             >
                               <CodeIcon />
-                              Details
+                              {t("conformancetestresult.actions.details")}
                             </Button>
                           </td>
                         </>
@@ -399,7 +409,9 @@ const ConformanceTestResult: React.FC = () => {
                 </tbody>
               </table>
               {testCases.length === 0 && (
-                <div className="no-tests">No test cases available.</div>
+                <div className="no-tests">
+                  {t("conformancetestresult.noTests")}
+                </div>
               )}
             </div>
           </main>
@@ -413,7 +425,7 @@ const ConformanceTestResult: React.FC = () => {
                   </Heading>
                   <Box className="test-box-actions">
                     <Badge color={getStatusColor(selectedTest)}>
-                      {getStatusText(selectedTest)}
+                      {t(getStatusText(selectedTest))}
                     </Badge>
                     <Button
                       onClick={() => setSelectedTest(null)}
@@ -426,9 +438,10 @@ const ConformanceTestResult: React.FC = () => {
                         padding: "4px 8px",
                         cursor: "pointer",
                       }}
-                      title="Close panel"
+                      title={t("conformancetestresult.actions.closePanel")}
                     >
-                      Close Panel <DoubleArrowRightIcon />
+                      {t("conformancetestresult.actions.closePanel")}{" "}
+                      <DoubleArrowRightIcon />
                     </Button>
                   </Box>
                 </Box>
@@ -441,7 +454,7 @@ const ConformanceTestResult: React.FC = () => {
                         style={{ textDecoration: "underline" }}
                         href={selectedTest.documentationUrl}
                       >
-                        View test documentation
+                        {t("conformancetestresult.actions.viewDocumentation")}
                       </a>
                     </div>
                     <Badge
@@ -449,8 +462,8 @@ const ConformanceTestResult: React.FC = () => {
                       style={{ fontSize: "12px" }}
                     >
                       {selectedTest.mandatory === "Yes"
-                        ? "Mandatory"
-                        : "Optional"}
+                        ? t("conformancetestresult.mandatory")
+                        : t("conformancetestresult.optional")}
                     </Badge>
                   </div>
                 )}
@@ -459,7 +472,9 @@ const ConformanceTestResult: React.FC = () => {
                   size="2"
                   mb="4"
                   dangerouslySetInnerHTML={{
-                    __html: selectedTest.errorMessage ?? "No errors.",
+                    __html:
+                      selectedTest.errorMessage ??
+                      t("conformancetestresult.noErrors"),
                   }}
                 />
                 <br />

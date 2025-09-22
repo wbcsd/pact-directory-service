@@ -3,6 +3,7 @@ import { Box, Button, AlertDialog, Flex } from "@radix-ui/themes";
 import { Link } from "react-router-dom";
 import SideNav from "../components/SideNav";
 import { fetchWithAuth } from "../utils/auth-fetch";
+import { useTranslation } from "react-i18next";
 
 interface ConnectionRequest {
   id: number;
@@ -37,6 +38,8 @@ const ManageConnections: React.FC = () => {
     connectedCompanies: [],
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const { t } = useTranslation();
 
   const fetchConnectionsData = async () => {
     try {
@@ -96,16 +99,17 @@ const ManageConnections: React.FC = () => {
     <>
       <AlertDialog.Root open={isDialogOpen}>
         <AlertDialog.Content maxWidth="450px">
-          <AlertDialog.Title>Connection request accepted</AlertDialog.Title>
+          <AlertDialog.Title>
+            {t("manageconnections.dialog.acceptedTitle")}
+          </AlertDialog.Title>
           <AlertDialog.Description size="2">
-            Now you are able to exchange PCF data using your PACT Conformant
-            Solution with the company you just connected with
+            {t("manageconnections.dialog.acceptedDescription")}
           </AlertDialog.Description>
 
           <Flex mt="4" justify="center">
             <AlertDialog.Action>
               <Button onClick={handleDialogClose} variant="solid" color="blue">
-                Ok
+                {t("manageconnections.dialog.ok")}
               </Button>
             </AlertDialog.Action>
           </Flex>
@@ -118,11 +122,11 @@ const ManageConnections: React.FC = () => {
       </aside>
       <main className="main">
         <div className="header">
-          <h2>Manage Connections</h2>
+          <h2>{t("manageconnections.title")}</h2>
         </div>
 
         <Box>
-          <h2>Connected organizations</h2>
+          <h2>{t("manageconnections.connectedOrgs.title")}</h2>
           {connectionsData.connectedCompanies.length > 0 ? (
             <>
               {connectionsData.connectedCompanies.map((connection) => (
@@ -133,17 +137,21 @@ const ManageConnections: React.FC = () => {
                     </Link>
                   </p>
                   <p className="biline">
-                    Connected on {formatDate(new Date(connection.createdAt))}
+                    {t("manageconnections.connectedOrgs.connectedOn", {
+                      date: formatDate(new Date(connection.createdAt)),
+                    })}
                   </p>
                 </div>
               ))}
             </>
           ) : (
-            <p style={{ marginBottom: "20px" }}>No connected organizations.</p>
+            <p style={{ marginBottom: "20px" }}>
+              {t("manageconnections.connectedOrgs.empty")}
+            </p>
           )}
         </Box>
         <Box>
-          <h2>Sent Connection Requests</h2>
+          <h2>{t("manageconnections.sentRequests.title")}</h2>
           {connectionsData.sent.length > 0 ? (
             <>
               {connectionsData.sent.map((request) => (
@@ -154,21 +162,25 @@ const ManageConnections: React.FC = () => {
                     </Link>
                   </p>
                   <p className="biline">
-                    Status: {request.status} | Sent on{" "}
-                    {formatDate(new Date(request.createdAt))}
+                    {t("manageconnections.sentRequests.status", {
+                      status: request.status,
+                      date: formatDate(new Date(request.createdAt)),
+                    })}
                   </p>
                 </div>
               ))}
             </>
           ) : (
             <p style={{ marginBottom: "20px" }}>
-              No sent connection requests.{" "}
-              <Link to={"/search"}>Search for companies</Link>
+              {t("manageconnections.sentRequests.empty")}{" "}
+              <Link to={"/search"}>
+                {t("manageconnections.sentRequests.searchLink")}
+              </Link>
             </p>
           )}
         </Box>
         <Box>
-          <h2>Received Connection Requests</h2>
+          <h2>{t("manageconnections.receivedRequests.title")}</h2>
           {connectionsData.received.length > 0 ? (
             <>
               {connectionsData.received.map((request) => (
@@ -179,8 +191,10 @@ const ManageConnections: React.FC = () => {
                         {request.companyName}
                       </Link>
                       <p className="biline">
-                        Status: {request.status} | Received on{" "}
-                        {formatDate(new Date(request.createdAt))}
+                        {t("manageconnections.receivedRequests.status", {
+                          status: request.status,
+                          date: formatDate(new Date(request.createdAt)),
+                        })}
                       </p>
                     </Box>
                     <Box
@@ -192,7 +206,7 @@ const ManageConnections: React.FC = () => {
                       }}
                     >
                       <Button onClick={() => handleAccept(request.id)}>
-                        Accept request
+                        {t("manageconnections.receivedRequests.accept")}
                       </Button>
                     </Box>
                   </Flex>
@@ -201,7 +215,7 @@ const ManageConnections: React.FC = () => {
             </>
           ) : (
             <p style={{ marginBottom: "20px" }}>
-              No received connection requests.
+              {t("manageconnections.receivedRequests.empty")}
             </p>
           )}
         </Box>

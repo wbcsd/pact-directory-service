@@ -6,6 +6,7 @@ import StatusBadge from "../components/StatusBadge";
 import EmptyImage from "../assets/pact-logistics-center-8.png";
 import { ProfileData } from "../contexts/AuthContext";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { useTranslation } from "react-i18next";
 import "./ConformanceTestRuns.css";
 
 interface TestRun {
@@ -43,6 +44,8 @@ const ConformanceTestRunsGrid: React.FC<Props> = ({
   error,
   isLoading,
 }) => {
+  const { t } = useTranslation();
+
   if (isLoading) {
     return (
       <Box className="loadingBox">
@@ -54,7 +57,7 @@ const ConformanceTestRunsGrid: React.FC<Props> = ({
   if (error) {
     return (
       <Box className="errorBox">
-        <h2>Conformance Test Runs</h2>
+        <h2>{t("conformancetestrunsgrid.title")}</h2>
         <Callout.Root color="red" size="2">
           <Callout.Icon>
             <ExclamationTriangleIcon />
@@ -63,7 +66,7 @@ const ConformanceTestRunsGrid: React.FC<Props> = ({
         </Callout.Root>
         <Box mt="4">
           <Button onClick={() => navigate("/conformance-testing")}>
-            Back to Testing Form
+            {t("conformancetestrunsgrid.actions.backToForm")}
           </Button>
         </Box>
       </Box>
@@ -73,13 +76,11 @@ const ConformanceTestRunsGrid: React.FC<Props> = ({
   if (testRuns.length === 0) {
     return (
       <div className="emptyState">
-        <img src={EmptyImage} alt="No tests yet" />
-        <h2>You currently have no tests</h2>
-        <p className="emptyHint">
-          Start automated testing to ensure a PACT conformant solution
-        </p>
+        <img src={EmptyImage} alt={t("conformancetestrunsgrid.empty.alt")} />
+        <h2>{t("conformancetestrunsgrid.empty.title")}</h2>
+        <p className="emptyHint">{t("conformancetestrunsgrid.empty.hint")}</p>
         <Button onClick={() => navigate("/conformance-testing")}>
-          Run Tests
+          {t("conformancetestrunsgrid.actions.runTests")}
         </Button>
       </div>
     );
@@ -90,12 +91,16 @@ const ConformanceTestRunsGrid: React.FC<Props> = ({
       <table className="test-runs-table">
         <thead>
           <tr>
-            <th>Test Run ID</th>
-            {profileData?.role === "administrator" && <th>Company</th>}
-            {profileData?.role === "administrator" && <th>Email</th>}
-            <th>Status</th>
-            <th>Version</th>
-            <th>Run Date/Time CET</th>
+            <th>{t("conformancetestrunsgrid.table.testRunId")}</th>
+            {profileData?.role === "administrator" && (
+              <th>{t("conformancetestrunsgrid.table.company")}</th>
+            )}
+            {profileData?.role === "administrator" && (
+              <th>{t("conformancetestrunsgrid.table.email")}</th>
+            )}
+            <th>{t("conformancetestrunsgrid.table.status")}</th>
+            <th>{t("conformancetestrunsgrid.table.version")}</th>
+            <th>{t("conformancetestrunsgrid.table.runDate")}</th>
           </tr>
         </thead>
         <tbody>
