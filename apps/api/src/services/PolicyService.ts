@@ -1,3 +1,5 @@
+import express from "express";
+
 enum roles {
   siteadmin = "siteadmin",
   orgadmin = "orgadmin",
@@ -45,6 +47,26 @@ const checkAllowedPolicy = (role: roles, policy: allowedPolicies[]) => {
   return policy.every((p) => allowed.includes(p));
 };
 
+function action(
+  routeHandler: (req: express.Request, res: express.Response) => Promise<void>,
+  actionSet: allowedPolicies[]
+) {
+  return (req: express.Request, res: express.Response) => {
+    const role = req.headers["x-user-role"] as string;
+    if (!role) {
+      res.status(401).json({ error: "Unauthorized: No role provided" });
+      return;
+    }
+
+    if (!checkAllowedPolicy(role as roles, actionSet)) {
+      res.status(403).json({ error: "Forbidden: Insufficient permissions" });
+      return;
+    }
+
+    return routeHandler(req, res);
+  };
+}
+
 const policies = { testruns, org, site };
 
-export { roles, policies, checkAllowedPolicy, type allowedPolicies };
+export { roles, policies, checkAllowedPolicy, type allowedPolicies, action };
