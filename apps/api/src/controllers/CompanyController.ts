@@ -1,8 +1,8 @@
 import { Response, Request, NextFunction } from "express";
 import { Services } from "@src/services";
 
-/* Controller for company-related routes. Each function only 
- * interacts with the corresponding service methods and handles 
+/* Controller for company-related routes. Each function only
+ * interacts with the corresponding service methods and handles
  * request/response mapping. The controllers will not contain any
  * logic and will simply call the service methods. Mapping
  * of exceptions to HTTP errors is handled in the middleware.
@@ -32,7 +32,11 @@ export async function login(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-export async function myProfile(req: Request, res: Response, next: NextFunction) {
+export async function myProfile(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const services: Services = req.app.locals.services;
     const user = res.locals.user;
@@ -46,7 +50,11 @@ export async function myProfile(req: Request, res: Response, next: NextFunction)
   }
 }
 
-export async function getCompany(req: Request, res: Response, next: NextFunction) {
+export async function getCompany(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const services: Services = req.app.locals.services;
     const user = res.locals.user;
@@ -61,7 +69,11 @@ export async function getCompany(req: Request, res: Response, next: NextFunction
   }
 }
 
-export async function searchCompanies(req: Request, res: Response, next: NextFunction) {
+export async function searchCompanies(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const services: Services = req.app.locals.services;
     const user = res.locals.user;
@@ -79,7 +91,11 @@ export async function searchCompanies(req: Request, res: Response, next: NextFun
   }
 }
 
-export async function createConnectionRequest(req: Request, res: Response, next: NextFunction) {
+export async function createConnectionRequest(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const services: Services = req.app.locals.services;
     const user = res.locals.user;
@@ -96,7 +112,11 @@ export async function createConnectionRequest(req: Request, res: Response, next:
   }
 }
 
-export async function connectionRequestAction(req: Request, res: Response, next: NextFunction) {
+export async function connectionRequestAction(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const services: Services = req.app.locals.services;
     const user = res.locals.user;
@@ -113,7 +133,11 @@ export async function connectionRequestAction(req: Request, res: Response, next:
   }
 }
 
-export async function forgotPassword(req: Request, res: Response, next: NextFunction) {
+export async function forgotPassword(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const services: Services = req.app.locals.services;
 
@@ -125,7 +149,11 @@ export async function forgotPassword(req: Request, res: Response, next: NextFunc
   }
 }
 
-export async function resetPassword(req: Request, res: Response, next: NextFunction) {
+export async function resetPassword(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const services: Services = req.app.locals.services;
 
@@ -137,7 +165,11 @@ export async function resetPassword(req: Request, res: Response, next: NextFunct
   }
 }
 
-export async function verifyResetToken(req: Request, res: Response, next: NextFunction) {
+export async function verifyResetToken(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const services: Services = req.app.locals.services;
     const { token } = req.params;

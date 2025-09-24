@@ -1,6 +1,8 @@
 import { Kysely, sql } from "kysely";
 
 export async function up(db: Kysely<any>): Promise<void> {
+  await db.schema.dropTable("users").ifExists().execute();
+
   // Create organizations table if not exists
   await db.schema
     .createTable("organizations")
@@ -20,7 +22,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   // Create users table if not exists
   await db.schema
-    .createTable("org_users")
+    .createTable("users")
     .ifNotExists()
     .addColumn("user_id", "serial", (col) => col.primaryKey())
     .addColumn("org_id", "integer", (col) => col.notNull())

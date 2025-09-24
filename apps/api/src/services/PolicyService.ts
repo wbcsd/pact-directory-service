@@ -8,19 +8,11 @@ interface Policy {
 }
 
 class PolicyService {
-  private cache = new Map<number, { policies: Policy[]; expiresAt: number }>();
-  private ttlMs = 5 * 60 * 1000; // 5 minutes
+  private userPolicies = new Map<number, Policy[]>();
 
   constructor(private db: Kysely<Database>) {}
 
-  public async getPoliciesByUserId(userId: number): Promise<Policy[]> {
-    const cached = this.cache.get(userId);
-    const now = Date.now();
-
-    if (cached && cached.expiresAt > now) {
-      return cached.policies;
-    }
-
+  private async getPoliciesByUserId(userId: number): Promise<Policy[]> {
     const rows = await this.db
       .selectFrom("org_users")
       .innerJoin("org_roles", "org_users.roleId", "org_roles.roleId")
@@ -39,12 +31,26 @@ class PolicyService {
       action: row.actionName,
     }));
 
-    this.cache.set(userId, { policies, expiresAt: now + this.ttlMs });
     return policies;
   }
 
-  public invalidate(userId: number) {
-    this.cache.delete(userId);
+  public async cachePolicies(userId: number) {
+    this.invalidateCachedPolicies(userId);
+    const policies = await this.getPoliciesByUserId(userId);
+    this.userPolicies.set(userId, policies);
+  }
+
+  public async getCachedPolicies(userId: number): Promise<Policy[]> {
+    if (!this.userPolicies.has(userId)) {
+      await this.cachePolicies(userId);
+    }
+
+    // if there are no policies, it means the user has no policies assigned
+    return this.userPolicies.get(userId) ?? [];
+  }
+
+  private invalidateCachedPolicies(userId: number) {
+    this.userPolicies.delete(userId);
   }
 }
 

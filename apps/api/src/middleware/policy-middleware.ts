@@ -1,13 +1,13 @@
 import policyService from "@src/services/PolicyService";
+import logger from "@src/util/logger";
 import { Request, Response, NextFunction } from "express";
 
 export default function checkPoliciesMiddleware(
   allowedPolicies: { resource: string; action: string }[]
 ) {
   return async (req: Request, res: Response, next: NextFunction) => {
-    const email = req.headers["x-user-email"] as string;
-    if (!email) {
-      res.status(401).json({ error: "Unauthorized: No user email provided" });
+    if (!res.locals.user || !(res.locals.user as { userId: number }).userId) {
+      res.status(401).json({ error: "Unauthorized" });
       return;
     }
 
@@ -24,7 +24,7 @@ export default function checkPoliciesMiddleware(
 
       next();
     } catch (error) {
-      console.error("Error fetching policies:", error);
+      logger.error("Error fetching policies:", error);
       res.status(500).json({ error: "Internal Server Error" });
     }
   };
@@ -34,7 +34,7 @@ async function checkPolicies(
   userId: number,
   allowedPolicies: { resource: string; action: string }[]
 ): Promise<boolean> {
-  const policies = await policyService.getPoliciesByUserId(userId);
+  const policies = await policyService.getCachedPolicies(userId);
   const policySet = new Set(policies.map((p) => `${p.resource}:${p.action}`));
   for (const policy of allowedPolicies) {
     if (!policySet.has(`${policy.resource}:${policy.action}`)) {
