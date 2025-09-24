@@ -14,7 +14,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("network_key", "text")
     .addColumn("org_identifier_description", "text")
     .addColumn("created_at", "timestamp", (col) =>
-      col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`)
+      col.defaultTo(sql`CURRENT_TIMESTAMP`)
     )
     .execute();
 
@@ -28,7 +28,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("user_email", "varchar(255)", (col) => col.notNull().unique())
     .addColumn("role_id", "integer", (col) => col.notNull())
     .addColumn("created_at", "timestamp", (col) =>
-      col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`)
+      col.defaultTo(sql`CURRENT_TIMESTAMP`)
     )
     .execute();
 
@@ -39,7 +39,38 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn("role_id", "serial", (col) => col.primaryKey())
     .addColumn("role_name", "varchar(255)", (col) => col.notNull())
     .addColumn("created_at", "timestamp", (col) =>
-      col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`)
+      col.defaultTo(sql`CURRENT_TIMESTAMP`)
     )
     .execute();
+
+  await db.schema
+    .createTable("org_policies")
+    .ifNotExists()
+    .addColumn("policy_id", "serial", (col) => col.primaryKey())
+    .addColumn("resource_name", "varchar(255)", (col) => col.notNull())
+    .addColumn("resource_action", "varchar(255)", (col) => col.notNull())
+    .addColumn("policy_description", "text")
+    .addColumn("created_at", "timestamp", (col) =>
+      col.defaultTo(sql`CURRENT_TIMESTAMP`)
+    )
+    .execute();
+
+  await db.schema
+    .createTable("role_policies")
+    .ifNotExists()
+    .addColumn("role_policy_id", "serial", (col) => col.primaryKey())
+    .addColumn("role_id", "integer", (col) => col.notNull())
+    .addColumn("policy_id", "integer", (col) => col.notNull())
+    .addColumn("created_at", "timestamp", (col) =>
+      col.defaultTo(sql`CURRENT_TIMESTAMP`)
+    )
+    .execute();
+}
+
+export async function down(db: Kysely<any>): Promise<void> {
+  await db.schema.dropTable("role_policies").ifExists().execute();
+  await db.schema.dropTable("org_policies").ifExists().execute();
+  await db.schema.dropTable("org_roles").ifExists().execute();
+  await db.schema.dropTable("org_users").ifExists().execute();
+  await db.schema.dropTable("organizations").ifExists().execute();
 }
