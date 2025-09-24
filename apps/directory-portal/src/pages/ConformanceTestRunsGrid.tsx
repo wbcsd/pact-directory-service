@@ -89,6 +89,7 @@ const ConformanceTestRunsGrid: React.FC<Props> = ({
 
   return (
     <DataTable
+      idColumnName="testId"
       data={testRuns}
       columns={columns}
       isLoading={isLoading}

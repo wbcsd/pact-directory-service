@@ -12,7 +12,7 @@ export interface Column<T> {
 }
 
 interface TableProps<T> {
-  idColumnName: string;
+  idColumnName: keyof T;
   data: T[];
   columns: Column<T>[];
   isLoading?: boolean;
@@ -25,7 +25,7 @@ interface TableProps<T> {
   };
 }
 
-function DataTable<T extends Record<string, unknown>>({
+function DataTable<T extends object>({
   data,
   columns,
   isLoading = false,
