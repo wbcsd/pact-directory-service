@@ -22,7 +22,7 @@ export interface OrganizationsTable {
   clientSecret: string | null;
   networkKey: string | null;
   orgIdentifierDescription: string | null;
-  createdAt: Date;
+  createdAt?: Date;
 }
 
 export interface OrgUsersTable {
@@ -31,13 +31,13 @@ export interface OrgUsersTable {
   userName: string;
   userEmail: string;
   roleId: number;
-  createdAt: Date;
+  createdAt?: Date;
 }
 
 export interface OrgRolesTable {
   roleId: Generated<number>;
   roleName: string;
-  createdAt: Date;
+  createdAt?: Date;
 }
 
 export interface OrgPoliciesTable {
@@ -45,14 +45,14 @@ export interface OrgPoliciesTable {
   resourceName: string;
   actionName: string;
   policyDescription: string;
-  createdAt: Date;
+  createdAt?: Date;
 }
 
 export interface RolePoliciesTable {
   rolePolicyId: Generated<number>;
   roleId: number;
   policyId: number;
-  createdAt: Date;
+  createdAt?: Date;
 }
 
 export interface CompanyTable {

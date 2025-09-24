@@ -35,7 +35,7 @@ async function execute() {
   }
 }
 
-execute().catch((err) => {
+execute().catch((err: unknown) => {
   console.error("Error generating policies:", err);
   process.exit(1);
 });

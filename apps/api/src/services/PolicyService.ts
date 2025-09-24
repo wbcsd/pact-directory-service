@@ -1,86 +1,26 @@
-// import express from "express";
-
 import { db } from "@src/database/db";
 import { Database } from "@src/database/types";
 import { Kysely } from "kysely";
 
-// enum roles {
-//   siteadmin = "siteadmin",
-//   orgadmin = "orgadmin",
-//   orguser = "orguser",
-// }
-
-// enum testruns {
-//   listTestRuns = "listTestRuns",
-//   getTestRunById = "getTestRunById",
-//   createTestRun = "createTestRun",
-// }
-
-// enum org {
-//   listUsers = "listUsers",
-//   getUserById = "getUserById",
-//   updateUser = "updateUser",
-// }
-
-// enum site {
-//   listAllUsers = "listAllUsers",
-// }
-
-// type allowedPolicies = testruns | org | site;
-
-// const policiesMap: Record<roles, allowedPolicies[]> = {
-//   siteadmin: [
-//     testruns.listTestRuns,
-//     testruns.getTestRunById,
-//     testruns.createTestRun,
-//     org.listUsers,
-//     org.getUserById,
-//     org.updateUser,
-//     site.listAllUsers,
-//   ],
-//   orgadmin: [org.listUsers, org.getUserById, org.updateUser],
-//   orguser: [
-//     testruns.listTestRuns,
-//     testruns.getTestRunById,
-//     testruns.createTestRun,
-//   ],
-// };
-
-// const checkAllowedPolicy = (role: roles, policy: allowedPolicies[]) => {
-//   const allowed = policiesMap[role];
-//   return policy.every((p) => allowed.includes(p));
-// };
-
-// function action(
-//   routeHandler: (req: express.Request, res: express.Response) => Promise<void>,
-//   actionSet: allowedPolicies[]
-// ) {
-//   return (req: express.Request, res: express.Response) => {
-//     const role = req.headers["x-user-role"] as string;
-//     if (!role) {
-//       res.status(401).json({ error: "Unauthorized: No role provided" });
-//       return;
-//     }
-
-//     if (!checkAllowedPolicy(role as roles, actionSet)) {
-//       res.status(403).json({ error: "Forbidden: Insufficient permissions" });
-//       return;
-//     }
-
-//     return routeHandler(req, res);
-//   };
-// }
-
-// const policies = { testruns, org, site };
-
-// export { roles, policies, checkAllowedPolicy, type allowedPolicies, action };
+interface Policy {
+  resource: string;
+  action: string;
+}
 
 class PolicyService {
+  private cache = new Map<number, { policies: Policy[]; expiresAt: number }>();
+  private ttlMs = 5 * 60 * 1000; // 5 minutes
+
   constructor(private db: Kysely<Database>) {}
 
-  private async getPoliciesForUserEmail(
-    email: string
-  ): Promise<{ resource: string; action: string }[]> {
+  public async getPoliciesByUserId(userId: number): Promise<Policy[]> {
+    const cached = this.cache.get(userId);
+    const now = Date.now();
+
+    if (cached && cached.expiresAt > now) {
+      return cached.policies;
+    }
+
     const rows = await this.db
       .selectFrom("org_users")
       .innerJoin("org_roles", "org_users.roleId", "org_roles.roleId")
@@ -90,15 +30,21 @@ class PolicyService {
         "role_policies.policyId",
         "org_policies.policyId"
       )
-      .where("org_users.userEmail", "=", email)
-      .select("org_policies.resourceName")
-      .select("org_policies.actionName")
+      .where("org_users.userId", "=", userId)
+      .select(["org_policies.resourceName", "org_policies.actionName"])
       .execute();
 
-    return rows.map((row) => ({
+    const policies = rows.map((row) => ({
       resource: row.resourceName,
       action: row.actionName,
     }));
+
+    this.cache.set(userId, { policies, expiresAt: now + this.ttlMs });
+    return policies;
+  }
+
+  public invalidate(userId: number) {
+    this.cache.delete(userId);
   }
 }
 
