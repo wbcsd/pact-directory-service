@@ -1,25 +1,30 @@
 import morgan from "morgan";
 import helmet from "helmet";
 import express from "express";
-
-import config from "@src/common/config";
-import { loggerMiddleware } from "@src/util/logger";
-
 import "express-async-errors";
 import cors from "cors";
 
+import config from "@src/common/config";
+import { db } from "./database/db";
+import { errorHandler } from "./middleware/error-handler";
+import { ServiceContainer } from "./services";
+import { loggerMiddleware } from "@src/util/logger";
 import BaseRouter from "@src/routes";
 
 const app = express();
 
-// **** Setup **** //
+// Initialize service container
+const services = new ServiceContainer(db);
+
+// Make services available to routes via app.locals
+app.locals.services = services;
 
 // Basic middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Pino logging middleware
+// Logging
 app.use(loggerMiddleware);
 
 // Show routes called in console during development
@@ -46,5 +51,7 @@ app.get("/health-check", (_, res) => {
 // Add API routes
 app.use("/api", BaseRouter);
 
+// Error handler middleware
+app.use(errorHandler);
 
 export default app;
