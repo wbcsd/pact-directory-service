@@ -21,6 +21,11 @@ async function execute() {
       action: "createTestRun",
       description: "Org User/Admin",
     },
+    {
+      resource: "testruns",
+      action: "getTestResults",
+      description: "Org User/Admin",
+    },
   ];
 
   for (const policy of policies) {

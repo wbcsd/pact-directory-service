@@ -1,6 +1,5 @@
 import { Response, Request, NextFunction } from "express";
 import { Services } from "@src/services";
-import { RequirePolicies } from "@src/decorators/RequirePolicies";
 
 /* Controller for company-related routes. Each function only
  * interacts with the corresponding service methods and handles
@@ -10,7 +9,6 @@ import { RequirePolicies } from "@src/decorators/RequirePolicies";
  */
 
 export class CompanyController {
-  @RequirePolicies({ policies: [] })
   async signup(req: Request, res: Response, next: NextFunction) {
     try {
       const services: Services = req.app.locals.services;

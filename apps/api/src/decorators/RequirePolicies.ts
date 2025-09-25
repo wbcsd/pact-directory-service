@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import { RequestHandler } from "express";
 
 const POLICIES_KEY = Symbol("policies");
 
@@ -13,6 +14,8 @@ export function RequirePolicies({ policies }: { policies: string[] }) {
   };
 }
 
-export function getHandlerPolicies(handler: Function): string[] | undefined {
-  return Reflect.getMetadata(POLICIES_KEY, handler);
+export function getHandlerPolicies(
+  handler: RequestHandler
+): string[] | undefined {
+  return Reflect.getMetadata(POLICIES_KEY, handler) as string[] | undefined;
 }
