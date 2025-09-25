@@ -6,6 +6,7 @@ import {
   DoubleArrowRightIcon,
 } from "@radix-ui/react-icons";
 import SideNav from "../components/SideNav";
+import DataTable, { Column } from "../components/DataTable";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useConformanceTesting } from "../components/ConformanceTesting";
 import { useAuth } from "../contexts/AuthContext";
@@ -230,6 +231,58 @@ const ConformanceTestResult: React.FC = () => {
     }, 0);
   };
 
+  const columns: Column<TestCase>[] = [
+    {
+      key: "name",
+      header: "Test Case",
+      render: (test) => (
+        <span
+          onClick={() => selectTestAndScroll(test)}
+          className={`clickable ${
+            selectedTest?.testKey === test.testKey ? "selected" : ""
+          }`}
+        >
+          {test.name}
+        </span>
+      ),
+    },
+    ...(!selectedTest
+      ? [
+          {
+            key: "status",
+            header: "Status",
+            render: (test: TestCase) => (
+              <Badge color={getStatusColor(test)}>{getStatusText(test)}</Badge>
+            ),
+          },
+          {
+            key: "mandatory",
+            header: "Mandatory Test?",
+            render: (test: TestCase) => test.mandatory,
+          },
+          {
+            key: "actions",
+            header: "",
+            render: (test: TestCase) => (
+              <Button
+                onClick={() => selectTestAndScroll(test)}
+                style={{
+                  background: "transparent",
+                  color: "#0A0552",
+                  border: "1px solid #EBF0F5",
+                  padding: "8px 12px",
+                  minHeight: "0",
+                }}
+              >
+                <CodeIcon />
+                Details
+              </Button>
+            ),
+          },
+        ]
+      : []),
+  ];
+
   return (
     <>
       <aside className="sidebar">
@@ -342,66 +395,19 @@ const ConformanceTestResult: React.FC = () => {
               </Box>
             </div>
 
-            <div className="table-container">
-              <table className="test-runs-table">
-                <thead>
-                  <tr>
-                    <th style={{ width: "60%" }}>Test Case</th>
-                    {!selectedTest && (
-                      <>
-                        <th>Status</th>
-                        <th>Mandatory Test?</th>
-                        <th></th>
-                      </>
-                    )}
-                  </tr>
-                </thead>
-                <tbody>
-                  {testCases.sort(sortTestCases).map((test) => (
-                    <tr key={test.testKey}>
-                      <td
-                        onClick={() => selectTestAndScroll(test)}
-                        className={`clickable ${
-                          selectedTest?.testKey === test.testKey
-                            ? "selected"
-                            : ""
-                        }`}
-                      >
-                        {test.name}
-                      </td>
-                      {!selectedTest && (
-                        <>
-                          <td>
-                            <Badge color={getStatusColor(test)}>
-                              {getStatusText(test)}
-                            </Badge>
-                          </td>
-                          <td>{test.mandatory}</td>
-                          <td style={{ textAlign: "right" }}>
-                            <Button
-                              onClick={() => selectTestAndScroll(test)}
-                              style={{
-                                background: "transparent",
-                                color: "#0A0552",
-                                border: "1px solid #EBF0F5",
-                                padding: "8px 12px",
-                                minHeight: "0",
-                              }}
-                            >
-                              <CodeIcon />
-                              Details
-                            </Button>
-                          </td>
-                        </>
-                      )}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {testCases.length === 0 && (
-                <div className="no-tests">No test cases available.</div>
-              )}
-            </div>
+            <DataTable<TestCase>
+              idColumnName="testKey"
+              data={testCases.sort(sortTestCases)}
+              columns={columns}
+              isLoading={isLoading}
+              error={error}
+              emptyState={{
+                title: "No test cases available",
+              }}
+            />
+            {testCases.length === 0 && (
+              <div className="no-tests">No test cases available.</div>
+            )}
           </main>
 
           {selectedTest && (

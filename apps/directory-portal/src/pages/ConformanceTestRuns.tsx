@@ -154,7 +154,7 @@ const ConformanceTestRuns: React.FC = () => {
         <SideNav />
       </aside>
       <main className="main">
-        {Boolean(isLoading || error) === false && gridHeader}
+        {Boolean(error) === false && gridHeader}
         {testRuns.length === 0 && searchTerm.length > 0 ? (
           <div className="emptyState">
             <img src={EmptyImage} alt="No results" />

@@ -338,7 +338,7 @@ tbody tr {
   background: white;
 }
 .status {
-  padding: 0.25rem 0.5rem;
+  padding: 0 0.5rem;
   border-radius: 4px;
   font-weight: 600;
   font-size: 0.75rem;
