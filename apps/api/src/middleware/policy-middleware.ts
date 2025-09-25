@@ -1,8 +1,8 @@
 // middleware/checkPolicies.ts
-import { Request, Response, NextFunction, RequestHandler } from "express";
-import logger from "@src/util/logger";
-import { getHandlerPolicies } from "@src/decorators/RequirePolicies";
-import type { PolicyService } from "@src/services/policy-service";
+import { Request, Response, NextFunction, RequestHandler } from 'express';
+import logger from '@src/util/logger';
+import { getHandlerPolicies } from '@src/decorators/RequirePolicies';
+import type { PolicyService } from '@src/services/policy-service';
 
 export function checkPoliciesMiddleware(
   handler: RequestHandler
@@ -18,7 +18,7 @@ export function checkPoliciesMiddleware(
     const user = res.locals.user as { userId?: number };
 
     if (!user?.userId) {
-      res.status(401).json({ error: "Unauthorized" });
+      res.status(401).json({ error: 'Unauthorized' });
       return;
     }
 
@@ -33,14 +33,14 @@ export function checkPoliciesMiddleware(
       const isAllowed = allowedPolicies.every((p) => policySet.has(p));
 
       if (!isAllowed) {
-        res.status(403).json({ error: "Forbidden: Insufficient permissions" });
+        res.status(403).json({ error: 'Forbidden: Insufficient permissions' });
         return;
       }
 
       return handler(req, res, next);
     } catch (error) {
-      logger.error("Error checking policies:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+      logger.error('Error checking policies:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   };
 }

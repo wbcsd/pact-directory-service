@@ -1,6 +1,6 @@
-import { Response, Request, NextFunction } from "express";
-import { Services } from "@src/services";
-import { RequirePolicies } from "@src/decorators/RequirePolicies";
+import { Response, Request, NextFunction } from 'express';
+import { Services } from '@src/services';
+import { RequirePolicies } from '@src/decorators/RequirePolicies';
 
 /* Controller for test run proxy routes. Each function only
  * interacts with the corresponding service methods and handles
@@ -10,7 +10,7 @@ import { RequirePolicies } from "@src/decorators/RequirePolicies";
  */
 
 class ProxyController {
-  @RequirePolicies({ policies: ["testruns:createTestRun"] })
+  @RequirePolicies({ policies: ['testruns:createTestRun'] })
   async createTestRun(req: Request, res: Response, next: NextFunction) {
     try {
       const services: Services = req.app.locals.services;
@@ -29,7 +29,7 @@ class ProxyController {
     }
   }
 
-  @RequirePolicies({ policies: ["testruns:getTestResults"] })
+  @RequirePolicies({ policies: ['testruns:getTestResults'] })
   async getTestResults(req: Request, res: Response, next: NextFunction) {
     try {
       const services: Services = req.app.locals.services;
@@ -46,7 +46,7 @@ class ProxyController {
 endpoint: /test-runs?query={query}&adminEmail={adminEmail}&limit={limit}
 */
 
-  @RequirePolicies({ policies: ["testruns:listTestRuns"] })
+  @RequirePolicies({ policies: ['testruns:listTestRuns'] })
   async listTestRuns(req: Request, res: Response, next: NextFunction) {
     try {
       const services: Services = req.app.locals.services;

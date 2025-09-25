@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from "express";
-import { Services } from "../services";
+import { Request, Response, NextFunction } from 'express';
+import { Services } from '../services';
 
 /* Controller for obtaining authentication token
  */

@@ -1,5 +1,5 @@
-import { Response, Request, NextFunction } from "express";
-import { Services } from "@src/services";
+import { Response, Request, NextFunction } from 'express';
+import { Services } from '@src/services';
 
 /* Controller for company-related routes. Each function only
  * interacts with the corresponding service methods and handles
