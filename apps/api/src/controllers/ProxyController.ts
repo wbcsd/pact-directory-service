@@ -1,251 +1,61 @@
-import { Response, Request } from "express";
-import logger from "@src/util/logger";
-import HttpStatusCodes from "@src/common/HttpStatusCodes";
-import { db } from "@src/database/db";
-import config from "@src/common/config";
+import { Response, Request, NextFunction } from "express";
+import { Services } from "@src/services";
 
-const DEFAULT_PAGE_SIZE = 10;
+/* Controller for test run proxy routes. Each function only 
+ * interacts with the corresponding service methods and handles 
+ * request/response mapping. The controllers will not contain any
+ * logic and will simply call the service methods. Mapping
+ * of exceptions to HTTP errors is handled in the middleware.
+ */
 
-async function runTestCases(req: Request, res: Response) {
-  const { companyId, userId } = res.locals.user as {
-    companyId: string;
-    userId: string;
-  };
-
+export async function createTestRun(req: Request, res: Response, next: NextFunction) {
   try {
-    // Get user and company data using Kysely
-    const user = await db
-      .selectFrom("users")
-      .selectAll()
-      .where("id", "=", Number(userId))
-      .where("companyId", "=", Number(companyId))
-      .executeTakeFirst();
-
-    const company = await db
-      .selectFrom("companies")
-      .selectAll()
-      .where("id", "=", Number(companyId))
-      .executeTakeFirst();
-
-    if (!user || !company) {
-      res
-        .status(HttpStatusCodes.NOT_FOUND)
-        .json({ error: "User or company not found." });
-      return;
-    }
-
-    const {
-      apiUrl,
-      clientId,
-      clientSecret,
-      version,
-      authBaseUrl,
-      scope,
-      resource,
-      audience,
-    } = req.body as {
-      clientId: string;
-      clientSecret: string;
-      apiUrl: string;
-      version: string;
-      authBaseUrl?: string;
-      scope?: string;
-      resource?: string;
-      audience?: string;
+    const services: Services = req.app.locals.services;
+    const userContext = res.locals.user as {
+      companyId: string;
+      userId: string;
     };
 
-    const response = await fetch(
-      `${config.CONFORMANCE_API_INTERNAL}/testruns`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          clientId,
-          clientSecret,
-          baseUrl: apiUrl,
-          customAuthBaseUrl: authBaseUrl,
-          version,
-          companyName: company.companyName,
-          companyIdentifier: company.companyIdentifier,
-          adminEmail: user.email,
-          adminName: user.fullName,
-          scope: scope,
-          resource: resource,
-          audience: audience,
-        }),
-      }
-    );
-
-    const data: unknown = await response.json();
-    res.status(HttpStatusCodes.OK).json(data);
+    const result = await services.testRun.createTestRun(req.body, userContext);
+    res.status(200).json(result);
   } catch (error) {
-    logger.error("runTestCases error", error);
-    res
-      .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ error: "Failed to execute test cases." });
+    next(error);
   }
 }
 
-async function getTestResults(req: Request, res: Response) {
-  const { testRunId } = req.query;
-
-  if (!testRunId) {
-    res
-      .status(HttpStatusCodes.BAD_REQUEST)
-      .json({ error: "Missing 'testRunId' query parameter." });
-    return;
-  }
-
+export async function getTestResults(req: Request, res: Response, next: NextFunction) {
   try {
-    const url = new URL(
-      `${config.CONFORMANCE_API_INTERNAL}/testruns/${testRunId as string}`
-    );
+    const services: Services = req.app.locals.services;
+    const { testRunId } = req.query;
 
-    const response = await fetch(url.toString(), {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const data: unknown = await response.json();
-    res.status(HttpStatusCodes.OK).json(data);
+    const result = await services.testRun.getTestResults(testRunId as string);
+    res.status(200).json(result);
   } catch (error) {
-    logger.error("getTestResults error", error);
-    res
-      .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ error: "Failed to fetch test results." });
+    next(error);
   }
 }
 
 /*
 endpoint: /test-runs?query={query}&adminEmail={adminEmail}&limit={limit}
 */
-async function searchTestRuns(req: Request, res: Response) {
-  const { query, limit } = req.query;
-  if (!query) {
-    res
-      .status(HttpStatusCodes.BAD_REQUEST)
-      .json({ error: "Missing 'query' parameter." });
-    return;
-  }
 
-  const { userId } = res.locals.user as {
-    userId: string;
-  };
-
+export async function listTestRuns(req: Request, res: Response, next: NextFunction) {
   try {
-    const url = new URL(`${config.CONFORMANCE_API_INTERNAL}/testruns`);
-    url.searchParams.append("query", query as string);
-
-    const { email, role } = await getUserEmailAndRole(userId);
-
-    if (!email) {
-      res.status(HttpStatusCodes.NOT_FOUND).json({ error: "User not found." });
-      return;
-    }
-
-    if (role !== "administrator") {
-      url.searchParams.append("adminEmail", email);
-    }
-
-    if (limit) {
-      url.searchParams.append("limit", limit as string);
-    }
-
-    const response = await fetch(url.toString(), {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const data: unknown = await response.json();
-    res.status(HttpStatusCodes.OK).json(data);
-  } catch (error) {
-    logger.error("searchTestRuns error", error);
-    res
-      .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ error: "Failed to search test runs." });
-  }
-}
-
-async function getOrSearchTestRuns(req: Request, res: Response) {
-  const { query } = req.query;
-  if (query) {
-    await searchTestRuns(req, res);
-  } else {
-    await getRecentTestRuns(req, res);
-  }
-}
-
-async function getRecentTestRuns(req: Request, res: Response) {
-  const { userId } = res.locals.user as {
-    userId: string;
-  };
-
-  try {
-    const { email, role } = await getUserEmailAndRole(userId);
-
-    if (!email) {
-      res.status(HttpStatusCodes.NOT_FOUND).json({ error: "User not found." });
-      return;
-    }
-
-    const page = req.query.page ? Number(req.query.page) : 1;
-    const pageSize = req.query.pageSize
-      ? Number(req.query.pageSize)
-      : DEFAULT_PAGE_SIZE;
-
-    const url = new URL(`${config.CONFORMANCE_API_INTERNAL}/testruns`);
-
-    url.searchParams.append("page", page.toString());
-    url.searchParams.append("pageSize", pageSize.toString());
-
-    if (role !== "administrator") {
-      url.searchParams.append("adminEmail", email);
-    }
-
-    const response = await fetch(url.toString(), {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const data: unknown = await response.json();
-    res.status(HttpStatusCodes.OK).json(data);
-  } catch (error) {
-    logger.error("getRecentTestRuns error", error);
-    res
-      .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ error: "Failed to fetch recent test runs." });
-  }
-}
-
-async function getUserEmailAndRole(
-  userId: string
-): Promise<{ email: string; role: string }> {
-  try {
-    const user = await db
-      .selectFrom("users")
-      .select(["email", "role"])
-      .where("id", "=", Number(userId))
-      .executeTakeFirst();
-
-    return {
-      email: user?.email ?? "",
-      role: user?.role ?? "",
+    const services: Services = req.app.locals.services;
+    const { userId } = res.locals.user as {
+      userId: string;
     };
+
+    const queryParams = {
+      query: req.query.query as string | undefined,
+      page: req.query.page as string | undefined,
+      pageSize: req.query.pageSize as string | undefined,
+    };
+
+    const result = await services.testRun.listTestRuns(queryParams, userId);
+    res.status(200).json(result);
   } catch (error) {
-    logger.error("getUserEmailAndRole error", error);
-    throw error;
+    next(error);
   }
 }
 
-export default {
-  runTestCases,
-  getTestResults,
-  getOrSearchTestRuns,
-} as const;
