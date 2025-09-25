@@ -1,4 +1,4 @@
-import policyService from "@src/services/PolicyService";
+import type { PolicyService } from "@src/services/policy-service";
 import logger from "@src/util/logger";
 import { Request, Response, NextFunction } from "express";
 
@@ -6,6 +6,7 @@ export default function checkPoliciesMiddleware(
   allowedPolicies: { resource: string; action: string }[]
 ) {
   return async (req: Request, res: Response, next: NextFunction) => {
+    const { policyService } = req.app.locals.services;
     if (!res.locals.user || !(res.locals.user as { userId: number }).userId) {
       res.status(401).json({ error: "Unauthorized" });
       return;
@@ -14,7 +15,8 @@ export default function checkPoliciesMiddleware(
     try {
       const isAllowed = await checkPolicies(
         (res.locals.user as { userId: number }).userId,
-        allowedPolicies
+        allowedPolicies,
+        policyService
       );
 
       if (!isAllowed) {
@@ -32,7 +34,8 @@ export default function checkPoliciesMiddleware(
 
 async function checkPolicies(
   userId: number,
-  allowedPolicies: { resource: string; action: string }[]
+  allowedPolicies: { resource: string; action: string }[],
+  policyService: PolicyService
 ): Promise<boolean> {
   const policies = await policyService.getCachedPolicies(userId);
   const policySet = new Set(policies.map((p) => `${p.resource}:${p.action}`));

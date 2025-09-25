@@ -2,9 +2,8 @@ import { Generated } from "kysely";
 
 export interface Database {
   companies: CompanyTable;
-  users: UserTable;
   organizations: OrganizationsTable;
-  org_users: OrgUsersTable;
+  users: UsersTable;
   org_roles: OrgRolesTable;
   org_policies: OrgPoliciesTable;
   role_policies: RolePoliciesTable;
@@ -25,7 +24,7 @@ export interface OrganizationsTable {
   createdAt?: Date;
 }
 
-export interface OrgUsersTable {
+export interface UsersTable {
   userId: Generated<number>;
   orgId: number;
   userName: string;
@@ -64,15 +63,6 @@ export interface CompanyTable {
   clientId: string;
   clientSecret: string;
   networkKey: string;
-}
-
-export interface UserTable {
-  id: Generated<number>;
-  companyId: Generated<number>;
-  fullName: string;
-  email: string;
-  password: string;
-  role: "user" | "administrator";
 }
 
 export interface ConnectionRequestTable {
