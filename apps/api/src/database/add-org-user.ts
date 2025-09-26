@@ -22,19 +22,19 @@ async function main() {
   try {
     // Check if company exists
     let company = await db
-      .selectFrom('companies')
+      .selectFrom('organizations')
       .selectAll()
-      .where('companyIdentifier', '=', companyIdentifier)
+      .where('orgIdentifier', '=', companyIdentifier)
       .executeTakeFirst();
 
     if (!company) {
       // Insert company
       const inserted = await db
-        .insertInto('companies')
+        .insertInto('organizations')
         .values({
-          companyIdentifier,
-          companyName,
-          companyIdentifierDescription: '',
+          orgIdentifier: companyIdentifier,
+          orgName: companyName,
+          orgIdentifierDescription: '',
           solutionApiUrl: '',
           clientId: '',
           clientSecret: '',
@@ -52,7 +52,7 @@ async function main() {
     const userExists = await db
       .selectFrom('users')
       .selectAll()
-      .where('email', '=', email)
+      .where('userEmail', '=', email)
       .executeTakeFirst();
 
     if (userExists) {
@@ -67,11 +67,11 @@ async function main() {
     await db
       .insertInto('users')
       .values({
-        fullName,
-        email,
+        userName: fullName,
+        userEmail: email,
         password: hashedPassword,
-        role: role !== 'administrator' ? 'user' : role,
-        companyId: company.id,
+        roleId: 1,
+        orgId: company.id,
       })
       .executeTakeFirstOrThrow();
 

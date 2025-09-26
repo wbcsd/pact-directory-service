@@ -1,14 +1,14 @@
-import * as path from "path";
-import { Pool } from "pg";
-import { promises as fs } from "fs";
+import * as path from 'path';
+import { Pool } from 'pg';
+import { promises as fs } from 'fs';
 import {
   Kysely,
   Migrator,
   PostgresDialect,
   FileMigrationProvider,
-} from "kysely";
-import { Database } from "./types";
-import config from "../common/config";
+} from 'kysely';
+import { Database } from './types';
+import config from '../common/config';
 
 async function migrateToLatest() {
   const db = new Kysely<Database>({
@@ -27,7 +27,7 @@ async function migrateToLatest() {
         fs,
         path,
         // This needs to be an absolute path.
-        migrationFolder: path.join(__dirname, "migrations"),
+        migrationFolder: path.join(__dirname, 'migrations'),
       }),
     });
 
@@ -35,15 +35,15 @@ async function migrateToLatest() {
 
     results?.forEach((it) => {
       switch (it.status) {
-        case "Success":
+        case 'Success':
           console.info(
             `Migration "${it.migrationName}" was executed successfully.`
           );
           break;
-        case "Error":
+        case 'Error':
           console.error(`Migration "${it.migrationName}" failed to execute.`);
           break;
-        case "NotExecuted":
+        case 'NotExecuted':
           console.warn(
             `Migration "${it.migrationName}" was not executed due to earlier failures.`
           );
@@ -57,11 +57,11 @@ async function migrateToLatest() {
     });
 
     if (error) {
-      console.error("Failed to migrate", error);
+      console.error('Failed to migrate', error);
       process.exitCode = 1;
     }
   } catch (error) {
-    console.error("Unexpected error during migration", error);
+    console.error('Unexpected error during migration', error);
     process.exitCode = 1;
   } finally {
     // Ensure the database connection is always closed.
@@ -70,6 +70,6 @@ async function migrateToLatest() {
 }
 
 migrateToLatest().catch((error: unknown) => {
-  console.error("Fatal error during migration process:", error);
+  console.error('Fatal error during migration process:', error);
   process.exitCode = 1;
 });

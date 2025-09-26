@@ -1,9 +1,9 @@
-import { Generated } from "kysely";
+import { Generated } from 'kysely';
 
 export interface Database {
   companies: CompanyTable;
   organizations: OrganizationsTable;
-  users: UsersTable;
+  users: OrgUsersTable;
   org_roles: OrgRolesTable;
   org_policies: OrgPoliciesTable;
   role_policies: RolePoliciesTable;
@@ -24,10 +24,11 @@ export interface OrganizationsTable {
   createdAt?: Date;
 }
 
-export interface UsersTable {
+export interface OrgUsersTable {
   userId: Generated<number>;
   orgId: number;
   userName: string;
+  password: string;
   userEmail: string;
   roleId: number;
   createdAt?: Date;
@@ -69,7 +70,7 @@ export interface ConnectionRequestTable {
   id: Generated<number>;
   requestingCompanyId: number;
   requestedCompanyId: number;
-  status: "pending" | "accepted" | "rejected";
+  status: 'pending' | 'accepted' | 'rejected';
   createdAt: Date;
   updatedAt: Date;
 }
