@@ -1,5 +1,5 @@
-import bcrypt from "bcrypt";
-import { db } from "@src/database/db";
+import bcrypt from 'bcrypt';
+import { db } from '@src/database/db';
 
 async function main() {
   const [, , email, fullName, password, role, companyIdentifier, companyName] =
@@ -14,7 +14,7 @@ async function main() {
     !companyName
   ) {
     console.error(
-      "Usage: ts-node add-user.ts <email> <fullName> <password> <role> <companyIdentifier> <companyName>"
+      'Usage: ts-node add-user.ts <email> <fullName> <password> <role> <companyIdentifier> <companyName>'
     );
     process.exit(1);
   }
@@ -22,19 +22,19 @@ async function main() {
   try {
     // Check if company exists
     let company = await db
-      .selectFrom("companies")
+      .selectFrom("organizations")
       .selectAll()
-      .where("companyIdentifier", "=", companyIdentifier)
+      .where("uri", "=", companyIdentifier)
       .executeTakeFirst();
 
     if (!company) {
       // Insert company
       const inserted = await db
-        .insertInto("companies")
+        .insertInto("organizations")
         .values({
-          companyIdentifier,
-          companyName,
-          companyIdentifierDescription: "",
+          uri: companyIdentifier,
+          name: companyName,
+          description: "",
           solutionApiUrl: "",
           clientId: "",
           clientSecret: "",
@@ -50,13 +50,13 @@ async function main() {
 
     // Check if user exists
     const userExists = await db
-      .selectFrom("users")
+      .selectFrom('users')
       .selectAll()
-      .where("email", "=", email)
+      .where('email', '=', email)
       .executeTakeFirst();
 
     if (userExists) {
-      console.error("User with this email already exists.");
+      console.error('User with this email already exists.');
       process.exit(1);
     }
 
@@ -65,19 +65,19 @@ async function main() {
 
     // Insert user
     await db
-      .insertInto("users")
+      .insertInto('users')
       .values({
         fullName,
         email,
         password: hashedPassword,
         role: role !== "administrator" ? "user" : role,
-        companyId: company.id,
+        organizationId: company.id,
       })
       .executeTakeFirstOrThrow();
 
-    console.info(`User ${email} added to company ${companyName}.`);
+    console.info(`User ${email} added to organization ${companyName}.`);
   } catch (error) {
-    console.error("Error", error);
+    console.error('Error', error);
     // eslint-disable-next-line n/no-process-exit
     process.exit(1);
   } finally {

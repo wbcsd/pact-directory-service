@@ -1,38 +1,59 @@
-import { Generated } from "kysely";
+import { Generated } from 'kysely';
 
 export interface Database {
-  companies: CompanyTable;
-  users: UserTable;
+  organizations: OrganizationsTable;
+  users: UsersTable;
+  roles: RolesTable;
+  policies: PoliciesTable;
+  role_policies: RolePoliciesTable;
   connection_requests: ConnectionRequestTable;
   connections: ConnectionTable;
   password_reset_tokens: PasswordResetTokenTable;
 }
 
-export interface CompanyTable {
+export interface OrganizationsTable {
   id: Generated<number>;
-  companyName: string;
-  companyIdentifier: string;
-  companyIdentifierDescription: string;
+  parentId: number | null;
+  uri: string;
+  name: string;
   solutionApiUrl: string;
-  clientId: string;
-  clientSecret: string;
-  networkKey: string;
+  clientId: string | null;
+  clientSecret: string | null;
+  networkKey: string | null;
+  description: string | null;
+  createdAt?: Date;
 }
 
-export interface UserTable {
+export interface UsersTable {
   id: Generated<number>;
-  companyId: Generated<number>;
-  fullName: string;
+  organizationId: number;
   email: string;
+  fullName: string;
   password: string;
-  role: "user" | "administrator";
+  role: string;
+  createdAt?: Date;
 }
+
+export interface RolesTable {
+  name: string;
+}
+
+export interface PoliciesTable {
+  name: string;
+  description: string;
+}
+
+export interface RolePoliciesTable {
+  role: string;
+  policy: string;
+}
+
 
 export interface ConnectionRequestTable {
   id: Generated<number>;
   requestingCompanyId: number;
   requestedCompanyId: number;
-  status: "pending" | "accepted" | "rejected";
+  status: 'pending' | 'accepted' | 'rejected';
   createdAt: Date;
   updatedAt: Date;
 }

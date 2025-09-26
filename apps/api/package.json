@@ -12,8 +12,11 @@
     "start": "NODE_ENV=production node ./dist",
     "test": "NODE_ENV=test",
     "test:hot": "nodemon --exec \"npm run test\" --watch ./src --watch ./spec -e ts",
-    "db:migrate": "ts-node ./src/database/migrate-to-latest.ts",
-    "db:add-user": "ts-node ./src/database/add-user.ts"
+    "db:migrate": "ts-node ./src/scripts/migrate.ts latest",
+    "db:migrate:down": "ts-node ./src/scripts/migrate.ts down",
+    "db:migrate:up": "ts-node ./src/scripts/migrate.ts up",
+    "db:migrate:list": "ts-node ./src/scripts/migrate.ts list",
+    "db:add-user": "ts-node ./src/scripts/add-user.ts"
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.4",
@@ -52,6 +55,7 @@
     "@types/morgan": "^1.9.9",
     "@types/node": "^22.7.9",
     "@types/pg": "^8.11.10",
+    "@types/reflect-metadata": "^0.0.5",
     "@types/supertest": "^6.0.2",
     "eslint": "^9.13.0",
     "eslint-plugin-n": "^17.11.1",

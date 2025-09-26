@@ -17,6 +17,9 @@ export default tseslint.config(
         project: "./tsconfig.json",
         tsconfigRootDir: import.meta.dirname,
         warnOnUnsupportedTypeScriptVersion: false,
+        ecmaFeatures: {
+          legacyDecorators: true,
+        },
       },
     },
   },
@@ -67,8 +70,8 @@ export default tseslint.config(
     },
     settings: {
       node: {
-        version: ">=21.0.0"
-      }
-    }
+        version: ">=21.0.0",
+      },
+    },
   }
 );
