@@ -1,4 +1,4 @@
-import { Generated } from "kysely";
+import { Generated } from 'kysely';
 
 export interface Database {
   organizations: OrganizationsTable;
@@ -53,7 +53,7 @@ export interface ConnectionRequestTable {
   id: Generated<number>;
   requestingCompanyId: number;
   requestedCompanyId: number;
-  status: "pending" | "accepted" | "rejected";
+  status: 'pending' | 'accepted' | 'rejected';
   createdAt: Date;
   updatedAt: Date;
 }

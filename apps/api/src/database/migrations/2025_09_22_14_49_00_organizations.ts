@@ -61,7 +61,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 
   await db.schema
-    .createTable("role_policies")
+    .createTable('roles_policies')
     .ifNotExists()
     .addColumn("role", "varchar(255)", (col) => col.notNull())
     .addColumn("policy", "varchar(255)", (col) => col.notNull())

@@ -22,23 +22,23 @@ async function main() {
   try {
     // Check if company exists
     let company = await db
-      .selectFrom("organizations")
+      .selectFrom('organizations')
       .selectAll()
-      .where("uri", "=", companyIdentifier)
+      .where('orgIdentifier', '=', companyIdentifier)
       .executeTakeFirst();
 
     if (!company) {
       // Insert company
       const inserted = await db
-        .insertInto("organizations")
+        .insertInto('organizations')
         .values({
-          uri: companyIdentifier,
-          name: companyName,
-          description: "",
-          solutionApiUrl: "",
-          clientId: "",
-          clientSecret: "",
-          networkKey: "",
+          orgIdentifier: companyIdentifier,
+          orgName: companyName,
+          orgIdentifierDescription: '',
+          solutionApiUrl: '',
+          clientId: '',
+          clientSecret: '',
+          networkKey: '',
         })
         .returningAll()
         .executeTakeFirstOrThrow();
@@ -52,7 +52,7 @@ async function main() {
     const userExists = await db
       .selectFrom('users')
       .selectAll()
-      .where('email', '=', email)
+      .where('userEmail', '=', email)
       .executeTakeFirst();
 
     if (userExists) {
@@ -67,15 +67,15 @@ async function main() {
     await db
       .insertInto('users')
       .values({
-        fullName,
-        email,
+        userName: fullName,
+        userEmail: email,
         password: hashedPassword,
-        role: role !== "administrator" ? "user" : role,
-        organizationId: company.id,
+        roleId: 1,
+        orgId: company.id,
       })
       .executeTakeFirstOrThrow();
 
-    console.info(`User ${email} added to organization ${companyName}.`);
+    console.info(`User ${email} added to company ${companyName}.`);
   } catch (error) {
     console.error('Error', error);
     // eslint-disable-next-line n/no-process-exit

@@ -3,7 +3,12 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import config from '@src/common/config';
 import { Database } from '@src/database/types';
-import { BadRequestError, UnauthorizedError, NotFoundError, ForbiddenError } from '@src/common/errors';
+import {
+  BadRequestError,
+  UnauthorizedError,
+  NotFoundError,
+  ForbiddenError,
+} from '@src/common/errors';
 import { generateCredentials } from '@src/util/credentials';
 import { EmailService } from './email-service';
 import {
@@ -14,9 +19,9 @@ import {
 
 // Possible statuses for connection requests
 const connectionRequestStatus = {
-  PENDING: "pending",
-  ACCEPTED: "accepted",
-  REJECTED: "rejected",
+  PENDING: 'pending',
+  ACCEPTED: 'accepted',
+  REJECTED: 'rejected',
 } as const;
 
 export interface UserProfile {
@@ -137,9 +142,8 @@ export interface VerifyResetTokenResult {
 }
 
 export class CompanyService {
-
   constructor(
-    private db: Kysely<Database>, 
+    private db: Kysely<Database>,
     private emailService: EmailService
   ) {}
 
@@ -148,20 +152,19 @@ export class CompanyService {
    * Signup a user + company
    */
   async signup(data: SignUpInputData) {
-  
     // Check if passwords match
     if (data.password !== data.confirmPassword) {
-      throw new BadRequestError("Passwords do not match");
+      throw new BadRequestError('Passwords do not match');
     }
 
     // Check if email already exists
     const emailExists = await this.db
-      .selectFrom("users")
-      .where("email", "=", data.email)
+      .selectFrom('users')
+      .where('email', '=', data.email)
       .executeTakeFirst();
 
     if (emailExists) {
-      throw new BadRequestError("Email already in use.");
+      throw new BadRequestError('Email already in use.');
     }
 
     // TODO: create a random salt and store it next to the hashed password.
@@ -180,11 +183,11 @@ export class CompanyService {
           clientSecret,
           networkKey,
         })
-        .returning("id")
+        .returning('id')
         .executeTakeFirstOrThrow();
 
       return await trx
-        .insertInto("users")
+        .insertInto('users')
         .values({
           fullName: data.fullName,
           email: data.email,
@@ -203,7 +206,7 @@ export class CompanyService {
       role: user.role,
     };
 
-    const token = jwt.sign(userProfile, config.JWT_SECRET, { expiresIn: "6h" });
+    const token = jwt.sign(userProfile, config.JWT_SECRET, { expiresIn: '6h' });
 
     // Send welcome email
     await this.emailService.sendWelcomeEmail({
@@ -219,23 +222,19 @@ export class CompanyService {
    * Login
    */
   async login(data: LoginData) {
-
     const user = await this.db
       .selectFrom("users")
       .select(["password", "id", "email", "organizationId", "role"])
       .where("email", "=", data.email)
       .executeTakeFirst();
     if (!user) {
-      throw new UnauthorizedError("Invalid email or password");
+      throw new UnauthorizedError('Invalid email or password');
     }
 
-    const isPasswordValid = await bcrypt.compare(
-      data.password,
-      user.password
-    )
+    const isPasswordValid = await bcrypt.compare(data.password, user.password);
 
     if (!isPasswordValid) {
-      throw new UnauthorizedError("Invalid email or password");
+      throw new UnauthorizedError('Invalid email or password');
     }
 
     const userProfile: UserProfile = {
@@ -245,7 +244,7 @@ export class CompanyService {
       role: user.role,
     };
 
-    const token = jwt.sign(userProfile, config.JWT_SECRET, { expiresIn: "6h" });
+    const token = jwt.sign(userProfile, config.JWT_SECRET, { expiresIn: '6h' });
 
     return token;
   }
@@ -280,7 +279,7 @@ export class CompanyService {
 
     // Connection requests
     const sentConnectionRequests = await this.db
-      .selectFrom("connection_requests")
+      .selectFrom('connection_requests')
       .innerJoin(
         "organizations",
         "connection_requests.requestedCompanyId",
@@ -292,11 +291,11 @@ export class CompanyService {
         "organizations.name as companyName",
         "requestedCompanyId as companyId",
       ])
-      .where("requestingCompanyId", "=", Number(companyId))
+      .where('requestingCompanyId', '=', Number(companyId))
       .execute();
 
     const receivedConnectionRequests = await this.db
-      .selectFrom("connection_requests")
+      .selectFrom('connection_requests')
       .innerJoin(
         "organizations",
         "connection_requests.requestingCompanyId",
@@ -309,12 +308,12 @@ export class CompanyService {
         "organizations.name as companyName",
         "requestingCompanyId as companyId",
       ])
-      .where("requestedCompanyId", "=", Number(companyId))
+      .where('requestedCompanyId', '=', Number(companyId))
       .execute();
 
     // connections
     const connections = await this.db
-      .selectFrom("connections")
+      .selectFrom('connections')
       .innerJoin(
         "organizations as companiesOne",
         "connections.connectedCompanyOneId",
@@ -334,9 +333,9 @@ export class CompanyService {
         "companiesTwo.name as companyTwoName",
       ])
       .where((qb) =>
-        qb("connectedCompanyOneId", "=", Number(companyId)).or(
-          "connectedCompanyTwoId",
-          "=",
+        qb('connectedCompanyOneId', '=', Number(companyId)).or(
+          'connectedCompanyTwoId',
+          '=',
           Number(companyId)
         )
       )
@@ -373,7 +372,10 @@ export class CompanyService {
   /**
    * Get a company by ID with connection status
    */
-  async getCompany(companyId: string, currentUserCompanyId: string): Promise<GetCompanyResult> {
+  async getCompany(
+    companyId: string,
+    currentUserCompanyId: string
+  ): Promise<GetCompanyResult> {
     const company = await this.db
       .selectFrom("organizations as o")
       .innerJoin("users as u", "o.id", "u.organizationId")
@@ -391,40 +393,40 @@ export class CompanyService {
       .executeTakeFirst();
 
     if (!company) {
-      throw new NotFoundError("Company not found");
+      throw new NotFoundError('Company not found');
     }
 
     // This is the connection request sent by the current user on behalf of
     // their company
     const sentConnectionRequest = await this.db
-      .selectFrom("connection_requests")
-      .select(["createdAt", "status"])
-      .where("requestingCompanyId", "=", Number(currentUserCompanyId))
-      .where("requestedCompanyId", "=", Number(companyId))
+      .selectFrom('connection_requests')
+      .select(['createdAt', 'status'])
+      .where('requestingCompanyId', '=', Number(currentUserCompanyId))
+      .where('requestedCompanyId', '=', Number(companyId))
       .executeTakeFirst();
 
     // This is the connection request sent to the current user's company
     const receivedConnectionRequest = await this.db
-      .selectFrom("connection_requests")
-      .select(["createdAt", "status"])
-      .where("requestingCompanyId", "=", Number(companyId))
-      .where("requestedCompanyId", "=", Number(currentUserCompanyId))
+      .selectFrom('connection_requests')
+      .select(['createdAt', 'status'])
+      .where('requestingCompanyId', '=', Number(companyId))
+      .where('requestedCompanyId', '=', Number(currentUserCompanyId))
       .executeTakeFirst();
 
     // Are they connected?
     const connection = await this.db
-      .selectFrom("connections")
+      .selectFrom('connections')
       .where((qb) =>
-        qb("connectedCompanyOneId", "=", Number(currentUserCompanyId)).or(
-          "connectedCompanyTwoId",
-          "=",
+        qb('connectedCompanyOneId', '=', Number(currentUserCompanyId)).or(
+          'connectedCompanyTwoId',
+          '=',
           Number(currentUserCompanyId)
         )
       )
       .where((qb) =>
-        qb("connectedCompanyOneId", "=", Number(companyId)).or(
-          "connectedCompanyTwoId",
-          "=",
+        qb('connectedCompanyOneId', '=', Number(companyId)).or(
+          'connectedCompanyTwoId',
+          '=',
           Number(companyId)
         )
       )
@@ -441,9 +443,12 @@ export class CompanyService {
   /**
    * Search companies by companyName
    */
-  async searchCompanies(searchQuery: string, currentUserCompanyId: string): Promise<SearchCompanyResult[]> {
+  async searchCompanies(
+    searchQuery: string,
+    currentUserCompanyId: string
+  ): Promise<SearchCompanyResult[]> {
     if (!searchQuery) {
-      throw new BadRequestError("searchQuery is required");
+      throw new BadRequestError('searchQuery is required');
     }
 
     const companies = await this.db
@@ -474,11 +479,11 @@ export class CompanyService {
     const { companyId: requestedCompanyId } = data;
 
     if (!requestedCompanyId) {
-      throw new BadRequestError("Requested company ID is required");
+      throw new BadRequestError('Requested company ID is required');
     }
 
     if (requestingCompanyId === requestedCompanyId) {
-      throw new BadRequestError("You cannot connect with yourself");
+      throw new BadRequestError('You cannot connect with yourself');
     }
 
     // TODO Validate connection request doesn't exist already
@@ -486,7 +491,7 @@ export class CompanyService {
     const requestingCompany = await this.db
       .selectFrom("organizations")
       .selectAll()
-      .where("id", "=", requestingCompanyId)
+      .where('id', '=', requestingCompanyId)
       .executeTakeFirst();
 
     const requestedCompany = await this.db
@@ -497,7 +502,7 @@ export class CompanyService {
       .executeTakeFirst();
 
     const result = await this.db
-      .insertInto("connection_requests")
+      .insertInto('connection_requests')
       .values({
         requestingCompanyId: requestingCompanyId,
         requestedCompanyId: requestedCompanyId,
@@ -505,7 +510,7 @@ export class CompanyService {
         createdAt: new Date(),
         updatedAt: new Date(),
       })
-      .returning("id")
+      .returning('id')
       .executeTakeFirstOrThrow();
 
     // Send email to requested company
@@ -535,27 +540,29 @@ export class CompanyService {
     const { requestId } = data;
 
     if (!requestId) {
-      throw new BadRequestError("Request ID is required");
+      throw new BadRequestError('Request ID is required');
     }
 
     // TODO reject flow
     const connectionRequest = await this.db
-      .selectFrom("connection_requests")
+      .selectFrom('connection_requests')
       .selectAll()
-      .where("id", "=", requestId)
+      .where('id', '=', requestId)
       .executeTakeFirst();
 
     if (!connectionRequest) {
-      throw new NotFoundError("Connection request not found");
+      throw new NotFoundError('Connection request not found');
     }
 
     if (connectionRequest.requestedCompanyId !== currentCompanyId) {
-      throw new ForbiddenError("Only the requested company can accept the request");
+      throw new ForbiddenError(
+        'Only the requested company can accept the request'
+      );
     }
 
     await this.db.transaction().execute(async (trx) => {
       await trx
-        .insertInto("connections")
+        .insertInto('connections')
         .values({
           connectedCompanyOneId: connectionRequest.requestingCompanyId,
           connectedCompanyTwoId: connectionRequest.requestedCompanyId,
@@ -566,12 +573,12 @@ export class CompanyService {
 
       // TODO don't delete it, set it to accepted
       await trx
-        .deleteFrom("connection_requests")
-        .where("id", "=", requestId)
+        .deleteFrom('connection_requests')
+        .where('id', '=', requestId)
         .execute();
     });
 
-    return { message: "Connection created successfully" };
+    return { message: 'Connection created successfully' };
   }
 
   /**
@@ -580,8 +587,8 @@ export class CompanyService {
   async forgotPassword(data: ForgotPasswordData): Promise<{ message: string }> {
     const { email } = data;
 
-    if (!email || typeof email !== "string") {
-      throw new BadRequestError("Email is required");
+    if (!email || typeof email !== 'string') {
+      throw new BadRequestError('Email is required');
     }
 
     // Find user by email
@@ -594,7 +601,7 @@ export class CompanyService {
 
     // Always return success to prevent email enumeration attacks
     if (!user) {
-      return { message: "If that email exists, a reset link has been sent." };
+      return { message: 'If that email exists, a reset link has been sent.' };
     }
 
     // Create password reset token
@@ -610,7 +617,7 @@ export class CompanyService {
       resetUrl,
     });
 
-    return { message: "If that email exists, a reset link has been sent." };
+    return { message: 'If that email exists, a reset link has been sent.' };
   }
 
   /**
@@ -621,32 +628,34 @@ export class CompanyService {
 
     if (
       !token ||
-      typeof token !== "string" ||
+      typeof token !== 'string' ||
       !password ||
-      typeof password !== "string" ||
+      typeof password !== 'string' ||
       !confirmPassword ||
-      typeof confirmPassword !== "string"
+      typeof confirmPassword !== 'string'
     ) {
-      throw new BadRequestError("Token, password, and confirm password are required");
+      throw new BadRequestError(
+        'Token, password, and confirm password are required'
+      );
     }
 
     if (password !== confirmPassword) {
-      throw new BadRequestError("Passwords do not match");
+      throw new BadRequestError('Passwords do not match');
     }
 
     if (password.length < 6) {
-      throw new BadRequestError("Password must be at least 6 characters long");
+      throw new BadRequestError('Password must be at least 6 characters long');
     }
 
     // Validate reset token
     const tokenValidation = await validateResetToken(token);
 
     if (!tokenValidation.isValid) {
-      throw new BadRequestError(tokenValidation.error ?? "Invalid token");
+      throw new BadRequestError(tokenValidation.error ?? 'Invalid token');
     }
 
     if (!tokenValidation.userId) {
-      throw new BadRequestError("Invalid token");
+      throw new BadRequestError('Invalid token');
     }
 
     // Hash new password
@@ -654,33 +663,33 @@ export class CompanyService {
 
     // Update user password
     await this.db
-      .updateTable("users")
+      .updateTable('users')
       .set({ password: hashedPassword })
-      .where("id", "=", tokenValidation.userId)
+      .where('id', '=', tokenValidation.userId)
       .execute();
 
     // Mark token as used
     await markTokenAsUsed(token);
 
-    return { message: "Password has been reset successfully" };
+    return { message: 'Password has been reset successfully' };
   }
 
   /**
    * Verify Reset Token - Check if reset token is valid
    */
   async verifyResetToken(token: string): Promise<VerifyResetTokenResult> {
-    if (!token || typeof token !== "string") {
-      throw new BadRequestError("Token is required");
+    if (!token || typeof token !== 'string') {
+      throw new BadRequestError('Token is required');
     }
 
     const tokenValidation = await validateResetToken(token);
     if (!tokenValidation.isValid) {
-      throw new BadRequestError(tokenValidation.error ?? "Invalid token");
+      throw new BadRequestError(tokenValidation.error ?? 'Invalid token');
     }
 
-    return { 
-      valid: true, 
-      message: "Token is valid" 
+    return {
+      valid: true,
+      message: 'Token is valid',
     };
   }
 }
