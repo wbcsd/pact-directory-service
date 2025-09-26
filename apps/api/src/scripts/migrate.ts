@@ -35,8 +35,7 @@ async function main(command: string) {
     let result;
     switch (command) {
       case "list":
-        const migrations = await migrator.getMigrations()
-        console.table(migrations);
+        console.table(await migrator.getMigrations());
         return; // Exit without error
       case "latest":
         result = await migrator.migrateToLatest();
