@@ -1,78 +1,115 @@
-import { Kysely, sql } from "kysely";
+import { Kysely } from "kysely";
 
 export async function up(db: Kysely<any>): Promise<void> {
-  await db.schema.dropTable("users").ifExists().execute();
 
-  // Create organizations table if not exists
+  // Rename organizations table if not exists
   await db.schema
-    .createTable("organizations")
-    .ifNotExists()
-    .addColumn("id", "serial", (col) => col.primaryKey())
-    .addColumn("org_identifier", "text", (c) => c.notNull())
-    .addColumn("org_name", "varchar(255)", (col) => col.notNull())
-    .addColumn("solution_api_url", "text", (c) => c.notNull())
-    .addColumn("client_id", "text")
-    .addColumn("client_secret", "text")
-    .addColumn("network_key", "text")
-    .addColumn("org_identifier_description", "text")
-    .addColumn("created_at", "timestamp", (col) =>
-      col.defaultTo(sql`CURRENT_TIMESTAMP`)
+      .alterTable("companies")
+      .renameTo("organizations")
+      .execute();
+
+  // Cannot chain renameColumn calls, so doing them one by one
+  await db.schema.alterTable("organizations")
+    .renameColumn("company_identifier", "uri")
+    .execute();
+  await db.schema.alterTable("organizations")
+    .renameColumn("company_name", "name")
+    .execute();
+  await db.schema.alterTable("organizations")
+    .renameColumn("company_identifier_description", "description")
+    .execute();
+
+  // Add parent_id column to organizations
+  await db.schema.alterTable("organizations")
+    .addColumn("parent_id", "integer")
+    .execute();
+  
+  // Add foreign key constraint from organizations.parent_id to organizations.id
+  await db.schema.alterTable("organizations")
+    .addForeignKeyConstraint(
+      "fk_organizations_parent_id",
+      ["parent_id"],
+      "organizations",
+      ["id"]
     )
     .execute();
 
-  // Create users table if not exists
+  // Add index on parent_id
   await db.schema
-    .createTable("users")
-    .ifNotExists()
-    .addColumn("user_id", "serial", (col) => col.primaryKey())
-    .addColumn("org_id", "integer", (col) => col.notNull())
-    .addColumn("user_name", "varchar(255)", (col) => col.notNull())
-    .addColumn("user_email", "varchar(255)", (col) => col.notNull().unique())
-    .addColumn("role_id", "integer", (col) => col.notNull())
-    .addColumn("created_at", "timestamp", (col) =>
-      col.defaultTo(sql`CURRENT_TIMESTAMP`)
-    )
+    .createIndex("idx_organizations_parent_id")
+    .on("organizations")
+    .column("parent_id")
+    .execute();
+
+  // Rename company_id to organization_id in users table
+  await db.schema.alterTable("users")
+    .renameColumn("company_id", "organization_id")
     .execute();
 
   // Create roles table if not exists
   await db.schema
-    .createTable("org_roles")
+    .createTable("roles")
     .ifNotExists()
-    .addColumn("role_id", "serial", (col) => col.primaryKey())
-    .addColumn("role_name", "varchar(255)", (col) => col.notNull())
-    .addColumn("created_at", "timestamp", (col) =>
-      col.defaultTo(sql`CURRENT_TIMESTAMP`)
-    )
+    .addColumn("name", "varchar(255)", (col) => col.primaryKey())
     .execute();
 
   await db.schema
-    .createTable("org_policies")
+    .createTable("policies")
     .ifNotExists()
-    .addColumn("policy_id", "serial", (col) => col.primaryKey())
-    .addColumn("resource_name", "varchar(255)", (col) => col.notNull())
-    .addColumn("resource_action", "varchar(255)", (col) => col.notNull())
-    .addColumn("policy_description", "text")
-    .addColumn("created_at", "timestamp", (col) =>
-      col.defaultTo(sql`CURRENT_TIMESTAMP`)
-    )
+    .addColumn("name", "varchar(255)", (col) => col.primaryKey())
+    .addColumn("description", "text")
     .execute();
 
   await db.schema
     .createTable("role_policies")
     .ifNotExists()
-    .addColumn("role_policy_id", "serial", (col) => col.primaryKey())
-    .addColumn("role_id", "integer", (col) => col.notNull())
-    .addColumn("policy_id", "integer", (col) => col.notNull())
-    .addColumn("created_at", "timestamp", (col) =>
-      col.defaultTo(sql`CURRENT_TIMESTAMP`)
-    )
+    .addColumn("role", "varchar(255)", (col) => col.notNull())
+    .addColumn("policy", "varchar(255)", (col) => col.notNull())
+    .addPrimaryKeyConstraint("role_policy_pk", ["role", "policy"])
     .execute();
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
-  await db.schema.dropTable("role_policies").ifExists().execute();
-  await db.schema.dropTable("org_policies").ifExists().execute();
-  await db.schema.dropTable("org_roles").ifExists().execute();
-  await db.schema.dropTable("org_users").ifExists().execute();
-  await db.schema.dropTable("organizations").ifExists().execute();
+  await db.schema
+    .dropTable("role_policies")
+    .ifExists()
+    .execute();
+  await db.schema
+    .dropTable("policies")
+    .ifExists()
+    .execute();
+  await db.schema
+    .dropTable("roles")
+    .ifExists()
+    .execute();
+
+  // Rename columns back to original names
+  await db.schema.alterTable("users")
+    .renameColumn("organization_id", "company_id")
+    .execute();
+
+  // Drop parent_id column and its foreign key constraint
+  // await db.schema.alterTable("organizations").dropConstraint("fk_organizations_parent").execute();
+  await db.schema
+    .alterTable("organizations")
+    .dropColumn("parent_id")
+    .execute();
+
+  await db.schema
+    .alterTable("organizations")
+    .renameColumn("uri", "company_identifier")
+    .execute();
+  await db.schema
+    .alterTable("organizations")
+    .renameColumn("name", "company_name")
+    .execute();
+  await db.schema
+    .alterTable("organizations")
+    .renameColumn("description", "company_identifier_description")
+    .execute();
+
+  await db.schema
+    .alterTable("organizations")
+    .renameTo("companies")
+    .execute();
 }

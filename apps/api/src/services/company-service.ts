@@ -47,10 +47,10 @@ export interface MyProfileResult {
   companyName: string;
   companyIdentifier: string;
   solutionApiUrl: string;
-  clientId: string;
-  clientSecret: string;
-  networkKey: string;
-  companyIdentifierDescription: string;
+  clientId: string | null;
+  clientSecret: string | null;
+  networkKey: string | null;
+  companyIdentifierDescription: string | null;
   fullName: string;
   email: string;
   role: string;
@@ -82,8 +82,8 @@ export interface GetCompanyResult {
     id: number;
     companyName: string;
     companyIdentifier: string;
-    companyIdentifierDescription: string;
-    networkKey: string;
+    companyIdentifierDescription: string | null;
+    networkKey: string | null;
     solutionApiUrl: string;
     fullName: string;
     email: string;
@@ -164,15 +164,18 @@ export class CompanyService {
       throw new BadRequestError("Email already in use.");
     }
 
+    // TODO: create a random salt and store it next to the hashed password.
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
     const { clientId, clientSecret, networkKey } = await generateCredentials();
 
     const user = await this.db.transaction().execute(async (trx) => {
-      const company = await trx
-        .insertInto("companies")
+      const organization = await trx
+        .insertInto("organizations")
         .values({
           ...data,
+          uri: data.companyIdentifier,
+          name: data.companyName,
           clientId,
           clientSecret,
           networkKey,
@@ -185,18 +188,18 @@ export class CompanyService {
         .values({
           fullName: data.fullName,
           email: data.email,
-          role: "user", // Default role
+          role: "user", 
           password: hashedPassword,
-          companyId: company.id,
+          organizationId: organization.id,
         })
-        .returning(["id", "email", "companyId", "role"])
+        .returningAll()
         .executeTakeFirstOrThrow();
     });
 
     const userProfile: UserProfile = {
       userId: user.id,
       email: user.email,
-      companyId: user.companyId,
+      companyId: user.organizationId,
       role: user.role,
     };
 
@@ -219,7 +222,7 @@ export class CompanyService {
 
     const user = await this.db
       .selectFrom("users")
-      .select(["password", "id", "email", "companyId", "role"])
+      .select(["password", "id", "email", "organizationId", "role"])
       .where("email", "=", data.email)
       .executeTakeFirst();
     if (!user) {
@@ -238,7 +241,7 @@ export class CompanyService {
     const userProfile: UserProfile = {
       userId: user.id,
       email: user.email,
-      companyId: user.companyId,
+      companyId: user.organizationId,
       role: user.role,
     };
 
@@ -251,26 +254,27 @@ export class CompanyService {
    * Get user's profile including company info, connection requests and connections
    */
   async getMyProfile(email: string, companyId: string): Promise<MyProfileResult | null> {
-    const company = await this.db
-      .selectFrom("companies")
-      .innerJoin("users", "companies.id", "users.companyId")
+    const profile = await this.db
+      .selectFrom("organizations as o")
+      .innerJoin("users as u", "o.id", "u.organizationId")
       .select([
-        "companies.id",
-        "companies.companyName",
-        "companies.companyIdentifier",
-        "companies.solutionApiUrl",
-        "companies.clientId",
-        "companies.clientSecret",
-        "companies.networkKey",
-        "companies.companyIdentifierDescription",
-        "users.fullName",
-        "users.email",
-        "users.role",
+        "o.id",
+        "o.name as companyName",
+        "o.uri as companyIdentifier",
+        "o.description as companyIdentifierDescription",
+        "o.solutionApiUrl",
+        "o.clientId",
+        "o.clientSecret",
+        "o.networkKey",
+        "o.description",
+        "u.fullName",
+        "u.email",
+        "u.role",
       ])
-      .where("users.email", "=", email)
+      .where("u.email", "=", email)
       .executeTakeFirst();
 
-    if (!company) {
+    if (!profile) {
       throw new NotFoundError("User not found");
     }
 
@@ -278,14 +282,14 @@ export class CompanyService {
     const sentConnectionRequests = await this.db
       .selectFrom("connection_requests")
       .innerJoin(
-        "companies",
+        "organizations",
         "connection_requests.requestedCompanyId",
-        "companies.id"
+        "organizations.id"
       )
       .select([
-        "createdAt",
-        "status",
-        "companies.companyName",
+        "connection_requests.createdAt",
+        "connection_requests.status",
+        "organizations.name as companyName",
         "requestedCompanyId as companyId",
       ])
       .where("requestingCompanyId", "=", Number(companyId))
@@ -294,15 +298,15 @@ export class CompanyService {
     const receivedConnectionRequests = await this.db
       .selectFrom("connection_requests")
       .innerJoin(
-        "companies",
+        "organizations",
         "connection_requests.requestingCompanyId",
-        "companies.id"
+        "organizations.id"
       )
       .select([
         "connection_requests.id",
-        "createdAt",
-        "status",
-        "companies.companyName",
+        "connection_requests.createdAt",
+        "connection_requests.status",
+        "organizations.name as companyName",
         "requestingCompanyId as companyId",
       ])
       .where("requestedCompanyId", "=", Number(companyId))
@@ -312,22 +316,22 @@ export class CompanyService {
     const connections = await this.db
       .selectFrom("connections")
       .innerJoin(
-        "companies as companiesOne",
+        "organizations as companiesOne",
         "connections.connectedCompanyOneId",
         "companiesOne.id"
       )
       .innerJoin(
-        "companies as companiesTwo",
+        "organizations as companiesTwo",
         "connections.connectedCompanyTwoId",
         "companiesTwo.id"
       )
       .select([
-        "connectedCompanyOneId",
-        "connectedCompanyTwoId",
+        "connections.connectedCompanyOneId",
+        "connections.connectedCompanyTwoId",
         "connections.requestedAt",
         "connections.createdAt",
-        "companiesOne.companyName as companyOneName",
-        "companiesTwo.companyName as companyTwoName",
+        "companiesOne.name as companyOneName",
+        "companiesTwo.name as companyTwoName",
       ])
       .where((qb) =>
         qb("connectedCompanyOneId", "=", Number(companyId)).or(
@@ -357,7 +361,7 @@ export class CompanyService {
     });
 
     return {
-      ...company,
+      ...profile,
       connectionRequests: {
         sent: sentConnectionRequests,
         received: receivedConnectionRequests,
@@ -371,19 +375,19 @@ export class CompanyService {
    */
   async getCompany(companyId: string, currentUserCompanyId: string): Promise<GetCompanyResult> {
     const company = await this.db
-      .selectFrom("companies")
-      .innerJoin("users", "companies.id", "users.companyId")
+      .selectFrom("organizations as o")
+      .innerJoin("users as u", "o.id", "u.organizationId")
       .select([
-        "companies.id",
-        "companyName",
-        "companyIdentifier",
-        "companyIdentifierDescription",
-        "networkKey",
-        "solutionApiUrl",
-        "users.fullName",
-        "users.email",
+        "o.id",
+        "o.name as companyName",
+        "o.uri as companyIdentifier",
+        "o.description as companyIdentifierDescription",
+        "o.networkKey",
+        "o.solutionApiUrl",
+        "u.fullName",
+        "u.email",
       ])
-      .where("companies.id", "=", Number(companyId))
+      .where("o.id", "=", Number(companyId))
       .executeTakeFirst();
 
     if (!company) {
@@ -443,18 +447,18 @@ export class CompanyService {
     }
 
     const companies = await this.db
-      .selectFrom("companies")
-      .innerJoin("users", "companies.id", "users.companyId")
+      .selectFrom("organizations as o")
+      .innerJoin("users as u", "o.id", "u.organizationId")
       .select([
-        "companies.id",
-        "companies.companyName",
-        "companies.companyIdentifier",
-        "companies.solutionApiUrl",
-        "users.email",
-        "users.fullName",
+        "o.id",
+        "o.name as companyName",
+        "o.uri as companyIdentifier",
+        "o.solutionApiUrl",
+        "u.email",
+        "u.fullName",
       ])
-      .where("companies.companyName", "ilike", `%${searchQuery}%`)
-      .where("companies.id", "!=", Number(currentUserCompanyId))
+      .where("o.name", "ilike", `%${searchQuery}%`)
+      .where("o.id", "!=", Number(currentUserCompanyId))
       .execute();
 
     return companies;
@@ -480,16 +484,16 @@ export class CompanyService {
     // TODO Validate connection request doesn't exist already
 
     const requestingCompany = await this.db
-      .selectFrom("companies")
+      .selectFrom("organizations")
       .selectAll()
       .where("id", "=", requestingCompanyId)
       .executeTakeFirst();
 
     const requestedCompany = await this.db
-      .selectFrom("companies")
-      .leftJoin("users", "companies.id", "users.companyId")
-      .select(["users.email", "users.fullName"])
-      .where("companies.id", "=", requestedCompanyId)
+      .selectFrom("organizations as o")
+      .leftJoin("users as u", "o.id", "u.organizationId")
+      .select(["u.email", "u.fullName"])
+      .where("o.id", "=", requestedCompanyId)
       .executeTakeFirst();
 
     const result = await this.db
@@ -514,7 +518,7 @@ export class CompanyService {
       await this.emailService.sendConnectionRequestEmail({
         to: requestedCompany.email,
         name: requestedCompany.fullName,
-        companyName: requestingCompany.companyName,
+        companyName: requestingCompany.name,
       });
     }
 
@@ -583,7 +587,7 @@ export class CompanyService {
     // Find user by email
     const user = await this.db
       .selectFrom("users")
-      .innerJoin("companies", "users.companyId", "companies.id")
+      .innerJoin("organizations", "users.organizationId", "organizations.id")
       .select(["users.id", "users.fullName", "users.email"])
       .where("users.email", "=", email.toLowerCase().trim())
       .executeTakeFirst();

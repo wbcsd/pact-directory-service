@@ -1,6 +1,5 @@
 import { Response, Request, NextFunction } from 'express';
 import { Services } from '@src/services';
-import { RequirePolicies } from '@src/decorators/RequirePolicies';
 
 /* Controller for test run proxy routes. Each function only
  * interacts with the corresponding service methods and handles
@@ -9,8 +8,7 @@ import { RequirePolicies } from '@src/decorators/RequirePolicies';
  * of exceptions to HTTP errors is handled in the middleware.
  */
 
-class ProxyController {
-  @RequirePolicies({ policies: ['testruns:createTestRun'] })
+export class ProxyController {
   async createTestRun(req: Request, res: Response, next: NextFunction) {
     try {
       const services: Services = req.app.locals.services;
@@ -29,7 +27,6 @@ class ProxyController {
     }
   }
 
-  @RequirePolicies({ policies: ['testruns:getTestResults'] })
   async getTestResults(req: Request, res: Response, next: NextFunction) {
     try {
       const services: Services = req.app.locals.services;
@@ -43,10 +40,8 @@ class ProxyController {
   }
 
   /*
-endpoint: /test-runs?query={query}&adminEmail={adminEmail}&limit={limit}
-*/
-
-  @RequirePolicies({ policies: ['testruns:listTestRuns'] })
+  endpoint: /test-runs?query={query}&adminEmail={adminEmail}&limit={limit}
+  */
   async listTestRuns(req: Request, res: Response, next: NextFunction) {
     try {
       const services: Services = req.app.locals.services;

@@ -29,30 +29,30 @@ export class AuthService {
 
     // 1. Load both companies from the db. One company through the client_id and the other through the network_id
     const clientCompany = await this.db
-        .selectFrom("companies")
-        .leftJoin("users", "companies.id", "users.companyId")
+        .selectFrom("organizations")
+        .leftJoin("users", "organizations.id", "users.organizationId")
         .select([
-        "companies.id",
-        "companies.clientSecret",
-        "companies.networkKey",
-        "companies.companyName",
+        "organizations.id",
+        "organizations.clientSecret",
+        "organizations.networkKey",
+        "organizations.name as companyName",
         "users.email",
         ])
         .where("clientId", "=", client_id)
         .executeTakeFirst();
 
     const networkCompany = await this.db
-        .selectFrom("companies")
+        .selectFrom("organizations")
         .selectAll()
         .where("networkKey", "=", network_key)
         .executeTakeFirst();
 
-    // Check if both companies exist
+    // Check if both organizations exist
     if (!clientCompany || !networkCompany) {
         throw new UnauthorizedError("Invalid client_id or network_id");
     }
 
-    // 2. Check if the client_id and client_secret match the company
+    // 2. Check if the client_id and client_secret match the organization
     if (clientCompany.clientSecret !== client_secret) {
         throw new UnauthorizedError("Invalid client_secret");
     }
@@ -91,7 +91,7 @@ export class AuthService {
         name: clientCompany.companyName,
         email: clientCompany.email,
         },
-        networkCompany.clientSecret // Use the secret from the network company
+        networkCompany.clientSecret ?? "" // Use the secret from the network company
     );
     return {
         access_token: token,

@@ -1,36 +1,20 @@
 import { Database } from "@src/database/types";
 import { Kysely } from "kysely";
 
-interface Policy {
-  resource: string;
-  action: string;
-}
 
 export class PolicyService {
-  private userPolicies = new Map<number, Policy[]>();
+  private userPolicies = new Map<number, string[]>();
 
   constructor(private db: Kysely<Database>) {}
 
-  private async getPoliciesByUserId(userId: number): Promise<Policy[]> {
-    const rows = await this.db
+  private async getPoliciesByUserId(userId: number): Promise<string[]> {
+    const policies = await this.db
       .selectFrom("users")
-      .innerJoin("org_roles", "users.roleId", "org_roles.roleId")
-      .innerJoin("role_policies", "org_roles.roleId", "role_policies.roleId")
-      .innerJoin(
-        "org_policies",
-        "role_policies.policyId",
-        "org_policies.policyId"
-      )
-      .where("users.userId", "=", userId)
-      .select(["org_policies.resourceName", "org_policies.actionName"])
+      .innerJoin("role_policies", "users.role", "role_policies.role")
+      .where("users.id", "=", userId)
+      .select(["role_policies.policy"])
       .execute();
-
-    const policies = rows.map((row) => ({
-      resource: row.resourceName,
-      action: row.actionName,
-    }));
-
-    return policies;
+    return policies.map((p) => p.policy);
   }
 
   public async cachePolicies(userId: number) {
@@ -39,7 +23,7 @@ export class PolicyService {
     this.userPolicies.set(userId, policies);
   }
 
-  public async getCachedPolicies(userId: number): Promise<Policy[]> {
+  public async getCachedPolicies(userId: number): Promise<string[]> {
     if (!this.userPolicies.has(userId)) {
       await this.cachePolicies(userId);
     }

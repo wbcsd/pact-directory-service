@@ -22,19 +22,19 @@ async function main() {
   try {
     // Check if company exists
     let company = await db
-      .selectFrom("companies")
+      .selectFrom("organizations")
       .selectAll()
-      .where("companyIdentifier", "=", companyIdentifier)
+      .where("uri", "=", companyIdentifier)
       .executeTakeFirst();
 
     if (!company) {
       // Insert company
       const inserted = await db
-        .insertInto("companies")
+        .insertInto("organizations")
         .values({
-          companyIdentifier,
-          companyName,
-          companyIdentifierDescription: "",
+          uri: companyIdentifier,
+          name: companyName,
+          description: "",
           solutionApiUrl: "",
           clientId: "",
           clientSecret: "",
@@ -71,11 +71,11 @@ async function main() {
         email,
         password: hashedPassword,
         role: role !== "administrator" ? "user" : role,
-        companyId: company.id,
+        organizationId: company.id,
       })
       .executeTakeFirstOrThrow();
 
-    console.info(`User ${email} added to company ${companyName}.`);
+    console.info(`User ${email} added to organization ${companyName}.`);
   } catch (error) {
     console.error("Error", error);
     // eslint-disable-next-line n/no-process-exit

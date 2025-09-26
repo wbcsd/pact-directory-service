@@ -38,16 +38,16 @@ export class TestRunService {
   async createTestRun(data: CreateTestRunData, userContext: UserContext): Promise<unknown> {
     const { companyId, userId } = userContext;
 
-    // Get user and company data using Kysely
+    // Get user and company data
     const user = await this.db
       .selectFrom("users")
       .selectAll()
       .where("id", "=", Number(userId))
-      .where("companyId", "=", Number(companyId))
+      .where("organizationId", "=", Number(companyId))
       .executeTakeFirst();
 
     const company = await this.db
-      .selectFrom("companies")
+      .selectFrom("organizations")
       .selectAll()
       .where("id", "=", Number(companyId))
       .executeTakeFirst();
@@ -81,8 +81,8 @@ export class TestRunService {
             baseUrl: apiUrl,
             customAuthBaseUrl: authBaseUrl,
             version,
-            companyName: company.companyName,
-            companyIdentifier: company.companyIdentifier,
+            companyName: company.name,
+            companyIdentifier: company.uri,
             adminEmail: user.email,
             adminName: user.fullName,
             scope: scope,
