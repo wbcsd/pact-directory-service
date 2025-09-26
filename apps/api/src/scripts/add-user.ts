@@ -2,15 +2,14 @@ import bcrypt from 'bcrypt';
 import { db } from '@src/database/db';
 
 async function main() {
-  const [, , email, fullName, password, role, companyIdentifier, companyName] =
-    process.argv;
+  const [, , email, fullName, password, role, companyUri, companyName] = process.argv;
 
   if (
     !email ||
     !fullName ||
     !password ||
     !role ||
-    !companyIdentifier ||
+    !companyUri ||
     !companyName
   ) {
     console.error(
@@ -24,7 +23,7 @@ async function main() {
     let company = await db
       .selectFrom("organizations")
       .selectAll()
-      .where("uri", "=", companyIdentifier)
+      .where("uri", "=", companyUri)
       .executeTakeFirst();
 
     if (!company) {
@@ -32,7 +31,7 @@ async function main() {
       const inserted = await db
         .insertInto("organizations")
         .values({
-          uri: companyIdentifier,
+          uri: companyUri,
           name: companyName,
           description: "",
           solutionApiUrl: "",
