@@ -1,11 +1,11 @@
-import { randomBytes } from "crypto";
-import { promisify } from "node:util";
+import { randomBytes } from 'crypto';
+import { promisify } from 'node:util';
 
 const randomBytesAsync = promisify(randomBytes);
 
 async function generateRandomString(length: number): Promise<string> {
   const buffer = await randomBytesAsync(length);
-  return buffer.toString("hex");
+  return buffer.toString('hex');
 }
 
 export async function generateCredentials(): Promise<{

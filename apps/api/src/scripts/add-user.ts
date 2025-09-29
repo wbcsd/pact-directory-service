@@ -21,23 +21,23 @@ async function main() {
   try {
     // Check if company exists
     let company = await db
-      .selectFrom("organizations")
+      .selectFrom('organizations')
       .selectAll()
-      .where("uri", "=", companyUri)
+      .where('uri', '=', companyUri)
       .executeTakeFirst();
 
     if (!company) {
       // Insert company
       const inserted = await db
-        .insertInto("organizations")
+        .insertInto('organizations')
         .values({
           uri: companyUri,
           name: companyName,
-          description: "",
-          solutionApiUrl: "",
-          clientId: "",
-          clientSecret: "",
-          networkKey: "",
+          description: '',
+          solutionApiUrl: '',
+          clientId: '',
+          clientSecret: '',
+          networkKey: '',
         })
         .returningAll()
         .executeTakeFirstOrThrow();
@@ -69,7 +69,7 @@ async function main() {
         fullName,
         email,
         password: hashedPassword,
-        role: role !== "administrator" ? "user" : role,
+        role: role !== 'administrator' ? 'user' : role,
         organizationId: company.id,
       })
       .executeTakeFirstOrThrow();
@@ -77,7 +77,7 @@ async function main() {
     console.info(`User ${email} added to organization ${companyName}.`);
   } catch (error) {
     console.error('Error', error);
-    // eslint-disable-next-line n/no-process-exit
+     
     process.exit(1);
   } finally {
     await db.destroy();

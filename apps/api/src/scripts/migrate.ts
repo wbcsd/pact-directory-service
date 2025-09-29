@@ -1,17 +1,16 @@
-import * as path from "path";
-import { Pool } from "pg";
-import { promises as fs } from "fs";
+import * as path from 'path';
+import { Pool } from 'pg';
+import { promises as fs } from 'fs';
 import {
   Kysely,
   Migrator,
   PostgresDialect,
   FileMigrationProvider,
-} from "kysely";
-import config from "@src/common/config";
-import { Database } from "@src/database/types";
+} from 'kysely';
+import config from '@src/common/config';
+import { Database } from '@src/database/types';
 
 async function main(command: string) {
-
   const db = new Kysely<Database>({
     dialect: new PostgresDialect({
       pool: new Pool({
@@ -28,35 +27,35 @@ async function main(command: string) {
         fs,
         path,
         // This needs to be an absolute path.
-        migrationFolder: path.join(__dirname, "../database/migrations"),
+        migrationFolder: path.join(__dirname, '../database/migrations'),
       }),
     });
 
     let result;
     switch (command) {
-      case "list":
+      case 'list':
         console.table(await migrator.getMigrations());
         return; // Exit without error
-      case "latest":
+      case 'latest':
         result = await migrator.migrateToLatest();
         break;
-      case "down":
+      case 'down':
         result = await migrator.migrateDown();
         break;
-      case "up":
+      case 'up':
         result = await migrator.migrateUp();
         break;
       default:
         throw new Error(`Unknown command: ${command}`);
     }
-    
+
     console.table(result.results);
     if (result.error) {
-      console.error("Failed to migrate", result.error);
+      console.error('Failed to migrate', result.error);
       process.exitCode = 1;
     }
   } catch (error) {
-    console.error("Unexpected error during migration", error);
+    console.error('Unexpected error during migration', error);
     process.exitCode = 1;
   } finally {
     // Ensure the database connection is always closed.
@@ -65,6 +64,6 @@ async function main(command: string) {
 }
 
 main(process.argv[2]).catch((error: unknown) => {
-  console.error("Fatal error during migration process:", error);
+  console.error('Fatal error during migration process:', error);
   process.exitCode = 1;
 });

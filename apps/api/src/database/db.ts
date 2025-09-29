@@ -1,7 +1,7 @@
-import { Database } from "./types";
-import { Pool } from "pg";
-import { CamelCasePlugin, Kysely, PostgresDialect } from "kysely";
-import config from "@src/common/config";
+import { Database } from './types';
+import { Pool } from 'pg';
+import { CamelCasePlugin, Kysely, PostgresDialect } from 'kysely';
+import config from '@src/common/config';
 
 const dialect = new PostgresDialect({
   /*@typescript-eslint/no-unsafe-call */
