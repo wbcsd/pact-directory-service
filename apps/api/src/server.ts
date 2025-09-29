@@ -1,15 +1,15 @@
-import morgan from "morgan";
-import helmet from "helmet";
-import express from "express";
-import "express-async-errors";
-import cors from "cors";
+import morgan from 'morgan';
+import helmet from 'helmet';
+import express from 'express';
+import 'express-async-errors';
+import cors from 'cors';
 
-import config from "@src/common/config";
-import { db } from "./database/db";
-import { errorHandler } from "./middleware/error-handler";
-import { ServiceContainer } from "./services";
-import { loggerMiddleware } from "@src/util/logger";
-import BaseRouter from "@src/routes";
+import config from '@src/common/config';
+import { db } from './database/db';
+import { errorHandler } from './middleware/error-handler';
+import { ServiceContainer } from './services';
+import { loggerMiddleware } from '@src/util/logger';
+import BaseRouter from '@src/routes';
 
 const app = express();
 
@@ -28,28 +28,28 @@ app.use(express.urlencoded({ extended: true }));
 app.use(loggerMiddleware);
 
 // Show routes called in console during development
-if (config.NODE_ENV === "development") {
-  app.use(morgan("dev"));
+if (config.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
 }
 
 // Security
-if (config.NODE_ENV === "production") {
+if (config.NODE_ENV === 'production') {
   app.use(helmet());
 }
 
 // Define health check route
-app.get("/health-check", (_, res) => {
+app.get('/health-check', (_, res) => {
   res.status(200).send({
-    status: "OK",
+    status: 'OK',
     service: process.env.SERVICE_NAME,
-    git_commit: process.env.RENDER_GIT_COMMIT ?? "N/A",
-    render_service_name: process.env.RENDER_SERVICE_NAME ?? "N/A",
-    render_service_type: process.env.RENDER_SERVICE_TYPE ?? "N/A",
+    git_commit: process.env.RENDER_GIT_COMMIT ?? 'N/A',
+    render_service_name: process.env.RENDER_SERVICE_NAME ?? 'N/A',
+    render_service_type: process.env.RENDER_SERVICE_TYPE ?? 'N/A',
   });
 });
 
 // Add API routes
-app.use("/api", BaseRouter);
+app.use('/api', BaseRouter);
 
 // Error handler middleware
 app.use(errorHandler);
