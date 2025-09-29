@@ -16,7 +16,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
     res.locals.user = jwt.verify(token, config.JWT_SECRET) as UserProfile;
     next();
   } catch (error) {
-    logger.error(error)
+    logger.error(error);
     throw new UnauthorizedError('Invalid token');
   }
 };
