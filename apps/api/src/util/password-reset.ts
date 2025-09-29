@@ -1,11 +1,11 @@
-import crypto from "crypto";
-import { db } from "@src/database/db";
+import crypto from 'crypto';
+import { db } from '@src/database/db';
 
 /**
  * Generate a secure random token for password reset
  */
 export function generateResetToken(): string {
-  return crypto.randomBytes(32).toString("hex");
+  return crypto.randomBytes(32).toString('hex');
 }
 
 /**
@@ -19,7 +19,7 @@ export async function createPasswordResetToken(
   expiresAt.setMinutes(expiresAt.getMinutes() + 15); // 15 minutes expiration
 
   await db
-    .insertInto("password_reset_tokens")
+    .insertInto('password_reset_tokens')
     .values({
       userId,
       token,
@@ -40,18 +40,18 @@ export async function validateResetToken(token: string): Promise<{
   error?: string;
 }> {
   const resetToken = await db
-    .selectFrom("password_reset_tokens")
+    .selectFrom('password_reset_tokens')
     .selectAll()
-    .where("token", "=", token)
-    .where("usedAt", "is", null)
+    .where('token', '=', token)
+    .where('usedAt', 'is', null)
     .executeTakeFirst();
 
   if (!resetToken) {
-    return { isValid: false, error: "Invalid or expired reset token" };
+    return { isValid: false, error: 'Invalid or expired reset token' };
   }
 
   if (new Date() > resetToken.expiresAt) {
-    return { isValid: false, error: "Reset token has expired" };
+    return { isValid: false, error: 'Reset token has expired' };
   }
 
   return { isValid: true, userId: resetToken.userId };
@@ -62,9 +62,9 @@ export async function validateResetToken(token: string): Promise<{
  */
 export async function markTokenAsUsed(token: string): Promise<void> {
   await db
-    .updateTable("password_reset_tokens")
+    .updateTable('password_reset_tokens')
     .set({ usedAt: new Date() })
-    .where("token", "=", token)
+    .where('token', '=', token)
     .execute();
 }
 
@@ -73,7 +73,7 @@ export async function markTokenAsUsed(token: string): Promise<void> {
  */
 export async function cleanupExpiredTokens(): Promise<void> {
   await db
-    .deleteFrom("password_reset_tokens")
-    .where("expiresAt", "<", new Date())
+    .deleteFrom('password_reset_tokens')
+    .where('expiresAt', '<', new Date())
     .execute();
 }

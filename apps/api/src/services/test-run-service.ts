@@ -40,20 +40,20 @@ export class TestRunService {
 
     // Get user and company data
     const user = await this.db
-      .selectFrom("users")
+      .selectFrom('users')
       .selectAll()
-      .where("id", "=", Number(userId))
-      .where("organizationId", "=", Number(companyId))
+      .where('id', '=', Number(userId))
+      .where('organizationId', '=', Number(companyId))
       .executeTakeFirst();
 
     const company = await this.db
-      .selectFrom("organizations")
+      .selectFrom('organizations')
       .selectAll()
-      .where("id", "=", Number(companyId))
+      .where('id', '=', Number(companyId))
       .executeTakeFirst();
 
     if (!user || !company) {
-      throw new NotFoundError("User or company not found.");
+      throw new NotFoundError('User or company not found.');
     }
 
     const {
@@ -71,9 +71,9 @@ export class TestRunService {
       const response = await fetch(
         `${config.CONFORMANCE_API_INTERNAL}/testruns`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             clientId,
@@ -95,8 +95,8 @@ export class TestRunService {
       const responseData: unknown = await response.json();
       return responseData;
     } catch (error) {
-      logger.error("createTestRun error", error);
-      throw new Error("Failed to execute test cases.");
+      logger.error('createTestRun error', error);
+      throw new Error('Failed to execute test cases.');
     }
   }
 
@@ -114,17 +114,17 @@ export class TestRunService {
       );
 
       const response = await fetch(url.toString(), {
-        method: "GET",
+        method: 'GET',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       });
       
       const data: unknown = await response.json();
       return data;
     } catch (error) {
-      logger.error("getTestResults error", error);
-      throw new Error("Failed to fetch test results.");
+      logger.error('getTestResults error', error);
+      throw new Error('Failed to fetch test results.');
     }
   }
 
@@ -133,43 +133,43 @@ export class TestRunService {
    */
   async listTestRuns(queryParams: ListTestRunsQuery, userId: string): Promise<unknown> {
     const user = await this.db
-      .selectFrom("users")
-      .select(["email", "role"])
-      .where("id", "=", Number(userId))
+      .selectFrom('users')
+      .select(['email', 'role'])
+      .where('id', '=', Number(userId))
       .executeTakeFirst();
 
     if (!user) {
-      throw new NotFoundError("User not found.");
+      throw new NotFoundError('User not found.');
     }
 
     try {
       const url = new URL(`${config.CONFORMANCE_API_INTERNAL}/testruns`);
       
       if (queryParams.query) 
-        url.searchParams.append("query", queryParams.query);
+        url.searchParams.append('query', queryParams.query);
       
       if (queryParams.page) 
-        url.searchParams.append("page", queryParams.page);
+        url.searchParams.append('page', queryParams.page);
       
       if (queryParams.pageSize)
-        url.searchParams.append("pageSize", queryParams.pageSize);
+        url.searchParams.append('pageSize', queryParams.pageSize);
 
       // Non-administrator users should only see their own test runs
-      if (user.role !== "administrator")
-        url.searchParams.append("adminEmail", user.email);
+      if (user.role !== 'administrator')
+        url.searchParams.append('adminEmail', user.email);
 
       const response = await fetch(url, {
-        method: "GET",
+        method: 'GET',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       });
 
       const data: unknown = await response.json();
       return data;
     } catch (error) {
-      logger.error("listTestRuns error", error);
-      throw new Error("Failed to fetch recent test runs.");
+      logger.error('listTestRuns error', error);
+      throw new Error('Failed to fetch recent test runs.');
     }
   }
 

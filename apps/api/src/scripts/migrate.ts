@@ -33,20 +33,20 @@ async function main(command: string) {
 
     let result;
     switch (command) {
-    case 'list':
-      console.table(await migrator.getMigrations());
-      return; // Exit without error
-    case 'latest':
-      result = await migrator.migrateToLatest();
-      break;
-    case 'down':
-      result = await migrator.migrateDown();
-      break;
-    case 'up':
-      result = await migrator.migrateUp();
-      break;
-    default:
-      throw new Error(`Unknown command: ${command}`);
+      case 'list':
+        console.table(await migrator.getMigrations());
+        return; // Exit without error
+      case 'latest':
+        result = await migrator.migrateToLatest();
+        break;
+      case 'down':
+        result = await migrator.migrateDown();
+        break;
+      case 'up':
+        result = await migrator.migrateUp();
+        break;
+      default:
+        throw new Error(`Unknown command: ${command}`);
     }
 
     console.table(result.results);
