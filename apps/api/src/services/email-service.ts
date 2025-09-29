@@ -1,6 +1,6 @@
-import config from "@src/common/config";
-import logger from "@src/util/logger";
-import sgMail from "@sendgrid/mail";
+import config from '@src/common/config';
+import logger from '@src/util/logger';
+import sgMail from '@sendgrid/mail';
 
 sgMail.setApiKey(config.SENDGRID_API_KEY);
 
@@ -17,7 +17,6 @@ interface SendPasswordResetEmailParams {
 }
 
 export class EmailService {
-
   async sendWelcomeEmail({
     to,
     name,
@@ -26,7 +25,7 @@ export class EmailService {
     const msg = {
       to,
       from: config.SENDGRID_FROM_EMAIL, // Use the email address or domain you verified with SendGrid
-      subject: "Welcome to PACT Network",
+      subject: 'Welcome to PACT Network',
       text: `Hello ${name},\n\nWelcome to PACT Network! We're excited to have you on board. Thank you for registering your organization, ${companyName}.\n\nBest regards,\nThe PACT Network Team`,
       html: `<p>Hello ${name},</p><p>Welcome to PACT Network! We're excited to have you on board. Thank you for registering your organization, ${companyName}.</p><p>Best regards,<br>The PACT Network</p>`,
     };
@@ -35,7 +34,7 @@ export class EmailService {
       await sgMail.send(msg);
       logger.info(`Email sent to ${name}`);
     } catch (error) {
-      logger.error("sendWelcomeEmail error", error);
+      logger.error('sendWelcomeEmail error', error);
     }
   }
 
@@ -47,7 +46,7 @@ export class EmailService {
     const msg = {
       to,
       from: config.SENDGRID_FROM_EMAIL, // Use the email address or domain you verified with SendGrid
-      subject: "Connection Request from PACT Network",
+      subject: 'Connection Request from PACT Network',
       text: `Hello ${name},\n\n${companyName} has requested to connect with your organization on the PACT Network. Please log in to your account to accept or reject the request.\n\nBest regards,\nThe PACT Network Team`,
       html: `<p>Hello ${name},</p><p>${companyName} has requested to connect with your organization on the PACT Network. Please log in to your account to accept or reject the request.</p><p>You can manage your connections from https://pact-directory-portal.onrender.com/manage-connections</p><p>Best regards,<br>The PACT Network</p>`,
     };
@@ -56,7 +55,7 @@ export class EmailService {
       await sgMail.send(msg);
       logger.info(`Email sent to ${name}`);
     } catch (error) {
-      logger.error("sendConnectionRequestEmail error", error);
+      logger.error('sendConnectionRequestEmail error', error);
     }
   }
 
@@ -67,17 +66,17 @@ export class EmailService {
   }: SendPasswordResetEmailParams): Promise<void> {
     const textContent = [
       `Hello ${name},`,
-      "",
-      "We received a request to reset your password for your PACT Network account.",
-      "",
-      "Click the link below to reset your password (expires in 15 minutes):",
+      '',
+      'We received a request to reset your password for your PACT Network account.',
+      '',
+      'Click the link below to reset your password (expires in 15 minutes):',
       resetUrl,
-      "",
+      '',
       "If you didn't request this reset, please ignore this email.",
-      "",
-      "Best regards,",
-      "The PACT Network Team",
-    ].join("\n");
+      '',
+      'Best regards,',
+      'The PACT Network Team',
+    ].join('\n');
 
     const htmlContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -105,7 +104,7 @@ export class EmailService {
     const msg = {
       to,
       from: config.SENDGRID_FROM_EMAIL,
-      subject: "Password Reset Request - PACT Network",
+      subject: 'Password Reset Request - PACT Network',
       text: textContent,
       html: htmlContent,
     };
@@ -114,7 +113,7 @@ export class EmailService {
       await sgMail.send(msg);
       logger.info(`Password reset email sent to ${to}`);
     } catch (error) {
-      logger.error("sendPasswordResetEmail error", error);
+      logger.error('sendPasswordResetEmail error', error);
     }
   }
 }

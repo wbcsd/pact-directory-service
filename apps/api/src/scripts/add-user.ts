@@ -77,7 +77,7 @@ async function main() {
     console.info(`User ${email} added to organization ${companyName}.`);
   } catch (error) {
     console.error('Error', error);
-    // eslint-disable-next-line n/no-process-exit
+     
     process.exit(1);
   } finally {
     await db.destroy();

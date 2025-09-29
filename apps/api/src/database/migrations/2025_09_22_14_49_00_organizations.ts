@@ -4,9 +4,9 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   // Rename organizations table if not exists
   await db.schema
-      .alterTable("companies")
-      .renameTo("organizations")
-      .execute();
+    .alterTable("companies")
+    .renameTo("organizations")
+    .execute();
 
   // Cannot chain renameColumn calls, so doing them one by one
   await db.schema.alterTable("organizations")
