@@ -2,6 +2,7 @@ import React from "react";
 import { Text } from "@radix-ui/themes";
 import { NavLink } from "react-router-dom";
 import { featureFlags } from "../utils/feature-flags";
+import FeatureFlag from "./FeatureFlag";
 
 const SideNav: React.FC = () => {
   return (
@@ -12,7 +13,18 @@ const SideNav: React.FC = () => {
           <NavLink to="/conformance-test-runs">
             <Text>Conformance Testing</Text>
           </NavLink>
-          {featureFlags.enableIdentityManagement && (
+          <FeatureFlag flag="enableOrganizationManagement">
+            <>
+              <a href="#">Organization</a>
+              <NavLink
+                to="/organization/users"
+                style={{ textDecoration: "none", paddingLeft: "2em" }}
+              >
+                <Text>Users</Text>
+              </NavLink>
+            </>
+          </FeatureFlag>
+          <FeatureFlag flag="enableIdentityManagement">
             <>
               <a href="#">Identity Management</a>
               <NavLink
@@ -28,10 +40,10 @@ const SideNav: React.FC = () => {
                 <Text>Manage Connections</Text>
               </NavLink>
             </>
-          )}
+          </FeatureFlag>
         </nav>
       </div>
-      {featureFlags.enableIdentityManagement && (
+      <FeatureFlag flag="enableIdentityManagement">
         <div className="nav-group">
           <div className="nav-title">Settings</div>
           <nav>
@@ -40,7 +52,7 @@ const SideNav: React.FC = () => {
             </NavLink>
           </nav>
         </div>
-      )}
+      </FeatureFlag>
 
       <div className="nav-group">
         <p style={{ fontSize: "0.8em" }}>
