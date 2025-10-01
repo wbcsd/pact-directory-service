@@ -56,9 +56,12 @@ const ConformanceTestRuns: React.FC = () => {
     setError(null);
 
     try {
-      const url = `/test-runs?page=${page}${
+      let url = `/test-runs?&page=${page}${
         query ? `&query=${encodeURIComponent(query)}` : ""
       }`;
+
+      url += `&pageSize=${MAX_PAGE_SIZE}`;
+
       const response = await proxyWithAuth(url);
       if (!response || !response.ok)
         throw new Error("Failed to fetch test runs");
@@ -172,7 +175,7 @@ const ConformanceTestRuns: React.FC = () => {
             error={error}
           />
         )}
-        {!searchParams.get("q") && (
+        {testRuns.length > 0 && (
           <div className="paging-wrapper">
             <Button
               type="button"
