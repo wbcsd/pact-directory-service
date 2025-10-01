@@ -6,7 +6,7 @@ info:
     API for user authentication, organization management, inter-organization connections, 
     password reset, and proxying test execution to the conformance service.
 servers:
-  - url: http://localhost:3000
+  - url: http://localhost:3000/api
     description: Local
   - url: https://api.pact-directory.com
     description: Production
@@ -20,7 +20,7 @@ components:
     Error:
       type: object
       properties:
-        message::
+        message:
           type: string
       required: [message]
     AuthTokenRequest:
@@ -358,12 +358,13 @@ paths:
           schema: { type: string }
       responses:
         '200':
-          description: Token valid
+          description: Token verification result
           content:
             application/json:
               schema: { $ref: '#/components/schemas/VerifyResetTokenResponse' }
         '400': { $ref: '#/components/responses/BadRequest' }
         '500': { $ref: '#/components/responses/InternalError' }
+      x-notes: Controller currently reads req.params.token. Adjust controller or route.
   /directory/users/me:
     get:
       summary: Get current user profile with organization and connections
@@ -394,6 +395,7 @@ paths:
               schema: { $ref: '#/components/schemas/OrganizationProfileResponse' }
         '404': { $ref: '#/components/responses/NotFound' }
         '401': { $ref: '#/components/responses/Unauthorized' }
+      x-notes: Controller uses req.params.id. Either change route to /directory/companies/profile/{id} or adapt controller to query.
   /directory/organizations:
     get:
       summary: List and search organizations
@@ -503,7 +505,11 @@ paths:
           required: false
           schema: { type: string }
         - in: query
-          name: limit
+          name: page
+          required: false
+          schema: { type: integer, minimum: 1 }
+        - in: query
+          name: pageSize
           required: false
           schema: { type: integer, minimum: 1 }
       responses:
