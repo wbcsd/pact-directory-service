@@ -86,7 +86,7 @@ function DataTable<T extends object>({
 
   const handleSort = (columnKey: string) => {
     const column = columns.find((col) => col.key === columnKey);
-    if (!column || column.sortable === false) return;
+    if (!column || Boolean(column.sortable) === false) return;
 
     setSortConfig((current) => {
       if (!current || current.key !== columnKey) {
@@ -136,7 +136,7 @@ function DataTable<T extends object>({
         <thead>
           <tr>
             {columns.map((col) => {
-              const isSortable = col.sortable !== false;
+              const isSortable = Boolean(col.sortable);
               const isActive = sortConfig?.key === col.key;
 
               return (

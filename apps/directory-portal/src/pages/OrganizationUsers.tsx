@@ -38,10 +38,24 @@ const OrganizationUsers: React.FC = () => {
     {
       key: "fullName",
       header: "Full Name",
+      sortable: true,
+      sortValue: (row: User) => row.fullName,
       render: (row: User) => row.fullName,
     },
-    { key: "email", header: "E-Mail", render: (row: User) => row.email },
-    { key: "role", header: "Role", render: (row: User) => row.role },
+    {
+      key: "email",
+      header: "E-Mail",
+      sortable: true,
+      sortValue: (row: User) => row.email,
+      render: (row: User) => row.email,
+    },
+    {
+      key: "role",
+      header: "Role",
+      sortable: true,
+      sortValue: (row: User) => row.role,
+      render: (row: User) => row.role,
+    },
   ];
 
   return (
