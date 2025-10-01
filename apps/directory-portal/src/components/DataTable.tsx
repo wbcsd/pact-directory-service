@@ -1,14 +1,21 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import { Box, Callout } from "@radix-ui/themes";
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import {
+  ExclamationTriangleIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
+  CaretSortIcon,
+} from "@radix-ui/react-icons";
+import "./DataTable.css";
 import Spinner from "../components/LoadingSpinner";
 import EmptyImage from "../assets/pact-logistics-center-8.png";
-import "./DataTable.css";
 
 export interface Column<T> {
   key: string;
   header: string;
-  render: (row: T) => React.ReactNode; // custom cell renderer
+  render: (row: T) => React.ReactNode;
+  sortable?: boolean; // New: whether this column is sortable
+  sortValue?: (row: T) => string | number; // New: custom sort value extractor
 }
 
 interface TableProps<T> {
@@ -25,6 +32,11 @@ interface TableProps<T> {
   };
 }
 
+type SortConfig = {
+  key: string;
+  direction: "asc" | "desc";
+} | null;
+
 function DataTable<T extends object>({
   data,
   columns,
@@ -34,6 +46,59 @@ function DataTable<T extends object>({
   error,
   emptyState,
 }: TableProps<T>) {
+  const [sortConfig, setSortConfig] = useState<SortConfig>(null);
+
+  const sortedData = useMemo(() => {
+    if (!sortConfig) return data;
+
+    const column = columns.find((col) => col.key === sortConfig.key);
+    if (!column) return data;
+
+    const sorted = [...data].sort((a, b) => {
+      let aValue: string | number;
+      let bValue: string | number;
+
+      if (column.sortValue) {
+        aValue = column.sortValue(a);
+        bValue = column.sortValue(b);
+      } else {
+        // Default: use the rendered content as string
+        aValue = String(column.render(a));
+        bValue = String(column.render(b));
+      }
+
+      if (typeof aValue === "number" && typeof bValue === "number") {
+        return sortConfig.direction === "asc"
+          ? aValue - bValue
+          : bValue - aValue;
+      }
+
+      const aStr = String(aValue).toLowerCase();
+      const bStr = String(bValue).toLowerCase();
+
+      if (aStr < bStr) return sortConfig.direction === "asc" ? -1 : 1;
+      if (aStr > bStr) return sortConfig.direction === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    return sorted;
+  }, [data, sortConfig, columns]);
+
+  const handleSort = (columnKey: string) => {
+    const column = columns.find((col) => col.key === columnKey);
+    if (!column || column.sortable === false) return;
+
+    setSortConfig((current) => {
+      if (!current || current.key !== columnKey) {
+        return { key: columnKey, direction: "asc" };
+      }
+      if (current.direction === "asc") {
+        return { key: columnKey, direction: "desc" };
+      }
+      return null; // Reset sorting
+    });
+  };
+
   if (error) {
     return (
       <Box className="errorBox">
@@ -67,17 +132,43 @@ function DataTable<T extends object>({
           <Spinner />
         </div>
       )}
-
       <table className="generic-table">
         <thead>
           <tr>
-            {columns.map((col) => (
-              <th key={col.key}>{col.header}</th>
-            ))}
+            {columns.map((col) => {
+              const isSortable = col.sortable !== false;
+              const isActive = sortConfig?.key === col.key;
+
+              return (
+                <th
+                  key={col.key}
+                  onClick={() => handleSort(col.key)}
+                  className={isSortable ? "sortable" : ""}
+                  style={{ cursor: isSortable ? "pointer" : "default" }}
+                >
+                  <div className="th-content">
+                    <span>{col.header}</span>
+                    {isSortable && (
+                      <span className="sort-icon">
+                        {isActive ? (
+                          sortConfig.direction === "asc" ? (
+                            <ChevronUpIcon />
+                          ) : (
+                            <ChevronDownIcon />
+                          )
+                        ) : (
+                          <CaretSortIcon />
+                        )}
+                      </span>
+                    )}
+                  </div>
+                </th>
+              );
+            })}
           </tr>
         </thead>
         <tbody>
-          {data.map((row, rowIdx) => (
+          {sortedData.map((row, rowIdx) => (
             <tr key={(row[idColumnName] as string) ?? rowIdx}>
               {columns.map((col) => (
                 <td key={col.key}>{col.render(row)}</td>
@@ -89,5 +180,4 @@ function DataTable<T extends object>({
     </div>
   );
 }
-
 export default DataTable;

@@ -703,8 +703,6 @@ export class CompanyService {
       .where('organizationId', '=', Number(organizationId))
       .execute();
 
-    console.log(users);
-
     return users;
   }
 }
