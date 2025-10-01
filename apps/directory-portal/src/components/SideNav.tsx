@@ -1,7 +1,6 @@
 import React from "react";
 import { Text } from "@radix-ui/themes";
 import { NavLink } from "react-router-dom";
-import { featureFlags } from "../utils/feature-flags";
 import FeatureFlag from "./FeatureFlag";
 
 const SideNav: React.FC = () => {

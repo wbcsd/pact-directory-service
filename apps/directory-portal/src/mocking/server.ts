@@ -1,3 +1,4 @@
+/*
 import { rest } from 'msw';
 
 export const handlers = [
@@ -25,3 +26,4 @@ export const handlers = [
   }),
 
   rest.post('/api/directory/companies/login')
+  */
