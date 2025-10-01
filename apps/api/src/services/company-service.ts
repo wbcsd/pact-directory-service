@@ -699,9 +699,11 @@ export class CompanyService {
   async getOrganizationUsers(organizationId: string) {
     const users = await this.db
       .selectFrom('users')
-      .select(['id', 'fullName', 'email', 'role', 'createdAt'])
+      .select(['id', 'fullName', 'email', 'role'])
       .where('organizationId', '=', Number(organizationId))
       .execute();
+
+    console.log(users);
 
     return users;
   }

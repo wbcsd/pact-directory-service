@@ -47,7 +47,7 @@ router.get(
 
 // Organizations
 router.get(
-  '/directory/organizations/:id/users',
+  '/directory/organizations/users',
   authenticate,
   (req: Request, res: Response, next: NextFunction) =>
     companyController.getOrganizationUsers(req, res, next)

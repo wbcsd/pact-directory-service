@@ -68,12 +68,14 @@ export class CompanyController {
   async getOrganizationUsers(req: Request, res: Response, next: NextFunction) {
     try {
       const services: Services = req.app.locals.services;
-      const { id } = req.params;
+      const user = res.locals.user;
+      const { companyId } = user as { email: string; companyId: string };
 
-      const users = await services.company.getOrganizationUsers(id);
+      const users = await services.company.getOrganizationUsers(companyId);
 
       res.json(users);
     } catch (error) {
+      console.log(error);
       next(error);
     }
   }
