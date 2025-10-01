@@ -21,7 +21,7 @@ const SearchPage: React.FC = () => {
   const handleSearch = async () => {
     try {
       const response = await fetchWithAuth(
-        `/companies/search?searchQuery=${encodeURIComponent(searchQuery)}`
+        `/organizations?query=${encodeURIComponent(searchQuery)}`
       );
 
       if (!response || !response.ok) {

@@ -64,7 +64,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   // Fetch profile data from the API
   const fetchProfileData = async (): Promise<ProfileData> => {
     try {
-      const response = await fetchWithAuth("/companies/my-profile");
+      const response = await fetchWithAuth("/users/me");
 
       if (!response || !response.ok) {
         throw new Error("Failed to fetch profile data");

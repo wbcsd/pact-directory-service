@@ -1,106 +1,38 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router } from 'express';
 import { authenticate } from '../middleware/authentication';
-import companyController from '../controllers/CompanyController';
-import authController from '../controllers/AuthController';
-import proxyController from '../controllers/ProxyController';
+import * as UserController from '../controllers/user-controller';
+import * as OrganizationController from '../controllers/organization-controller';
+import * as AuthController from '../controllers/auth-controller';
+import * as ProxyController from '../controllers/proxy-controller';
 
 const router = Router();
 
 // Auth token
-router.post(
-  '/im/auth/token',
-  (req: Request, res: Response, next: NextFunction) =>
-    authController.token(req, res, next)
-);
+router.post('/im/auth/token', AuthController.token);
 
 // Signup & Login
-router.post(
-  '/directory/companies/signup',
-  (req: Request, res: Response, next: NextFunction) =>
-    companyController.signup(req, res, next)
-);
+router.post('/directory/users/signup', UserController.signup);
+router.post('/directory/users/login', UserController.login);
 
-router.post(
-  '/directory/companies/login',
-  (req: Request, res: Response, next: NextFunction) =>
-    companyController.login(req, res, next)
-);
+// User profile
+router.get('/directory/users/me', authenticate, UserController.myProfile);
 
 // Password reset
-router.post(
-  '/directory/companies/forgot-password',
-  (req: Request, res: Response, next: NextFunction) =>
-    companyController.forgotPassword(req, res, next)
-);
+router.post('/directory/users/forgot-password', UserController.forgotPassword);
+router.post('/directory/users/reset-password', UserController.resetPassword);
+router.get('/directory/users/verify-reset-token/:token', UserController.verifyResetToken);
 
-router.post(
-  '/directory/companies/reset-password',
-  (req: Request, res: Response, next: NextFunction) =>
-    companyController.resetPassword(req, res, next)
-);
+// Organization list and search
+router.get('/directory/organizations/:id', authenticate, OrganizationController.get);
+router.get('/directory/organizations', authenticate, OrganizationController.list);
 
-router.get(
-  '/directory/companies/verify-reset-token/:token',
-  (req: Request, res: Response, next: NextFunction) =>
-    companyController.verifyResetToken(req, res, next)
-);
-
-// Company profile and search
-router.get(
-  '/directory/companies/my-profile',
-  authenticate,
-  (req: Request, res: Response, next: NextFunction) =>
-    companyController.myProfile(req, res, next)
-);
-
-router.get(
-  '/directory/companies/profile/:id',
-  authenticate,
-  (req: Request, res: Response, next: NextFunction) =>
-    companyController.getCompany(req, res, next)
-);
-
-router.get(
-  '/directory/companies/search',
-  authenticate,
-  (req: Request, res: Response, next: NextFunction) =>
-    companyController.searchCompanies(req, res, next)
-);
-
-router.post(
-  '/directory/companies/create-connection-request',
-  authenticate,
-  (req: Request, res: Response, next: NextFunction) =>
-    companyController.createConnectionRequest(req, res, next)
-);
-
-router.post(
-  '/directory/companies/connection-request-action',
-  authenticate,
-  (req: Request, res: Response, next: NextFunction) =>
-    companyController.connectionRequestAction(req, res, next)
-);
+// Connections between organizations
+router.post('/directory/organizations/create-connection-request', authenticate, OrganizationController.createConnectionRequest);
+router.post('/directory/organizations/connection-request-action', authenticate, OrganizationController.connectionRequestAction);
 
 // Proxy routes to Conformance service
-router.post(
-  '/proxy/test',
-  authenticate,
-  (req: Request, res: Response, next: NextFunction) =>
-    proxyController.createTestRun(req, res, next)
-);
-
-router.get(
-  '/proxy/test-runs',
-  authenticate,
-  (req: Request, res: Response, next: NextFunction) =>
-    proxyController.listTestRuns(req, res, next)
-);
-
-router.get(
-  '/proxy/test-results',
-  authenticate,
-  (req: Request, res: Response, next: NextFunction) =>
-    proxyController.getTestResults(req, res, next)
-);
+router.post('/proxy/test', authenticate, ProxyController.createTestRun);
+router.get('/proxy/test-runs', authenticate, ProxyController.listTestRuns);
+router.get('/proxy/test-results', authenticate, ProxyController.getTestResults);
 
 export default router;

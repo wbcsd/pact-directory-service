@@ -31,7 +31,7 @@ const CompanyProfile: React.FC = () => {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const response = await fetchWithAuth(`/companies/profile/${id}`);
+        const response = await fetchWithAuth(`/organizations/${id}`);
 
         if (!response || !response.ok) {
           throw new Error("Failed to fetch profile data");
@@ -41,7 +41,7 @@ const CompanyProfile: React.FC = () => {
 
         setLoadingData(false);
 
-        setProfileData(data.company);
+        setProfileData(data);
 
         if (data.sentConnectionRequest) {
           setRequestStatus(RequestStatus.PENDING);
@@ -70,7 +70,7 @@ const CompanyProfile: React.FC = () => {
       }
 
       const response = await fetchWithAuth(
-        "/companies/create-connection-request",
+        "/organizations/create-connection-request",
         {
           method: "POST",
           body: JSON.stringify({ companyId: id }),

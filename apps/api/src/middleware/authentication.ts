@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import logger from '@src/util/logger';
 import config from '@src/common/config';
 import { UnauthorizedError } from '@src/common/errors';
-import { UserProfile } from '@src/services/company-service';
+import { UserProfile } from '@src/services/user-service';
 
 export function authenticate(req: Request, res: Response, next: NextFunction) {
 

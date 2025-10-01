@@ -40,7 +40,7 @@ const ManageConnections: React.FC = () => {
 
   const fetchConnectionsData = async () => {
     try {
-      const response = await fetchWithAuth(`/companies/my-profile`);
+      const response = await fetchWithAuth(`/users/me`);
 
       if (!response || !response.ok) {
         throw new Error("Failed to fetch connections data");
@@ -69,7 +69,7 @@ const ManageConnections: React.FC = () => {
       }
 
       const response = await fetchWithAuth(
-        "/companies/connection-request-action",
+        "/organizations/connection-request-action",
         {
           method: "POST",
           body: JSON.stringify({ requestId }),

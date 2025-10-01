@@ -47,7 +47,7 @@ const SignupPage: React.FC = () => {
       setCreatingAccount(true);
 
       const response = await fetch(
-        `${import.meta.env.VITE_DIRECTORY_API}/directory/companies/signup`,
+        `${import.meta.env.VITE_DIRECTORY_API}/directory/users/signup`,
         {
           method: "POST",
           headers: {
