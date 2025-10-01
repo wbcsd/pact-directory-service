@@ -1,15 +1,17 @@
-import morgan from 'morgan';
-import helmet from 'helmet';
-import express from 'express';
-import 'express-async-errors';
-import cors from 'cors';
+import express from "express";
+import path from 'path';
+import morgan from "morgan";
+import helmet from "helmet";
+import "express-async-errors";
+import cors from "cors";
+import * as OpenApiValidator from 'express-openapi-validator';
 
-import config from '@src/common/config';
-import { db } from './database/db';
-import { errorHandler } from './middleware/error-handler';
-import { ServiceContainer } from './services';
-import { loggerMiddleware } from '@src/util/logger';
-import BaseRouter from '@src/routes';
+import config from "@src/common/config";
+import { db } from "./database/db";
+import { errorHandler } from "./middleware/error-handler";
+import { ServiceContainer } from "./services";
+import { loggerMiddleware } from "@src/util/logger";
+import BaseRouter from "@src/routes";
 
 const app = express();
 
@@ -26,6 +28,15 @@ app.use(express.urlencoded({ extended: true }));
 
 // Logging
 app.use(loggerMiddleware);
+
+// OpenAPI Validator Middleware
+app.use(OpenApiValidator.middleware({
+  apiSpec: path.join(__dirname, '..', 'openapi.yaml'),
+  validateSecurity: false,
+  validateRequests: true,
+  validateResponses: true,
+  ignoreUndocumented: false,
+}));
 
 // Show routes called in console during development
 if (config.NODE_ENV === 'development') {
