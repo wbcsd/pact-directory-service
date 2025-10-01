@@ -1,12 +1,13 @@
+/*
 import { rest } from 'msw';
 
 export const handlers = [
-  rest.get<{}, ('/api/directory/companies/my-profile', (req, res, ctx) => {
+  rest.get<{}, ('/api/directory/organizations/my-profile', (req, res, ctx) => {
     return res(
       ctx.status(200),
       ctx.json({
         id: 1,
-        name: 'Mock Company',
+        name: 'Mock Organization',
         email: '',
         phone: '',
         address: '',
@@ -25,3 +26,5 @@ export const handlers = [
   }),
 
   rest.post('/api/directory/companies/login')
+
+*/

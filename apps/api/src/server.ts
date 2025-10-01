@@ -1,17 +1,17 @@
-import express from "express";
+import express from 'express';
 import path from 'path';
-import morgan from "morgan";
-import helmet from "helmet";
-import "express-async-errors";
-import cors from "cors";
+import morgan from 'morgan';
+import helmet from 'helmet';
+import 'express-async-errors';
+import cors from 'cors';
 import * as OpenApiValidator from 'express-openapi-validator';
 
-import config from "@src/common/config";
-import { db } from "./database/db";
-import { errorHandler } from "./middleware/error-handler";
-import { ServiceContainer } from "./services";
-import { loggerMiddleware } from "@src/util/logger";
-import BaseRouter from "@src/routes";
+import config from '@src/common/config';
+import { db } from './database/db';
+import { errorHandler } from './middleware/error-handler';
+import { ServiceContainer } from './services';
+import { loggerMiddleware } from '@src/util/logger';
+import BaseRouter from '@src/routes';
 
 const app = express();
 
