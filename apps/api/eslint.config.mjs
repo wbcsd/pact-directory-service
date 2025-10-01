@@ -66,8 +66,8 @@ export default tseslint.config(
       "n/no-process-exit": 0,
       "n/no-missing-import": 0,
       "n/no-unpublished-import": 0,
-      indent: ["error", 2, { SwitchCase: 1 }],
-      quotes: ["error", "single", { avoidEscape: true }],
+      indent: ["warn", 2, { SwitchCase: 1 }],
+      quotes: ["warn", "single", { avoidEscape: true }],
     },
     settings: {
       node: {

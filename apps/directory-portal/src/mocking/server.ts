@@ -26,5 +26,4 @@ export const handlers = [
   }),
 
   rest.post('/api/directory/companies/login')
-
 */

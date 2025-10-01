@@ -5,7 +5,6 @@ import helmet from 'helmet';
 import 'express-async-errors';
 import cors from 'cors';
 import * as OpenApiValidator from 'express-openapi-validator';
-
 import config from '@src/common/config';
 import { db } from './database/db';
 import { errorHandler } from './middleware/error-handler';
