@@ -39,18 +39,18 @@ components:
     SignupRequest:
       type: object
       properties:
-        companyName: { type: string }
-        companyIdentifier: { type: string }
-        companyIdentifierDescription: { type: string }
+        organizationName: { type: string }
+        organizationIdentifier: { type: string }
+        organizationIdentifierDescription: { type: string }
         fullName: { type: string }
         email: { type: string, format: email }
         password: { type: string, format: password, minLength: 6 }
         confirmPassword: { type: string, format: password }
         solutionApiUrl: { type: string }
       required:
-        - companyName
-        - companyIdentifier
-        - companyIdentifierDescription
+        - organizationName
+        - organizationIdentifier
+        - organizationIdentifierDescription
         - fullName
         - email
         - password
@@ -116,12 +116,12 @@ components:
       properties:
         userId: { type: integer }
         email: { type: string, format: email }
-        companyId: { type: integer }
+        organizationId: { type: integer }
         role: { type: string }
         fullName: { type: string }
-        companyName: { type: string }
-        companyIdentifier: { type: string }
-        companyIdentifierDescription: { type: string, nullable: true }
+        organizationName: { type: string }
+        organizationIdentifier: { type: string }
+        organizationIdentifierDescription: { type: string, nullable: true }
         solutionApiUrl: { type: string }
         clientId: { type: string, nullable: true }
         clientSecret: { type: string, nullable: true }
@@ -136,9 +136,9 @@ components:
                 properties:
                   createdAt: { type: string, format: date-time }
                   status: { type: string }
-                  companyName: { type: string }
-                  companyId: { type: integer }
-                required: [createdAt, status, companyName, companyId]
+                  organizationName: { type: string }
+                  organizationId: { type: integer }
+                required: [createdAt, status, organizationName, organizationId]
             received:
               type: array
               items:
@@ -147,42 +147,42 @@ components:
                   id: { type: integer }
                   createdAt: { type: string, format: date-time }
                   status: { type: string }
-                  companyName: { type: string }
-                  companyId: { type: integer }
-                required: [id, createdAt, status, companyName, companyId]
+                  organizationName: { type: string }
+                  organizationId: { type: integer }
+                required: [id, createdAt, status, organizationName, organizationId]
           required: [sent, received]
-        connectedCompanies:
+        connectedOrganizations:
           type: array
           items:
             type: object
             properties:
-              companyId: { type: integer }
-              companyName: { type: string }
+              organizationId: { type: integer }
+              organizationName: { type: string }
               requestedAt: { type: string, format: date-time }
               createdAt: { type: string, format: date-time }
-            required: [companyId, companyName, requestedAt, createdAt]
+            required: [organizationId, organizationName, requestedAt, createdAt]
       required:
         - userId
         - email
-        - companyId
+        - organizationId
         - role
         - fullName
-        - companyName
-        - companyIdentifier
+        - organizationName
+        - organizationIdentifier
         - solutionApiUrl
         - connectionRequests
-        - connectedCompanies
+        - connectedOrganizations
     OrganizationProfileResponse:
       type: object
       properties:
         id: { type: integer }
-        companyName: { type: string }
-        companyIdentifier: { type: string }
-        companyIdentifierDescription: { type: string }
+        organizationName: { type: string }
+        organizationIdentifier: { type: string }
+        organizationIdentifierDescription: { type: string }
         networkKey: { type: string }
         solutionApiUrl: { type: string }
         parentId: { type: integer, nullable: true }
-      required: [id, companyName, companyIdentifier, solutionApiUrl]
+      required: [id, organizationName, organizationIdentifier, solutionApiUrl]
     OrganizationSummary:
       type: object
       properties:
@@ -195,8 +195,8 @@ components:
     CreateConnectionRequestRequest:
       type: object
       properties:
-        requestedCompanyId: { type: integer, description: "Requested organization ID" }
-      required: [requestedCompanyId]
+        requestedOrganizationId: { type: integer, description: "Requested organization ID" }
+      required: [requestedOrganizationId]
     CreateConnectionRequestResponse:
       type: object
       properties:

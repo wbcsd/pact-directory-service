@@ -5,7 +5,7 @@ import { UserProfile } from './user-service';
 import { EmailService } from './email-service';
 
 
-export interface CompanySummary {
+export interface OrganizationSummary {
   id: number;
   uri: string;
   name: string;
@@ -13,13 +13,13 @@ export interface CompanySummary {
   parentId: number | null | undefined;
 }
 
-export interface CompanyData {
+export interface OrganizationData {
   id: number;
-  companyName: string;
-  companyIdentifier: string;
-  companyIdentifierDescription: string | null;
+  organizationName: string;
+  organizationIdentifier: string | null;
+  organizationIdentifierDescription: string | null;
   networkKey: string | null;
-  solutionApiUrl: string;
+  solutionApiUrl: string | null;
   parentId: number | null | undefined;
 }
 
@@ -33,15 +33,15 @@ export class OrganizationService {
   /**
    * Get a organization
    */
-  async get(id: number): Promise<CompanyData> {
+  async get(id: number): Promise<OrganizationData> {
 
     const company = await this.db
       .selectFrom('organizations')
       .select([
         'id',
-        'name as companyName',
-        'uri as companyIdentifier',
-        'description as companyIdentifierDescription',
+        'name as organizationName',
+        'uri as organizationIdentifier',
+        'description as organizationIdentifierDescription',
         'networkKey',
         'solutionApiUrl',
         'parentId'
@@ -50,7 +50,7 @@ export class OrganizationService {
       .executeTakeFirst();
 
     if (!company) {
-      throw new NotFoundError('Company not found');
+      throw new NotFoundError('Organization not found');
     }
 
     return company;
@@ -59,14 +59,14 @@ export class OrganizationService {
   /**
    * List all organizations, optionally filter by a search query
    */
-  async list(query?: string): Promise<CompanyData[]> {
+  async list(query?: string): Promise<OrganizationData[]> {
     let qb = this.db
       .selectFrom('organizations')
       .select([
         'id',
-        'name as companyName',
-        'uri as companyIdentifier',
-        'description as companyIdentifierDescription',
+        'name as organizationName',
+        'uri as organizationIdentifier',
+        'description as organizationIdentifierDescription',
         'networkKey',
         'solutionApiUrl',
         'parentId'
@@ -89,7 +89,7 @@ export class OrganizationService {
    * @param parentId - The ID of the parent organization whose sub-organizations are to be listed.
    * @returns A promise that resolves to an array of `CompanyData` objects representing the sub-organizations.
    */
-  async listSubOrganizations(parentId: number): Promise<CompanyData[]> {
+  async listSubOrganizations(parentId: number): Promise<OrganizationData[]> {
 
     const qb = this.db
       .withRecursive('children', (db) =>
@@ -107,9 +107,9 @@ export class OrganizationService {
       .selectFrom('children')
       .select([
         'id',
-        'name as companyName',
-        'uri as companyIdentifier',
-        'description as companyIdentifierDescription',
+        'name as organizationName',
+        'uri as organizationIdentifier',
+        'description as organizationIdentifierDescription',
         'networkKey',
         'solutionApiUrl',
         'parentId'
@@ -134,9 +134,9 @@ export class OrganizationService {
         'u.fullName',
         'u.email',
         'u.role',
-        'o.id as companyId',
-        'o.name as companyName',
-        'o.uri as companyIdentifier',
+        'o.id as organizationId',
+        'o.name as organizationName',
+        'o.uri as organizationIdentifier',
       ])
       .where('o.id', '=', organizationId)
       .execute();

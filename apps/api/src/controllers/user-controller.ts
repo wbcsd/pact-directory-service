@@ -38,7 +38,7 @@ export async function myProfile(req: Request, res: Response, next: NextFunction)
     const services: Services = req.app.locals.services;
     const user: UserProfile = res.locals.user;
 
-    const profile = await services.user.getMyProfile(user.email, user.companyId);
+    const profile = await services.user.getMyProfile(user.email, user.organizationId);
 
     res.json(profile);
   } catch (error) {

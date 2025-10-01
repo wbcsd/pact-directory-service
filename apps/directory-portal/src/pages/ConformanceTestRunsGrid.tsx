@@ -10,7 +10,7 @@ interface TestRun {
   testId: string;
   techSpecVersion: string;
   timestamp: string;
-  companyName: string;
+  organizationName: string;
   adminEmail: string;
   passingPercentage: number;
   status: "PASS" | "FAIL" | "PENDING";
@@ -55,9 +55,9 @@ const ConformanceTestRunsGrid: React.FC<Props> = ({
     ...(profileData?.role === "administrator"
       ? [
           {
-            key: "companyName",
-            header: "Company",
-            render: (run: TestRun) => run.companyName,
+            key: "organizationName",
+            header: "Organization",
+            render: (run: TestRun) => run.organizationName,
           },
           {
             key: "adminEmail",

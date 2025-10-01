@@ -11,7 +11,7 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import MyProfile from "./pages/MyProfile";
 import SearchPage from "./pages/SearchPage";
-import CompanyProfile from "./pages/CompanyProfile";
+import OrganizationProfile from "./pages/OrganizationProfile";
 import ManageConnections from "./pages/ManageConnections";
 import ConformanceTesting from "./pages/ConformanceTesting";
 import ConformanceTestResult from "./pages/ConformanceTestResult";
@@ -48,7 +48,7 @@ const App: React.FC = () => {
               {featureFlags.enableIdentityManagement && (
                 <>
                   <Route path="/search" element={<SearchPage />} />
-                  <Route path="/company/:id" element={<CompanyProfile />} />
+                  <Route path="/organization/:id" element={<OrganizationProfile />} />
                   <Route
                     path="/manage-connections"
                     element={<ManageConnections />}

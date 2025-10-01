@@ -19,19 +19,16 @@ import { EmailService } from './email-service';
 export interface UserProfile {
   userId: number;
   email: string;
-  companyId: number;
+  organizationId: number;
   role: string;
 }
 
 export interface SignUpData {
-  companyName: string;
-  companyIdentifier: string;
-  companyIdentifierDescription: string;
+  organizationName: string;
   fullName: string;
   email: string;
   password: string;
   confirmPassword: string;
-  solutionApiUrl: string;
 }
 
 export interface LoginData {
@@ -41,31 +38,31 @@ export interface LoginData {
 
 export interface AccountData extends UserProfile {
   fullName: string;
-  companyName: string;
-  companyIdentifier: string;
-  solutionApiUrl: string;
+  organizationName: string;
+  organizationUri: string | null;
+  solutionApiUrl: string | null;
   clientId: string | null;
   clientSecret: string | null;
   networkKey: string | null;
-  companyIdentifierDescription: string | null;
+  organizationDescription: string | null;
   connectionRequests: {
     sent: {
       createdAt: Date;
       status: string;
-      companyName: string;
-      companyId: number;
+      organizationName: string;
+      organizationId: number;
     }[];
     received: {
       id: number;
       createdAt: Date;
       status: string;
-      companyName: string;
-      companyId: number;
+      organizationName: string;
+      organizationId: number;
     }[];
   };
-  connectedCompanies: {
-    companyId: number;
-    companyName: string;
+  connectedOrganizations: {
+    organizationId: number;
+    organizationName: string;
     requestedAt: Date;
     createdAt: Date;
   }[];
@@ -115,18 +112,17 @@ export class UserService {
     // TODO: create a random salt and store it next to the hashed password.
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
-    const { clientId, clientSecret, networkKey } = await generateCredentials();
+    // TODO: Move creation of client credentials to environments
+    // const { clientId, clientSecret, networkKey } = await generateCredentials();
+    await generateCredentials();
 
     const user = await this.db.transaction().execute(async (trx) => {
       const organization = await trx
         .insertInto('organizations')
         .values({
-          ...data,
-          uri: data.companyIdentifier,
-          name: data.companyName,
-          clientId,
-          clientSecret,
-          networkKey,
+          name: data.organizationName,
+          uri: '',
+          solutionApiUrl: '',
         })
         .returning('id')
         .executeTakeFirstOrThrow();
@@ -147,7 +143,7 @@ export class UserService {
     const userProfile: UserProfile = {
       userId: user.id,
       email: user.email,
-      companyId: user.organizationId,
+      organizationId: user.organizationId,
       role: user.role,
     };
 
@@ -157,7 +153,7 @@ export class UserService {
     await this.emailService.sendWelcomeEmail({
       to: data.email,
       name: data.fullName,
-      companyName: data.companyName,
+      companyName: data.organizationName,
     });
 
     return token;
@@ -185,7 +181,7 @@ export class UserService {
     const userProfile: UserProfile = {
       userId: user.id,
       email: user.email,
-      companyId: user.organizationId,
+      organizationId: user.organizationId,
       role: user.role,
     };
 
@@ -195,9 +191,9 @@ export class UserService {
   }
 
   /**
-   * Get user's profile including company info, connection requests and connections
+   * Get user's profile including organization info, connection requests and connections
    */
-  async getMyProfile(email: string, companyId: number): Promise<AccountData | null> {
+  async getMyProfile(email: string, organizationId: number): Promise<AccountData | null> {
     const profile = await this.db
       .selectFrom('organizations as o')
       .innerJoin('users as u', 'o.id', 'u.organizationId')
@@ -206,10 +202,10 @@ export class UserService {
         'u.fullName',
         'u.email',
         'u.role',
-        'o.id as companyId',
-        'o.name as companyName',
-        'o.uri as companyIdentifier',
-        'o.description as companyIdentifierDescription',
+        'o.id as organizationId',
+        'o.name as organizationName',
+        'o.uri as organizationUri',
+        'o.description as organizationDescription',
         'o.solutionApiUrl',
         'o.clientId',
         'o.clientSecret',
@@ -234,10 +230,10 @@ export class UserService {
       .select([
         'connection_requests.createdAt',
         'connection_requests.status',
-        'organizations.name as companyName',
-        'requestedCompanyId as companyId',
+        'organizations.name as organizationName',
+        'requestedCompanyId as organizationId',
       ])
-      .where('requestingCompanyId', '=', companyId)
+      .where('requestingCompanyId', '=', organizationId)
       .execute();
 
     const receivedConnectionRequests = await this.db
@@ -251,10 +247,10 @@ export class UserService {
         'connection_requests.id',
         'connection_requests.createdAt',
         'connection_requests.status',
-        'organizations.name as companyName',
-        'requestingCompanyId as companyId',
+        'organizations.name as organizationName',
+        'requestingCompanyId as organizationId',
       ])
-      .where('requestedCompanyId', '=', companyId)
+      .where('requestedCompanyId', '=', organizationId)
       .execute();
 
     // connections
@@ -279,24 +275,24 @@ export class UserService {
         'companiesTwo.name as companyTwoName',
       ])
       .where((qb) =>
-        qb('connectedCompanyOneId', '=', companyId)
-          .or('connectedCompanyTwoId', '=', companyId)
+        qb('connectedCompanyOneId', '=', organizationId)
+          .or('connectedCompanyTwoId', '=', organizationId)
       )
       .execute();
 
-    const connectedCompanies = connections.map((connection) => {
-      if (connection.connectedCompanyOneId === companyId) {
+    const connectedOrganizations = connections.map((connection) => {
+      if (connection.connectedCompanyOneId === organizationId) {
         return {
-          companyId: connection.connectedCompanyTwoId,
-          companyName: connection.companyTwoName,
+          organizationId: connection.connectedCompanyTwoId,
+          organizationName: connection.companyTwoName,
           requestedAt: connection.requestedAt,
           createdAt: connection.createdAt,
         };
       }
 
       return {
-        companyId: connection.connectedCompanyOneId,
-        companyName: connection.companyOneName,
+        organizationId: connection.connectedCompanyOneId,
+        organizationName: connection.companyOneName,
         requestedAt: connection.requestedAt,
         createdAt: connection.createdAt,
       };
@@ -308,7 +304,7 @@ export class UserService {
         sent: sentConnectionRequests,
         received: receivedConnectionRequests,
       },
-      connectedCompanies,
+      connectedOrganizations,
     };
   }
 

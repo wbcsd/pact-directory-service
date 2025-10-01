@@ -45,8 +45,8 @@ export async function createConnectionRequest(
 
     const result = await services.connection.createConnectionRequest(
       user,
-      req.body.requestedCompanyId,
-      user.companyId
+      req.body.requestedOrganizationId,
+      user.organizationId
     );
 
     res.status(201).json(result);

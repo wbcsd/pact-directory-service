@@ -35,27 +35,27 @@ export class ConnectionService {
       private emailService: EmailService
   ) {} 
 
-  async listConnections(companyId: number): Promise<Connection[]> {
+  async listConnections(organizationId: number): Promise<Connection[]> {
     const connections = await this.db
       .selectFrom('connections')
       .selectAll()
       .where((e) => e.or([
-        e('connectedCompanyOneId', '=', companyId),
-        e('connectedCompanyTwoId', '=', companyId)
+        e('connectedCompanyOneId', '=', organizationId),
+        e('connectedCompanyTwoId', '=', organizationId)
       ]))
       .execute();
     return connections;
   }
 
-  async listConnectionRequests(companyId: number): Promise<ConnectionRequest[]> {
+  async listConnectionRequests(organizationId: number): Promise<ConnectionRequest[]> {
     // This is the connection request sent by the current user on behalf of
     // their company
     const connectionRequests = await this.db
       .selectFrom('connection_requests')
       .selectAll()
       .where((e) => e.or([
-        e('requestingCompanyId', '=', companyId),
-        e('requestedCompanyId', '=', companyId)
+        e('requestingCompanyId', '=', organizationId),
+        e('requestedCompanyId', '=', organizationId)
       ]))
       .execute();
     return connectionRequests;
@@ -66,15 +66,15 @@ export class ConnectionService {
    */
   async createConnectionRequest(
     context: UserProfile, 
-    requestedCompanyId: number,
-    requestingCompanyId: number
+    requestedOrganizationId: number,
+    requestingOrganizationId: number
   ): Promise<ConnectionRequest> {
 
-    if (!requestedCompanyId) {
-      throw new BadRequestError('Requested company ID is required');
+    if (!requestedOrganizationId) {
+      throw new BadRequestError('Requested organization ID is required');
     }
 
-    if (requestingCompanyId === requestedCompanyId) {
+    if (requestingOrganizationId === requestedOrganizationId) {
       throw new BadRequestError('You cannot connect with yourself');
     }
 
@@ -82,20 +82,20 @@ export class ConnectionService {
       throw new ForbiddenError('You are not allowed to send connection requests');
     }
 
-    const requesting = await this.organizationService.get(requestingCompanyId);
-    const requested = await this.organizationService.get(requestedCompanyId);
+    const requesting = await this.organizationService.get(requestingOrganizationId);
+    const requested = await this.organizationService.get(requestedOrganizationId);
 
     if (!requesting) {
-      throw new NotFoundError('Requesting company not found');
+      throw new NotFoundError('Requesting organization not found');
     }
     if (!requested) {
-      throw new NotFoundError('Requested company not found');
+      throw new NotFoundError('Requested organization not found');
     }
 
-    // Ensure the user is either an admin of the requesting company or a member of a child organization
-    if (context.companyId !== requestingCompanyId) {
-      const subOrgs = await this.organizationService.listSubOrganizations(context.companyId);
-      if (!subOrgs.find(o => o.id === requestingCompanyId)) {
+    // Ensure the user is either an admin of the requesting organization or a member of a child organization
+    if (context.organizationId !== requestingOrganizationId) {
+      const subOrgs = await this.organizationService.listSubOrganizations(context.organizationId);
+      if (!subOrgs.find(o => o.id === requestingOrganizationId)) {
         throw new ForbiddenError('Can only send an invitation from a child organization or your own organization');
       }
     }
@@ -103,8 +103,8 @@ export class ConnectionService {
     const result = await this.db
       .insertInto('connection_requests')
       .values({
-        requestingCompanyId: requestingCompanyId,
-        requestedCompanyId: requestedCompanyId,
+        requestingCompanyId: requestingOrganizationId,
+        requestedCompanyId: requestedOrganizationId,
         status: 'pending',
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -112,17 +112,17 @@ export class ConnectionService {
       .returningAll()
       .executeTakeFirstOrThrow();
 
-    // Send email to requested company
+    // Send email to requested organization
     await this.emailService.sendConnectionRequestEmail({
-      to: context.email, // TODO: Add administrative email or primary contact of requested company
-      name: requested.companyName,
-      companyName: requesting.companyName,
+      to: context.email, // TODO: Add administrative email or primary contact of requested organization
+      name: requested.organizationName,
+      companyName: requesting.organizationName,
     });
 
     return result;
   }
 
-  async acceptConnectionRequest(requestId: number, currentCompanyId: number): Promise<void> {
+  async acceptConnectionRequest(requestId: number, currentOrganizationId: number): Promise<void> {
 
     if (!requestId) {
       throw new BadRequestError('Request ID is required');
@@ -138,7 +138,7 @@ export class ConnectionService {
       throw new NotFoundError('Connection request not found');
     }
 
-    if (connectionRequest.requestedCompanyId !== currentCompanyId) {
+    if (connectionRequest.requestedCompanyId !== currentOrganizationId) {
       throw new ForbiddenError(
         'Only the requested company can accept the request'
       );

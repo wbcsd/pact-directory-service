@@ -6,15 +6,15 @@ import { fetchWithAuth } from "../utils/auth-fetch";
 
 interface ConnectionRequest {
   id: number;
-  companyName: string;
-  companyId: number;
+  organizationName: string;
+  organizationId: number;
   status: string;
   createdAt: Date;
 }
 
 interface ConnectedOrganization {
-  companyId: number;
-  companyName: string;
+  organizationId: number;
+  organizationName: string;
   requestedAt: Date;
   createdAt: Date;
 }
@@ -30,11 +30,11 @@ const ManageConnections: React.FC = () => {
   const [connectionsData, setConnectionsData] = useState<{
     sent: ConnectionRequest[];
     received: ConnectionRequest[];
-    connectedCompanies: ConnectedOrganization[];
+    connectedOrganizations: ConnectedOrganization[];
   }>({
     sent: [],
     received: [],
-    connectedCompanies: [],
+    connectedOrganizations: [],
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -50,7 +50,7 @@ const ManageConnections: React.FC = () => {
 
       setConnectionsData({
         ...data.connectionRequests,
-        connectedCompanies: data.connectedCompanies,
+        connectedOrganizations: data.connectedOrganizations,
       });
     } catch (error) {
       console.error("Error fetching connections data:", error);
@@ -99,7 +99,7 @@ const ManageConnections: React.FC = () => {
           <AlertDialog.Title>Connection request accepted</AlertDialog.Title>
           <AlertDialog.Description size="2">
             Now you are able to exchange PCF data using your PACT Conformant
-            Solution with the company you just connected with
+            Solution with the organization you just connected with
           </AlertDialog.Description>
 
           <Flex mt="4" justify="center">
@@ -123,13 +123,13 @@ const ManageConnections: React.FC = () => {
 
         <Box>
           <h2>Connected organizations</h2>
-          {connectionsData.connectedCompanies.length > 0 ? (
+          {connectionsData.connectedOrganizations.length > 0 ? (
             <>
-              {connectionsData.connectedCompanies.map((connection) => (
-                <div className="connection" key={connection.companyId}>
+              {connectionsData.connectedOrganizations.map((connection) => (
+                <div className="connection" key={connection.organizationId}>
                   <p>
-                    <Link to={`/company/${connection.companyId}`}>
-                      {connection.companyName}
+                    <Link to={`/organization/${connection.organizationId}`}>
+                      {connection.organizationName}
                     </Link>
                   </p>
                   <p className="biline">
@@ -149,8 +149,8 @@ const ManageConnections: React.FC = () => {
               {connectionsData.sent.map((request) => (
                 <div className="connection" key={request.id}>
                   <p>
-                    <Link to={`/company/${request.companyId}`}>
-                      {request.companyName}
+                    <Link to={`/organization/${request.organizationId}`}>
+                      {request.organizationName}
                     </Link>
                   </p>
                   <p className="biline">
@@ -175,8 +175,8 @@ const ManageConnections: React.FC = () => {
                 <div className="connection" key={request.id}>
                   <Flex gap={"3"} justify={"between"}>
                     <Box>
-                      <Link to={`/company/${request.companyId}`}>
-                        {request.companyName}
+                      <Link to={`/organization/${request.organizationId}`}>
+                        {request.organizationName}
                       </Link>
                       <p className="biline">
                         Status: {request.status} | Received on{" "}

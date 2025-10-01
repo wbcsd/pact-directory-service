@@ -12,16 +12,16 @@ const RequestStatus = {
   RECEIVED: "received",
 };
 
-const CompanyProfile: React.FC = () => {
+const OrganizationProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [requestStatus, setRequestStatus] = useState(RequestStatus.NOREQUEST);
 
   const [loadingData, setLoadingData] = useState(true);
 
   const [profileData, setProfileData] = useState({
-    companyName: "",
-    companyIdentifier: "",
-    companyIdentifierDescription: "",
+    organizationName: "",
+    organizationIdentifier: "",
+    organizationIdentifierDescription: "",
     fullName: "",
     email: "",
     solutionApiUrl: "",
@@ -45,7 +45,7 @@ const CompanyProfile: React.FC = () => {
 
         if (data.sentConnectionRequest) {
           setRequestStatus(RequestStatus.PENDING);
-        } else if (data.connectedToCurrentCompany) {
+        } else if (data.connectedToCurrentOrganization) {
           setRequestStatus(RequestStatus.ACCEPTED);
         } else if (data.receivedConnectionRequest) {
           setRequestStatus(RequestStatus.RECEIVED);
@@ -73,7 +73,7 @@ const CompanyProfile: React.FC = () => {
         "/organizations/create-connection-request",
         {
           method: "POST",
-          body: JSON.stringify({ companyId: id }),
+          body: JSON.stringify({ organizationId: id }),
         }
       );
 
@@ -97,7 +97,7 @@ const CompanyProfile: React.FC = () => {
     [RequestStatus.PENDING]:
       "Your connection request is pending approval from this organization.",
     [RequestStatus.NOREQUEST]:
-      "When you click Connect, PACT Identity Management Service will send a request to this company, requesting their permission to create an authenticated connection between your PACT Conformant Solution and theirs.",
+      "When you click Connect, PACT Identity Management Service will send a request to this organization, requesting their permission to create an authenticated connection between your PACT Conformant Solution and theirs.",
     [RequestStatus.ACCEPTED]: "You are connected with this organization.",
     [RequestStatus.RECEIVED]:
       "This organization has sent you a connection request, you can accept it in the Manage Connections page.",
@@ -124,7 +124,7 @@ const CompanyProfile: React.FC = () => {
       ) : (
         <main className="main">
           <div className="header">
-            <h2>{profileData.companyName}</h2>
+            <h2>{profileData.organizationName}</h2>
           </div>
 
           {requestStatus === RequestStatus.RECEIVED ? (
@@ -170,12 +170,12 @@ const CompanyProfile: React.FC = () => {
 
           <Box>
             <div>
-              <h3>Company Identifier</h3>
-              <p>{profileData.companyIdentifier}</p>
+              <h3>Organization Identifier</h3>
+              <p>{profileData.organizationIdentifier}</p>
             </div>
             <div>
-              <h3>Company Identifier Description</h3>
-              <p>{profileData.companyIdentifierDescription}</p>
+              <h3>Organization Identifier Description</h3>
+              <p>{profileData.organizationIdentifierDescription}</p>
             </div>
             <div>
               <h3>Account Admin Full Name</h3>
@@ -207,4 +207,4 @@ const CompanyProfile: React.FC = () => {
   );
 };
 
-export default CompanyProfile;
+export default OrganizationProfile;
