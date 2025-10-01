@@ -65,6 +65,19 @@ export class CompanyController {
     }
   }
 
+  async getOrganizationUsers(req: Request, res: Response, next: NextFunction) {
+    try {
+      const services: Services = req.app.locals.services;
+      const { id } = req.params;
+
+      const users = await services.company.getOrganizationUsers(id);
+
+      res.json(users);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async searchCompanies(req: Request, res: Response, next: NextFunction) {
     try {
       const services: Services = req.app.locals.services;

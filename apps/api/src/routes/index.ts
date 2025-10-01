@@ -45,6 +45,14 @@ router.get(
     companyController.verifyResetToken(req, res, next)
 );
 
+// Organizations
+router.get(
+  '/directory/organizations/:id/users',
+  authenticate,
+  (req: Request, res: Response, next: NextFunction) =>
+    companyController.getOrganizationUsers(req, res, next)
+);
+
 // Company profile and search
 router.get(
   '/directory/companies/my-profile',

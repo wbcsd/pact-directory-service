@@ -191,7 +191,7 @@ export class CompanyService {
         .values({
           fullName: data.fullName,
           email: data.email,
-          role: 'user', 
+          role: 'user',
           password: hashedPassword,
           organizationId: organization.id,
         })
@@ -252,7 +252,10 @@ export class CompanyService {
   /**
    * Get user's profile including company info, connection requests and connections
    */
-  async getMyProfile(email: string, companyId: string): Promise<MyProfileResult | null> {
+  async getMyProfile(
+    email: string,
+    companyId: string
+  ): Promise<MyProfileResult | null> {
     const profile = await this.db
       .selectFrom('organizations as o')
       .innerJoin('users as u', 'o.id', 'u.organizationId')
@@ -691,5 +694,15 @@ export class CompanyService {
       valid: true,
       message: 'Token is valid',
     };
+  }
+
+  async getOrganizationUsers(organizationId: string) {
+    const users = await this.db
+      .selectFrom('users')
+      .select(['id', 'fullName', 'email', 'role', 'createdAt'])
+      .where('organizationId', '=', Number(organizationId))
+      .execute();
+
+    return users;
   }
 }
