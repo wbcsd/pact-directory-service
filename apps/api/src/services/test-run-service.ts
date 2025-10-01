@@ -18,7 +18,7 @@ export interface CreateTestRunData {
 export interface ListTestRunsQuery {
   query?: string;
   page?: string;
-  pageSize?: string;
+  size?: string;
 }
 
 export interface UserContext {
@@ -27,15 +27,15 @@ export interface UserContext {
 }
 
 export class TestRunService {
-
-  constructor(
-    private db: Kysely<Database>
-  ) {}
+  constructor(private db: Kysely<Database>) {}
 
   /**
    * Create a new test run
    */
-  async createTestRun(data: CreateTestRunData, userContext: UserContext): Promise<unknown> {
+  async createTestRun(
+    data: CreateTestRunData,
+    userContext: UserContext
+  ): Promise<unknown> {
     const { companyId, userId } = userContext;
 
     // Get user and company data
@@ -119,7 +119,7 @@ export class TestRunService {
           'Content-Type': 'application/json',
         },
       });
-      
+
       const data: unknown = await response.json();
       return data;
     } catch (error) {
@@ -131,7 +131,10 @@ export class TestRunService {
   /**
    * List test runs with optional filtering
    */
-  async listTestRuns(queryParams: ListTestRunsQuery, userId: string): Promise<unknown> {
+  async listTestRuns(
+    queryParams: ListTestRunsQuery,
+    userId: string
+  ): Promise<unknown> {
     const user = await this.db
       .selectFrom('users')
       .select(['email', 'role'])
@@ -144,15 +147,13 @@ export class TestRunService {
 
     try {
       const url = new URL(`${config.CONFORMANCE_API_INTERNAL}/testruns`);
-      
-      if (queryParams.query) 
+
+      if (queryParams.query)
         url.searchParams.append('query', queryParams.query);
-      
-      if (queryParams.page) 
-        url.searchParams.append('page', queryParams.page);
-      
-      if (queryParams.pageSize)
-        url.searchParams.append('pageSize', queryParams.pageSize);
+
+      if (queryParams.page) url.searchParams.append('page', queryParams.page);
+
+      if (queryParams.size) url.searchParams.append('size', queryParams.size);
 
       // Non-administrator users should only see their own test runs
       if (user.role !== 'administrator')
@@ -172,5 +173,4 @@ export class TestRunService {
       throw new Error('Failed to fetch recent test runs.');
     }
   }
-
 }

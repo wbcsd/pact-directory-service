@@ -52,7 +52,7 @@ export class ProxyController {
       const queryParams = {
         query: req.query.query as string | undefined,
         page: req.query.page as string | undefined,
-        pageSize: req.query.pageSize as string | undefined,
+        size: req.query.size as string | undefined,
       };
 
       const result = await services.testRun.listTestRuns(queryParams, userId);
