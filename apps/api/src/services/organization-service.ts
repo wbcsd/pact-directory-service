@@ -5,14 +5,6 @@ import { UserProfile } from './user-service';
 import { EmailService } from './email-service';
 
 
-export interface OrganizationSummary {
-  id: number;
-  uri: string;
-  name: string;
-  email: string;
-  parentId: number | null | undefined;
-}
-
 export interface OrganizationData {
   id: number;
   organizationName: string;

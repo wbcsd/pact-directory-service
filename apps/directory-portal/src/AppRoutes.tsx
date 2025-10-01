@@ -25,7 +25,7 @@ const AppRoutes: React.FC = () => {
       {featureFlags.enableIdentityManagement === true && (
         <>
           <Route path="/search" element={<SearchPage />} />
-          <Route path="/company/:id" element={<OrganizationProfile />} />
+          <Route path="/organization/:id" element={<OrganizationProfile />} />
           <Route path="/manage-connections" element={<ManageConnections />} />
         </>
       )}

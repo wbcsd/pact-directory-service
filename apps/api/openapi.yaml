@@ -183,15 +183,6 @@ components:
         solutionApiUrl: { type: string }
         parentId: { type: integer, nullable: true }
       required: [id, organizationName, organizationIdentifier, solutionApiUrl]
-    OrganizationSummary:
-      type: object
-      properties:
-        id: { type: integer }
-        uri: { type: string }
-        name: { type: string }
-        email: { type: string, format: email }
-        parentId: { type: integer, nullable: true }
-      required: [id, uri, name, email]
     CreateConnectionRequestRequest:
       type: object
       properties:
@@ -414,7 +405,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items: { $ref: '#/components/schemas/OrganizationSummary' }
+                items: { $ref: '#/components/schemas/OrganizationProfileResponse' }
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
   /directory/organizations/create-connection-request:

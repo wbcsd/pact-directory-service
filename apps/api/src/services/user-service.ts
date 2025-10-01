@@ -39,7 +39,7 @@ export interface LoginData {
 export interface AccountData extends UserProfile {
   fullName: string;
   organizationName: string;
-  organizationUri: string | null;
+  organizationIdentifier: string | null;
   solutionApiUrl: string | null;
   clientId: string | null;
   clientSecret: string | null;
@@ -204,7 +204,7 @@ export class UserService {
         'u.role',
         'o.id as organizationId',
         'o.name as organizationName',
-        'o.uri as organizationUri',
+        'o.uri as organizationIdentifier',
         'o.description as organizationDescription',
         'o.solutionApiUrl',
         'o.clientId',
