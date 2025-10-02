@@ -21,7 +21,7 @@ const OrganizationProfile: React.FC = () => {
   const [profileData, setProfileData] = useState({
     organizationName: "",
     organizationIdentifier: "",
-    organizationIdentifierDescription: "",
+    organizationDescription: "",
     fullName: "",
     email: "",
     solutionApiUrl: "",
@@ -174,8 +174,8 @@ const OrganizationProfile: React.FC = () => {
               <p>{profileData.organizationIdentifier}</p>
             </div>
             <div>
-              <h3>Organization Identifier Description</h3>
-              <p>{profileData.organizationIdentifierDescription}</p>
+              <h3>Organization Description</h3>
+              <p>{profileData.organizationDescription}</p>
             </div>
             <div>
               <h3>Account Admin Full Name</h3>

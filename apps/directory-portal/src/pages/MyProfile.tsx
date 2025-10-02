@@ -47,7 +47,7 @@ const MyProfile: React.FC = () => {
           </div>
           <div>
             <h3>Organization Description</h3>
-            <p>{profileData.organizationIdentifierDescription}</p>
+            <p>{profileData.organizationDescription}</p>
           </div>
           <div>
             <h3>Account Admin Full Name</h3>

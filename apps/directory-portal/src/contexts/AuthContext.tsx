@@ -5,7 +5,7 @@ import { fetchWithAuth } from "../utils/auth-fetch";
 export interface ProfileData {
   organizationName: string;
   organizationIdentifier: string;
-  organizationIdentifierDescription: string;
+  organizationDescription: string;
   fullName: string;
   email: string;
   role: string; // 'user' | 'administrator'
@@ -41,7 +41,7 @@ export const useAuth = () => useContext(AuthContext);
 const emptyProfileData: ProfileData = {
   organizationName: "",
   organizationIdentifier: "",
-  organizationIdentifierDescription: "",
+  organizationDescription: "",
   fullName: "",
   email: "",
   role: "user", // Default to 'user' role

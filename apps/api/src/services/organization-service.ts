@@ -7,12 +7,12 @@ import { EmailService } from './email-service';
 
 export interface OrganizationData {
   id: number;
+  parentId: number | null;
   organizationName: string;
   organizationIdentifier: string | null;
-  organizationIdentifierDescription: string | null;
+  organizationDescription: string | null;
   networkKey: string | null;
   solutionApiUrl: string | null;
-  parentId: number | null | undefined;
 }
 
 export class OrganizationService {
@@ -33,7 +33,7 @@ export class OrganizationService {
         'id',
         'name as organizationName',
         'uri as organizationIdentifier',
-        'description as organizationIdentifierDescription',
+        'description as organizationDescription',
         'networkKey',
         'solutionApiUrl',
         'parentId'
@@ -58,7 +58,7 @@ export class OrganizationService {
         'id',
         'name as organizationName',
         'uri as organizationIdentifier',
-        'description as organizationIdentifierDescription',
+        'description as organizationDescription',
         'networkKey',
         'solutionApiUrl',
         'parentId'
@@ -101,7 +101,7 @@ export class OrganizationService {
         'id',
         'name as organizationName',
         'uri as organizationIdentifier',
-        'description as organizationIdentifierDescription',
+        'description as organizationDescription',
         'networkKey',
         'solutionApiUrl',
         'parentId'
