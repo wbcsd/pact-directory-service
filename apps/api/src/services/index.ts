@@ -7,14 +7,12 @@ import { TestRunService } from './test-run-service';
 import { PolicyService } from './policy-service';
 import { UserService } from './user-service';
 import { ConnectionService } from './connection-service';
-// import { EnvironmentService } from './environment-service';
 
 // Export individual service classes for direct usage if needed
-export { AuthService, } from './auth-service';
+export { AuthService } from './auth-service';
 export { UserService } from './user-service';
 export { OrganizationService } from './organization-service';
 export { ConnectionService } from './connection-service';
-// export { EnvironmentService } from './environment-service';
 
 export interface Services {
   auth: AuthService;
@@ -24,7 +22,6 @@ export interface Services {
   policy: PolicyService;
   user: UserService;
   connection: ConnectionService;
-  // environment: EnvironmentService;
 }
 
 export class ServiceContainer implements Services {
@@ -35,8 +32,6 @@ export class ServiceContainer implements Services {
   connection: ConnectionService
   testRun: TestRunService;
   policy: PolicyService;
-  // organization: OrganizationService
-  // environment: EnvironmentService
 
   constructor(db: Kysely<Database>) {
     this.email = new EmailService();
@@ -44,7 +39,7 @@ export class ServiceContainer implements Services {
     this.organization = new OrganizationService(db, this.email);
     this.connection = new ConnectionService(db, this.organization, this.email);
     this.user = new UserService(db, this.email);
-    this.testRun = new TestRunService(db);
+    this.testRun = new TestRunService(db, this.user, this.organization);
     this.policy = new PolicyService(db);
     // this.environment = new EnvironmentService(db);
   }
