@@ -1,5 +1,6 @@
 import { Response, Request, NextFunction } from 'express';
 import { Services } from '@src/services';
+import { UserProfile } from '@src/services/user-service';
 
 /* Controller for test run proxy routes. Each function only
  * interacts with the corresponding service methods and handles
@@ -11,15 +12,9 @@ import { Services } from '@src/services';
 export async function createTestRun(req: Request, res: Response, next: NextFunction) {
   try {
     const services: Services = req.app.locals.services;
-    const userContext = res.locals.user as {
-      companyId: string;
-      userId: string;
-    };
-
-    const result = await services.testRun.createTestRun(
-      req.body,
-      userContext
-    );
+    const user: UserProfile = res.locals.user;
+    
+    const result = await services.testRun.createTestRun(user, req.body);
     res.status(200).json(result);
   } catch (error) {
     next(error);

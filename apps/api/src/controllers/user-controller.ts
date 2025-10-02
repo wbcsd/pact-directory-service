@@ -1,4 +1,6 @@
 import { Response, Request, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+import config from '@src/common/config';
 import { Services } from '@src/services';
 import { UserProfile } from '@src/services/user-service';
 
@@ -13,7 +15,8 @@ export async function signup(req: Request, res: Response, next: NextFunction) {
   try {
     const services: Services = req.app.locals.services;
 
-    const token = await services.user.signup(req.body);
+    const user: UserProfile = await services.user.signup(req.body);
+    const token = jwt.sign(user, config.JWT_SECRET, { expiresIn: '6h' });
 
     res.json({ token });
   } catch (error) {
@@ -25,7 +28,8 @@ export async function login(req: Request, res: Response, next: NextFunction) {
   try {
     const services: Services = req.app.locals.services;
 
-    const token = await services.user.login(req.body);
+    const user: UserProfile = await services.user.login(req.body);
+    const token = jwt.sign(user, config.JWT_SECRET, { expiresIn: '6h' });
 
     res.json({ token });
   } catch (error) {

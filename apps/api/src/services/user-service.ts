@@ -1,5 +1,4 @@
 import { Kysely } from 'kysely';
-import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import config from '@src/common/config';
 import { Database } from '@src/database/types';
@@ -15,6 +14,7 @@ import {
   markTokenAsUsed,
 } from '@src/util/password-reset';
 import { EmailService } from './email-service';
+
 
 export interface UserProfile {
   userId: number;
@@ -33,6 +33,15 @@ export interface SignUpData {
 
 export interface LoginData {
   email: string;
+  password: string;
+}
+
+export interface UserData {
+  id: number;
+  fullName: string;
+  email: string;
+  role: string;
+  organizationId: number;
   password: string;
 }
 
@@ -85,6 +94,7 @@ export interface VerifyResetTokenResult {
 }
 
 export class UserService {
+
   constructor(
     private db: Kysely<Database>,
     private emailService: EmailService
@@ -93,7 +103,7 @@ export class UserService {
   /**
    * Signup a user + company
    */
-  async signup(data: SignUpData) {
+  async signup(data: SignUpData): Promise<UserProfile> {
     // Check if passwords match
     if (data.password !== data.confirmPassword) {
       throw new BadRequestError('Passwords do not match');
@@ -140,29 +150,26 @@ export class UserService {
         .executeTakeFirstOrThrow();
     });
 
-    const userProfile: UserProfile = {
+    // Send welcome email
+    await this.emailService.sendWelcomeEmail({
+      to: user.email,
+      name: user.fullName,
+      companyName: data.organizationName,
+    });
+
+    // Return user profile
+    return {
       userId: user.id,
       email: user.email,
       organizationId: user.organizationId,
       role: user.role,
     };
-
-    const token = jwt.sign(userProfile, config.JWT_SECRET, { expiresIn: '6h' });
-
-    // Send welcome email
-    await this.emailService.sendWelcomeEmail({
-      to: data.email,
-      name: data.fullName,
-      companyName: data.organizationName,
-    });
-
-    return token;
   }
 
   /**
    * Login
    */
-  async login(data: LoginData) {
+  async login(data: LoginData): Promise<UserProfile> {
     const user = await this.db
       .selectFrom('users')
       .select(['password', 'id', 'email', 'organizationId', 'role'])
@@ -178,16 +185,26 @@ export class UserService {
       throw new UnauthorizedError('Invalid email or password');
     }
 
-    const userProfile: UserProfile = {
+    return {
       userId: user.id,
       email: user.email,
       organizationId: user.organizationId,
-      role: user.role,
-    };
+      role: user.role,      
+    }
+  }
 
-    const token = jwt.sign(userProfile, config.JWT_SECRET, { expiresIn: '6h' });
+  async get(id: number): Promise<UserData> {
+    const user = await this.db
+      .selectFrom('users')
+      .selectAll()
+      .where('id', '=', id)
+      .executeTakeFirst();
+      
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
 
-    return token;
+    return user;
   }
 
   /**
