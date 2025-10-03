@@ -1,7 +1,7 @@
 import { Kysely } from 'kysely';
 import { Database } from '@src/database/types';
 import { NotFoundError } from '@src/common/errors';
-import { UserProfile } from './user-service';
+import { UserContext } from './user-service';
 import { EmailService } from './email-service';
 
 
@@ -115,9 +115,9 @@ export class OrganizationService {
    * Retrieves a list of user profiles who are members of the specified organization.
    *
    * @param organizationId - The unique identifier of the organization.
-   * @returns A promise that resolves to an array of `UserProfile` objects representing the organization's members.
+   * @returns A promise that resolves to an array of `UserContext` objects representing the organization's members.
    */
-  async listMembers(organizationId: number): Promise<UserProfile[]> {
+  async listMembers(organizationId: number): Promise<UserContext[]> {
     const users = await this.db
       .selectFrom('users as u')
       .innerJoin('organizations as o', 'u.organizationId', 'o.id')

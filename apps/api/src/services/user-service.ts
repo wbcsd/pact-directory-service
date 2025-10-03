@@ -16,7 +16,7 @@ import {
 import { EmailService } from './email-service';
 
 
-export interface UserProfile {
+export interface UserContext {
   userId: number;
   email: string;
   organizationId: number;
@@ -45,7 +45,7 @@ export interface UserData {
   password: string;
 }
 
-export interface AccountData extends UserProfile {
+export interface AccountData extends UserContext {
   fullName: string;
   organizationName: string;
   organizationIdentifier: string | null;
@@ -103,7 +103,7 @@ export class UserService {
   /**
    * Signup a user + company
    */
-  async signup(data: SignUpData): Promise<UserProfile> {
+  async signup(data: SignUpData): Promise<UserContext> {
     // Check if passwords match
     if (data.password !== data.confirmPassword) {
       throw new BadRequestError('Passwords do not match');
@@ -169,7 +169,7 @@ export class UserService {
   /**
    * Login
    */
-  async login(data: LoginData): Promise<UserProfile> {
+  async login(data: LoginData): Promise<UserContext> {
     const user = await this.db
       .selectFrom('users')
       .select(['password', 'id', 'email', 'organizationId', 'role'])

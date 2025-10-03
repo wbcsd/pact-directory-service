@@ -3,7 +3,7 @@ import config from '@src/common/config';
 import { Database } from '@src/database/types';
 import { BadRequestError, NotFoundError } from '@src/common/errors';
 import logger from '@src/util/logger';
-import { UserProfile, UserService } from './user-service';
+import { UserContext, UserService } from './user-service';
 import { OrganizationService } from './organization-service';
 
 export interface CreateTestRunData {
@@ -23,8 +23,8 @@ export interface ListTestRunsQuery {
   pageSize?: string;
 }
 
-export interface UserContext {
-  companyId: string;
+export interface TestRunUserContext {
+  organizationId: string;
   userId: string;
 }
 
@@ -39,7 +39,7 @@ export class TestRunService {
   /**
    * Create a new test run
    */
-  async createTestRun(context: UserProfile, data: CreateTestRunData): Promise<unknown> {
+  async createTestRun(context: UserContext, data: CreateTestRunData): Promise<unknown> {
 
     // Get user and company data
     const user = await this.userService.get(context.userId);
@@ -74,8 +74,8 @@ export class TestRunService {
             baseUrl: apiUrl,
             customAuthBaseUrl: authBaseUrl,
             version,
-            companyName: organization.organizationName,
-            companyIdentifier: organization.organizationIdentifier,
+            organizationName: organization.organizationName,
+            organizationIdentifier: organization.organizationIdentifier,
             adminEmail: user.email,
             adminName: user.fullName,
             scope: scope,

@@ -7,7 +7,7 @@ import {
 } from '@src/common/errors';
 import { OrganizationService } from './organization-service';
 import { EmailService } from './email-service';
-import { UserProfile } from './user-service';
+import { UserContext } from './user-service';
 
 
 export interface ConnectionRequest {
@@ -65,7 +65,7 @@ export class ConnectionService {
    * Create a connection request
    */
   async createConnectionRequest(
-    context: UserProfile, 
+    context: UserContext, 
     requestedOrganizationId: number,
     requestingOrganizationId: number
   ): Promise<ConnectionRequest> {

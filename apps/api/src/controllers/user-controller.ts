@@ -2,7 +2,7 @@ import { Response, Request, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import config from '@src/common/config';
 import { Services } from '@src/services';
-import { UserProfile } from '@src/services/user-service';
+import { UserContext } from '@src/services/user-service';
 
 /* Controller for company-related routes. Each function only
  * interacts with the corresponding service methods and handles
@@ -15,7 +15,7 @@ export async function signup(req: Request, res: Response, next: NextFunction) {
   try {
     const services: Services = req.app.locals.services;
 
-    const user: UserProfile = await services.user.signup(req.body);
+    const user: UserContext = await services.user.signup(req.body);
     const token = jwt.sign(user, config.JWT_SECRET, { expiresIn: '6h' });
 
     res.json({ token });
@@ -28,7 +28,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
   try {
     const services: Services = req.app.locals.services;
 
-    const user: UserProfile = await services.user.login(req.body);
+    const user: UserContext = await services.user.login(req.body);
     const token = jwt.sign(user, config.JWT_SECRET, { expiresIn: '6h' });
 
     res.json({ token });
@@ -40,7 +40,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 export async function myProfile(req: Request, res: Response, next: NextFunction) {
   try {
     const services: Services = req.app.locals.services;
-    const user: UserProfile = res.locals.user;
+    const user: UserContext = res.locals.user;
 
     const profile = await services.user.getMyProfile(user.email, user.organizationId);
 
