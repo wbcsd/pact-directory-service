@@ -3,14 +3,6 @@ import jwt from 'jsonwebtoken';
 import { Database } from '../database/types';
 import { UnauthorizedError } from '@src/common/errors';
 
-export interface RegisterData {
-  email: string;
-  password: string;
-  firstname: string;
-  lastname: string;
-  organization_id: string;
-}
-
 export interface LoginData {
   client_id: string;
   client_secret: string;

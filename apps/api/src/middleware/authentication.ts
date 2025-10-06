@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import logger from '@src/util/logger';
 import config from '@src/common/config';
 import { UnauthorizedError } from '@src/common/errors';
-import { UserProfile } from '@src/services/company-service';
+import { UserContext } from '@src/services/user-service';
 
 export function authenticate(req: Request, res: Response, next: NextFunction) {
 
@@ -13,7 +13,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
 
   const token = header.substring(7);
   try {
-    res.locals.user = jwt.verify(token, config.JWT_SECRET) as UserProfile;
+    res.locals.user = jwt.verify(token, config.JWT_SECRET) as UserContext;
     next();
   } catch (error) {
     logger.error(error);

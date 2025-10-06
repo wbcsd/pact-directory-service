@@ -105,7 +105,7 @@ const ConformanceTestResult: React.FC = () => {
     useState(0);
   const [techSpecVersion, setTechSpecVersion] = useState("");
   const [isNewTestRun, setIsNewTestRun] = useState(false);
-  const [companyName, setCompanyName] = useState("");
+  const [organizationName, setOrganizationName] = useState("");
   const [adminName, setAdminName] = useState("");
   const [adminEmail, setAdminEmail] = useState("");
 
@@ -135,7 +135,7 @@ const ConformanceTestResult: React.FC = () => {
         setPassingPercentage(data.passingPercentage);
         setNonMandatoryPassingPercentage(data.nonMandatoryPassingPercentage);
         setTechSpecVersion(data.techSpecVersion);
-        setCompanyName(data.companyName);
+        setOrganizationName(data.organizationName);
         setAdminName(data.adminName);
         setAdminEmail(data.adminEmail);
         setIsLoading(false);
@@ -186,7 +186,7 @@ const ConformanceTestResult: React.FC = () => {
         setPassingPercentage(data.passingPercentage);
         setNonMandatoryPassingPercentage(data.nonMandatoryPassingPercentage);
         setTechSpecVersion(data.techSpecVersion);
-        setCompanyName(data.companyName);
+        setOrganizationName(data.organizationName);
         setAdminName(data.adminName);
         setAdminEmail(data.adminEmail);
         setIsLoading(false);
@@ -338,7 +338,7 @@ const ConformanceTestResult: React.FC = () => {
               </div>
               {profileData?.role === "administrator" && (
                 <div>
-                  <div>{companyName}</div>
+                  <div>{organizationName}</div>
                   <div>{adminName}</div>
                   <div>{adminEmail}</div>
                 </div>

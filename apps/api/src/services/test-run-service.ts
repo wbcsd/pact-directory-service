@@ -3,6 +3,8 @@ import config from '@src/common/config';
 import { Database } from '@src/database/types';
 import { BadRequestError, NotFoundError } from '@src/common/errors';
 import logger from '@src/util/logger';
+import { UserContext, UserService } from './user-service';
+import { OrganizationService } from './organization-service';
 
 export interface CreateTestRunData {
   apiUrl: string;
@@ -21,39 +23,30 @@ export interface ListTestRunsQuery {
   pageSize?: string;
 }
 
-export interface UserContext {
-  companyId: string;
+export interface TestRunUserContext {
+  organizationId: string;
   userId: string;
 }
 
 export class TestRunService {
 
   constructor(
-    private db: Kysely<Database>
+    private db: Kysely<Database>,
+    private userService: UserService,
+    private organizationService: OrganizationService
   ) {}
 
   /**
    * Create a new test run
    */
-  async createTestRun(data: CreateTestRunData, userContext: UserContext): Promise<unknown> {
-    const { companyId, userId } = userContext;
+  async createTestRun(context: UserContext, data: CreateTestRunData): Promise<unknown> {
 
     // Get user and company data
-    const user = await this.db
-      .selectFrom('users')
-      .selectAll()
-      .where('id', '=', Number(userId))
-      .where('organizationId', '=', Number(companyId))
-      .executeTakeFirst();
+    const user = await this.userService.get(context.userId);
+    const organization = await this.organizationService.get(user.organizationId);
 
-    const company = await this.db
-      .selectFrom('organizations')
-      .selectAll()
-      .where('id', '=', Number(companyId))
-      .executeTakeFirst();
-
-    if (!user || !company) {
-      throw new NotFoundError('User or company not found.');
+    if (!user || !organization) {
+      throw new BadRequestError('User or organization not found.');
     }
 
     const {
@@ -81,8 +74,8 @@ export class TestRunService {
             baseUrl: apiUrl,
             customAuthBaseUrl: authBaseUrl,
             version,
-            companyName: company.name,
-            companyIdentifier: company.uri,
+            organizationName: organization.organizationName,
+            organizationIdentifier: organization.organizationIdentifier,
             adminEmail: user.email,
             adminName: user.fullName,
             scope: scope,

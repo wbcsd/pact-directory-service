@@ -3,8 +3,8 @@ info:
   title: PACT Directory Service API
   version: 1.0.0
   description: >
-    API for company onboarding, authentication, connections, password reset,
-    and proxying test execution to the conformance service.
+    API for user authentication, organization management, inter-organization connections, 
+    password reset, and proxying test execution to the conformance service.
 servers:
   - url: http://localhost:3000/api
     description: Local
@@ -39,18 +39,18 @@ components:
     SignupRequest:
       type: object
       properties:
-        companyName: { type: string }
-        companyIdentifier: { type: string }
-        companyIdentifierDescription: { type: string }
+        organizationName: { type: string }
+        organizationIdentifier: { type: string }
+        organizationIdentifierDescription: { type: string }
         fullName: { type: string }
         email: { type: string, format: email }
         password: { type: string, format: password, minLength: 6 }
         confirmPassword: { type: string, format: password }
         solutionApiUrl: { type: string }
       required:
-        - companyName
-        - companyIdentifier
-        - companyIdentifierDescription
+        - organizationName
+        - organizationIdentifier
+        - organizationIdentifierDescription
         - fullName
         - email
         - password
@@ -114,17 +114,18 @@ components:
     MyProfileResponse:
       type: object
       properties:
-        id: { type: integer }
-        companyName: { type: string }
-        companyIdentifier: { type: string }
-        companyIdentifierDescription: { type: string }
-        solutionApiUrl: { type: string }
-        clientId: { type: string }
-        clientSecret: { type: string }
-        networkKey: { type: string }
-        fullName: { type: string }
+        userId: { type: integer }
         email: { type: string, format: email }
+        organizationId: { type: integer }
         role: { type: string }
+        fullName: { type: string }
+        organizationName: { type: string }
+        organizationIdentifier: { type: string }
+        organizationIdentifierDescription: { type: string, nullable: true }
+        solutionApiUrl: { type: string }
+        clientId: { type: string, nullable: true }
+        clientSecret: { type: string, nullable: true }
+        networkKey: { type: string, nullable: true }
         connectionRequests:
           type: object
           properties:
@@ -135,8 +136,9 @@ components:
                 properties:
                   createdAt: { type: string, format: date-time }
                   status: { type: string }
-                  companyName: { type: string }
-                  companyId: { type: integer }
+                  organizationName: { type: string }
+                  organizationId: { type: integer }
+                required: [createdAt, status, organizationName, organizationId]
             received:
               type: array
               items:
@@ -145,68 +147,47 @@ components:
                   id: { type: integer }
                   createdAt: { type: string, format: date-time }
                   status: { type: string }
-                  companyName: { type: string }
-                  companyId: { type: integer }
-        connectedCompanies:
+                  organizationName: { type: string }
+                  organizationId: { type: integer }
+                required: [id, createdAt, status, organizationName, organizationId]
+          required: [sent, received]
+        connectedOrganizations:
           type: array
           items:
             type: object
             properties:
-              companyId: { type: integer }
-              companyName: { type: string }
+              organizationId: { type: integer }
+              organizationName: { type: string }
               requestedAt: { type: string, format: date-time }
               createdAt: { type: string, format: date-time }
+            required: [organizationId, organizationName, requestedAt, createdAt]
       required:
-        - id
-        - companyName
-        - companyIdentifier
-        - fullName
+        - userId
         - email
+        - organizationId
         - role
+        - fullName
+        - organizationName
+        - organizationIdentifier
+        - solutionApiUrl
         - connectionRequests
-        - connectedCompanies
-    CompanyProfileResponse:
+        - connectedOrganizations
+    OrganizationProfileResponse:
       type: object
       properties:
-        company:
-          type: object
-          properties:
-            id: { type: integer }
-            companyName: { type: string }
-            companyIdentifier: { type: string }
-            companyIdentifierDescription: { type: string }
-            networkKey: { type: string }
-            solutionApiUrl: { type: string }
-            fullName: { type: string }
-            email: { type: string, format: email }
-          required: [id, companyName, companyIdentifier, fullName, email]
-        sentConnectionRequest:
-          type: object
-          nullable: true
-          properties:
-            createdAt: { type: string, format: date-time }
-            status: { type: string }
-        receivedConnectionRequest:
-          type: object
-          nullable: true
-          properties:
-            createdAt: { type: string, format: date-time }
-            status: { type: string }
-        connectedToCurrentCompany: { type: boolean }
-      required: [company, connectedToCurrentCompany]
-    SearchCompaniesResponseItem:
-      allOf:
-        - $ref: '#/components/schemas/CompanyBase'
-        - type: object
-          properties:
-            fullName: { type: string }
-            email: { type: string, format: email }
-          required: [fullName, email]
+        id: { type: integer }
+        organizationName: { type: string }
+        organizationIdentifier: { type: string }
+        organizationIdentifierDescription: { type: string }
+        networkKey: { type: string }
+        solutionApiUrl: { type: string }
+        parentId: { type: integer, nullable: true }
+      required: [id, organizationName, organizationIdentifier, solutionApiUrl]
     CreateConnectionRequestRequest:
       type: object
       properties:
-        companyId: { type: integer, description: "Requested company ID" }
-      required: [companyId]
+        requestedOrganizationId: { type: integer, description: "Requested organization ID" }
+      required: [requestedOrganizationId]
     CreateConnectionRequestResponse:
       type: object
       properties:
@@ -285,10 +266,10 @@ paths:
               schema: { $ref: '#/components/schemas/AuthTokenResponse' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '400': { $ref: '#/components/responses/BadRequest' }
-  /directory/companies/signup:
+  /directory/users/signup:
     post:
       summary: Sign up a company and primary user
-      tags: [Companies]
+      tags: [Users]
       security: []
       requestBody:
         required: true
@@ -302,10 +283,10 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/SignupResponse' }
         '400': { $ref: '#/components/responses/BadRequest' }
-  /directory/companies/login:
+  /directory/users/login:
     post:
       summary: Login with email/password
-      tags: [Companies]
+      tags: [Users]
       security: []
       requestBody:
         required: true
@@ -320,10 +301,10 @@ paths:
               schema: { $ref: '#/components/schemas/LoginResponse' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '400': { $ref: '#/components/responses/BadRequest' }
-  /directory/companies/forgot-password:
+  /directory/users/forgot-password:
     post:
       summary: Request password reset
-      tags: [Companies]
+      tags: [Users]
       security: []
       requestBody:
         required: true
@@ -338,10 +319,10 @@ paths:
               schema: { $ref: '#/components/schemas/GenericMessage' }
         '400': { $ref: '#/components/responses/BadRequest' }
         '500': { $ref: '#/components/responses/InternalError' }
-  /directory/companies/reset-password:
+  /directory/users/reset-password:
     post:
       summary: Reset password with token
-      tags: [Companies]
+      tags: [Users]
       security: []
       requestBody:
         required: true
@@ -356,10 +337,10 @@ paths:
               schema: { $ref: '#/components/schemas/GenericMessage' }
         '400': { $ref: '#/components/responses/BadRequest' }
         '500': { $ref: '#/components/responses/InternalError' }
-  /directory/companies/verify-reset-token/{token}:
+  /directory/users/verify-reset-token/{token}:
     get:
       summary: Verify a password reset token
-      tags: [Companies]
+      tags: [Users]
       security: []
       parameters:
         - in: path
@@ -375,22 +356,22 @@ paths:
         '400': { $ref: '#/components/responses/BadRequest' }
         '500': { $ref: '#/components/responses/InternalError' }
       x-notes: Controller currently reads req.params.token. Adjust controller or route.
-  /directory/companies/my-profile:
+  /directory/users/me:
     get:
-      summary: Get current company profile and connections
-      tags: [Companies]
+      summary: Get current user profile with organization and connections
+      tags: [Users]
       security: [{ bearerAuth: [] }]
       responses:
         '200':
-          description: Profile
+          description: User profile with organization data
           content:
             application/json:
               schema: { $ref: '#/components/schemas/MyProfileResponse' }
         '401': { $ref: '#/components/responses/Unauthorized' }
-  /directory/companies/profile/{id}:
+  /directory/organizations/{id}:
     get:
-      summary: Get another company profile
-      tags: [Companies]
+      summary: Get organization profile by ID
+      tags: [Organizations]
       security: [{ bearerAuth: [] }]
       parameters:
         - in: path
@@ -399,37 +380,38 @@ paths:
           schema: { type: integer }
       responses:
         '200':
-          description: Company profile
+          description: Organization profile
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/CompanyProfileResponse' }
+              schema: { $ref: '#/components/schemas/OrganizationProfileResponse' }
         '404': { $ref: '#/components/responses/NotFound' }
         '401': { $ref: '#/components/responses/Unauthorized' }
       x-notes: Controller uses req.params.id. Either change route to /directory/companies/profile/{id} or adapt controller to query.
-  /directory/companies/search:
+  /directory/organizations:
     get:
-      summary: Search companies by name
-      tags: [Companies]
+      summary: List and search organizations
+      tags: [Organizations]
       security: [{ bearerAuth: [] }]
       parameters:
         - in: query
-          name: searchQuery
-          required: true
+          name: query
+          required: false
           schema: { type: string }
+          description: Search query to filter organizations by name
       responses:
         '200':
-          description: Search results
+          description: List of organizations
           content:
             application/json:
               schema:
                 type: array
-                items: { $ref: '#/components/schemas/SearchCompaniesResponseItem' }
+                items: { $ref: '#/components/schemas/OrganizationProfileResponse' }
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
-  /directory/companies/create-connection-request:
+  /directory/organizations/create-connection-request:
     post:
-      summary: Create a connection request
-      tags: [Companies]
+      summary: Create a connection request between organizations
+      tags: [Organizations]
       security: [{ bearerAuth: [] }]
       requestBody:
         required: true
@@ -438,16 +420,16 @@ paths:
             schema: { $ref: '#/components/schemas/CreateConnectionRequestRequest' }
       responses:
         '201':
-          description: Created
+          description: Connection request created
           content:
             application/json:
               schema: { $ref: '#/components/schemas/CreateConnectionRequestResponse' }
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
-  /directory/companies/connection-request-action:
+  /directory/organizations/connection-request-action:
     post:
-      summary: Accept connection request (creates connection)
-      tags: [Companies]
+      summary: Accept connection request (creates connection between organizations)
+      tags: [Organizations]
       security: [{ bearerAuth: [] }]
       requestBody:
         required: true
@@ -456,7 +438,7 @@ paths:
             schema: { $ref: '#/components/schemas/ConnectionRequestActionRequest' }
       responses:
         '201':
-          description: Connection created
+          description: Connection created between organizations
           content:
             application/json:
               schema: { $ref: '#/components/schemas/ConnectionCreatedResponse' }
@@ -532,5 +514,6 @@ paths:
         '500': { $ref: '#/components/responses/InternalError' }
 tags:
   - name: Authentication
-  - name: Companies
+  - name: Users
+  - name: Organizations
   - name: Proxy

@@ -8,8 +8,8 @@ import { fetchWithAuth } from "../utils/auth-fetch";
 
 interface SearchResults {
   id: number;
-  companyName: string;
-  companyIdentifier: string;
+  organizationName: string;
+  organizationIdentifier: string;
   email: string;
 }
 
@@ -21,7 +21,7 @@ const SearchPage: React.FC = () => {
   const handleSearch = async () => {
     try {
       const response = await fetchWithAuth(
-        `/companies/search?searchQuery=${encodeURIComponent(searchQuery)}`
+        `/organizations?query=${encodeURIComponent(searchQuery)}`
       );
 
       if (!response || !response.ok) {
@@ -65,7 +65,7 @@ const SearchPage: React.FC = () => {
       </aside>
       <main className="main">
         <div className="header">
-          <h2>Search Companies</h2>
+          <h2>Search Organizations</h2>
         </div>
 
         <Box
@@ -78,7 +78,7 @@ const SearchPage: React.FC = () => {
             style={{
               minWidth: "250",
             }}
-            placeholder="Search by company name"
+            placeholder="Search by organization name"
             onChange={handleSearchInputChange}
             onKeyDown={handleKeyDown}
           >
@@ -98,8 +98,8 @@ const SearchPage: React.FC = () => {
             <table className="test-runs-table">
               <thead>
                 <tr>
-                  <th>Company Name</th>
-                  <th>Company Identifier</th>
+                  <th>Organization Name</th>
+                  <th>Organization Identifier</th>
                   <th>Account Admin Email</th>
                 </tr>
               </thead>
@@ -107,11 +107,11 @@ const SearchPage: React.FC = () => {
                 {searchResults.map((result) => (
                   <tr key={result.id}>
                     <td>
-                      <Link to={`/company/${result.id}`}>
-                        {result.companyName}
+                      <Link to={`/organization/${result.id}`}>
+                        {result.organizationName}
                       </Link>
                     </td>
-                    <td>{result.companyIdentifier}</td>
+                    <td>{result.organizationIdentifier}</td>
                     <td>{result.email}</td>
                   </tr>
                 ))}

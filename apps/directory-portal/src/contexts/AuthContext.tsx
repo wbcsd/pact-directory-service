@@ -3,9 +3,9 @@ import { fetchWithAuth } from "../utils/auth-fetch";
 
 // Define our profile data type
 export interface ProfileData {
-  companyName: string;
-  companyIdentifier: string;
-  companyIdentifierDescription: string;
+  organizationName: string;
+  organizationIdentifier: string;
+  organizationDescription: string;
   fullName: string;
   email: string;
   role: string; // 'user' | 'administrator'
@@ -39,9 +39,9 @@ export const useAuth = () => useContext(AuthContext);
 
 // Default empty profile data
 const emptyProfileData: ProfileData = {
-  companyName: "",
-  companyIdentifier: "",
-  companyIdentifierDescription: "",
+  organizationName: "",
+  organizationIdentifier: "",
+  organizationDescription: "",
   fullName: "",
   email: "",
   role: "user", // Default to 'user' role
@@ -64,7 +64,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   // Fetch profile data from the API
   const fetchProfileData = async (): Promise<ProfileData> => {
     try {
-      const response = await fetchWithAuth("/companies/my-profile");
+      const response = await fetchWithAuth("/users/me");
 
       if (!response || !response.ok) {
         throw new Error("Failed to fetch profile data");

@@ -21,7 +21,6 @@ export interface OrganizationsTable {
   clientSecret: string | null;
   networkKey: string | null;
   description: string | null;
-  createdAt?: Date;
 }
 
 export interface UsersTable {
@@ -31,7 +30,6 @@ export interface UsersTable {
   fullName: string;
   password: string;
   role: string;
-  createdAt?: Date;
 }
 
 export interface RolesTable {

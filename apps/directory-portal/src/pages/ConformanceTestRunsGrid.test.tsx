@@ -42,7 +42,7 @@ type Run = {
   testId: string;
   techSpecVersion: string;
   timestamp: string;
-  companyName: string;
+  organizationName: string;
   adminEmail: string;
   passingPercentage: number;
   status: "PASS" | "FAIL" | "PENDING";
@@ -52,7 +52,7 @@ const mkRun = (over: Partial<Run> = {}): Run => ({
   testId: "abcd1234efgh5678",
   techSpecVersion: "1.0.0",
   timestamp: new Date("2025-01-01T10:00:00Z").toISOString(),
-  companyName: "Acme Corp",
+  organizationName: "Acme Corp",
   adminEmail: "admin@acme.com",
   passingPercentage: 100,
   status: "PASS",
@@ -135,13 +135,13 @@ describe("<ConformanceTestRunsGrid />", () => {
     expect(navigate).toHaveBeenCalledWith("/conformance-testing");
   });
 
-  it("renders table with admin columns (Company, Email)", () => {
+  it("renders table with admin columns (Organization, Email)", () => {
     const navigate = vi.fn();
     renderGrid(
       <ConformanceTestRunsGrid
         testRuns={[
           mkRun(),
-          mkRun({ testId: "zzzz9999yyyy8888", companyName: "Globex" }),
+          mkRun({ testId: "zzzz9999yyyy8888", organizationName: "Globex" }),
         ]}
         profileData={{ role: "administrator" } as any}
         navigate={navigate as any}
@@ -155,7 +155,7 @@ describe("<ConformanceTestRunsGrid />", () => {
       screen.getByRole("columnheader", { name: /Test Run ID/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("columnheader", { name: /Company/i })
+      screen.getByRole("columnheader", { name: /Organization/i })
     ).toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: /Email/i })
@@ -202,9 +202,9 @@ describe("<ConformanceTestRunsGrid />", () => {
       />
     );
 
-    // Company/Email headers should NOT exist
+    // Organization/Email headers should NOT exist
     expect(
-      screen.queryByRole("columnheader", { name: /Company/i })
+      screen.queryByRole("columnheader", { name: /Organization/i })
     ).not.toBeInTheDocument();
     expect(
       screen.queryByRole("columnheader", { name: /Email/i })

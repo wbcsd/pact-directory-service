@@ -14,7 +14,7 @@ interface TestRun {
   testId: string;
   techSpecVersion: string;
   timestamp: string;
-  companyName: string;
+  organizationName: string;
   adminEmail: string;
   passingPercentage: number;
   status: "PASS" | "FAIL" | "PENDING";
@@ -118,7 +118,7 @@ const ConformanceTestRuns: React.FC = () => {
         <input
           autoFocus
           type="text"
-          placeholder="Press enter to search by company name, email address or user name"
+          placeholder="Press enter to search by organization name, email address or user name"
           className="searchInput"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}

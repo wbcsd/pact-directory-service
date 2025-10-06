@@ -20,14 +20,11 @@ import HeroImage from "../assets/providers-header.webp";
 const SignupPage: React.FC = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    companyName: "",
-    companyIdentifier: "",
-    companyIdentifierDescription: "",
+    organizationName: "",
     fullName: "",
     email: "",
     password: "",
-    confirmPassword: "",
-    solutionApiUrl: "",
+    confirmPassword: ""
   });
   const [status, setStatus] = useState<null | "success" | "error">(null);
 
@@ -47,7 +44,7 @@ const SignupPage: React.FC = () => {
       setCreatingAccount(true);
 
       const response = await fetch(
-        `${import.meta.env.VITE_DIRECTORY_API}/directory/companies/signup`,
+        `${import.meta.env.VITE_DIRECTORY_API}/directory/users/signup`,
         {
           method: "POST",
           headers: {
@@ -133,7 +130,7 @@ const SignupPage: React.FC = () => {
               Sign up to PACT Network Services
             </h2>
             <Form.Root onSubmit={handleSubmit}>
-              <Form.Field name="companyName">
+              <Form.Field name="organizationName">
                 <Form.Label
                   style={{
                     display: "block",
@@ -141,13 +138,13 @@ const SignupPage: React.FC = () => {
                     fontWeight: "500",
                   }}
                 >
-                  Company Name<span style={{ color: "red" }}>*</span>
+                  Organization Name<span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <Form.Control asChild>
                   <TextField.Root
-                    value={formData.companyName}
+                    value={formData.organizationName}
                     required
-                    placeholder="Enter company name"
+                    placeholder="Enter organization name"
                     onChange={handleChange}
                     style={{
                       width: "100%",
@@ -173,7 +170,7 @@ const SignupPage: React.FC = () => {
                             align="center"
                             sideOffset={5}
                           >
-                            The full registered/legal name of your company.
+                            The full registered/legal name of your organization.
                           </Tooltip.Content>
                         </Tooltip.Root>
                       </Tooltip.Provider>
@@ -187,7 +184,7 @@ const SignupPage: React.FC = () => {
                     fontSize: "0.85em",
                   }}
                 >
-                  Company name is required.
+                  Organization name is required.
                 </Form.Message>
               </Form.Field>
 

@@ -50,7 +50,7 @@ type Run = {
   testId: string;
   techSpecVersion: string;
   timestamp: string;
-  companyName: string;
+  organizationName: string;
   adminEmail: string;
   passingPercentage: number;
   status: "PASS" | "FAIL" | "PENDING";
@@ -59,7 +59,7 @@ const mkRun = (over: Partial<Run> = {}): Run => ({
   testId: "abcd1234efgh5678",
   techSpecVersion: "1.0.0",
   timestamp: new Date("2025-01-01T10:00:00Z").toISOString(),
-  companyName: "Acme Corp",
+  organizationName: "Acme Corp",
   adminEmail: "admin@acme.com",
   passingPercentage: 100,
   status: "PASS",
@@ -124,11 +124,11 @@ describe("<ConformanceTestRuns /> container", () => {
   it("Enter (≥4 chars) updates URL -> triggers fetch with query -> grid shows filtered runs", async () => {
     // initial fetch (no query)
     (proxyWithAuth as vi.Mock).mockResolvedValueOnce(
-      ok({ testRuns: [mkRun({ companyName: "Globex" })] })
+      ok({ testRuns: [mkRun({ organizationName: "Globex" })] })
     );
     // after search
     (proxyWithAuth as vi.Mock).mockResolvedValueOnce(
-      ok({ testRuns: [mkRun({ companyName: "Acme" })] })
+      ok({ testRuns: [mkRun({ organizationName: "Acme" })] })
     );
 
     renderWithRouter("/runs");
@@ -153,7 +153,7 @@ describe("<ConformanceTestRuns /> container", () => {
     (proxyWithAuth as vi.Mock).mockResolvedValueOnce(ok({ testRuns: [] }));
     // after clearing -> all
     (proxyWithAuth as vi.Mock).mockResolvedValueOnce(
-      ok({ testRuns: [mkRun({ companyName: "All" })] })
+      ok({ testRuns: [mkRun({ organizationName: "All" })] })
     );
 
     renderWithRouter("/runs?q=acme");

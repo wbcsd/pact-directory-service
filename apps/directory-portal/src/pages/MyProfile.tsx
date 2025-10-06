@@ -38,16 +38,16 @@ const MyProfile: React.FC = () => {
       ) : (
         <main className="main">
           <div className="header">
-            <h2>My Profile: {profileData.companyName}</h2>
+            <h2>My Profile: {profileData.organizationName}</h2>
           </div>
 
           <div>
-            <h3>Company Identifier</h3>
-            <p>{profileData.companyIdentifier}</p>
+            <h3>Organization Identifier</h3>
+            <p>{profileData.organizationIdentifier}</p>
           </div>
           <div>
-            <h3>Company Identifier Description</h3>
-            <p>{profileData.companyIdentifierDescription}</p>
+            <h3>Organization Description</h3>
+            <p>{profileData.organizationDescription}</p>
           </div>
           <div>
             <h3>Account Admin Full Name</h3>
