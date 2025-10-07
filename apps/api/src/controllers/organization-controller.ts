@@ -21,12 +21,30 @@ export async function get(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+export async function listMembers(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const services: Services = req.app.locals.services;
+    const user = res.locals.user;
+    const { id } = user as { email: string; id: string };
+
+    const users = await services.organization.listMembers(Number(id));
+
+    res.json(users);
+  } catch (error) {
+    next(error);
+  }
+}
+
 export async function list(req: Request, res: Response, next: NextFunction) {
   try {
     const services: Services = req.app.locals.services;
     const { query } = req.query;
 
-    const organizations = await services.organization.list( query as string);
+    const organizations = await services.organization.list(query as string);
 
     res.json(organizations);
   } catch (error) {
