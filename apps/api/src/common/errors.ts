@@ -21,15 +21,6 @@ export class BadRequestError extends Error {
   }
 }
 
-export class ConflictError extends Error {
-  code = 409;
-  constructor(message: string) {
-    super(message);
-    this.name = 'ConflictError';
-    this.message = message;
-  }
-}
-
 export class ValidationError extends Error {
   code = 400;
   constructor(message: string) {
@@ -56,3 +47,49 @@ export class ForbiddenError extends Error {
     this.message = message;
   }
 }
+
+export class RequestTimeoutError extends Error {
+  code = 408;
+  constructor(message: string) {
+    super(message);
+    this.name = 'RequestTimeoutError';
+    this.message = message;
+  }
+}
+
+export class ConflictError extends Error {
+  code = 409;
+  constructor(message: string) {
+    super(message);
+    this.name = 'ConflictRequestError';
+    this.message = message;
+  }
+} 
+
+export class TooManyRequestsError extends Error {
+  code = 429;
+  constructor(message: string) {
+    super(message);
+    this.name = 'TooManyRequestsError';
+    this.message = message;
+  }
+}
+
+export class InternalServerError extends Error {
+  code = 500;
+  constructor(message: string) {
+    super(message);
+    this.name = 'InternalServerError';
+    this.message = message;
+  }
+}
+
+export class ServiceUnavailableError extends Error {
+  code = 503
+  constructor(message: string) {
+    super(message);
+    this.name = 'ServiceUnavailableError';
+    this.message = message;
+  }
+}
+

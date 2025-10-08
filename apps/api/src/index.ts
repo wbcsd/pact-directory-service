@@ -1,4 +1,4 @@
-import logger from '@src/util/logger';
+import logger from '@src/common/logger';
 
 import config from '@src/common/config';
 import server from './server';

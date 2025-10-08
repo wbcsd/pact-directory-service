@@ -1,8 +1,8 @@
 import { Kysely } from 'kysely';
 import config from '@src/common/config';
 import { Database } from '@src/database/types';
-import { BadRequestError, NotFoundError } from '@src/common/errors';
-import logger from '@src/util/logger';
+import { BadRequestError } from '@src/common/errors';
+import logger from '@src/common/logger';
 import { UserContext, UserService } from './user-service';
 import { OrganizationService } from './organization-service';
 
@@ -43,7 +43,7 @@ export class TestRunService {
 
     // Get user and company data
     const user = await this.userService.get(context.userId);
-    const organization = await this.organizationService.get(user.organizationId);
+    const organization = await this.organizationService.get(context, user.organizationId);
 
     if (!user || !organization) {
       throw new BadRequestError('User or organization not found.');
@@ -74,8 +74,8 @@ export class TestRunService {
             baseUrl: apiUrl,
             customAuthBaseUrl: authBaseUrl,
             version,
-            organizationName: organization.organizationName,
-            organizationIdentifier: organization.organizationIdentifier,
+            companyName: organization.organizationName,
+            companyIdentifier: organization.organizationIdentifier,
             adminEmail: user.email,
             adminName: user.fullName,
             scope: scope,
@@ -96,7 +96,8 @@ export class TestRunService {
   /**
    * Get test results by test run ID
    */
-  async getTestResults(testRunId: string): Promise<unknown> {
+  async getTestResults(context: UserContext, testRunId: string): Promise<unknown> {
+
     if (!testRunId) {
       throw new BadRequestError("Missing 'testRunId' parameter.");
     }
@@ -124,16 +125,9 @@ export class TestRunService {
   /**
    * List test runs with optional filtering
    */
-  async listTestRuns(queryParams: ListTestRunsQuery, userId: string): Promise<unknown> {
-    const user = await this.db
-      .selectFrom('users')
-      .select(['email', 'role'])
-      .where('id', '=', Number(userId))
-      .executeTakeFirst();
-
-    if (!user) {
-      throw new NotFoundError('User not found.');
-    }
+  async listTestRuns(context: UserContext, queryParams: ListTestRunsQuery): Promise<unknown> {
+    
+    const user = await this.userService.get(context.userId);
 
     try {
       const url = new URL(`${config.CONFORMANCE_API_INTERNAL}/testruns`);

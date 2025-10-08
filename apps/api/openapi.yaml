@@ -40,22 +40,16 @@ components:
       type: object
       properties:
         organizationName: { type: string }
-        organizationIdentifier: { type: string }
-        organizationIdentifierDescription: { type: string }
         fullName: { type: string }
         email: { type: string, format: email }
         password: { type: string, format: password, minLength: 6 }
         confirmPassword: { type: string, format: password }
-        solutionApiUrl: { type: string }
       required:
         - organizationName
-        - organizationIdentifier
-        - organizationIdentifierDescription
         - fullName
         - email
         - password
         - confirmPassword
-        - solutionApiUrl
     SignupResponse:
       type: object
       properties:
@@ -85,25 +79,26 @@ components:
     ResetPasswordRequest:
       type: object
       properties:
+        email: { type: string, format: email }
         token: { type: string }
         password: { type: string, minLength: 6 }
         confirmPassword: { type: string, minLength: 6 }
-      required: [token, password, confirmPassword]
+      required: [email, token, password, confirmPassword]
     VerifyResetTokenResponse:
       type: object
       properties:
         valid: { type: boolean }
         message: { type: string }
       required: [valid]
-    CompanyBase:
+    OrganizationBase:
       type: object
       properties:
         id: { type: integer }
-        companyName: { type: string }
-        companyIdentifier: { type: string }
-        companyIdentifierDescription: { type: string }
+        organizationName: { type: string }
+        organizationIdentifier: { type: string }
+        organizationDescription: { type: string, nullable: true }
         solutionApiUrl: { type: string }
-      required: [id, companyName, companyIdentifier]
+      required: [id, organizationName, organizationIdentifier]
     UserBase:
       type: object
       properties:
@@ -118,10 +113,13 @@ components:
         email: { type: string, format: email }
         organizationId: { type: integer }
         role: { type: string }
+        policies: 
+          type: array
+          items: { type: string }
         fullName: { type: string }
         organizationName: { type: string }
         organizationIdentifier: { type: string }
-        organizationIdentifierDescription: { type: string, nullable: true }
+        organizationDescription: { type: string, nullable: true }
         solutionApiUrl: { type: string }
         clientId: { type: string, nullable: true }
         clientSecret: { type: string, nullable: true }
@@ -166,6 +164,7 @@ components:
         - email
         - organizationId
         - role
+        - policies
         - fullName
         - organizationName
         - organizationIdentifier
@@ -178,8 +177,8 @@ components:
         id: { type: integer }
         organizationName: { type: string }
         organizationIdentifier: { type: string }
-        organizationIdentifierDescription: { type: string }
-        networkKey: { type: string }
+        organizationDescription: { type: string, nullable: true }
+        networkKey: { type: string, nullable: true }
         solutionApiUrl: { type: string }
         parentId: { type: integer, nullable: true }
       required: [id, organizationName, organizationIdentifier, solutionApiUrl]
@@ -250,7 +249,7 @@ security:
 paths:
   /im/auth/token:
     post:
-      summary: Issue inter-company access token
+      summary: Issue inter-organization access token
       tags: [Authentication]
       security: []
       requestBody:
@@ -268,7 +267,7 @@ paths:
         '400': { $ref: '#/components/responses/BadRequest' }
   /directory/users/signup:
     post:
-      summary: Sign up a company and primary user
+      summary: Sign up an organization and primary user
       tags: [Users]
       security: []
       requestBody:
@@ -408,6 +407,56 @@ paths:
                 items: { $ref: '#/components/schemas/OrganizationProfileResponse' }
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
+  /directory/organizations/{id}/users:
+    get:
+      summary: List all users in an organization
+      tags: [Organizations]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          description: Organization ID
+      responses:
+        '200':
+          description: List of users in the organization
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/UserBase' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /directory/organizations/{id}/connections:
+    post:
+      summary: List connections for an organization
+      tags: [Organizations]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          description: Organization ID
+      responses:
+        '200':
+          description: List of connections for the organization
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  type: object
+                  properties:
+                    organizationId: { type: integer }
+                    organizationName: { type: string }
+                    requestedAt: { type: string, format: date-time }
+                    createdAt: { type: string, format: date-time }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
   /directory/organizations/create-connection-request:
     post:
       summary: Create a connection request between organizations

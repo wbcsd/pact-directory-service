@@ -66,10 +66,9 @@ const SignupPage: React.FC = () => {
 
         navigate("/conformance-test-runs");
       } else {
-        const errorResponse = await response.json();
-
-        if (errorResponse.error) {
-          setErrorMessage(errorResponse.error);
+        const data = await response.json();
+        if (data.message) {
+          setErrorMessage(data.message);
         }
 
         setStatus("error");

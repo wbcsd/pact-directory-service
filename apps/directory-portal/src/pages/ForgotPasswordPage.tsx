@@ -32,8 +32,8 @@ const ForgotPasswordPage: React.FC = () => {
       if (response.ok) {
         setStatus("success");
       } else {
-        const errorData = await response.json();
-        setErrorMessage(errorData.error || "An error occurred");
+        const error = await response.json();
+        setErrorMessage(error.message || "An error occurred");
         setStatus("error");
       }
     } catch (error) {
