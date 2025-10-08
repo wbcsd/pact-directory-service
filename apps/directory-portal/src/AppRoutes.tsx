@@ -13,6 +13,7 @@ import ConformanceTestResult from "./pages/ConformanceTestResult";
 import ConformanceTestRuns from "./pages/ConformanceTestRuns";
 import { featureFlags } from "./utils/feature-flags";
 import OrganizationUsers from "./pages/OrganizationUsers";
+import ManageUser from "./pages/ManageUser";
 
 const AppRoutes: React.FC = () => {
   return (
@@ -30,7 +31,10 @@ const AppRoutes: React.FC = () => {
         </>
       )}
       {featureFlags.enableOrganizationManagement === true && (
-        <Route path="/organization/users" element={<OrganizationUsers />} />
+        <>
+          <Route path="/organization/users" element={<OrganizationUsers />} />
+          <Route path="/organization/users/:id" element={<ManageUser />} />
+        </>
       )}
       <Route path="/conformance-testing" element={<ConformanceTesting />} />
       <Route

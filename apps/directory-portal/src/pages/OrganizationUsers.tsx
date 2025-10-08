@@ -5,9 +5,10 @@ import { fetchWithAuth } from "../utils/auth-fetch";
 import DataTable, { Column } from "../components/DataTable";
 import { useAuth } from "../contexts/AuthContext";
 import { InputIcon } from "@radix-ui/react-icons";
+import { useNavigate } from "react-router-dom";
 
 interface User {
-  id: number;
+  userId: number;
   fullName: string;
   email: string;
   role: string;
@@ -19,6 +20,7 @@ interface User {
 const OrganizationUsers: React.FC = () => {
   // fetch users from api
   const [users, setUsers] = React.useState([]);
+  const navigate = useNavigate();
   const { profileData } = useAuth();
 
   useEffect(() => {
@@ -76,9 +78,11 @@ const OrganizationUsers: React.FC = () => {
     {
       key: "actions",
       header: "",
-      render: (user: User) => (
+      render: (row: User) => (
         <Button
-          onClick={() => {}}
+          onClick={() => {
+            navigate(`/organization/users/${row.userId}`);
+          }}
           style={{
             background: "transparent",
             color: "#0A0552",
@@ -105,7 +109,7 @@ const OrganizationUsers: React.FC = () => {
           <h2>Organization Users</h2>
         </div>
         <div>
-          <DataTable idColumnName="id" columns={columns} data={users} />
+          <DataTable idColumnName="userId" columns={columns} data={users} />
         </div>
       </main>
     </>
