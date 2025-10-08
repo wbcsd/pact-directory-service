@@ -7,7 +7,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { InputIcon } from "@radix-ui/react-icons";
 import { useNavigate } from "react-router-dom";
 
-interface User {
+export interface User {
   userId: number;
   fullName: string;
   email: string;
