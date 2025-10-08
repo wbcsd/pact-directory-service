@@ -1,5 +1,6 @@
 import { Response, Request, NextFunction } from 'express';
 import { Services } from '@src/services';
+import logger from '@src/util/logger';
 
 /* Controller for company-related routes. Each function only
  * interacts with the corresponding service methods and handles
@@ -21,12 +22,36 @@ export async function get(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+export async function listMembers(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const services: Services = req.app.locals.services;
+    const user = res.locals.user;
+    const { id } = req.params;
+
+    if (Number(id) !== user.organizationId) {
+      res.status(403).json({ message: 'Forbidden' });
+      return;
+    }
+
+    const members = await services.organization.listMembers(Number(id));
+
+    res.json({ members });
+  } catch (error) {
+    logger.error('OrganizationController.listMembers', error);
+    next(error);
+  }
+}
+
 export async function list(req: Request, res: Response, next: NextFunction) {
   try {
     const services: Services = req.app.locals.services;
     const { query } = req.query;
 
-    const organizations = await services.organization.list( query as string);
+    const organizations = await services.organization.list(query as string);
 
     res.json(organizations);
   } catch (error) {

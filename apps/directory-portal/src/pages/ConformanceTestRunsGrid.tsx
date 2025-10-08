@@ -10,7 +10,7 @@ interface TestRun {
   testId: string;
   techSpecVersion: string;
   timestamp: string;
-  organizationName: string;
+  companyName: string;
   adminEmail: string;
   passingPercentage: number;
   status: "PASS" | "FAIL" | "PENDING";
@@ -46,6 +46,8 @@ const ConformanceTestRunsGrid: React.FC<Props> = ({
     {
       key: "testId",
       header: "Test Run ID",
+      sortable: true,
+      sortValue: (run) => run.testId,
       render: (run) => (
         <NavLink to={`/conformance-test-result?testRunId=${run.testId}`}>
           {run.testId.substring(0, 8)}
@@ -55,13 +57,17 @@ const ConformanceTestRunsGrid: React.FC<Props> = ({
     ...(profileData?.role === "administrator"
       ? [
           {
-            key: "organizationName",
-            header: "Organization",
-            render: (run: TestRun) => run.organizationName,
+            key: "companyName",
+            header: "Company",
+            sortable: true,
+            sortValue: (run: TestRun) => run.companyName,
+            render: (run: TestRun) => run.companyName,
           },
           {
             key: "adminEmail",
             header: "Email",
+            sortable: true,
+            sortValue: (run: TestRun) => run.adminEmail,
             render: (run: TestRun) => run.adminEmail,
           },
         ]
@@ -69,16 +75,22 @@ const ConformanceTestRunsGrid: React.FC<Props> = ({
     {
       key: "status",
       header: "Status",
+      sortable: true,
+      sortValue: (run) => run.status,
       render: (run) => <StatusBadge status={run.status} />,
     },
     {
       key: "techSpecVersion",
       header: "Version",
+      sortable: true,
+      sortValue: (run) => run.techSpecVersion,
       render: (run) => run.techSpecVersion,
     },
     {
       key: "timestamp",
       header: "Run Date/Time CET",
+      sortable: true,
+      sortValue: (run) => new Date(run.timestamp).getTime(),
       render: (run) => (
         <span className="test-gridcell-datetime">
           {formatDate(run.timestamp)}

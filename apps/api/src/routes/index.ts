@@ -20,15 +20,40 @@ router.get('/directory/users/me', authenticate, UserController.myProfile);
 // Password reset
 router.post('/directory/users/forgot-password', UserController.forgotPassword);
 router.post('/directory/users/reset-password', UserController.resetPassword);
-router.get('/directory/users/verify-reset-token/:token', UserController.verifyResetToken);
+router.get(
+  '/directory/users/verify-reset-token/:token',
+  UserController.verifyResetToken
+);
 
 // Organization list and search
-router.get('/directory/organizations/:id', authenticate, OrganizationController.get);
-router.get('/directory/organizations', authenticate, OrganizationController.list);
+router.get(
+  '/directory/organizations/:id',
+  authenticate,
+  OrganizationController.get
+);
+router.get(
+  '/directory/organizations',
+  authenticate,
+  OrganizationController.list
+);
+
+router.get(
+  '/directory/organizations/:id/members',
+  authenticate,
+  OrganizationController.listMembers
+);
 
 // Connections between organizations
-router.post('/directory/organizations/create-connection-request', authenticate, OrganizationController.createConnectionRequest);
-router.post('/directory/organizations/connection-request-action', authenticate, OrganizationController.connectionRequestAction);
+router.post(
+  '/directory/organizations/create-connection-request',
+  authenticate,
+  OrganizationController.createConnectionRequest
+);
+router.post(
+  '/directory/organizations/connection-request-action',
+  authenticate,
+  OrganizationController.connectionRequestAction
+);
 
 // Proxy routes to Conformance service
 router.post('/proxy/test', authenticate, ProxyController.createTestRun);
