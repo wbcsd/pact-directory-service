@@ -30,12 +30,18 @@ export async function listMembers(
   try {
     const services: Services = req.app.locals.services;
     const user = res.locals.user;
-    const { id } = user as { email: string; id: string };
+    const { id } = req.params;
 
-    const users = await services.organization.listMembers(Number(id));
+    if (Number(id) !== user.organizationId) {
+      res.status(403).json({ message: 'Forbidden' });
+      return;
+    }
 
-    res.json(users);
+    const members = await services.organization.listMembers(Number(id));
+
+    res.json({ members });
   } catch (error) {
+    logger.error('OrganizationController.listMembers', error);
     next(error);
   }
 }

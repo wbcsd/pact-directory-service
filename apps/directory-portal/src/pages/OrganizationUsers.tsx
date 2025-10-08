@@ -26,8 +26,8 @@ const OrganizationUsers: React.FC = () => {
           `/organizations/${profileData?.organizationId}/members`
         );
         if (response!.ok) {
-          const data = await response!.json();
-          setUsers(data);
+          const { members } = await response!.json();
+          setUsers(members);
         } else {
           console.error("Failed to fetch users");
         }

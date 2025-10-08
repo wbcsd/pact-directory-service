@@ -185,8 +185,11 @@ components:
         parentId: { type: integer, nullable: true }
       required: [id, organizationName, organizationIdentifier, solutionApiUrl]
     OrganizationsMemberResponse:
-      type: array
-      items: { $ref: "#/components/schemas/UserBase" }
+      type: object
+      properties:
+        members:
+          type: array
+          items: { $ref: "#/components/schemas/UserBase" }
     CreateConnectionRequestRequest:
       type: object
       properties:
@@ -409,7 +412,7 @@ paths:
           content:
             application/json:
               schema:
-                { $ref: "#/components/schemas/OrganizationProfileResponse" }
+                { $ref: "#/components/schemas/OrganizationsMemberResponse" }
         "404": { $ref: "#/components/responses/NotFound" }
         "401": { $ref: "#/components/responses/Unauthorized" }
       x-notes: Controller uses req.params.id. Either change route to /directory/companies/profile/{id} or adapt controller to query.
