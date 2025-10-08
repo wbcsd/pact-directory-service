@@ -25,11 +25,11 @@ const EditUserPage: React.FC = () => {
   const { id: userId } = useParams<{ id: string }>();
   const [formData, setFormData] = useState({
     fullName: "",
-    email: "",
     role: "",
   });
   const [readOnlyData, setReadOnlyData] = useState({
     id: 0,
+    email: "",
     organizationName: "",
     organizationId: 0,
     organizationIdentifier: "",
@@ -59,10 +59,10 @@ const EditUserPage: React.FC = () => {
           const user: User = await response.json();
           setFormData({
             fullName: user.fullName,
-            email: user.email,
             role: user.role,
           });
           setReadOnlyData({
+            email: user.email,
             id: user.userId,
             organizationName: user.organizationName,
             organizationId: user.organizationId,
@@ -89,7 +89,6 @@ const EditUserPage: React.FC = () => {
 
     const cleanedFormData = {
       ...formData,
-      email: formData.email.replace(/\s+/g, ""),
     };
 
     try {
@@ -162,7 +161,7 @@ const EditUserPage: React.FC = () => {
             <h2 style={{ marginBottom: "30px" }}>Edit User</h2>
 
             <Form.Root onSubmit={handleSubmit}>
-              {/* Read-only User ID */}
+              {/* Read-only User Email */}
               <Box style={{ marginBottom: "20px" }}>
                 <Text
                   style={{
@@ -171,10 +170,10 @@ const EditUserPage: React.FC = () => {
                     fontWeight: "500",
                   }}
                 >
-                  User ID
+                  Email Address
                 </Text>
                 <TextField.Root
-                  value={readOnlyData.id.toString()}
+                  value={readOnlyData.email.toString()}
                   readOnly
                   disabled
                   style={{
@@ -205,7 +204,6 @@ const EditUserPage: React.FC = () => {
                     style={{
                       width: "100%",
                       border: "1px solid #ccc",
-                      padding: "12px",
                       fontSize: "16px",
                     }}
                   >
@@ -241,75 +239,6 @@ const EditUserPage: React.FC = () => {
                   }}
                 >
                   Full name is required.
-                </Form.Message>
-              </Form.Field>
-
-              {/* Editable Email */}
-              <Form.Field name="email">
-                <Form.Label
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    fontWeight: "500",
-                  }}
-                >
-                  Email<span style={{ color: "red" }}>*</span>
-                </Form.Label>
-                <Form.Control asChild>
-                  <TextField.Root
-                    value={formData.email}
-                    required
-                    type="email"
-                    placeholder="Enter email address"
-                    onChange={handleChange}
-                    style={{
-                      width: "100%",
-                      border: "1px solid #ccc",
-                      padding: "12px",
-                      fontSize: "16px",
-                    }}
-                  >
-                    <TextField.Slot side="right">
-                      <Tooltip.Provider delayDuration={0}>
-                        <Tooltip.Root>
-                          <Tooltip.Trigger asChild>
-                            <InfoCircledIcon
-                              width={20}
-                              height={20}
-                              color="#0A0552"
-                              style={{ cursor: "pointer" }}
-                            />
-                          </Tooltip.Trigger>
-                          <Tooltip.Content
-                            className="TooltipContent"
-                            side="right"
-                            align="center"
-                            sideOffset={5}
-                          >
-                            Email address for login and notifications
-                          </Tooltip.Content>
-                        </Tooltip.Root>
-                      </Tooltip.Provider>
-                    </TextField.Slot>
-                  </TextField.Root>
-                </Form.Control>
-                <Form.Message
-                  match="valueMissing"
-                  style={{
-                    color: "var(--base-color-brand--light-blue)",
-                    fontSize: "0.85em",
-                  }}
-                >
-                  Email is required.
-                </Form.Message>
-                <Form.Message
-                  match="typeMismatch"
-                  style={{
-                    color: "var(--base-color-brand--light-blue)",
-                    fontSize: "0.85em",
-                  }}
-                >
-                  Invalid email.
                 </Form.Message>
               </Form.Field>
 
@@ -357,7 +286,7 @@ const EditUserPage: React.FC = () => {
                     >
                       <Select.Viewport>
                         <Select.Item
-                          value="admin"
+                          value="administrator"
                           style={{
                             padding: "12px",
                             cursor: "pointer",
@@ -365,11 +294,6 @@ const EditUserPage: React.FC = () => {
                           }}
                         >
                           <Select.ItemText>Admin</Select.ItemText>
-                          <Select.ItemIndicator
-                            style={{ position: "absolute", left: "0" }}
-                          >
-                            <CheckIcon />
-                          </Select.ItemIndicator>
                         </Select.Item>
                         <Select.Item
                           value="user"
@@ -380,11 +304,6 @@ const EditUserPage: React.FC = () => {
                           }}
                         >
                           <Select.ItemText>User</Select.ItemText>
-                          <Select.ItemIndicator
-                            style={{ position: "absolute", left: "0" }}
-                          >
-                            <CheckIcon />
-                          </Select.ItemIndicator>
                         </Select.Item>
                         <Select.Item
                           value="viewer"
@@ -395,11 +314,6 @@ const EditUserPage: React.FC = () => {
                           }}
                         >
                           <Select.ItemText>Viewer</Select.ItemText>
-                          <Select.ItemIndicator
-                            style={{ position: "absolute", left: "0" }}
-                          >
-                            <CheckIcon />
-                          </Select.ItemIndicator>
                         </Select.Item>
                       </Select.Viewport>
                     </Select.Content>
@@ -479,9 +393,8 @@ const EditUserPage: React.FC = () => {
               <Box style={{ display: "flex", gap: "10px", marginTop: "40px" }}>
                 <Button
                   type="button"
-                  variant="outline"
                   style={{ flex: 1 }}
-                  onClick={() => navigate("/users")}
+                  onClick={() => navigate("/organization/users")}
                 >
                   Cancel
                 </Button>
