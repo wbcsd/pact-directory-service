@@ -1,5 +1,6 @@
 import { Response, Request, NextFunction } from 'express';
 import { Services } from '@src/services';
+import logger from '@src/util/logger';
 
 /* Controller for company-related routes. Each function only
  * interacts with the corresponding service methods and handles

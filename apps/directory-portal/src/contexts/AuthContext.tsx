@@ -6,6 +6,7 @@ export interface ProfileData {
   organizationName: string;
   organizationIdentifier: string;
   organizationDescription: string;
+  organizationId: number;
   fullName: string;
   email: string;
   role: string; // 'user' | 'administrator'
@@ -42,6 +43,7 @@ const emptyProfileData: ProfileData = {
   organizationName: "",
   organizationIdentifier: "",
   organizationDescription: "",
+  organizationId: 0,
   fullName: "",
   email: "",
   role: "user", // Default to 'user' role

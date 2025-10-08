@@ -37,6 +37,12 @@ router.get(
   OrganizationController.list
 );
 
+router.get(
+  '/directory/organizations/:id/members',
+  authenticate,
+  OrganizationController.listMembers
+);
+
 // Connections between organizations
 router.post(
   '/directory/organizations/create-connection-request',
@@ -47,11 +53,6 @@ router.post(
   '/directory/organizations/connection-request-action',
   authenticate,
   OrganizationController.connectionRequestAction
-);
-router.get(
-  '/directory/organizations/members',
-  authenticate,
-  OrganizationController.listMembers
 );
 
 // Proxy routes to Conformance service

@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import SideNav from "../components/SideNav";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import DataTable, { Column } from "../components/DataTable";
+import { useAuth } from "../contexts/AuthContext";
 
 interface User {
   id: number;
@@ -13,12 +14,17 @@ interface User {
 const OrganizationUsers: React.FC = () => {
   // fetch users from api
   const [users, setUsers] = React.useState([]);
+  const { profileData } = useAuth();
 
   useEffect(() => {
     // Placeholder for fetching users from the API
+    if (!profileData) return;
+
     const fetchUsers = async () => {
       try {
-        const response = await fetchWithAuth("/organizations/users");
+        const response = await fetchWithAuth(
+          `/organizations/${profileData?.organizationId}/members`
+        );
         if (response!.ok) {
           const data = await response!.json();
           setUsers(data);
@@ -31,7 +37,7 @@ const OrganizationUsers: React.FC = () => {
     };
 
     fetchUsers();
-  }, []);
+  }, [profileData]);
 
   const columns: Column<User>[] = [
     {

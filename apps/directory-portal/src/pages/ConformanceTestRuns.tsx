@@ -60,7 +60,7 @@ const ConformanceTestRuns: React.FC = () => {
         query ? `&query=${encodeURIComponent(query)}` : ""
       }`;
 
-      url += `&size=${MAX_PAGE_SIZE}`;
+      url += `&pageSize=${MAX_PAGE_SIZE}`;
 
       const response = await proxyWithAuth(url);
       if (!response || !response.ok)
