@@ -29,7 +29,6 @@ export interface TestRunUserContext {
 }
 
 export class TestRunService {
-
   constructor(
     private db: Kysely<Database>,
     private userService: UserService,
@@ -39,8 +38,10 @@ export class TestRunService {
   /**
    * Create a new test run
    */
-  async createTestRun(context: UserContext, data: CreateTestRunData): Promise<unknown> {
-
+  async createTestRun(
+    context: UserContext,
+    data: CreateTestRunData
+  ): Promise<unknown> {
     // Get user and company data
     const user = await this.userService.get(context.userId);
     const organization = await this.organizationService.get(context, user.organizationId);
@@ -113,7 +114,7 @@ export class TestRunService {
           'Content-Type': 'application/json',
         },
       });
-      
+
       const data: unknown = await response.json();
       return data;
     } catch (error) {
@@ -131,15 +132,14 @@ export class TestRunService {
 
     try {
       const url = new URL(`${config.CONFORMANCE_API_INTERNAL}/testruns`);
-      
-      if (queryParams.query) 
+
+      if (queryParams.query)
         url.searchParams.append('query', queryParams.query);
-      
-      if (queryParams.page) 
-        url.searchParams.append('page', queryParams.page);
-      
+
+      if (queryParams.page) url.searchParams.append('page', queryParams.page);
+
       if (queryParams.pageSize)
-        url.searchParams.append('pageSize', queryParams.pageSize);
+        url.searchParams.append('size', queryParams.pageSize);
 
       // Non-administrator users should only see their own test runs
       if (user.role !== 'administrator')
@@ -159,5 +159,4 @@ export class TestRunService {
       throw new Error('Failed to fetch recent test runs.');
     }
   }
-
 }
