@@ -118,7 +118,7 @@ function DataTable<T extends object>({
         <img src={EmptyImage} alt="No data" />
         <h2>{emptyState?.title ?? "No Data"}</h2>
         {emptyState?.description && (
-          <p className="emptyHint">{emptyState.description}</p>
+          <div className="emptyHint">{emptyState.description}</div>
         )}
         {emptyState?.action}
       </div>

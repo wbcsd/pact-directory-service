@@ -54,7 +54,7 @@ const SideNav: React.FC = () => {
       </FeatureFlag>
 
       <div className="nav-group">
-        <p style={{ fontSize: "0.8em" }}>
+        <div style={{ fontSize: "0.8em" }}>
           <div className="nav-title">Support</div>
           Need help? Contact us at:
           <br />
@@ -64,7 +64,7 @@ const SideNav: React.FC = () => {
           >
             pact-support@wbcsd.org
           </a>
-        </p>
+        </div>
       </div>
     </>
   );
