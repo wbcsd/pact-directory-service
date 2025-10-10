@@ -16,32 +16,32 @@ export class AuthService {
     const { client_id, client_secret, network_key } = data;
 
     // 1. Load both companies from the db. One company through the client_id and the other through the network_id
-    const clientCompany = await this.db
+    const clientOrganization = await this.db
       .selectFrom('organizations')
       .leftJoin('users', 'organizations.id', 'users.organizationId')
       .select([
         'organizations.id',
         'organizations.clientSecret',
         'organizations.networkKey',
-        'organizations.name as companyName',
+        'organizations.name as organizationName',
         'users.email',
       ])
       .where('clientId', '=', client_id)
       .executeTakeFirst();
 
-    const networkCompany = await this.db
+    const networkOrganization = await this.db
       .selectFrom('organizations')
       .selectAll()
       .where('networkKey', '=', network_key)
       .executeTakeFirst();
 
     // Check if both organizations exist
-    if (!clientCompany || !networkCompany) {
+    if (!clientOrganization || !networkOrganization) {
       throw new UnauthorizedError('Invalid client_id or network_id');
     }
 
     // 2. Check if the client_id and client_secret match the organization
-    if (clientCompany.clientSecret !== client_secret) {
+    if (clientOrganization.clientSecret !== client_secret) {
       throw new UnauthorizedError('Invalid client_secret');
     }
 
@@ -50,37 +50,37 @@ export class AuthService {
       .selectFrom('connections')
       .selectAll()
       .where((qb) =>
-        qb('connectedCompanyOneId', '=', clientCompany.id).or(
+        qb('connectedCompanyOneId', '=', clientOrganization.id).or(
           'connectedCompanyTwoId',
           '=',
-          clientCompany.id
+          clientOrganization.id
         )
       )
       .where((qb) =>
-        qb('connectedCompanyOneId', '=', networkCompany.id).or(
+        qb('connectedCompanyOneId', '=', networkOrganization.id).or(
           'connectedCompanyTwoId',
           '=',
-          networkCompany.id
+          networkOrganization.id
         )
       )
       .executeTakeFirst();
 
     if (!connection) {
-      throw new UnauthorizedError('No connection between the companies');
+      throw new UnauthorizedError('No connection between the organizations');
     }
 
-    // 4. If they do, generate a JWT signed with the secret being the one from the company which network_id = body param network_id and return it
+    // 4. If they do, generate a JWT signed with the secret being the one from the organization which network_id = body param network_id and return it
     const token = jwt.sign(
       {
         iss: 'https://im.carbon-transparency.org',
-        sub: clientCompany.networkKey,
-        aud: networkCompany.networkKey,
+        sub: clientOrganization.networkKey,
+        aud: networkOrganization.networkKey,
         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 3,
         iat: Math.floor(Date.now() / 1000),
-        name: clientCompany.companyName,
-        email: clientCompany.email,
+        name: clientOrganization.organizationName,
+        email: clientOrganization.email,
       },
-      networkCompany.clientSecret ?? '' // Use the secret from the network company
+      networkOrganization.clientSecret ?? '' // Use the secret from the network organization
     );
     return {
       access_token: token,
