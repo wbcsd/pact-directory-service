@@ -2,10 +2,7 @@
 import { UserContext } from '../services/user-service';
 import { ForbiddenError } from './errors';
 
-const POLICIES: string[] = [
-  'view-connections-own-organization',
-  'view-connections-all-organizations',
-]
+const POLICIES: string[] = [];
 
 /**
  * Registers a new policy by adding it to the global policies list.
@@ -14,6 +11,13 @@ export function registerPolicy(policy: string) {
   if (!POLICIES.includes(policy)) {
     POLICIES.push(policy);
   }
+}
+
+/**
+ * Lists all registered policies.
+ */
+export function listRegisteredPolicies(): string[] {
+  return POLICIES;
 }
 
 /**

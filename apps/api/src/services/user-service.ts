@@ -9,6 +9,10 @@ import {
   NotFoundError,
 } from '@src/common/errors';
 import { EmailService } from './email-service';
+import { listRegisteredPolicies, registerPolicy } from '@src/common/policies';
+
+registerPolicy('view-users');
+registerPolicy('edit-users');
 
 
 export interface UserContext {
@@ -91,8 +95,6 @@ export interface VerifyResetTokenResult {
   message?: string;
   error?: string;
 }
-
-const POLICIES: string[] = ['view-own-organization', 'view-all-organizations'];
 
 export class UserService {
 
@@ -177,7 +179,7 @@ export class UserService {
       email: user.email,
       organizationId: user.organizationId,
       role: user.role,
-      policies: POLICIES
+      policies: listRegisteredPolicies()
     };
   }
 
@@ -214,7 +216,7 @@ export class UserService {
       email: user.email,
       organizationId: user.organizationId,
       role: user.role,
-      policies: POLICIES  
+      policies: listRegisteredPolicies()
     }
   }
 
@@ -343,7 +345,7 @@ export class UserService {
 
     return {
       ...profile,
-      policies: POLICIES,
+      policies: listRegisteredPolicies(),
       connectionRequests: {
         sent: sentConnectionRequests,
         received: receivedConnectionRequests,
