@@ -9,10 +9,11 @@ import {
   NotFoundError,
 } from '@src/common/errors';
 import { EmailService } from './email-service';
-import { listRegisteredPolicies, registerPolicy } from '@src/common/policies';
+import { checkAccess, listRegisteredPolicies, registerPolicy } from '@src/common/policies';
 
 registerPolicy('view-users');
 registerPolicy('edit-users');
+registerPolicy('add-users');
 
 
 export interface UserContext {
@@ -86,6 +87,14 @@ export interface ForgotPasswordData {
 export interface ResetPasswordData {
   email: string;
   token: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export interface AddUserToOrganizationData {
+  fullName: string;
+  email: string;
+  role: string;
   password: string;
   confirmPassword: string;
 }
@@ -509,6 +518,88 @@ export class UserService {
     return {
       valid: true,
       message: 'Token is valid',
+    };
+  }
+
+  /**
+   * Adds a new user to an existing organization.
+   *
+   * - Validates that the provided passwords match.
+   * - Checks if the email is already in use.
+   * - Verifies that the organization exists.
+   * - Hashes the user's password.
+   * - Creates the user within the specified organization.
+   * - Sends a welcome email to the new user.
+   * - Returns the user's context information.
+   *
+   * @param organizationId - The ID of the organization to add the user to.
+   * @param data - The user data containing user details.
+   * @returns A promise that resolves to the newly created user's context.
+   * @throws {BadRequestError} If passwords do not match or email is already in use.
+   * @throws {NotFoundError} If the organization doesn't exist.
+   */
+  async addUserToOrganization(context: UserContext, organizationId: number, data: AddUserToOrganizationData): Promise<UserContext> {
+    
+    // Check if user has permission to add users to this organization
+    checkAccess(context, 'add-users', context.organizationId === organizationId || context.role === 'admin');
+    
+
+  // Check if passwords match
+    if (data.password !== data.confirmPassword) {
+      throw new BadRequestError('Passwords do not match');
+    }
+
+    // Check if email already exists
+    const emailExists = await this.db
+      .selectFrom('users')
+      .where('email', '=', data.email)
+      .executeTakeFirst();
+
+    if (emailExists) {
+      throw new BadRequestError('Email already in use.');
+    }
+
+    // Verify organization exists
+    const organization = await this.db
+      .selectFrom('organizations')
+      .select(['id', 'name'])
+      .where('id', '=', organizationId)
+      .executeTakeFirst();
+
+    if (!organization) {
+      throw new NotFoundError('Organization not found');
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+
+    // Create user
+    const user = await this.db
+      .insertInto('users')
+      .values({
+        fullName: data.fullName,
+        email: data.email,
+        role: data.role,
+        password: hashedPassword,
+        organizationId: organizationId,
+      })
+      .returningAll()
+      .executeTakeFirstOrThrow();
+
+    // Send welcome email
+    await this.emailService.sendWelcomeEmail({
+      to: user.email,
+      name: user.fullName,
+      companyName: organization.name,
+    });
+
+    // Return user context
+    return {
+      userId: user.id,
+      email: user.email,
+      organizationId: user.organizationId,
+      role: user.role,
+      policies: listRegisteredPolicies()
     };
   }
 }

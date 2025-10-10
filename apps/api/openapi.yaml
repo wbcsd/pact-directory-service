@@ -234,6 +234,28 @@ components:
       description: Opaque response proxied from external conformance service.
       type: object
       additionalProperties: true
+    AddUserToOrganizationRequest:
+      type: object
+      properties:
+        fullName: { type: string, description: "Full name of the user", example: "John Doe" }
+        email: { type: string, format: email, description: "Email address of the user", example: "john.doe@example.com" }
+        role: { type: string, description: "Role of the user in the organization", example: "user" }
+        password: { type: string, format: password, description: "Password for the user account", minLength: 6 }
+        confirmPassword: { type: string, format: password, description: "Password confirmation" }
+      required: [fullName, email, role, password, confirmPassword]
+    UserContext:
+      type: object
+      properties:
+        userId: { type: integer, description: "Unique identifier for the user", example: 123 }
+        email: { type: string, format: email, description: "User's email address", example: "user@example.com" }
+        organizationId: { type: integer, description: "ID of the organization the user belongs to", example: 456 }
+        role: { type: string, description: "User's role in the organization", example: "user" }
+        policies: 
+          type: array
+          items: { type: string }
+          description: "List of policies/permissions assigned to the user"
+          example: ["view-users", "edit-users"]
+      required: [userId, email, organizationId, role, policies]
   responses:
     Unauthorized:
       description: Unauthorized
@@ -442,6 +464,33 @@ paths:
               schema:
                 type: array
                 items: { $ref: '#/components/schemas/UserBase' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    post:
+      summary: Add a new user to an organization
+      tags: [Organizations]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          description: Organization ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUserToOrganizationRequest'
+      responses:
+        '201':
+          description: User successfully added to organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserContext'
+        '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
