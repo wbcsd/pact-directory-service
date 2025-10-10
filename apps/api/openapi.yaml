@@ -106,6 +106,16 @@ components:
         email: { type: string, format: email }
         role: { type: string }
       required: [fullName, email, role]
+    Member:
+      allOf:
+        - { $ref: "#/components/schemas/UserBase" }
+        - type: object
+          properties:
+            id: { type: integer }
+            organizationId: { type: integer }
+            organizationName: { type: string }
+            organizationIdentifier: { type: string }
+          required: [id]
     MyProfileResponse:
       type: object
       properties:
@@ -182,6 +192,12 @@ components:
         solutionApiUrl: { type: string }
         parentId: { type: integer, nullable: true }
       required: [id, organizationName, organizationIdentifier, solutionApiUrl]
+    OrganizationsMemberResponse:
+      type: object
+      properties:
+        members:
+          type: array
+          items: { $ref: "#/components/schemas/Member" }
     CreateConnectionRequestRequest:
       type: object
       properties:

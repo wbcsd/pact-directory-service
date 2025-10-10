@@ -1,19 +1,26 @@
 import React, { useEffect } from "react";
+import { Button } from "@radix-ui/themes";
 import SideNav from "../components/SideNav";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import DataTable, { Column } from "../components/DataTable";
 import { useAuth } from "../contexts/AuthContext";
+import { InputIcon } from "@radix-ui/react-icons";
+import { useNavigate } from "react-router-dom";
 
-interface User {
-  id: number;
+export interface User {
+  userId: number;
   fullName: string;
   email: string;
   role: string;
+  organizationName: string;
+  organizationId: number;
+  organizationIdentifier: string;
 }
 
 const OrganizationUsers: React.FC = () => {
   // fetch users from api
   const [users, setUsers] = React.useState([]);
+  const navigate = useNavigate();
   const { profileData } = useAuth();
 
   useEffect(() => {
@@ -41,11 +48,25 @@ const OrganizationUsers: React.FC = () => {
 
   const columns: Column<User>[] = [
     {
+      key: "organizationName",
+      header: "Organization",
+      sortable: true,
+      sortValue: (row: User) => row?.organizationName,
+      render: (row: User) => row?.organizationName,
+    },
+    {
       key: "fullName",
       header: "Full Name",
       sortable: true,
       sortValue: (row: User) => row.fullName,
       render: (row: User) => row.fullName,
+    },
+    {
+      key: "role",
+      header: "Role",
+      sortable: true,
+      sortValue: (row: User) => row.role,
+      render: (row: User) => row.role,
     },
     {
       key: "email",
@@ -55,11 +76,25 @@ const OrganizationUsers: React.FC = () => {
       render: (row: User) => row.email,
     },
     {
-      key: "role",
-      header: "Role",
-      sortable: true,
-      sortValue: (row: User) => row.role,
-      render: (row: User) => row.role,
+      key: "actions",
+      header: "",
+      render: (row: User) => (
+        <Button
+          onClick={() => {
+            navigate(`/organization/users/${row.userId}`);
+          }}
+          style={{
+            background: "transparent",
+            color: "#0A0552",
+            border: "1px solid #EBF0F5",
+            padding: "8px 12px",
+            minHeight: "0",
+          }}
+        >
+          <InputIcon />
+          Edit
+        </Button>
+      ),
     },
   ];
 
@@ -74,7 +109,7 @@ const OrganizationUsers: React.FC = () => {
           <h2>Organization Users</h2>
         </div>
         <div>
-          <DataTable idColumnName="id" columns={columns} data={users} />
+          <DataTable idColumnName="userId" columns={columns} data={users} />
         </div>
       </main>
     </>
