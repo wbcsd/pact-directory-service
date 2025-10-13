@@ -1,5 +1,5 @@
 import config from '@src/common/config';
-import logger from '@src/util/logger';
+import logger from '@src/common/logger';
 import sgMail from '@sendgrid/mail';
 
 sgMail.setApiKey(config.SENDGRID_API_KEY);
@@ -17,6 +17,20 @@ interface SendPasswordResetEmailParams {
 }
 
 export class EmailService {
+
+  constructor() {
+    // In development mode, mock the send function to avoid sending real emails
+    if (config.NODE_ENV === 'development') {
+      sgMail.send = async (msg: any) => {
+        logger.debug('--- SENDGRID MOCK SEND ---');
+        logger.debug(msg);
+        logger.debug('--- END SENDGRID MOCK SEND ---');
+        await Promise.resolve(); // Added await to satisfy linter
+        return [{} as sgMail.ClientResponse, {}];
+      }
+    }
+  }
+
   async sendWelcomeEmail({
     to,
     name,

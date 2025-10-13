@@ -2,18 +2,18 @@ import bcrypt from 'bcrypt';
 import { db } from '@src/database/db';
 
 async function main() {
-  const [, , email, fullName, password, role, companyUri, companyName] = process.argv;
+  const [, , email, fullName, password, role, organizationUri, organizationName] = process.argv;
 
   if (
     !email ||
     !fullName ||
     !password ||
     !role ||
-    !companyUri ||
-    !companyName
+    !organizationUri ||
+    !organizationName
   ) {
     console.error(
-      'Usage: ts-node add-user.ts <email> <fullName> <password> <role> <companyIdentifier> <companyName>'
+      'Usage: ts-node add-user.ts <email> <fullName> <password> <role> <organizationIdentifier> <organizationName>'
     );
     process.exit(1);
   }
@@ -23,7 +23,7 @@ async function main() {
     let company = await db
       .selectFrom('organizations')
       .selectAll()
-      .where('uri', '=', companyUri)
+      .where('uri', '=', organizationUri)
       .executeTakeFirst();
 
     if (!company) {
@@ -31,8 +31,8 @@ async function main() {
       const inserted = await db
         .insertInto('organizations')
         .values({
-          uri: companyUri,
-          name: companyName,
+          uri: organizationUri,
+          name: organizationName,
           description: '',
           solutionApiUrl: '',
           clientId: '',
@@ -42,9 +42,9 @@ async function main() {
         .returningAll()
         .executeTakeFirstOrThrow();
       company = inserted;
-      console.info(`Created company: ${companyName}`);
+      console.info(`Created company: ${organizationName}`);
     } else {
-      console.info(`Company already exists: ${companyName}`);
+      console.info(`Company already exists: ${organizationName}`);
     }
 
     // Check if user exists
@@ -74,7 +74,7 @@ async function main() {
       })
       .executeTakeFirstOrThrow();
 
-    console.info(`User ${email} added to organization ${companyName}.`);
+    console.info(`User ${email} added to organization ${organizationName}.`);
   } catch (error) {
     console.error('Error', error);
      

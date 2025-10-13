@@ -1,19 +1,18 @@
-import { Kysely } from 'kysely';
 import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 import config from '@src/common/config';
+import { Kysely } from 'kysely';
 import { Database } from '@src/database/types';
 import {
   BadRequestError,
   UnauthorizedError,
   NotFoundError,
 } from '@src/common/errors';
-import { generateCredentials } from '@src/util/credentials';
-import {
-  createPasswordResetToken,
-  validateResetToken,
-  markTokenAsUsed,
-} from '@src/util/password-reset';
 import { EmailService } from './email-service';
+import { listRegisteredPolicies, registerPolicy } from '@src/common/policies';
+
+registerPolicy('view-users');
+registerPolicy('edit-users');
 
 
 export interface UserContext {
@@ -21,6 +20,7 @@ export interface UserContext {
   email: string;
   organizationId: number;
   role: string;
+  policies: string[];
 }
 
 export interface SignUpData {
@@ -54,6 +54,7 @@ export interface AccountData extends UserContext {
   clientSecret: string | null;
   networkKey: string | null;
   organizationDescription: string | null;
+  // TODO: remove connections from here and move to ConnectionService
   connectionRequests: {
     sent: {
       createdAt: Date;
@@ -69,6 +70,7 @@ export interface AccountData extends UserContext {
       organizationId: number;
     }[];
   };
+  // TODO: remove connections from here and move to ConnectionService
   connectedOrganizations: {
     organizationId: number;
     organizationName: string;
@@ -82,6 +84,7 @@ export interface ForgotPasswordData {
 }
 
 export interface ResetPasswordData {
+  email: string;
   token: string;
   password: string;
   confirmPassword: string;
@@ -95,13 +98,29 @@ export interface VerifyResetTokenResult {
 
 export class UserService {
 
+  // TODO: Remove
+
   constructor(
     private db: Kysely<Database>,
     private emailService: EmailService
   ) {}
 
   /**
-   * Signup a user + company
+   * Signup a user + organization
+   */
+  /**
+   * Registers a new user and organization in the system.
+   *
+   * - Validates that the provided passwords match.
+   * - Checks if the email is already in use.
+   * - Hashes the user's password.
+   * - Creates a new organization and user within a database transaction.
+   * - Sends a welcome email to the new user.
+   * - Returns the user's context information.
+   *
+   * @param data - The sign-up data containing user and organization details.
+   * @returns A promise that resolves to the newly created user's context.
+   * @throws {BadRequestError} If passwords do not match or email is already in use.
    */
   async signup(data: SignUpData): Promise<UserContext> {
     // Check if passwords match
@@ -122,10 +141,7 @@ export class UserService {
     // TODO: create a random salt and store it next to the hashed password.
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
-    // TODO: Move creation of client credentials to environments
-    // const { clientId, clientSecret, networkKey } = await generateCredentials();
-    await generateCredentials();
-
+    // Create organization and user in a transaction
     const user = await this.db.transaction().execute(async (trx) => {
       const organization = await trx
         .insertInto('organizations')
@@ -163,16 +179,27 @@ export class UserService {
       email: user.email,
       organizationId: user.organizationId,
       role: user.role,
+      policies: listRegisteredPolicies()
     };
   }
 
+
   /**
-   * Login
+   * Authenticates a user using their email and password.
+   *
+   * This method queries the database for a user with the provided email,
+   * verifies the password using bcrypt, and returns the user's context if authentication succeeds.
+   * 
+   * Throws an `UnauthorizedError` if the email or password is invalid.
+   *
+   * @param data - The login credentials containing email and password.
+   * @returns A promise that resolves to the authenticated user's context.
+   * @throws UnauthorizedError If the email or password is incorrect.
    */
   async login(data: LoginData): Promise<UserContext> {
     const user = await this.db
       .selectFrom('users')
-      .select(['password', 'id', 'email', 'organizationId', 'role'])
+      .selectAll()
       .where('email', '=', data.email)
       .executeTakeFirst();
     if (!user) {
@@ -180,7 +207,6 @@ export class UserService {
     }
 
     const isPasswordValid = await bcrypt.compare(data.password, user.password);
-
     if (!isPasswordValid) {
       throw new UnauthorizedError('Invalid email or password');
     }
@@ -189,7 +215,8 @@ export class UserService {
       userId: user.id,
       email: user.email,
       organizationId: user.organizationId,
-      role: user.role,      
+      role: user.role,
+      policies: listRegisteredPolicies()
     }
   }
 
@@ -210,6 +237,7 @@ export class UserService {
   /**
    * Get user's profile including organization info, connection requests and connections
    */
+  // TODO: remove connections from here and move to ConnectionService
   async getMyProfile(email: string, organizationId: number): Promise<AccountData | null> {
     const profile = await this.db
       .selectFrom('organizations as o')
@@ -317,6 +345,7 @@ export class UserService {
 
     return {
       ...profile,
+      policies: listRegisteredPolicies(),
       connectionRequests: {
         sent: sentConnectionRequests,
         received: receivedConnectionRequests,
@@ -326,7 +355,15 @@ export class UserService {
   }
 
   /**
-   * Forgot Password - Request password reset
+   * Handles the password reset process for a user.
+   *
+   * This method accepts an email address, verifies its validity, and attempts to find the corresponding user.
+   * Regardless of whether the user exists, it always returns a generic success message to prevent email enumeration attacks.
+   * If the user exists, it generates a password reset token, stores it with a 15-minute expiration, and sends a password reset email.
+   *
+   * @param data - An object containing the user's email address.
+   * @returns A promise that resolves to an object with a message indicating that a reset link has been sent if the email exists.
+   * @throws {BadRequestError} If the email is missing or invalid.
    */
   async forgotPassword(data: ForgotPasswordData): Promise<{ message: string }> {
     const { email } = data;
@@ -349,7 +386,19 @@ export class UserService {
     }
 
     // Create password reset token
-    const token = await createPasswordResetToken(user.id);
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + 15); // 15 minutes expiration
+  
+    await this.db
+      .insertInto('password_reset_tokens')
+      .values({
+        userId: user.id,
+        token,
+        expiresAt,
+        createdAt: new Date(),
+      })
+      .execute();
 
     // Generate reset URL
     const resetUrl = `${config.FRONTEND_URL}/reset-password/${token}`;
@@ -361,22 +410,27 @@ export class UserService {
       resetUrl,
     });
 
-    return { message: 'If that email exists, a reset link has been sent.' };
+    return { message: 'If this email is known in our system, a reset link has been sent.' };
   }
 
+
   /**
-   * Reset Password - Reset password with token
+   * Resets a user's password using a provided reset token.
+   *
+   * Validates the token, checks password requirements, and updates the user's password.
+   * Marks the reset token as used after successful password reset.
+   *
+   * @param data - An object containing the reset token, new password, and password confirmation.
+   * @returns An object with a success message.
+   * @throws {BadRequestError} If any required field is missing, passwords do not match,
+   *         password is too short, token is invalid, or token has expired.
    */
   async resetPassword(data: ResetPasswordData): Promise<{ message: string }> {
     const { token, password, confirmPassword } = data;
 
-    if (
-      !token ||
-      typeof token !== 'string' ||
-      !password ||
-      typeof password !== 'string' ||
-      !confirmPassword ||
-      typeof confirmPassword !== 'string'
+    if (!token || typeof token !== 'string' ||
+      !password || typeof password !== 'string' ||
+      !confirmPassword || typeof confirmPassword !== 'string'
     ) {
       throw new BadRequestError(
         'Token, password, and confirm password are required'
@@ -392,14 +446,19 @@ export class UserService {
     }
 
     // Validate reset token
-    const tokenValidation = await validateResetToken(token);
+    const foundToken = await this.db
+      .selectFrom('password_reset_tokens')
+      .selectAll()
+      .where('token', '=', token)
+      .where('usedAt', 'is', null)
+      .executeTakeFirst();
 
-    if (!tokenValidation.isValid) {
-      throw new BadRequestError(tokenValidation.error ?? 'Invalid token');
+    if (!foundToken) {
+      throw new BadRequestError('Invalid reset token');
     }
 
-    if (!tokenValidation.userId) {
-      throw new BadRequestError('Invalid token');
+    if (new Date() > foundToken.expiresAt) {
+      throw new BadRequestError('Reset token has expired');
     }
 
     // Hash new password
@@ -409,11 +468,15 @@ export class UserService {
     await this.db
       .updateTable('users')
       .set({ password: hashedPassword })
-      .where('id', '=', tokenValidation.userId)
+      .where('id', '=', foundToken.userId)
       .execute();
 
     // Mark token as used
-    await markTokenAsUsed(token);
+    await this.db
+      .updateTable('password_reset_tokens')
+      .set({ usedAt: new Date() })
+      .where('token', '=', token)
+      .execute();
 
     return { message: 'Password has been reset successfully' };
   }
@@ -421,14 +484,26 @@ export class UserService {
   /**
    * Verify Reset Token - Check if reset token is valid
    */
+  // TODO: Not necessary, the reset password endpoint already does this validation.
+  // The client can just call the reset endpoint and see if it fails.
   async verifyResetToken(token: string): Promise<VerifyResetTokenResult> {
     if (!token || typeof token !== 'string') {
       throw new BadRequestError('Token is required');
     }
 
-    const tokenValidation = await validateResetToken(token);
-    if (!tokenValidation.isValid) {
-      throw new BadRequestError(tokenValidation.error ?? 'Invalid token');
+    const resetToken = await this.db
+      .selectFrom('password_reset_tokens')
+      .selectAll()
+      .where('token', '=', token)
+      .where('usedAt', 'is', null)
+      .executeTakeFirst();
+
+    if (!resetToken) {
+      throw new BadRequestError('Invalid reset token');
+    }
+
+    if (new Date() > resetToken.expiresAt) {
+      throw new BadRequestError('Reset token has expired');
     }
 
     return {

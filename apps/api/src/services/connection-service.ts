@@ -8,6 +8,7 @@ import {
 import { OrganizationService } from './organization-service';
 import { EmailService } from './email-service';
 import { UserContext } from './user-service';
+import { checkAccess } from '@src/common/policies';
 
 
 export interface ConnectionRequest {
@@ -35,7 +36,12 @@ export class ConnectionService {
       private emailService: EmailService
   ) {} 
 
-  async listConnections(organizationId: number): Promise<Connection[]> {
+  async listConnections(
+    context: UserContext,
+    organizationId: number
+  ): Promise<Connection[]> {
+    checkAccess(context, 'view-connections-own-organization', context.organizationId === organizationId);
+    checkAccess(context, 'view-connections-all-organizations');
     const connections = await this.db
       .selectFrom('connections')
       .selectAll()
@@ -47,7 +53,10 @@ export class ConnectionService {
     return connections;
   }
 
-  async listConnectionRequests(organizationId: number): Promise<ConnectionRequest[]> {
+  async listConnectionRequests(
+    context: UserContext,
+    organizationId: number
+  ): Promise<ConnectionRequest[]> {
     // This is the connection request sent by the current user on behalf of
     // their company
     const connectionRequests = await this.db
@@ -82,8 +91,8 @@ export class ConnectionService {
       throw new ForbiddenError('You are not allowed to send connection requests');
     }
 
-    const requesting = await this.organizationService.get(requestingOrganizationId);
-    const requested = await this.organizationService.get(requestedOrganizationId);
+    const requesting = await this.organizationService.get(context, requestingOrganizationId);
+    const requested = await this.organizationService.get(context, requestedOrganizationId);
 
     if (!requesting) {
       throw new NotFoundError('Requesting organization not found');

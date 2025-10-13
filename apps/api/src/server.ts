@@ -9,7 +9,7 @@ import config from '@src/common/config';
 import { db } from './database/db';
 import { errorHandler } from './middleware/error-handler';
 import { ServiceContainer } from './services';
-import { loggerMiddleware } from '@src/util/logger';
+import { loggerMiddleware } from '@src/common/logger';
 import BaseRouter from '@src/routes';
 
 const app = express();
@@ -34,7 +34,7 @@ app.use(OpenApiValidator.middleware({
   validateSecurity: false,
   validateRequests: true,
   validateResponses: true,
-  ignoreUndocumented: false,
+  ignoreUndocumented: false
 }));
 
 // Show routes called in console during development

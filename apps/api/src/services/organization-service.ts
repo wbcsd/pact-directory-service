@@ -1,8 +1,18 @@
 import { Kysely } from 'kysely';
 import { Database } from '@src/database/types';
-import { NotFoundError } from '@src/common/errors';
-import { UserContext } from './user-service';
+import { NotFoundError, ForbiddenError } from '@src/common/errors';
+import { registerPolicy, checkAccess } from '@src/common/policies';
+import { UserContext, UserData } from './user-service';
 import { EmailService } from './email-service';
+import config from '@src/common/config';
+
+// Register all policies used in this service
+registerPolicy('view-connections-own-organization');
+registerPolicy('view-connections-all-organizations');
+registerPolicy('view-own-organizations');
+registerPolicy('edit-own-organizations');
+registerPolicy('view-all-organizations');
+registerPolicy('edit-all-organizations');
 
 
 export interface OrganizationData {
@@ -15,6 +25,12 @@ export interface OrganizationData {
   solutionApiUrl: string | null;
 }
 
+interface PagingParams {
+  query?: string;
+  page?: number;
+  pageSize?: number;
+}
+
 export class OrganizationService {
 
   constructor(
@@ -25,9 +41,15 @@ export class OrganizationService {
   /**
    * Get a organization
    */
-  async get(id: number): Promise<OrganizationData> {
+  async get(context: UserContext, id: number): Promise<OrganizationData> {
 
-    const company = await this.db
+    const allowed = context.organizationId === id ||
+      context.policies?.includes('view-all-organizations');
+    if (!allowed) {
+      throw new ForbiddenError('You are not allowed to view this organization');
+    }
+
+    const organization = await this.db
       .selectFrom('organizations')
       .select([
         'id',
@@ -41,17 +63,19 @@ export class OrganizationService {
       .where('id', '=', id)
       .executeTakeFirst();
 
-    if (!company) {
+    if (!organization) {
       throw new NotFoundError('Organization not found');
     }
 
-    return company;
+    return organization;
   }
 
   /**
    * List all organizations, optionally filter by a search query
    */
-  async list(query?: string): Promise<OrganizationData[]> {
+  async list(context: UserContext, paging?: PagingParams): Promise<OrganizationData[]> {
+    checkAccess(context, ['view-own-organizations', 'view-all-organizations']);
+
     let qb = this.db
       .selectFrom('organizations')
       .select([
@@ -63,8 +87,11 @@ export class OrganizationService {
         'solutionApiUrl',
         'parentId'
       ]);
-    if (query) {
-      qb = qb.where('name', 'ilike', `%${query}%`);
+    if (paging?.query) {
+      qb = qb.where('name', 'ilike', `%${paging.query}%`);
+    }
+    if (paging?.page) {
+      qb = qb.offset((paging.page - 1) * (paging.pageSize ?? 50)).limit(paging.pageSize ?? config.DEFAULT_PAGE_SIZE);
     }
     return qb.execute();
   }
@@ -117,20 +144,17 @@ export class OrganizationService {
    * @param organizationId - The unique identifier of the organization.
    * @returns A promise that resolves to an array of `UserContext` objects representing the organization's members.
    */
-  async listMembers(organizationId: number): Promise<UserContext[]> {
+  async listMembers(context: UserContext, organizationId: number): Promise<UserData[]> {
+    checkAccess(context, 'view-own-organization', context.organizationId === organizationId);
+    const allowed = context.role === 'administrator' && context.organizationId === organizationId;
+
+    if (!allowed) {
+      throw new ForbiddenError('You are not allowed to view members of this organization');
+    }
     const users = await this.db
-      .selectFrom('users as u')
-      .innerJoin('organizations as o', 'u.organizationId', 'o.id')
-      .select([
-        'u.id as userId',
-        'u.fullName',
-        'u.email',
-        'u.role',
-        'o.id as organizationId',
-        'o.name as organizationName',
-        'o.uri as organizationIdentifier',
-      ])
-      .where('o.id', '=', organizationId)
+      .selectFrom('users')
+      .selectAll()
+      .where('organizationId', '=', organizationId) 
       .execute();
     return users;
   }
