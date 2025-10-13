@@ -14,7 +14,7 @@ interface TestRun {
   testRunId: string;
   techSpecVersion: string;
   timestamp: string;
-  companyName: string;
+  organizationName: string;
   adminEmail: string;
   passingPercentage: number;
   status: "PASS" | "FAIL" | "PENDING";
