@@ -150,12 +150,10 @@ const EditUserPage: React.FC = () => {
       </aside>
       <main className="main">
         <div className="header">
-          <h2>Organization Users</h2>
+          <h2>Edit User</h2>
         </div>
         <div>
-          <Box style={{ margin: "0 auto", paddingTop: "40px" }}>
-            <h2 style={{ marginBottom: "30px" }}>Edit User</h2>
-
+          <Box style={{ margin: "0 auto" }}>
             <Form.Root onSubmit={handleSubmit}>
               {/* Read-only User Email */}
               <Box style={{ marginBottom: "20px" }}>
