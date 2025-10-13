@@ -41,4 +41,5 @@ export default {
   JWT_EXP: int('JWT_EXP', 21600), // Default to 6 hours
   SENDGRID_API_KEY: process.env.SENDGRID_API_KEY ?? '',
   SENDGRID_FROM_EMAIL: process.env.SENDGRID_FROM_EMAIL ?? '',
+  ENABLE_OPENAPI_VALIDATION: bool('ENABLE_OPENAPI_VALIDATION'),
 };
