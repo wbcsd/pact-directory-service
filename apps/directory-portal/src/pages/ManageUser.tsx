@@ -44,6 +44,8 @@ const EditUserPage: React.FC = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
+      if (!profileData) return;
+
       try {
         const response = await fetchWithAuth(
           `/organizations/${profileData?.organizationId}/users/${userId}`
