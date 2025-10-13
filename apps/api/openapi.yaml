@@ -576,6 +576,38 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+    post:
+      summary: (Not implemented) Update a user in an organization
+      tags: [Organizations]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: oid
+          required: true
+          schema: { type: integer }
+          description: Organization ID
+        - in: path
+          name: uid
+          required: true
+          schema: { type: integer }
+          description: User ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullName: { type: string }
+                role: { type: string }
+              required: [fullName, role]
+      responses:
+        "501":
+          description: Not Implemented
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /directory/organizations/{id}/connections:
     post:
       summary: List connections for an organization
