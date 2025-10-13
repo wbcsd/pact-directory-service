@@ -29,13 +29,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(loggerMiddleware);
 
 // OpenAPI Validator Middleware
-app.use(OpenApiValidator.middleware({
-  apiSpec: path.join(__dirname, '..', 'openapi.yaml'),
-  validateSecurity: false,
-  validateRequests: true,
-  validateResponses: true,
-  ignoreUndocumented: false
-}));
+if (config.ENABLE_OPENAPI_VALIDATION) {
+  app.use(OpenApiValidator.middleware({
+    apiSpec: path.join(__dirname, '..', 'openapi.yaml'),
+    validateSecurity: false,
+    validateRequests: true,
+    validateResponses: true,
+    ignoreUndocumented: false
+  }));
+}
 
 // Show routes called in console during development
 if (config.NODE_ENV === 'development') {

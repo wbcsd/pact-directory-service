@@ -7,10 +7,10 @@ import { ProfileData } from "../contexts/AuthContext";
 import "./ConformanceTestRuns.css";
 
 interface TestRun {
-  testId: string;
+  testRunId: string;
   techSpecVersion: string;
   timestamp: string;
-  companyName: string;
+  organizationName: string;
   adminEmail: string;
   passingPercentage: number;
   status: "PASS" | "FAIL" | "PENDING";
@@ -44,24 +44,24 @@ const ConformanceTestRunsGrid: React.FC<Props> = ({
   // Define table columns dynamically
   const columns: Column<TestRun>[] = [
     {
-      key: "testId",
+      key: "testRunId",
       header: "Test Run ID",
       sortable: true,
-      sortValue: (run) => run.testId,
+      sortValue: (run) => run.testRunId,
       render: (run) => (
-        <NavLink to={`/conformance-test-result?testRunId=${run.testId}`}>
-          {run.testId.substring(0, 8)}
+        <NavLink to={`/conformance-test-result?testRunId=${run.testRunId}`}>
+          {run.testRunId.substring(0, 8)}
         </NavLink>
       ),
     },
     ...(profileData?.role === "administrator"
       ? [
           {
-            key: "companyName",
-            header: "Company",
+            key: "organizationName",
+            header: "Organization",
             sortable: true,
-            sortValue: (run: TestRun) => run.companyName,
-            render: (run: TestRun) => run.companyName,
+            sortValue: (run: TestRun) => run.organizationName,
+            render: (run: TestRun) => run.organizationName,
           },
           {
             key: "adminEmail",
@@ -101,7 +101,7 @@ const ConformanceTestRunsGrid: React.FC<Props> = ({
 
   return (
     <DataTable
-      idColumnName="testId"
+      idColumnName="testRunId"
       data={testRuns}
       columns={columns}
       isLoading={isLoading}
