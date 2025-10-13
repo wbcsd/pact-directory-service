@@ -231,4 +231,47 @@ export class OrganizationService {
 
     return user;
   }
+
+  // Update user
+  async updateMember(
+    context: UserContext,
+    organizationId: number,
+    userId: number,
+    update: { fullName?: string; role?: string }
+  ): Promise<void> {
+    checkAccess(
+      context,
+      'edit-own-organizations',
+      context.organizationId === organizationId
+    );
+    const allowed =
+      context.role === 'administrator' &&
+      context.organizationId === organizationId;
+
+    if (!allowed) {
+      throw new ForbiddenError(
+        'You are not allowed to edit members of this organization'
+      );
+    }
+
+    const user = await this.db
+      .selectFrom('users')
+      .select(['id'])
+      .where('id', '=', userId)
+      .where('organizationId', '=', organizationId)
+      .executeTakeFirst();
+
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+
+    await this.db
+      .updateTable('users')
+      .set({
+        ...(update.fullName && { fullName: update.fullName }),
+        ...(update.role && { role: update.role }),
+      })
+      .where('id', '=', userId)
+      .execute();
+  }
 }
