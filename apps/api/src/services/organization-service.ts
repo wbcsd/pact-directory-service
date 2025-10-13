@@ -2,7 +2,7 @@ import { Kysely } from 'kysely';
 import { Database } from '@src/database/types';
 import { NotFoundError, ForbiddenError } from '@src/common/errors';
 import { registerPolicy, checkAccess } from '@src/common/policies';
-import { UserContext, UserData } from './user-service';
+import { UserContext, UserListData } from './user-service';
 import { EmailService } from './email-service';
 import config from '@src/common/config';
 
@@ -13,7 +13,6 @@ registerPolicy('view-own-organizations');
 registerPolicy('edit-own-organizations');
 registerPolicy('view-all-organizations');
 registerPolicy('edit-all-organizations');
-
 
 export interface OrganizationData {
   id: number;
@@ -32,7 +31,6 @@ interface PagingParams {
 }
 
 export class OrganizationService {
-
   constructor(
     private db: Kysely<Database>,
     private emailService: EmailService
@@ -42,8 +40,8 @@ export class OrganizationService {
    * Get a organization
    */
   async get(context: UserContext, id: number): Promise<OrganizationData> {
-
-    const allowed = context.organizationId === id ||
+    const allowed =
+      context.organizationId === id ||
       context.policies?.includes('view-all-organizations');
     if (!allowed) {
       throw new ForbiddenError('You are not allowed to view this organization');
@@ -58,7 +56,7 @@ export class OrganizationService {
         'description as organizationDescription',
         'networkKey',
         'solutionApiUrl',
-        'parentId'
+        'parentId',
       ])
       .where('id', '=', id)
       .executeTakeFirst();
@@ -73,7 +71,10 @@ export class OrganizationService {
   /**
    * List all organizations, optionally filter by a search query
    */
-  async list(context: UserContext, paging?: PagingParams): Promise<OrganizationData[]> {
+  async list(
+    context: UserContext,
+    paging?: PagingParams
+  ): Promise<OrganizationData[]> {
     checkAccess(context, ['view-own-organizations', 'view-all-organizations']);
 
     let qb = this.db
@@ -85,13 +86,15 @@ export class OrganizationService {
         'description as organizationDescription',
         'networkKey',
         'solutionApiUrl',
-        'parentId'
+        'parentId',
       ]);
     if (paging?.query) {
       qb = qb.where('name', 'ilike', `%${paging.query}%`);
     }
     if (paging?.page) {
-      qb = qb.offset((paging.page - 1) * (paging.pageSize ?? 50)).limit(paging.pageSize ?? config.DEFAULT_PAGE_SIZE);
+      qb = qb
+        .offset((paging.page - 1) * (paging.pageSize ?? 50))
+        .limit(paging.pageSize ?? config.DEFAULT_PAGE_SIZE);
     }
     return qb.execute();
   }
@@ -109,7 +112,6 @@ export class OrganizationService {
    * @returns A promise that resolves to an array of `CompanyData` objects representing the sub-organizations.
    */
   async listSubOrganizations(parentId: number): Promise<OrganizationData[]> {
-
     const qb = this.db
       .withRecursive('children', (db) =>
         db
@@ -131,9 +133,9 @@ export class OrganizationService {
         'description as organizationDescription',
         'networkKey',
         'solutionApiUrl',
-        'parentId'
+        'parentId',
       ]);
-      
+
     const companies = await qb.execute();
     return companies;
   }
@@ -144,18 +146,40 @@ export class OrganizationService {
    * @param organizationId - The unique identifier of the organization.
    * @returns A promise that resolves to an array of `UserContext` objects representing the organization's members.
    */
-  async listMembers(context: UserContext, organizationId: number): Promise<UserData[]> {
-    checkAccess(context, 'view-own-organization', context.organizationId === organizationId);
-    const allowed = context.role === 'administrator' && context.organizationId === organizationId;
+  async listMembers(
+    context: UserContext,
+    organizationId: number
+  ): Promise<Omit<UserListData, 'password'>[]> {
+    checkAccess(
+      context,
+      'view-own-organizations',
+      context.organizationId === organizationId
+    );
+    const allowed =
+      context.role === 'administrator' &&
+      context.organizationId === organizationId;
 
     if (!allowed) {
-      throw new ForbiddenError('You are not allowed to view members of this organization');
+      throw new ForbiddenError(
+        'You are not allowed to view members of this organization'
+      );
     }
+    // join with organizations to get organization name
     const users = await this.db
       .selectFrom('users')
-      .selectAll()
-      .where('organizationId', '=', organizationId) 
+      .innerJoin('organizations', 'users.organizationId', 'organizations.id')
+      .select([
+        'users.id as id',
+        'users.fullName as fullName',
+        'users.email as email',
+        'users.role as role',
+        'organizations.name as organizationName',
+        'organizations.id as organizationId',
+        'organizations.uri as organizationIdentifier',
+      ])
+      .where('users.organizationId', '=', organizationId)
       .execute();
+
     return users;
   }
 }

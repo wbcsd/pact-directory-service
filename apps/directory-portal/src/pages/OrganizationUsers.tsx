@@ -30,10 +30,10 @@ const OrganizationUsers: React.FC = () => {
     const fetchUsers = async () => {
       try {
         const response = await fetchWithAuth(
-          `/organizations/${profileData?.organizationId}/members`
+          `/organizations/${profileData?.organizationId}/users`
         );
         if (response!.ok) {
-          const { members } = await response!.json();
+          const members = await response!.json();
           setUsers(members);
         } else {
           console.error("Failed to fetch users");
