@@ -36,15 +36,15 @@ export function checkAccess(
 ) {
   if (Array.isArray(policy)) {
     if (!policy.some((p) => context.policies.includes(p))) {
-      throw new ForbiddenError('Access denied x');
+      throw new ForbiddenError('Access denied');
     }
   } else {
     if (!context.policies.includes(policy)) {
-      throw new ForbiddenError('Access denied y');
+      throw new ForbiddenError('Access denied');
     }
   }
   if (!condition) {
-    throw new ForbiddenError('Access denied z');
+    throw new ForbiddenError('Access denied');
   }
 }
 

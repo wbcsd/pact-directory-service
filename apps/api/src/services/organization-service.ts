@@ -182,4 +182,53 @@ export class OrganizationService {
 
     return users;
   }
+
+  /**
+   * Retrieves a list of user profiles who are members of the specified organization.
+   *
+   * @param organizationId - The unique identifier of the organization.
+   * @returns A promise that resolves to an array of `UserContext` objects representing the organization's members.
+   */
+  async getMember(
+    context: UserContext,
+    organizationId: number,
+    userId: number
+  ): Promise<Omit<UserListData, 'password'>> {
+    checkAccess(
+      context,
+      'view-own-organizations',
+      context.organizationId === organizationId
+    );
+    const allowed =
+      context.role === 'administrator' &&
+      context.organizationId === organizationId;
+
+    if (!allowed) {
+      throw new ForbiddenError(
+        'You are not allowed to view members of this organization'
+      );
+    }
+    // join with organizations to get organization name
+    const user = await this.db
+      .selectFrom('users')
+      .innerJoin('organizations', 'users.organizationId', 'organizations.id')
+      .select([
+        'users.id as id',
+        'users.fullName as fullName',
+        'users.email as email',
+        'users.role as role',
+        'organizations.name as organizationName',
+        'organizations.id as organizationId',
+        'organizations.uri as organizationIdentifier',
+      ])
+      .where('users.id', '=', userId)
+      .where('users.organizationId', '=', organizationId)
+      .executeTakeFirst();
+
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+
+    return user;
+  }
 }

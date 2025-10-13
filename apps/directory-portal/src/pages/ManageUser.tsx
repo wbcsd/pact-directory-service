@@ -19,6 +19,8 @@ import {
 } from "@radix-ui/react-icons";
 import SideNav from "../components/SideNav";
 import { User } from "./OrganizationUsers";
+import { useAuth } from "../contexts/AuthContext";
+import { fetchWithAuth } from "../utils/auth-fetch";
 
 const EditUserPage: React.FC = () => {
   const navigate = useNavigate();
@@ -38,32 +40,24 @@ const EditUserPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const { profileData } = useAuth();
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await Promise.resolve({
-          ok: true,
-          json: async () => ({
-            userId: 1,
-            fullName: "John Doe",
-            email: "john@doe.com",
-            role: "administrator",
-            organizationName: "Example Org",
-            organizationId: 123,
-            organizationIdentifier: "EX123",
-          }),
-        });
+        const response = await fetchWithAuth(
+          `/organizations/${profileData?.organizationId}/users/${userId}`
+        );
 
-        if (response.ok) {
-          const user: User = await response.json();
+        if (response!.ok) {
+          const user: User = await response!.json();
           setFormData({
             fullName: user.fullName,
             role: user.role,
           });
           setReadOnlyData({
             email: user.email,
-            id: user.userId,
+            id: user.id,
             organizationName: user.organizationName,
             organizationId: user.organizationId,
             organizationIdentifier: user.organizationIdentifier,
@@ -82,7 +76,7 @@ const EditUserPage: React.FC = () => {
     };
 
     fetchUser();
-  }, [userId]);
+  }, [userId, profileData]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
