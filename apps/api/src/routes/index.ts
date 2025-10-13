@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { authenticate } from '../middleware/authentication';
 import { Services } from '@src/services';
-import { LoginData, UserContext } from '@src/services/user-service';
+import { LoginData, UserContext, AddUserToOrganizationData } from '@src/services/user-service';
 import jwt from 'jsonwebtoken';
 import config from '@src/common/config';
 import logger from '@src/common/logger';
@@ -114,6 +114,12 @@ router.get('/directory/organizations/:id/users', authenticate, context(async (re
     req.context,
     parseInt(req.params.id)
   );
+}));
+
+// Add a user to an organization
+router.post('/directory/organizations/:id/users', authenticate, context(async (req) => {
+  const organizationId = parseInt(req.params.id);
+  return req.services.user.addUserToOrganization(req.context, organizationId, req.body as AddUserToOrganizationData);
 }));
 
 // Connections between organizations
