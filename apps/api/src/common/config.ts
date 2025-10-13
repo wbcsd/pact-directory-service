@@ -3,8 +3,8 @@ import dotenv from 'dotenv';
 // Load environment variables from .env files
 dotenv.config();
 
-// Helper to get and validate required vars
-function getEnvVar(key: string, fallback?: string): string {
+// Get a required environment variable or throw an error
+function required(key: string, fallback?: string): string {
   const value = process.env[key] ?? fallback;
   if (value === undefined) {
     throw new Error(`Missing environment variable: ${key}`);
@@ -12,22 +12,33 @@ function getEnvVar(key: string, fallback?: string): string {
   return value;
 }
 
- 
+// Get a boolean environment variable or default
+function bool(key: string, fallback?: boolean): boolean {
+  const value = process.env[key] ?? (fallback ? 'true' : 'false');
+  return ['true', '1', 'y', 'yes'].includes(value.trim().toLowerCase());
+}
+
+// Get an integer environment variable or default
+function int(key: string, fallback?: number): number {
+  const value = process.env[key] ?? fallback ?? '0';
+  return parseInt(value as string, 10);
+}
+
 export default {
-  NODE_ENV: getEnvVar('NODE_ENV'),
-  PORT: getEnvVar('PORT'),
-  DB_CONNECTION_STRING: getEnvVar('DB_CONNECTION_STRING'),
-  CONFORMANCE_API_INTERNAL: getEnvVar('CONFORMANCE_API_INTERNAL', getEnvVar('CONFORMANCE_API')),
+  NODE_ENV: required('NODE_ENV'),
+  PORT: required('PORT'),
+  DB_CONNECTION_STRING: required('DB_CONNECTION_STRING'),
+  CONFORMANCE_API_INTERNAL: required('CONFORMANCE_API_INTERNAL', required('CONFORMANCE_API')),
   LOG_OUTPUT: process.env.LOG_OUTPUT ?? 'pino',
   LOG_LEVEL: process.env.LOG_LEVEL ?? 'info',
   FRONTEND_URL: process.env.FRONTEND_URL ?? 'http://localhost:5173',
   COOKIE_PATH: process.env.COOKIE_PATH ?? '',
   COOKIE_SECRET: process.env.COOKIE_SECRET ?? '',
-  COOKIE_EXP: Number(process.env.COOKIE_EXP ?? 0),
+  COOKIE_EXP: int('COOKIE_EXP', 0),
   COOKIE_DOMAIN: process.env.COOKIE_DOMAIN ?? '',
-  DEFAULT_PAGE_SIZE: 50,
-  JWT_SECRET: process.env.JWT_SECRET ?? '',
-  JWT_EXP: Number(process.env.JWT_EXP ?? 0),
+  DEFAULT_PAGE_SIZE: int('DEFAULT_PAGE_SIZE', 50),
+  JWT_SECRET: required('JWT_SECRET'),
+  JWT_EXP: int('JWT_EXP', 21600), // Default to 6 hours
   SENDGRID_API_KEY: process.env.SENDGRID_API_KEY ?? '',
   SENDGRID_FROM_EMAIL: process.env.SENDGRID_FROM_EMAIL ?? '',
 };
