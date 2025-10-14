@@ -8,7 +8,7 @@ import { InputIcon } from "@radix-ui/react-icons";
 import { useNavigate } from "react-router-dom";
 
 export interface User {
-  userId: number;
+  id: number;
   fullName: string;
   email: string;
   role: string;
@@ -30,10 +30,10 @@ const OrganizationUsers: React.FC = () => {
     const fetchUsers = async () => {
       try {
         const response = await fetchWithAuth(
-          `/organizations/${profileData?.organizationId}/members`
+          `/organizations/${profileData?.organizationId}/users`
         );
         if (response!.ok) {
-          const { members } = await response!.json();
+          const members = await response!.json();
           setUsers(members);
         } else {
           console.error("Failed to fetch users");
@@ -81,7 +81,7 @@ const OrganizationUsers: React.FC = () => {
       render: (row: User) => (
         <Button
           onClick={() => {
-            navigate(`/organization/users/${row.userId}`);
+            navigate(`/organization/users/${row.id}`);
           }}
           style={{
             background: "transparent",
@@ -109,7 +109,7 @@ const OrganizationUsers: React.FC = () => {
           <h2>Organization Users</h2>
         </div>
         <div>
-          <DataTable idColumnName="userId" columns={columns} data={users} />
+          <DataTable idColumnName="id" columns={columns} data={users} />
         </div>
       </main>
     </>

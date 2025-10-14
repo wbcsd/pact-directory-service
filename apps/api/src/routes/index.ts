@@ -11,12 +11,12 @@ const router = Router();
 /**
  * ContextRequests Express Request interface to include custom properties:
  *
- * @property services - An instance of the Services class, 
+ * @property services - An instance of the Services class,
  *                      providing access to application services.
  * @property context -  The UserContext object, containing information
  *                      about the current user.
  */
-type ContextRequest = Request & { services: Services; context: UserContext }; 
+type ContextRequest = Request & { services: Services; context: UserContext };
 
 /**
  * Represents an asynchronous request handler function for API routes.
@@ -33,19 +33,21 @@ type Handler = (req: ContextRequest, res: Response) => Promise<any>;
  * headers have not been sent, the result is sent as a JSON response. Errors are logged and passed
  * to the next middleware.
  */
-const context = (handler: Handler) => async (req: Request, res: Response, next: NextFunction) => {
+const context =
+  (handler: Handler) =>
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
-        (req as ContextRequest).services = req.app.locals.services;
-        (req as ContextRequest).context = res.locals.user as UserContext;
-        const result = await handler(req as ContextRequest, res);
-        if (result && !res.headersSent) {
-            res.json(result);
-        }
+      (req as ContextRequest).services = req.app.locals.services;
+      (req as ContextRequest).context = res.locals.user as UserContext;
+      const result = await handler(req as ContextRequest, res);
+      if (result && !res.headersSent) {
+        res.json(result);
+      }
     } catch (error) {
       logger.error(error);
       next(error);
     }
-};
+  };
 
 /**
  * Routes
@@ -119,7 +121,40 @@ router.get('/directory/organizations/:id/users', authenticate, context(async (re
 // Add a user to an organization
 router.post('/directory/organizations/:id/users', authenticate, context(async (req) => {
   const organizationId = parseInt(req.params.id);
-  return req.services.user.addUserToOrganization(req.context, organizationId, req.body as AddUserToOrganizationData);
+  return req.services.user.addUserToOrganization(
+    req.context,
+    organizationId,
+    req.body as AddUserToOrganizationData
+  );
+}));
+
+// Retrieve users from the organization
+router.get('/directory/organizations/:id/users', authenticate, context(async (req) => {
+  const organizationId = parseInt(req.params.id);
+  return req.services.organization.listMembers(req.context, organizationId);
+}));
+
+router.get('/directory/organizations/:oid/users/:uid', authenticate, context(async (req) => {
+  const organizationId = parseInt(req.params.oid);
+  const userId = parseInt(req.params.uid);
+
+  return req.services.organization.getMember(
+    req.context,
+    organizationId,
+    userId
+  );
+}));
+
+router.post('/directory/organizations/:oid/users/:uid', authenticate, context(async (req) => {
+  const organizationId = parseInt(req.params.oid);
+  const userId = parseInt(req.params.uid);
+
+  return req.services.organization.updateMember(
+    req.context,
+    organizationId,
+    userId,
+    req.body as { fullName?: string; role?: string }
+  );
 }));
 
 // Connections between organizations

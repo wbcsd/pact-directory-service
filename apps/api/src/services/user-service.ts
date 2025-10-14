@@ -9,12 +9,15 @@ import {
   NotFoundError,
 } from '@src/common/errors';
 import { EmailService } from './email-service';
-import { checkAccess, listRegisteredPolicies, registerPolicy } from '@src/common/policies';
+import {
+  checkAccess,
+  listRegisteredPolicies,
+  registerPolicy,
+} from '@src/common/policies';
 
 registerPolicy('view-users');
 registerPolicy('edit-users');
 registerPolicy('add-users');
-
 
 export interface UserContext {
   userId: number;
@@ -45,6 +48,11 @@ export interface UserData {
   role: string;
   organizationId: number;
   password: string;
+}
+
+export interface UserListData extends UserData {
+  organizationName: string;
+  organizationIdentifier: string | null;
 }
 
 export interface AccountData extends UserContext {
@@ -115,7 +123,6 @@ export interface ResendVerificationData {
 }
 
 export class UserService {
-
   // TODO: Remove
 
   constructor(
@@ -176,7 +183,7 @@ export class UserService {
         .values({
           fullName: data.fullName,
           email: data.email,
-          role: 'user', 
+          role: 'user',
           password: hashedPassword,
           organizationId: organization.id,
           status: 'unverified', // Set as unverified initially
@@ -198,13 +205,12 @@ export class UserService {
     };
   }
 
-
   /**
    * Authenticates a user using their email and password.
    *
    * This method queries the database for a user with the provided email,
    * verifies the password using bcrypt, and returns the user's context if authentication succeeds.
-   * 
+   *
    * Throws an `UnauthorizedError` if the email or password is invalid.
    *
    * @param data - The login credentials containing email and password.
@@ -259,7 +265,7 @@ export class UserService {
       .selectAll()
       .where('id', '=', id)
       .executeTakeFirst();
-      
+
     if (!user) {
       throw new NotFoundError('User not found');
     }
@@ -406,7 +412,10 @@ export class UserService {
    * Get user's profile including organization info, connection requests and connections
    */
   // TODO: remove connections from here and move to ConnectionService
-  async getMyProfile(email: string, organizationId: number): Promise<AccountData | null> {
+  async getMyProfile(
+    email: string,
+    organizationId: number
+  ): Promise<AccountData | null> {
     const profile = await this.db
       .selectFrom('organizations as o')
       .innerJoin('users as u', 'o.id', 'u.organizationId')
@@ -489,8 +498,11 @@ export class UserService {
         'companiesTwo.name as companyTwoName',
       ])
       .where((qb) =>
-        qb('connectedCompanyOneId', '=', organizationId)
-          .or('connectedCompanyTwoId', '=', organizationId)
+        qb('connectedCompanyOneId', '=', organizationId).or(
+          'connectedCompanyTwoId',
+          '=',
+          organizationId
+        )
       )
       .execute();
 
@@ -558,7 +570,7 @@ export class UserService {
     const token = crypto.randomBytes(32).toString('hex');
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 15); // 15 minutes expiration
-  
+
     await this.db
       .insertInto('password_reset_tokens')
       .values({
@@ -579,9 +591,11 @@ export class UserService {
       resetUrl,
     });
 
-    return { message: 'If this email is known in our system, a reset link has been sent.' };
+    return {
+      message:
+        'If this email is known in our system, a reset link has been sent.',
+    };
   }
-
 
   /**
    * Resets a user's password using a provided reset token.
@@ -597,9 +611,13 @@ export class UserService {
   async resetPassword(data: ResetPasswordData): Promise<{ message: string }> {
     const { token, password, confirmPassword } = data;
 
-    if (!token || typeof token !== 'string' ||
-      !password || typeof password !== 'string' ||
-      !confirmPassword || typeof confirmPassword !== 'string'
+    if (
+      !token ||
+      typeof token !== 'string' ||
+      !password ||
+      typeof password !== 'string' ||
+      !confirmPassword ||
+      typeof confirmPassword !== 'string'
     ) {
       throw new BadRequestError(
         'Token, password, and confirm password are required'
