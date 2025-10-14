@@ -10,15 +10,15 @@ import {
   Spinner,
 } from "@radix-ui/themes";
 import * as Tooltip from "@radix-ui/react-tooltip";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   ExclamationTriangleIcon,
   InfoCircledIcon,
+  CheckIcon,
 } from "@radix-ui/react-icons";
 import HeroImage from "../assets/providers-header.webp";
 
 const SignupPage: React.FC = () => {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     organizationName: "",
     fullName: "",
@@ -27,7 +27,7 @@ const SignupPage: React.FC = () => {
     confirmPassword: ""
   });
   const [status, setStatus] = useState<null | "success" | "error">(null);
-
+  const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   const [creatingAccount, setCreatingAccount] = useState(false);
@@ -58,13 +58,10 @@ const SignupPage: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        const { token } = data;
-
-        localStorage.setItem("jwt", token);
-
+        // Store the verification message from the API
+        setSuccessMessage(data.message || "Registration successful. Please check your email to verify your account.");
         setStatus("success");
-
-        navigate("/conformance-test-runs");
+        // Don't navigate - show verification message instead
       } else {
         const data = await response.json();
         if (data.message) {
@@ -125,10 +122,41 @@ const SignupPage: React.FC = () => {
           <Box
             style={{ maxWidth: "400px", margin: "0 auto", paddingTop: "40px" }}
           >
-            <h2 style={{ marginBottom: "30px" }}>
-              Sign up to PACT Network Services
-            </h2>
-            <Form.Root onSubmit={handleSubmit}>
+            {status === "success" ? (
+              <>
+                <h2 style={{ marginBottom: "30px" }}>
+                  Check Your Email
+                </h2>
+                <Callout.Root color="green" variant="surface" style={{ marginBottom: "30px" }}>
+                  <Callout.Icon>
+                    <CheckIcon />
+                  </Callout.Icon>
+                  <Callout.Text>
+                    {successMessage}
+                  </Callout.Text>
+                </Callout.Root>
+                <p style={{ marginBottom: "20px", color: "#666" }}>
+                  We've sent you a verification link. Please click the link in your email to activate your account and complete the registration process.
+                </p>
+                <Box style={{ textAlign: "center" }}>
+                  <Link
+                    to="/login"
+                    style={{
+                      color: "#0A0552",
+                      textDecoration: "underline",
+                      fontSize: "0.9em",
+                    }}
+                  >
+                    Back to Login
+                  </Link>
+                </Box>
+              </>
+            ) : (
+              <>
+                <h2 style={{ marginBottom: "30px" }}>
+                  Sign up to PACT Network Services
+                </h2>
+                <Form.Root onSubmit={handleSubmit}>
               <Form.Field name="organizationName">
                 <Form.Label
                   style={{
@@ -496,21 +524,23 @@ const SignupPage: React.FC = () => {
                 </p>
               </Box>
             </Form.Root>
-            {status === "error" && (
-              <Callout.Root
-                color="bronze"
-                highContrast
-                variant="surface"
-                mt={"4"}
-              >
-                <Callout.Icon>
-                  <ExclamationTriangleIcon />
-                </Callout.Icon>
-                <Callout.Text>
-                  {errorMessage ||
-                    "Error during sign up, please check your data."}
-                </Callout.Text>
-              </Callout.Root>
+                {status === "error" && (
+                  <Callout.Root
+                    color="bronze"
+                    highContrast
+                    variant="surface"
+                    mt={"4"}
+                  >
+                    <Callout.Icon>
+                      <ExclamationTriangleIcon />
+                    </Callout.Icon>
+                    <Callout.Text>
+                      {errorMessage ||
+                        "Error during sign up, please check your data."}
+                    </Callout.Text>
+                  </Callout.Root>
+                )}
+              </>
             )}
           </Box>
         </Box>

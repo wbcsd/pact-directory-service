@@ -4,6 +4,8 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import EmailVerificationPage from "./pages/EmailVerificationPage";
+import ResendVerificationPage from "./pages/ResendVerificationPage";
 import MyProfile from "./pages/MyProfile";
 import SearchPage from "./pages/SearchPage";
 import OrganizationProfile from "./pages/OrganizationProfile";
@@ -22,6 +24,8 @@ const AppRoutes: React.FC = () => {
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+      <Route path="/verify-email/:token" element={<EmailVerificationPage />} />
+      <Route path="/resend-verification" element={<ResendVerificationPage />} />
       <Route path="/my-profile" element={<MyProfile />} />
       {featureFlags.enableIdentityManagement === true && (
         <>
