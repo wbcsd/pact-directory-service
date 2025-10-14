@@ -123,7 +123,7 @@ components:
         email: { type: string, format: email }
         organizationId: { type: integer }
         role: { type: string }
-        policies: 
+        policies:
           type: array
           items: { type: string }
         fullName: { type: string }
@@ -192,16 +192,21 @@ components:
         solutionApiUrl: { type: string }
         parentId: { type: integer, nullable: true }
       required: [id, organizationName, organizationIdentifier, solutionApiUrl]
-    OrganizationsMemberResponse:
+    OrganizationsMembersResponse:
       type: object
       properties:
         members:
           type: array
           items: { $ref: "#/components/schemas/Member" }
+    OrganizationsMemberResponse:
+      type: object
+      allOf:
+        - { $ref: "#/components/schemas/Member" }
     CreateConnectionRequestRequest:
       type: object
       properties:
-        requestedOrganizationId: { type: integer, description: "Requested organization ID" }
+        requestedOrganizationId:
+          { type: integer, description: "Requested organization ID" }
       required: [requestedOrganizationId]
     CreateConnectionRequestResponse:
       type: object
@@ -243,6 +248,10 @@ components:
         password: { type: string, format: password, description: "Password for the user account", minLength: 6 }
         confirmPassword: { type: string, format: password, description: "Password confirmation" }
       required: [fullName, email, role, password, confirmPassword]
+    UpdateUserResponse:
+      type: object
+      properties:
+        message: { type: string }
     UserContext:
       type: object
       properties:
@@ -261,27 +270,27 @@ components:
       description: Unauthorized
       content:
         application/json:
-          schema: { $ref: '#/components/schemas/Error' }
+          schema: { $ref: "#/components/schemas/Error" }
     Forbidden:
       description: Forbidden
       content:
         application/json:
-          schema: { $ref: '#/components/schemas/Error' }
+          schema: { $ref: "#/components/schemas/Error" }
     NotFound:
       description: Not Found
       content:
         application/json:
-          schema: { $ref: '#/components/schemas/Error' }
+          schema: { $ref: "#/components/schemas/Error" }
     BadRequest:
       description: Bad Request
       content:
         application/json:
-          schema: { $ref: '#/components/schemas/Error' }
+          schema: { $ref: "#/components/schemas/Error" }
     InternalError:
       description: Internal Server Error
       content:
         application/json:
-          schema: { $ref: '#/components/schemas/Error' }
+          schema: { $ref: "#/components/schemas/Error" }
 security:
   - bearerAuth: []
 paths:
@@ -294,15 +303,15 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/AuthTokenRequest' }
+            schema: { $ref: "#/components/schemas/AuthTokenRequest" }
       responses:
-        '200':
+        "200":
           description: Token issued
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/AuthTokenResponse' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '400': { $ref: '#/components/responses/BadRequest' }
+              schema: { $ref: "#/components/schemas/AuthTokenResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "400": { $ref: "#/components/responses/BadRequest" }
   /directory/users/signup:
     post:
       summary: Sign up an organization and primary user
@@ -312,14 +321,14 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/SignupRequest' }
+            schema: { $ref: "#/components/schemas/SignupRequest" }
       responses:
-        '201':
+        "201":
           description: Signup successful
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/SignupResponse' }
-        '400': { $ref: '#/components/responses/BadRequest' }
+              schema: { $ref: "#/components/schemas/SignupResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
   /directory/users/login:
     post:
       summary: Login with email/password
@@ -328,16 +337,16 @@ paths:
       requestBody:
         required: true
         content:
-            application/json:
-              schema: { $ref: '#/components/schemas/LoginRequest' }
+          application/json:
+            schema: { $ref: "#/components/schemas/LoginRequest" }
       responses:
-        '200':
+        "200":
           description: Login successful
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/LoginResponse' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '400': { $ref: '#/components/responses/BadRequest' }
+              schema: { $ref: "#/components/schemas/LoginResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "400": { $ref: "#/components/responses/BadRequest" }
   /directory/users/forgot-password:
     post:
       summary: Request password reset
@@ -347,15 +356,15 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/ForgotPasswordRequest' }
+            schema: { $ref: "#/components/schemas/ForgotPasswordRequest" }
       responses:
-        '200':
+        "200":
           description: Always returns generic success
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/GenericMessage' }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '500': { $ref: '#/components/responses/InternalError' }
+              schema: { $ref: "#/components/schemas/GenericMessage" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "500": { $ref: "#/components/responses/InternalError" }
   /directory/users/reset-password:
     post:
       summary: Reset password with token
@@ -365,15 +374,15 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/ResetPasswordRequest' }
+            schema: { $ref: "#/components/schemas/ResetPasswordRequest" }
       responses:
-        '200':
+        "200":
           description: Password reset
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/GenericMessage' }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '500': { $ref: '#/components/responses/InternalError' }
+              schema: { $ref: "#/components/schemas/GenericMessage" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "500": { $ref: "#/components/responses/InternalError" }
   /directory/users/verify-reset-token/{token}:
     get:
       summary: Verify a password reset token
@@ -385,13 +394,13 @@ paths:
           required: true
           schema: { type: string }
       responses:
-        '200':
+        "200":
           description: Token verification result
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/VerifyResetTokenResponse' }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '500': { $ref: '#/components/responses/InternalError' }
+              schema: { $ref: "#/components/schemas/VerifyResetTokenResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "500": { $ref: "#/components/responses/InternalError" }
       x-notes: Controller currently reads req.params.token. Adjust controller or route.
   /directory/users/me:
     get:
@@ -399,12 +408,12 @@ paths:
       tags: [Users]
       security: [{ bearerAuth: [] }]
       responses:
-        '200':
+        "200":
           description: User profile with organization data
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/MyProfileResponse' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
+              schema: { $ref: "#/components/schemas/MyProfileResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
   /directory/organizations/{id}:
     get:
       summary: Get organization profile by ID
@@ -416,13 +425,13 @@ paths:
           required: true
           schema: { type: integer }
       responses:
-        '200':
+        "200":
           description: Organization profile
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/OrganizationProfileResponse' }
-        '404': { $ref: '#/components/responses/NotFound' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
+              schema: { $ref: "#/components/schemas/OrganizationProfileResponse" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
       x-notes: Controller uses req.params.id. Either change route to /directory/companies/profile/{id} or adapt controller to query.
   /directory/organizations:
     get:
@@ -436,15 +445,16 @@ paths:
           schema: { type: string }
           description: Search query to filter organizations by name
       responses:
-        '200':
+        "200":
           description: List of organizations
           content:
             application/json:
               schema:
                 type: array
-                items: { $ref: '#/components/schemas/OrganizationProfileResponse' }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
+                items:
+                  $ref: "#/components/schemas/OrganizationProfileResponse"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
   /directory/organizations/{id}/users:
     get:
       summary: List all users in an organization
@@ -457,16 +467,17 @@ paths:
           schema: { type: integer }
           description: Organization ID
       responses:
-        '200':
+        "200":
           description: List of users in the organization
           content:
             application/json:
               schema:
                 type: array
-                items: { $ref: '#/components/schemas/UserBase' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '403': { $ref: '#/components/responses/Forbidden' }
-        '404': { $ref: '#/components/responses/NotFound' }
+                items: 
+                  $ref: "#/components/schemas/Member"
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
     post:
       summary: Add a new user to an organization
       tags: [Organizations]
@@ -482,18 +493,77 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AddUserToOrganizationRequest'
+              $ref: "#/components/schemas/AddUserToOrganizationRequest"
       responses:
-        '201':
+        "201":
           description: User successfully added to organization
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserContext'
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '403': { $ref: '#/components/responses/Forbidden' }
-        '404': { $ref: '#/components/responses/NotFound' }
+                $ref: "#/components/schemas/UserContext"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /directory/organizations/{oid}/users/{uid}:
+    get:
+      summary: List all users in an organization
+      tags: [Organizations]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: oid
+          required: true
+          schema: { type: integer }
+          description: Organization ID
+        - in: path
+          name: uid
+          required: true
+          schema: { type: integer }
+          description: User ID
+      responses:
+        "200":
+          description: User in the organization
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Member" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    post:
+      summary: Update a user in an organization
+      tags: [Organizations]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: oid
+          required: true
+          schema: { type: integer }
+          description: Organization ID
+        - in: path
+          name: uid
+          required: true
+          schema: { type: integer }
+          description: User ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullName: { type: string }
+                role: { type: string }
+              required: [fullName, role]
+      responses:
+        "200":
+          description: User in the organization
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UpdateUserResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /directory/organizations/{id}/connections:
     post:
       summary: List connections for an organization
@@ -506,22 +576,22 @@ paths:
           schema: { type: integer }
           description: Organization ID
       responses:
-        '200':
+        "200":
           description: List of connections for the organization
           content:
             application/json:
               schema:
                 type: array
-                items: 
+                items:
                   type: object
                   properties:
                     organizationId: { type: integer }
                     organizationName: { type: string }
                     requestedAt: { type: string, format: date-time }
                     createdAt: { type: string, format: date-time }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '403': { $ref: '#/components/responses/Forbidden' }
-        '404': { $ref: '#/components/responses/NotFound' }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /directory/organizations/create-connection-request:
     post:
       summary: Create a connection request between organizations
@@ -531,15 +601,15 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/CreateConnectionRequestRequest' }
+            schema: { $ref: "#/components/schemas/CreateConnectionRequestRequest" }
       responses:
-        '201':
+        "201":
           description: Connection request created
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/CreateConnectionRequestResponse' }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
+              schema: { $ref: "#/components/schemas/CreateConnectionRequestResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
   /directory/organizations/connection-request-action:
     post:
       summary: Accept connection request (creates connection between organizations)
@@ -549,17 +619,17 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/ConnectionRequestActionRequest' }
+            schema: { $ref: "#/components/schemas/ConnectionRequestActionRequest" }
       responses:
-        '201':
+        "201":
           description: Connection created between organizations
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/ConnectionCreatedResponse' }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '403': { $ref: '#/components/responses/Forbidden' }
-        '404': { $ref: '#/components/responses/NotFound' }
+              schema: { $ref: "#/components/schemas/ConnectionCreatedResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /proxy/test:
     post:
       summary: Run test cases via proxy
@@ -569,16 +639,16 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/RunTestCasesRequest' }
+            schema: { $ref: "#/components/schemas/RunTestCasesRequest" }
       responses:
-        '200':
+        "200":
           description: Proxy response
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/ExternalProxyResponse' }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '500': { $ref: '#/components/responses/InternalError' }
+              schema: { $ref: "#/components/schemas/ExternalProxyResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "500": { $ref: "#/components/responses/InternalError" }
   /proxy/test-results:
     get:
       summary: Get test run results
@@ -590,15 +660,15 @@ paths:
           required: true
           schema: { type: string }
       responses:
-        '200':
+        "200":
           description: Proxy response
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/ExternalProxyResponse' }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
-        '500': { $ref: '#/components/responses/InternalError' }
+              schema: { $ref: "#/components/schemas/ExternalProxyResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
   /proxy/test-runs:
     get:
       summary: List or search test runs
@@ -618,14 +688,14 @@ paths:
           required: false
           schema: { type: integer, minimum: 1 }
       responses:
-        '200':
+        "200":
           description: Proxy response
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/ExternalProxyResponse' }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '500': { $ref: '#/components/responses/InternalError' }
+              schema: { $ref: "#/components/schemas/ExternalProxyResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "500": { $ref: "#/components/responses/InternalError" }
 tags:
   - name: Authentication
   - name: Users

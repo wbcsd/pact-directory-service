@@ -19,6 +19,9 @@ import {
 } from "@radix-ui/react-icons";
 import SideNav from "../components/SideNav";
 import { User } from "./OrganizationUsers";
+import { useAuth } from "../contexts/AuthContext";
+import { fetchWithAuth } from "../utils/auth-fetch";
+import "./EditUserPage.css";
 
 const EditUserPage: React.FC = () => {
   const navigate = useNavigate();
@@ -38,32 +41,26 @@ const EditUserPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const { profileData } = useAuth();
 
   useEffect(() => {
     const fetchUser = async () => {
-      try {
-        const response = await Promise.resolve({
-          ok: true,
-          json: async () => ({
-            userId: 1,
-            fullName: "John Doe",
-            email: "john@doe.com",
-            role: "administrator",
-            organizationName: "Example Org",
-            organizationId: 123,
-            organizationIdentifier: "EX123",
-          }),
-        });
+      if (!profileData) return;
 
-        if (response.ok) {
-          const user: User = await response.json();
+      try {
+        const response = await fetchWithAuth(
+          `/organizations/${profileData?.organizationId}/users/${userId}`
+        );
+
+        if (response!.ok) {
+          const user: User = await response!.json();
           setFormData({
             fullName: user.fullName,
             role: user.role,
           });
           setReadOnlyData({
             email: user.email,
-            id: user.userId,
+            id: user.id,
             organizationName: user.organizationName,
             organizationId: user.organizationId,
             organizationIdentifier: user.organizationIdentifier,
@@ -82,7 +79,7 @@ const EditUserPage: React.FC = () => {
     };
 
     fetchUser();
-  }, [userId]);
+  }, [userId, profileData]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -93,27 +90,21 @@ const EditUserPage: React.FC = () => {
 
     try {
       setUpdating(true);
-      const token = localStorage.getItem("jwt");
 
-      const response = await fetch(
-        `${import.meta.env.VITE_DIRECTORY_API}/directory/users/${userId}`,
+      const response = await fetchWithAuth(
+        `/organizations/${profileData?.organizationId}/users/${userId}`,
         {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+          method: "POST",
           body: JSON.stringify(cleanedFormData),
         }
       );
 
       setUpdating(false);
 
-      if (response.ok) {
+      if (response!.ok) {
         setStatus("success");
-        setTimeout(() => navigate("/users"), 1500);
       } else {
-        const errorResponse = await response.json();
+        const errorResponse = await response!.json();
         if (errorResponse.error) {
           setErrorMessage(errorResponse.error);
         }
@@ -137,11 +128,9 @@ const EditUserPage: React.FC = () => {
 
   if (loading) {
     return (
-      <Box style={{ padding: "40px", textAlign: "center" }}>
+      <Box className="loading-container">
         <Spinner loading />
-        <Text style={{ display: "block", marginTop: "20px" }}>
-          Loading user data...
-        </Text>
+        <Text className="loading-text">Loading user data...</Text>
       </Box>
     );
   }
@@ -154,46 +143,26 @@ const EditUserPage: React.FC = () => {
       </aside>
       <main className="main">
         <div className="header">
-          <h2>Organization Users</h2>
+          <h2>Edit User</h2>
         </div>
         <div>
-          <Box style={{ margin: "0 auto", paddingTop: "40px" }}>
-            <h2 style={{ marginBottom: "30px" }}>Edit User</h2>
-
+          <Box className="form-container">
             <Form.Root onSubmit={handleSubmit}>
               {/* Read-only User Email */}
-              <Box style={{ marginBottom: "20px" }}>
-                <Text
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    fontWeight: "500",
-                  }}
-                >
-                  Email Address
-                </Text>
+              <Box className="form-field">
+                <Text className="field-label">Email Address</Text>
                 <TextField.Root
                   value={readOnlyData.email.toString()}
                   readOnly
                   disabled
-                  style={{
-                    width: "100%",
-                    backgroundColor: "#f5f5f5",
-                    opacity: 0.7,
-                  }}
+                  className="readonly-field"
                 />
               </Box>
 
               {/* Editable Full Name */}
               <Form.Field name="fullName">
-                <Form.Label
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    fontWeight: "500",
-                  }}
-                >
-                  Full Name<span style={{ color: "red" }}>*</span>
+                <Form.Label className="field-label">
+                  Full Name<span className="required-asterisk">*</span>
                 </Form.Label>
                 <Form.Control asChild>
                   <TextField.Root
@@ -201,11 +170,7 @@ const EditUserPage: React.FC = () => {
                     required
                     placeholder="Enter full name"
                     onChange={handleChange}
-                    style={{
-                      width: "100%",
-                      border: "1px solid #ccc",
-                      fontSize: "16px",
-                    }}
+                    className="editable-field"
                   >
                     <TextField.Slot side="right">
                       <Tooltip.Provider delayDuration={0}>
@@ -215,7 +180,7 @@ const EditUserPage: React.FC = () => {
                               width={20}
                               height={20}
                               color="#0A0552"
-                              style={{ cursor: "pointer" }}
+                              className="info-icon"
                             />
                           </Tooltip.Trigger>
                           <Tooltip.Content
@@ -233,87 +198,38 @@ const EditUserPage: React.FC = () => {
                 </Form.Control>
                 <Form.Message
                   match="valueMissing"
-                  style={{
-                    color: "var(--base-color-brand--light-blue)",
-                    fontSize: "0.85em",
-                  }}
+                  className="validation-message"
                 >
                   Full name is required.
                 </Form.Message>
               </Form.Field>
 
               {/* Editable Role (Dropdown) */}
-              <Box style={{ marginBottom: "20px" }}>
-                <Text
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    fontWeight: "500",
-                  }}
-                >
-                  Role<span style={{ color: "red" }}>*</span>
+              <Box className="form-field">
+                <Text className="field-label">
+                  Role<span className="required-asterisk">*</span>
                 </Text>
                 <Select.Root
                   value={formData.role}
                   onValueChange={handleRoleChange}
                 >
-                  <Select.Trigger
-                    style={{
-                      width: "100%",
-                      border: "1px solid #ccc",
-                      padding: "12px",
-                      fontSize: "16px",
-                      backgroundColor: "white",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      borderRadius: "4px",
-                    }}
-                  >
+                  <Select.Trigger className="select-trigger">
                     <Select.Value placeholder="Select a role" />
                     <Select.Icon>
                       <ChevronDownIcon />
                     </Select.Icon>
                   </Select.Trigger>
                   <Select.Portal>
-                    <Select.Content
-                      style={{
-                        backgroundColor: "white",
-                        border: "1px solid #ccc",
-                        borderRadius: "4px",
-                        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                      }}
-                    >
+                    <Select.Content className="select-content">
                       <Select.Viewport>
                         <Select.Item
                           value="administrator"
-                          style={{
-                            padding: "12px",
-                            cursor: "pointer",
-                            position: "relative",
-                          }}
+                          className="select-item"
                         >
-                          <Select.ItemText>Admin</Select.ItemText>
+                          <Select.ItemText>Administrator</Select.ItemText>
                         </Select.Item>
-                        <Select.Item
-                          value="user"
-                          style={{
-                            padding: "12px",
-                            cursor: "pointer",
-                            position: "relative",
-                          }}
-                        >
+                        <Select.Item value="user" className="select-item">
                           <Select.ItemText>User</Select.ItemText>
-                        </Select.Item>
-                        <Select.Item
-                          value="viewer"
-                          style={{
-                            padding: "12px",
-                            cursor: "pointer",
-                            position: "relative",
-                          }}
-                        >
-                          <Select.ItemText>Viewer</Select.ItemText>
                         </Select.Item>
                       </Select.Viewport>
                     </Select.Content>
@@ -322,84 +238,48 @@ const EditUserPage: React.FC = () => {
               </Box>
 
               {/* Read-only Organization Name */}
-              <Box style={{ marginBottom: "20px" }}>
-                <Text
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    fontWeight: "500",
-                  }}
-                >
-                  Organization Name
-                </Text>
+              <Box className="form-field">
+                <Text className="field-label">Organization Name</Text>
                 <TextField.Root
                   value={readOnlyData.organizationName}
                   readOnly
                   disabled
-                  style={{
-                    width: "100%",
-                    backgroundColor: "#f5f5f5",
-                    opacity: 0.7,
-                  }}
+                  className="readonly-field"
                 />
               </Box>
 
               {/* Read-only Organization ID */}
-              <Box style={{ marginBottom: "20px" }}>
-                <Text
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    fontWeight: "500",
-                  }}
-                >
-                  Organization ID
-                </Text>
+              <Box className="form-field">
+                <Text className="field-label">Organization ID</Text>
                 <TextField.Root
                   value={readOnlyData.organizationId.toString()}
                   readOnly
                   disabled
-                  style={{
-                    width: "100%",
-                    backgroundColor: "#f5f5f5",
-                    opacity: 0.7,
-                  }}
+                  className="readonly-field"
                 />
               </Box>
 
               {/* Read-only Organization Identifier */}
-              <Box style={{ marginBottom: "20px" }}>
-                <Text
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    fontWeight: "500",
-                  }}
-                >
-                  Organization Identifier
-                </Text>
+              <Box className="form-field">
+                <Text className="field-label">Organization Identifier</Text>
                 <TextField.Root
                   value={readOnlyData.organizationIdentifier}
                   readOnly
                   disabled
-                  style={{
-                    width: "100%",
-                    backgroundColor: "#f5f5f5",
-                    opacity: 0.7,
-                  }}
+                  className="readonly-field"
                 />
               </Box>
 
-              <Box style={{ display: "flex", gap: "10px", marginTop: "40px" }}>
+              <Box className="button-group">
                 <Button
                   type="button"
-                  style={{ flex: 1 }}
+                  className="cancel-button"
                   onClick={() => navigate("/organization/users")}
                 >
                   Cancel
                 </Button>
                 <Form.Submit asChild>
-                  <Button disabled={updating} style={{ flex: 1 }}>
+                  <Button disabled={updating} className="submit-button">
                     {updating && <Spinner loading />}
                     {updating ? "Updating..." : "Save Changes"}
                   </Button>

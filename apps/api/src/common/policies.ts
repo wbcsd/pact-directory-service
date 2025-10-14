@@ -1,4 +1,3 @@
-
 import { UserContext } from '../services/user-service';
 import { ForbiddenError } from './errors';
 
@@ -36,7 +35,7 @@ export function checkAccess(
   condition = true
 ) {
   if (Array.isArray(policy)) {
-    if (!policy.some(p => context.policies.includes(p))) {
+    if (!policy.some((p) => context.policies.includes(p))) {
       throw new ForbiddenError('Access denied');
     }
   } else {
