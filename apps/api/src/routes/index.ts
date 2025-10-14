@@ -64,10 +64,9 @@ router.post('/im/auth/token', context(async (req) => {
 
 // Signup 
 router.post('/directory/users/signup', context(async (req, res) => {
-  const user = await req.services.user.signup(req.body);
-  const token = jwt.sign(user, config.JWT_SECRET, { expiresIn: '6h' });
+  const result = await req.services.user.signup(req.body);
   res.status(201);
-  return { token };
+  return result;
 }));
 
 router.post('/directory/users/login', context(async (req) => {
