@@ -72,7 +72,7 @@ const sortTestCases = (a: TestCase, b: TestCase) => {
 const pollTestResults = (
   attempt: number = 1,
   setTestCases: React.Dispatch<React.SetStateAction<TestCase[]>>,
-  testRunId: string,
+  testId: string,
   isCancelled: () => boolean
 ) => {
   if (attempt > 5 || isCancelled()) return;
@@ -80,7 +80,7 @@ const pollTestResults = (
     if (isCancelled()) return;
     try {
       const pollResponse = await proxyWithAuth(
-        `/test-results?testRunId=${testRunId}`
+        `/test-results?testId=${testId}`
       );
       if (!pollResponse || !pollResponse.ok) {
         throw new Error("Failed to poll test results");
@@ -90,7 +90,7 @@ const pollTestResults = (
     } catch (pollError) {
       console.error(`Polling attempt ${attempt} error:`, pollError);
     }
-    pollTestResults(attempt + 1, setTestCases, testRunId, isCancelled);
+    pollTestResults(attempt + 1, setTestCases, testId, isCancelled);
   }, 2000);
 };
 
@@ -113,7 +113,7 @@ const ConformanceTestResult: React.FC = () => {
   const { profileData } = useAuth();
   const { apiUrl, authBaseUrl, clientId, clientSecret, version, authOptions } =
     useConformanceTesting();
-  const testRunId = searchParams.get("testRunId");
+  const testId = searchParams.get("testId");
 
   useEffect(() => {
     let cancelled = false;
@@ -121,7 +121,7 @@ const ConformanceTestResult: React.FC = () => {
 
     const fetchTestResults = async (id: string) => {
       try {
-        const response = await proxyWithAuth(`/test-results?testRunId=${id}`);
+        const response = await proxyWithAuth(`/test-results?testId=${id}`);
         if (!response || !response.ok) {
           throw new Error("Failed to fetch test results");
         }
@@ -191,11 +191,11 @@ const ConformanceTestResult: React.FC = () => {
         setAdminEmail(data.adminEmail);
         setIsLoading(false);
 
-        navigate(`/conformance-test-result?testRunId=${data.testRunId}`, {
+        navigate(`/conformance-test-result?testId=${data.testId}`, {
           replace: true,
         });
 
-        pollTestResults(1, setTestCases, data.testRunId, isCancelled);
+        pollTestResults(1, setTestCases, data.testId, isCancelled);
       } catch (error) {
         console.error("Error fetching test response:", error);
         setError(
@@ -205,8 +205,8 @@ const ConformanceTestResult: React.FC = () => {
       }
     };
 
-    if (testRunId) {
-      fetchTestResults(testRunId);
+    if (testId) {
+      fetchTestResults(testId);
     } else {
       runNewTest();
     }
@@ -214,15 +214,7 @@ const ConformanceTestResult: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [
-    testRunId,
-    clientId,
-    clientSecret,
-    apiUrl,
-    authBaseUrl,
-    version,
-    navigate,
-  ]);
+  }, [testId, clientId, clientSecret, apiUrl, authBaseUrl, version, navigate]);
 
   const selectTestAndScroll = (test: TestCase) => {
     setSelectedTest(test);
@@ -321,7 +313,7 @@ const ConformanceTestResult: React.FC = () => {
             <div className="header">
               <div>
                 <h2>
-                  Test Run ID {testRunId?.substring(0, 8)}{" "}
+                  Test Run ID {testId?.substring(0, 8)}{" "}
                   <Badge
                     style={{
                       verticalAlign: "middle",

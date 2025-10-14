@@ -44,7 +44,10 @@ export class TestRunService {
   ): Promise<unknown> {
     // Get user and company data
     const user = await this.userService.get(context.userId);
-    const organization = await this.organizationService.get(context, user.organizationId);
+    const organization = await this.organizationService.get(
+      context,
+      user.organizationId
+    );
 
     if (!user || !organization) {
       throw new BadRequestError('User or organization not found.');
@@ -97,15 +100,14 @@ export class TestRunService {
   /**
    * Get test results by test run ID
    */
-  async getTestResults(context: UserContext, testRunId: string): Promise<unknown> {
-
-    if (!testRunId) {
-      throw new BadRequestError("Missing 'testRunId' parameter.");
+  async getTestResults(context: UserContext, testId: string): Promise<unknown> {
+    if (!testId) {
+      throw new BadRequestError("Missing 'testId' parameter.");
     }
 
     try {
       const url = new URL(
-        `${config.CONFORMANCE_API_INTERNAL}/testruns/${testRunId}`
+        `${config.CONFORMANCE_API_INTERNAL}/testruns/${testId}`
       );
 
       const response = await fetch(url.toString(), {
@@ -126,8 +128,10 @@ export class TestRunService {
   /**
    * List test runs with optional filtering
    */
-  async listTestRuns(context: UserContext, queryParams: ListTestRunsQuery): Promise<unknown> {
-    
+  async listTestRuns(
+    context: UserContext,
+    queryParams: ListTestRunsQuery
+  ): Promise<unknown> {
     const user = await this.userService.get(context.userId);
 
     try {

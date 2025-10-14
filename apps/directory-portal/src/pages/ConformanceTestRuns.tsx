@@ -11,7 +11,7 @@ import "./ConformanceTestRuns.css";
 const MAX_PAGE_SIZE = 10;
 
 interface TestRun {
-  testRunId: string;
+  testId: string;
   techSpecVersion: string;
   timestamp: string;
   organizationName: string;

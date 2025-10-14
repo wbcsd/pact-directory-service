@@ -182,7 +182,7 @@ describe("<ConformanceTestRunsGrid />", () => {
       within(acmeRow).getByRole("link", { name: "abcd1234" })
     ).toHaveAttribute(
       "href",
-      expect.stringContaining("testRunId=abcd1234efgh5678")
+      expect.stringContaining("testId=abcd1234efgh5678")
     );
 
     // Date format includes the month (English locale) and year; avoid timezone flakiness

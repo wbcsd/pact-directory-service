@@ -7,7 +7,7 @@ import { ProfileData } from "../contexts/AuthContext";
 import "./ConformanceTestRuns.css";
 
 interface TestRun {
-  testRunId: string;
+  testId: string;
   techSpecVersion: string;
   timestamp: string;
   organizationName: string;
@@ -44,13 +44,13 @@ const ConformanceTestRunsGrid: React.FC<Props> = ({
   // Define table columns dynamically
   const columns: Column<TestRun>[] = [
     {
-      key: "testRunId",
+      key: "testId",
       header: "Test Run ID",
       sortable: true,
-      sortValue: (run) => run.testRunId,
+      sortValue: (run) => run.testId,
       render: (run) => (
-        <NavLink to={`/conformance-test-result?testRunId=${run.testRunId}`}>
-          {run.testRunId.substring(0, 8)}
+        <NavLink to={`/conformance-test-result?testId=${run.testId}`}>
+          {run.testId.substring(0, 8)}
         </NavLink>
       ),
     },
@@ -101,7 +101,7 @@ const ConformanceTestRunsGrid: React.FC<Props> = ({
 
   return (
     <DataTable
-      idColumnName="testRunId"
+      idColumnName="testId"
       data={testRuns}
       columns={columns}
       isLoading={isLoading}
