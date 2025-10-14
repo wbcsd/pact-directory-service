@@ -238,7 +238,7 @@ export class OrganizationService {
     organizationId: number,
     userId: number,
     update: { fullName?: string; role?: string }
-  ): Promise<void> {
+  ): Promise<{ message: string }> {
     checkAccess(
       context,
       'edit-own-organizations',
@@ -273,5 +273,9 @@ export class OrganizationService {
       })
       .where('id', '=', userId)
       .execute();
+
+    return {
+      message: 'User updated successfully',
+    };
   }
 }

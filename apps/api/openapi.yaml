@@ -276,6 +276,10 @@ components:
             description: "Password confirmation",
           }
       required: [fullName, email, role, password, confirmPassword]
+    UpdateUserResponse:
+      type: object
+      properties:
+        message: { type: string }
     UserContext:
       type: object
       properties:
@@ -577,7 +581,7 @@ paths:
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
     post:
-      summary: (Not implemented) Update a user in an organization
+      summary: Update a user in an organization
       tags: [Organizations]
       security: [{ bearerAuth: [] }]
       parameters:
@@ -602,12 +606,10 @@ paths:
                 role: { type: string }
               required: [fullName, role]
       responses:
-        "501":
-          description: Not Implemented
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+        "200": { $ref: "#/components/schemas/UpdateUserResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /directory/organizations/{id}/connections:
     post:
       summary: List connections for an organization

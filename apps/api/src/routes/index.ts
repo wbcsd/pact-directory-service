@@ -198,6 +198,22 @@ router.get(
   })
 );
 
+router.post(
+  '/directory/organizations/:oid/users/:uid',
+  authenticate,
+  context(async (req) => {
+    const organizationId = parseInt(req.params.oid);
+    const userId = parseInt(req.params.uid);
+
+    return req.services.organization.updateMember(
+      req.context,
+      organizationId,
+      userId,
+      req.body as { fullName?: string; role?: string }
+    );
+  })
+);
+
 // Connections between organizations
 router.post(
   '/directory/organizations/:id/connections',

@@ -89,27 +89,22 @@ const EditUserPage: React.FC = () => {
 
     try {
       setUpdating(true);
-      const token = localStorage.getItem("jwt");
 
-      const response = await fetch(
-        `${import.meta.env.VITE_DIRECTORY_API}/directory/users/${userId}`,
+      const response = await fetchWithAuth(
+        `/organizations/${profileData?.organizationId}/users/${userId}`,
         {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+          method: "POST",
           body: JSON.stringify(cleanedFormData),
         }
       );
 
       setUpdating(false);
 
-      if (response.ok) {
+      if (response!.ok) {
         setStatus("success");
         setTimeout(() => navigate("/users"), 1500);
       } else {
-        const errorResponse = await response.json();
+        const errorResponse = await response!.json();
         if (errorResponse.error) {
           setErrorMessage(errorResponse.error);
         }
