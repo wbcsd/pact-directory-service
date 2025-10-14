@@ -14,6 +14,8 @@ import ConformanceTestRuns from "./pages/ConformanceTestRuns";
 import { featureFlags } from "./utils/feature-flags";
 import OrganizationUsers from "./pages/OrganizationUsers";
 import EditUserPage from "./pages/EditUserPage";
+import ProtectedRoute from "./components/PolicyGuard";
+import PolicyGuard from "./components/PolicyGuard";
 
 const AppRoutes: React.FC = () => {
   return (
@@ -32,8 +34,22 @@ const AppRoutes: React.FC = () => {
       )}
       {featureFlags.enableOrganizationManagement === true && (
         <>
-          <Route path="/organization/users" element={<OrganizationUsers />} />
-          <Route path="/organization/users/:id" element={<EditUserPage />} />
+          <Route
+            path="/organization/users"
+            element={
+              <PolicyGuard policies={["view-own-organizations"]}>
+                <OrganizationUsers />
+              </PolicyGuard>
+            }
+          />
+          <Route
+            path="/organization/users/:id"
+            element={
+              <PolicyGuard policies={["edit-own-organizations"]}>
+                <EditUserPage />
+              </PolicyGuard>
+            }
+          />
         </>
       )}
       <Route path="/conformance-testing" element={<ConformanceTesting />} />

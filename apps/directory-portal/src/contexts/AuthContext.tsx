@@ -15,6 +15,7 @@ export interface ProfileData {
   clientId: string;
   clientSecret: string;
   networkKey: string;
+  policies: string[];
 }
 
 // Define the context shape
@@ -52,6 +53,7 @@ const emptyProfileData: ProfileData = {
   clientId: "",
   clientSecret: "",
   networkKey: "",
+  policies: [],
 };
 
 // Create the provider component
