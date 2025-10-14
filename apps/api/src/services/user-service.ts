@@ -131,6 +131,15 @@ export class UserService {
   ) {}
 
   /**
+   * Helper function to check if email verification token has expired
+   */
+  private isVerificationTokenExpired(sentAt: Date | null): boolean {
+    if (!sentAt) return true;
+    const expirationTime = new Date(sentAt.getTime() + (config.EMAIL_VERIFICATION_EXP * 1000));
+    return new Date() > expirationTime;
+  }
+
+  /**
    * Signup a user + organization
    */
   /**
@@ -296,7 +305,7 @@ export class UserService {
     }
 
     // Check if token has expired
-    if (user.emailVerificationExpiresAt && new Date() > user.emailVerificationExpiresAt) {
+    if (this.isVerificationTokenExpired(user.emailVerificationSentAt)) {
       throw new BadRequestError('Verification token has expired');
     }
 
@@ -306,7 +315,6 @@ export class UserService {
       .set({
         status: 'enabled',
         emailVerificationToken: null,
-        emailVerificationExpiresAt: null,
       })
       .where('id', '=', user.id)
       .execute();
@@ -371,7 +379,9 @@ export class UserService {
   }
 
   /**
-   * Generates a verification token and sends verification email
+   * Generates a verification token and sends verification email.
+   * Token expiration is calculated dynamically based on emailVerificationSentAt 
+   * timestamp + EMAIL_VERIFICATION_EXP config (default 6 hours).
    */
   private async generateAndSendVerificationToken(
     userId: number, 
@@ -380,15 +390,13 @@ export class UserService {
     organizationName: string
   ): Promise<string> {
     const token = crypto.randomBytes(32).toString('hex');
-    const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 24); // 24 hours expiration
 
-    // Store verification token
+    // Store verification token with sent timestamp
+    // Expiration is calculated dynamically using config.EMAIL_VERIFICATION_EXP
     await this.db
       .updateTable('users')
       .set({
         emailVerificationToken: token,
-        emailVerificationExpiresAt: expiresAt,
         emailVerificationSentAt: new Date(),
       })
       .where('id', '=', userId)

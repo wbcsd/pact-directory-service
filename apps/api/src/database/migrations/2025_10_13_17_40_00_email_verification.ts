@@ -7,7 +7,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     .alterTable('users')
     .addColumn('status', 'varchar(20)', (col) => col.notNull().defaultTo('unverified'))
     .addColumn('email_verification_token', 'varchar(255)')
-    .addColumn('email_verification_expires_at', 'timestamp')
     .addColumn('email_verification_sent_at', 'timestamp')
     .execute();
 
@@ -36,7 +35,6 @@ export async function down(db: Kysely<any>): Promise<void> {
     .alterTable('users')
     .dropColumn('status')
     .dropColumn('email_verification_token')
-    .dropColumn('email_verification_expires_at')
     .dropColumn('email_verification_sent_at')
     .execute();
 }

@@ -32,7 +32,6 @@ export interface UsersTable {
   organizationId: number;
   status: 'unverified' | 'enabled' | 'disabled' | 'deleted';
   emailVerificationToken: string | null;
-  emailVerificationExpiresAt: Date | null;
   emailVerificationSentAt: Date | null;
   createdAt: Generated<Date>;
   updatedAt: Generated<Date>;
