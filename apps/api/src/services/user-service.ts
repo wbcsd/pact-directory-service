@@ -369,9 +369,11 @@ export class UserService {
       };
     });
 
+    const policies = await this.policyService.getCachedPolicies(profile.userId);
+
     return {
       ...profile,
-      policies: listRegisteredPolicies(),
+      policies: policies.map((p) => p),
       connectionRequests: {
         sent: sentConnectionRequests,
         received: receivedConnectionRequests,
@@ -622,13 +624,16 @@ export class UserService {
       companyName: organization.name,
     });
 
+    await this.policyService.cachePolicies(user.id);
+    const policies = await this.policyService.getCachedPolicies(user.id);
+
     // Return user context
     return {
       userId: user.id,
       email: user.email,
       organizationId: user.organizationId,
       role: user.role,
-      policies: listRegisteredPolicies(),
+      policies,
     };
   }
 }
