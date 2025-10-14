@@ -159,4 +159,13 @@ router.get('/proxy/test-results', authenticate, context(async (req) => {
   return req.services.testRun.getTestResults(req.context, req.query.testRunId as string);
 }));
 
+// Email verification
+router.post('/directory/users/verify-email', context(async (req) => {
+  return await req.services.user.verifyEmail(req.body);
+}));
+
+router.post('/directory/users/resend-verification', context(async (req) => {
+  return await req.services.user.resendEmailVerification(req.body);
+}));
+
 export default router;

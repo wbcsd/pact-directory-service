@@ -43,7 +43,7 @@ export class TestRunService {
     data: CreateTestRunData
   ): Promise<unknown> {
     // Get user and company data
-    const user = await this.userService.get(context.userId);
+    const user = await this.userService.get(context, context.userId);
     const organization = await this.organizationService.get(context, user.organizationId);
 
     if (!user || !organization) {
@@ -128,7 +128,7 @@ export class TestRunService {
    */
   async listTestRuns(context: UserContext, queryParams: ListTestRunsQuery): Promise<unknown> {
     
-    const user = await this.userService.get(context.userId);
+    const user = await this.userService.get(context, context.userId);
 
     try {
       const url = new URL(`${config.CONFORMANCE_API_INTERNAL}/testruns`);

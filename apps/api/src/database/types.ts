@@ -25,11 +25,17 @@ export interface OrganizationsTable {
 
 export interface UsersTable {
   id: Generated<number>;
-  organizationId: number;
-  email: string;
   fullName: string;
-  password: string;
+  email: string;
   role: string;
+  password: string;
+  organizationId: number;
+  status: 'unverified' | 'enabled' | 'disabled' | 'deleted';
+  emailVerificationToken: string | null;
+  emailVerificationExpiresAt: Date | null;
+  emailVerificationSentAt: Date | null;
+  createdAt: Generated<Date>;
+  updatedAt: Generated<Date>;
 }
 
 export interface RolesTable {

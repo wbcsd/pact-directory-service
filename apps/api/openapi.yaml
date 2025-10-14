@@ -96,7 +96,7 @@ components:
         id: { type: integer }
         organizationName: { type: string }
         organizationIdentifier: { type: string }
-        organizationDescription: { type: string, nullable: true }
+        organizationDescription: { type: string }
         solutionApiUrl: { type: string }
       required: [id, organizationName, organizationIdentifier]
     UserBase:
@@ -129,11 +129,11 @@ components:
         fullName: { type: string }
         organizationName: { type: string }
         organizationIdentifier: { type: string }
-        organizationDescription: { type: string, nullable: true }
+        organizationDescription: { type: string }
         solutionApiUrl: { type: string }
-        clientId: { type: string, nullable: true }
-        clientSecret: { type: string, nullable: true }
-        networkKey: { type: string, nullable: true }
+        clientId: { type: string }
+        clientSecret: { type: string }
+        networkKey: { type: string }
         connectionRequests:
           type: object
           properties:
@@ -187,10 +187,10 @@ components:
         id: { type: integer }
         organizationName: { type: string }
         organizationIdentifier: { type: string }
-        organizationDescription: { type: string, nullable: true }
-        networkKey: { type: string, nullable: true }
+        organizationDescription: { type: string }
+        networkKey: { type: string }
         solutionApiUrl: { type: string }
-        parentId: { type: integer, nullable: true }
+        parentId: { type: integer }
       required: [id, organizationName, organizationIdentifier, solutionApiUrl]
     OrganizationsMemberResponse:
       type: object
@@ -255,7 +255,10 @@ components:
           items: { type: string }
           description: "List of policies/permissions assigned to the user"
           example: ["view-users", "edit-users"]
-      required: [userId, email, organizationId, role, policies]
+        status:
+          type: string
+          enum: [unverified, enabled, disabled, deleted]
+      required: [userId, email, organizationId, role, policies, status]
   responses:
     Unauthorized:
       description: Unauthorized
@@ -626,6 +629,62 @@ paths:
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '500': { $ref: '#/components/responses/InternalError' }
+  /directory/users/verify-email:
+    post:
+      tags:
+        - Users
+      summary: Verify email address
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
+                  description: Email verification token
+      responses:
+        '200':
+          description: Email verified successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /directory/users/resend-verification:
+    post:
+      tags:
+        - Users
+      summary: Resend email verification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Verification email sent (if email exists)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
 tags:
   - name: Authentication
   - name: Users

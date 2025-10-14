@@ -22,6 +22,7 @@ export interface UserContext {
   organizationId: number;
   role: string;
   policies: string[];
+  status: 'unverified' | 'enabled' | 'disabled' | 'deleted';
 }
 
 export interface SignUpData {
@@ -105,6 +106,14 @@ export interface VerifyResetTokenResult {
   error?: string;
 }
 
+export interface EmailVerificationData {
+  token: string;
+}
+
+export interface ResendVerificationData {
+  email: string;
+}
+
 export class UserService {
 
   // TODO: Remove
@@ -124,14 +133,14 @@ export class UserService {
    * - Checks if the email is already in use.
    * - Hashes the user's password.
    * - Creates a new organization and user within a database transaction.
-   * - Sends a welcome email to the new user.
+   * - Sends an email to the new user to verify their email address.
    * - Returns the user's context information.
    *
    * @param data - The sign-up data containing user and organization details.
    * @returns A promise that resolves to the newly created user's context.
    * @throws {BadRequestError} If passwords do not match or email is already in use.
    */
-  async signup(data: SignUpData): Promise<UserContext> {
+  async signup(data: SignUpData): Promise<{ message: string; }> {
     // Check if passwords match
     if (data.password !== data.confirmPassword) {
       throw new BadRequestError('Passwords do not match');
@@ -170,25 +179,22 @@ export class UserService {
           role: 'user', 
           password: hashedPassword,
           organizationId: organization.id,
+          status: 'unverified', // Set as unverified initially
         })
         .returningAll()
         .executeTakeFirstOrThrow();
     });
 
-    // Send welcome email
-    await this.emailService.sendWelcomeEmail({
-      to: user.email,
-      name: user.fullName,
-      companyName: data.organizationName,
-    });
+    // Generate and send verification token
+    await this.generateAndSendVerificationToken(
+      user.id,
+      user.email,
+      user.fullName,
+      data.organizationName
+    );
 
-    // Return user profile
     return {
-      userId: user.id,
-      email: user.email,
-      organizationId: user.organizationId,
-      role: user.role,
-      policies: listRegisteredPolicies()
+      message: 'Registration successful. Please check your email to verify your account.',
     };
   }
 
@@ -211,8 +217,19 @@ export class UserService {
       .selectAll()
       .where('email', '=', data.email)
       .executeTakeFirst();
+      
     if (!user) {
       throw new UnauthorizedError('Invalid email or password');
+    }
+
+    // Check if user is deleted
+    if (user.status === 'deleted') {
+      throw new UnauthorizedError('Account not found');
+    }
+
+    // Check if user is disabled
+    if (user.status === 'disabled') {
+      throw new UnauthorizedError('Account has been disabled. Please contact support.');
     }
 
     const isPasswordValid = await bcrypt.compare(data.password, user.password);
@@ -220,16 +237,23 @@ export class UserService {
       throw new UnauthorizedError('Invalid email or password');
     }
 
+    // Allow login for unverified users, but they'll have limited access
     return {
       userId: user.id,
       email: user.email,
       organizationId: user.organizationId,
       role: user.role,
-      policies: listRegisteredPolicies()
-    }
+      policies: listRegisteredPolicies(),
+      status: user.status
+    };
   }
 
-  async get(id: number): Promise<UserData> {
+    /**
+   * Get user by ID
+   */
+  async get(context: UserContext, id: number): Promise<UserData> {
+    checkAccess(context, 'view-users', context.userId === id || context.role === 'administrator');
+    
     const user = await this.db
       .selectFrom('users')
       .selectAll()
@@ -241,6 +265,141 @@ export class UserService {
     }
 
     return user;
+  }
+
+  /**
+   * Verify email address using verification token
+   */
+  async verifyEmail(data: EmailVerificationData): Promise<{ message: string }> {
+    const { token } = data;
+
+    if (!token || typeof token !== 'string') {
+      throw new BadRequestError('Verification token is required');
+    }
+
+    // Find user by verification token
+    const user = await this.db
+      .selectFrom('users')
+      .selectAll()
+      .where('emailVerificationToken', '=', token)
+      .where('status', '=', 'unverified')
+      .executeTakeFirst();
+
+    if (!user) {
+      throw new BadRequestError('Invalid or already used verification token');
+    }
+
+    // Check if token has expired
+    if (user.emailVerificationExpiresAt && new Date() > user.emailVerificationExpiresAt) {
+      throw new BadRequestError('Verification token has expired');
+    }
+
+    // Update user status
+    await this.db
+      .updateTable('users')
+      .set({
+        status: 'enabled',
+        emailVerificationToken: null,
+        emailVerificationExpiresAt: null,
+      })
+      .where('id', '=', user.id)
+      .execute();
+
+    return { message: 'Email verified successfully. Your account is now active.' };
+  }
+
+  /**
+   * Resend email verification
+   */
+  async resendEmailVerification(data: ResendVerificationData): Promise<{ message: string }> {
+    const { email } = data;
+
+    if (!email || typeof email !== 'string') {
+      throw new BadRequestError('Email is required');
+    }
+
+    // Find user by email
+    const user = await this.db
+      .selectFrom('users')
+      .innerJoin('organizations', 'users.organizationId', 'organizations.id')
+      .select([
+        'users.id',
+        'users.fullName',
+        'users.email',
+        'users.status',
+        'users.emailVerificationSentAt', // Changed from email_verification_sent_at
+        'organizations.name as organizationName'
+      ])
+      .where('users.email', '=', email.toLowerCase().trim())
+      .executeTakeFirst();
+
+    // Don't reveal if email exists or not
+    if (!user) {
+      return { message: 'If that email exists and is unverified, a verification email has been sent.' };
+    }
+
+    // Check if already verified
+    if (user.status !== 'unverified') {
+      return { message: 'Email is already verified.' };
+    }
+
+    // Rate limiting - don't allow resend within 1 minute
+    if (user.emailVerificationSentAt) {
+      const oneMinuteAgo = new Date();
+      oneMinuteAgo.setMinutes(oneMinuteAgo.getMinutes() - 1);
+      
+      if (user.emailVerificationSentAt > oneMinuteAgo) {
+        throw new BadRequestError('Please wait before requesting another verification email.');
+      }
+    }
+
+    // Generate and send new verification token
+    await this.generateAndSendVerificationToken(
+      user.id,
+      user.email,
+      user.fullName,
+      user.organizationName
+    );
+
+    return { message: 'Verification email sent.' };
+  }
+
+  /**
+   * Generates a verification token and sends verification email
+   */
+  private async generateAndSendVerificationToken(
+    userId: number, 
+    email: string, 
+    fullName: string, 
+    organizationName: string
+  ): Promise<string> {
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 24); // 24 hours expiration
+
+    // Store verification token
+    await this.db
+      .updateTable('users')
+      .set({
+        emailVerificationToken: token,
+        emailVerificationExpiresAt: expiresAt,
+        emailVerificationSentAt: new Date(),
+      })
+      .where('id', '=', userId)
+      .execute();
+
+    // Generate verification URL
+    const verificationUrl = `${config.FRONTEND_URL}/verify-email/${token}`;
+
+    // Send verification email
+    await this.emailService.sendEmailVerification({
+      to: email,
+      name: fullName,
+      organizationName,
+      verificationUrl,
+    });
+
+    return token;
   }
 
   /**
@@ -256,6 +415,7 @@ export class UserService {
         'u.fullName',
         'u.email',
         'u.role',
+        'u.status',
         'o.id as organizationId',
         'o.name as organizationName',
         'o.uri as organizationIdentifier',
@@ -538,13 +698,16 @@ export class UserService {
    * @throws {BadRequestError} If passwords do not match or email is already in use.
    * @throws {NotFoundError} If the organization doesn't exist.
    */
-  async addUserToOrganization(context: UserContext, organizationId: number, data: AddUserToOrganizationData): Promise<UserContext> {
+  async addUserToOrganization(
+    context: UserContext, 
+    organizationId: number, 
+    data: AddUserToOrganizationData
+  ): Promise<{ message: string; userId: number }> {
     
     // Check if user has permission to add users to this organization
     checkAccess(context, 'add-users', context.organizationId === organizationId || context.role === 'admin');
-    
 
-  // Check if passwords match
+    // Check if passwords match
     if (data.password !== data.confirmPassword) {
       throw new BadRequestError('Passwords do not match');
     }
@@ -582,24 +745,22 @@ export class UserService {
         role: data.role,
         password: hashedPassword,
         organizationId: organizationId,
+        status: 'unverified', // Start as unverified
       })
       .returningAll()
       .executeTakeFirstOrThrow();
 
-    // Send welcome email
-    await this.emailService.sendWelcomeEmail({
-      to: user.email,
-      name: user.fullName,
-      companyName: organization.name,
-    });
+    // Generate and send verification token
+    await this.generateAndSendVerificationToken(
+      user.id,
+      user.email,
+      user.fullName,
+      organization.name
+    );
 
-    // Return user context
     return {
-      userId: user.id,
-      email: user.email,
-      organizationId: user.organizationId,
-      role: user.role,
-      policies: listRegisteredPolicies()
+      message: 'User created successfully. They will receive an email to verify their account.',
+      userId: user.id
     };
   }
 }

@@ -85,7 +85,7 @@ export class InternalServerError extends Error {
 }
 
 export class ServiceUnavailableError extends Error {
-  code = 503
+  code = 503;
   constructor(message: string) {
     super(message);
     this.name = 'ServiceUnavailableError';

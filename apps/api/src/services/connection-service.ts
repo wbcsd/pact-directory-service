@@ -125,7 +125,7 @@ export class ConnectionService {
     await this.emailService.sendConnectionRequestEmail({
       to: context.email, // TODO: Add administrative email or primary contact of requested organization
       name: requested.organizationName,
-      companyName: requesting.organizationName,
+      organizationName: requesting.organizationName,
     });
 
     return result;
