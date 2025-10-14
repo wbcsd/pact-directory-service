@@ -44,9 +44,8 @@ export class TestRunService {
   ): Promise<unknown> {
     // Get user and company data
     const user = await this.userService.get(context, context.userId);
-    const organization = await this.organizationService.get(context, user.organizationId);
 
-    if (!user || !organization) {
+    if (!user) {
       throw new BadRequestError('User or organization not found.');
     }
 
@@ -75,8 +74,8 @@ export class TestRunService {
             baseUrl: apiUrl,
             customAuthBaseUrl: authBaseUrl,
             version,
-            organizationName: organization.organizationName,
-            organizationIdentifier: organization.organizationIdentifier,
+            organizationName: user.organizationName,
+            organizationIdentifier: user.organizationIdentifier,
             adminEmail: user.email,
             adminName: user.fullName,
             scope: scope,

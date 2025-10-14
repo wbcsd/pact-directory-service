@@ -47,10 +47,7 @@ export interface UserData {
   email: string;
   role: string;
   organizationId: number;
-  password: string;
-}
-
-export interface UserListData extends UserData {
+  status: string 
   organizationName: string;
   organizationIdentifier: string | null;
 }
@@ -271,7 +268,17 @@ export class UserService {
     
     const user = await this.db
       .selectFrom('users')
-      .selectAll()
+      .innerJoin('organizations', 'users.organizationId', 'organizations.id')
+      .select([
+        'users.id as id',
+        'users.fullName as fullName',
+        'users.email as email',
+        'users.role as role',
+        'users.status as status',
+        'organizations.name as organizationName',
+        'organizations.id as organizationId',
+        'organizations.uri as organizationIdentifier',
+      ])
       .where('id', '=', id)
       .executeTakeFirst();
 
