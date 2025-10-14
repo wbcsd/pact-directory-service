@@ -157,8 +157,7 @@ components:
                   status: { type: string }
                   organizationName: { type: string }
                   organizationId: { type: integer }
-                required:
-                  [id, createdAt, status, organizationName, organizationId]
+                required: [id, createdAt, status, organizationName, organizationId]
           required: [sent, received]
         connectedOrganizations:
           type: array
@@ -243,38 +242,11 @@ components:
     AddUserToOrganizationRequest:
       type: object
       properties:
-        fullName:
-          {
-            type: string,
-            description: "Full name of the user",
-            example: "John Doe",
-          }
-        email:
-          {
-            type: string,
-            format: email,
-            description: "Email address of the user",
-            example: "john.doe@example.com",
-          }
-        role:
-          {
-            type: string,
-            description: "Role of the user in the organization",
-            example: "user",
-          }
-        password:
-          {
-            type: string,
-            format: password,
-            description: "Password for the user account",
-            minLength: 6,
-          }
-        confirmPassword:
-          {
-            type: string,
-            format: password,
-            description: "Password confirmation",
-          }
+        fullName: { type: string, description: "Full name of the user", example: "John Doe" }
+        email: { type: string, format: email, description: "Email address of the user", example: "john.doe@example.com" }
+        role: { type: string, description: "Role of the user in the organization", example: "user" }
+        password: { type: string, format: password, description: "Password for the user account", minLength: 6 }
+        confirmPassword: { type: string, format: password, description: "Password confirmation" }
       required: [fullName, email, role, password, confirmPassword]
     UpdateUserResponse:
       type: object
@@ -283,32 +255,11 @@ components:
     UserContext:
       type: object
       properties:
-        userId:
-          {
-            type: integer,
-            description: "Unique identifier for the user",
-            example: 123,
-          }
-        email:
-          {
-            type: string,
-            format: email,
-            description: "User's email address",
-            example: "user@example.com",
-          }
-        organizationId:
-          {
-            type: integer,
-            description: "ID of the organization the user belongs to",
-            example: 456,
-          }
-        role:
-          {
-            type: string,
-            description: "User's role in the organization",
-            example: "user",
-          }
-        policies:
+        userId: { type: integer, description: "Unique identifier for the user", example: 123 }
+        email: { type: string, format: email, description: "User's email address", example: "user@example.com" }
+        organizationId: { type: integer, description: "ID of the organization the user belongs to", example: 456 }
+        role: { type: string, description: "User's role in the organization", example: "user" }
+        policies: 
           type: array
           items: { type: string }
           description: "List of policies/permissions assigned to the user"
@@ -478,8 +429,7 @@ paths:
           description: Organization profile
           content:
             application/json:
-              schema:
-                { $ref: "#/components/schemas/OrganizationProfileResponse" }
+              schema: { $ref: "#/components/schemas/OrganizationProfileResponse" }
         "404": { $ref: "#/components/responses/NotFound" }
         "401": { $ref: "#/components/responses/Unauthorized" }
       x-notes: Controller uses req.params.id. Either change route to /directory/companies/profile/{id} or adapt controller to query.
@@ -502,7 +452,7 @@ paths:
               schema:
                 type: array
                 items:
-                  { $ref: "#/components/schemas/OrganizationProfileResponse" }
+                  $ref: "#/components/schemas/OrganizationProfileResponse"
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
   /directory/organizations/{id}/users:
@@ -523,7 +473,8 @@ paths:
             application/json:
               schema:
                 type: array
-                items: { $ref: "#/components/schemas/Member" }
+                items: 
+                  $ref: "#/components/schemas/Member"
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
@@ -575,8 +526,7 @@ paths:
           description: User in the organization
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/Member"
+              schema: { $ref: "#/components/schemas/Member" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
@@ -606,7 +556,11 @@ paths:
                 role: { type: string }
               required: [fullName, role]
       responses:
-        "200": { $ref: "#/components/schemas/UpdateUserResponse" }
+        "200":
+          description: User in the organization
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UpdateUserResponse" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
@@ -647,15 +601,13 @@ paths:
         required: true
         content:
           application/json:
-            schema:
-              { $ref: "#/components/schemas/CreateConnectionRequestRequest" }
+            schema: { $ref: "#/components/schemas/CreateConnectionRequestRequest" }
       responses:
         "201":
           description: Connection request created
           content:
             application/json:
-              schema:
-                { $ref: "#/components/schemas/CreateConnectionRequestResponse" }
+              schema: { $ref: "#/components/schemas/CreateConnectionRequestResponse" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
   /directory/organizations/connection-request-action:
@@ -667,8 +619,7 @@ paths:
         required: true
         content:
           application/json:
-            schema:
-              { $ref: "#/components/schemas/ConnectionRequestActionRequest" }
+            schema: { $ref: "#/components/schemas/ConnectionRequestActionRequest" }
       responses:
         "201":
           description: Connection created between organizations
