@@ -279,7 +279,7 @@ export class UserService {
         'organizations.id as organizationId',
         'organizations.uri as organizationIdentifier',
       ])
-      .where('id', '=', id)
+      .where('users.id', '=', id)
       .executeTakeFirst();
 
     if (!user) {
