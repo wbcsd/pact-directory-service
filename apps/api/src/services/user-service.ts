@@ -11,7 +11,6 @@ import {
 import { EmailService } from './email-service';
 import {
   checkAccess,
-  listRegisteredPolicies,
   registerPolicy,
 } from '@src/common/policies';
 import { PolicyService } from './policy-service';
