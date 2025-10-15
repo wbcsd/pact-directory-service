@@ -7,7 +7,7 @@ sgMail.setApiKey(config.SENDGRID_API_KEY);
 interface SendNotificationEmailParams {
   to: string;
   name: string;
-  companyName: string;
+  organizationName: string;
 }
 
 interface SendPasswordResetEmailParams {
@@ -31,31 +31,43 @@ export class EmailService {
     }
   }
 
-  async sendWelcomeEmail({
-    to,
-    name,
-    companyName,
-  }: SendNotificationEmailParams) {
-    const msg = {
+  async sendEmailVerification(params: {
+    to: string;
+    name: string;
+    organizationName: string;
+    verificationUrl: string;
+  }): Promise<void> {
+    const { to, name, organizationName, verificationUrl } = params;
+
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2>Welcome to the PACT Network!</h2>
+        <p>Hi ${name},</p>
+        <p>Thank you for registering with us. To complete your registration and activate your account, please verify your email address by clicking the link below:</p>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${verificationUrl}" 
+             style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">
+            Verify Email Address
+          </a>
+        </div>
+        <p>This link will expire in 24 hours.</p>
+        <p>If you didn't create this account, you can safely ignore this email.</p>
+        <p>Best regards,<br>The PACT Team</p>
+      </div>
+    `;
+
+    await sgMail.send({
       to,
-      from: config.SENDGRID_FROM_EMAIL, // Use the email address or domain you verified with SendGrid
-      subject: 'Welcome to PACT Network',
-      text: `Hello ${name},\n\nWelcome to PACT Network! We're excited to have you on board. Thank you for registering your organization, ${companyName}.\n\nBest regards,\nThe PACT Network Team`,
-      html: `<p>Hello ${name},</p><p>Welcome to PACT Network! We're excited to have you on board. Thank you for registering your organization, ${companyName}.</p><p>Best regards,<br>The PACT Network</p>`,
-    };
-
-    try {
-      await sgMail.send(msg);
-      logger.info(`Email sent to ${name}`);
-    } catch (error) {
-      logger.error('sendWelcomeEmail error', error);
-    }
+      from: config.SENDGRID_FROM_EMAIL,
+      subject: `Please verify your email address for ${organizationName}`,
+      html: htmlContent,
+    });
   }
-
+  
   async sendConnectionRequestEmail({
     to,
     name,
-    companyName,
+    organizationName: companyName,
   }: SendNotificationEmailParams) {
     const msg = {
       to,
@@ -130,4 +142,5 @@ export class EmailService {
       logger.error('sendPasswordResetEmail error', error);
     }
   }
+
 }

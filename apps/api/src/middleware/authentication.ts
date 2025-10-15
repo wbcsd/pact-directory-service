@@ -13,7 +13,21 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
 
   const token = header.substring(7);
   try {
-    res.locals.user = jwt.verify(token, config.JWT_SECRET) as UserContext;
+    const user = jwt.verify(token, config.JWT_SECRET) as UserContext;
+
+    if (user.role === 'unverified') {
+      throw new UnauthorizedError('Email not verified');
+    }
+
+    if (user.role === 'deleted') {
+      throw new UnauthorizedError('Account deleted');
+    }
+
+    if (user.role === 'disabled') {
+      throw new UnauthorizedError('Account disabled');
+    }
+
+    res.locals.user = user;
     next();
   } catch (error) {
     logger.error(error);

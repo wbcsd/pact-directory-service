@@ -20,13 +20,13 @@ async function main() {
 
   try {
     // Check if company exists
-    let company = await db
+    let organization = await db
       .selectFrom('organizations')
       .selectAll()
       .where('uri', '=', organizationUri)
       .executeTakeFirst();
 
-    if (!company) {
+    if (!organization) {
       // Insert company
       const inserted = await db
         .insertInto('organizations')
@@ -41,7 +41,7 @@ async function main() {
         })
         .returningAll()
         .executeTakeFirstOrThrow();
-      company = inserted;
+      organization = inserted;
       console.info(`Created company: ${organizationName}`);
     } else {
       console.info(`Company already exists: ${organizationName}`);
@@ -69,8 +69,9 @@ async function main() {
         fullName,
         email,
         password: hashedPassword,
+        status: 'enabled',
         role: role !== 'administrator' ? 'user' : role,
-        organizationId: company.id,
+        organizationId: organization.id,
       })
       .executeTakeFirstOrThrow();
 

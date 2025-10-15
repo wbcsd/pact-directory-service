@@ -64,10 +64,9 @@ router.post('/im/auth/token', context(async (req) => {
 
 // Signup 
 router.post('/directory/users/signup', context(async (req, res) => {
-  const user = await req.services.user.signup(req.body);
-  const token = jwt.sign(user, config.JWT_SECRET, { expiresIn: '6h' });
+  const result = await req.services.user.signup(req.body);
   res.status(201);
-  return { token };
+  return result;
 }));
 
 router.post('/directory/users/login', context(async (req) => {
@@ -192,6 +191,15 @@ router.get('/proxy/test-runs', authenticate, context(async (req) => {
 
 router.get('/proxy/test-results', authenticate, context(async (req) => {
   return req.services.testRun.getTestResults(req.context, req.query.testRunId as string);
+}));
+
+// Email verification
+router.post('/directory/users/verify-email', context(async (req) => {
+  return await req.services.user.verifyEmail(req.body);
+}));
+
+router.post('/directory/users/resend-verification', context(async (req) => {
+  return await req.services.user.resendEmailVerification(req.body);
 }));
 
 export default router;
