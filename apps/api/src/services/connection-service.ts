@@ -8,8 +8,7 @@ import {
 import { OrganizationService } from './organization-service';
 import { EmailService } from './email-service';
 import { UserContext } from './user-service';
-import { checkAccess } from '@src/common/policies';
-
+import { checkAccess, Role } from '@src/common/policies';
 
 export interface ConnectionRequest {
   id: number;
@@ -29,26 +28,31 @@ export interface Connection {
 }
 
 export class ConnectionService {
-
   constructor(
-      private db: Kysely<Database>,
-      private organizationService: OrganizationService,
-      private emailService: EmailService
-  ) {} 
+    private db: Kysely<Database>,
+    private organizationService: OrganizationService,
+    private emailService: EmailService
+  ) {}
 
   async listConnections(
     context: UserContext,
     organizationId: number
   ): Promise<Connection[]> {
-    checkAccess(context, 'view-connections-own-organization', context.organizationId === organizationId);
+    checkAccess(
+      context,
+      'view-connections-own-organization',
+      context.organizationId === organizationId
+    );
     checkAccess(context, 'view-connections-all-organizations');
     const connections = await this.db
       .selectFrom('connections')
       .selectAll()
-      .where((e) => e.or([
-        e('connectedCompanyOneId', '=', organizationId),
-        e('connectedCompanyTwoId', '=', organizationId)
-      ]))
+      .where((e) =>
+        e.or([
+          e('connectedCompanyOneId', '=', organizationId),
+          e('connectedCompanyTwoId', '=', organizationId),
+        ])
+      )
       .execute();
     return connections;
   }
@@ -62,10 +66,12 @@ export class ConnectionService {
     const connectionRequests = await this.db
       .selectFrom('connection_requests')
       .selectAll()
-      .where((e) => e.or([
-        e('requestingCompanyId', '=', organizationId),
-        e('requestedCompanyId', '=', organizationId)
-      ]))
+      .where((e) =>
+        e.or([
+          e('requestingCompanyId', '=', organizationId),
+          e('requestedCompanyId', '=', organizationId),
+        ])
+      )
       .execute();
     return connectionRequests;
   }
@@ -74,11 +80,10 @@ export class ConnectionService {
    * Create a connection request
    */
   async createConnectionRequest(
-    context: UserContext, 
+    context: UserContext,
     requestedOrganizationId: number,
     requestingOrganizationId: number
   ): Promise<ConnectionRequest> {
-
     if (!requestedOrganizationId) {
       throw new BadRequestError('Requested organization ID is required');
     }
@@ -87,12 +92,20 @@ export class ConnectionService {
       throw new BadRequestError('You cannot connect with yourself');
     }
 
-    if (context.role !== 'administrator') {
-      throw new ForbiddenError('You are not allowed to send connection requests');
+    if (context.role !== Role.ADMIN) {
+      throw new ForbiddenError(
+        'You are not allowed to send connection requests'
+      );
     }
 
-    const requesting = await this.organizationService.get(context, requestingOrganizationId);
-    const requested = await this.organizationService.get(context, requestedOrganizationId);
+    const requesting = await this.organizationService.get(
+      context,
+      requestingOrganizationId
+    );
+    const requested = await this.organizationService.get(
+      context,
+      requestedOrganizationId
+    );
 
     if (!requesting) {
       throw new NotFoundError('Requesting organization not found');
@@ -103,9 +116,13 @@ export class ConnectionService {
 
     // Ensure the user is either an admin of the requesting organization or a member of a child organization
     if (context.organizationId !== requestingOrganizationId) {
-      const subOrgs = await this.organizationService.listSubOrganizations(context.organizationId);
-      if (!subOrgs.find(o => o.id === requestingOrganizationId)) {
-        throw new ForbiddenError('Can only send an invitation from a child organization or your own organization');
+      const subOrgs = await this.organizationService.listSubOrganizations(
+        context.organizationId
+      );
+      if (!subOrgs.find((o) => o.id === requestingOrganizationId)) {
+        throw new ForbiddenError(
+          'Can only send an invitation from a child organization or your own organization'
+        );
       }
     }
 
@@ -131,8 +148,10 @@ export class ConnectionService {
     return result;
   }
 
-  async acceptConnectionRequest(requestId: number, currentOrganizationId: number): Promise<void> {
-
+  async acceptConnectionRequest(
+    requestId: number,
+    currentOrganizationId: number
+  ): Promise<void> {
     if (!requestId) {
       throw new BadRequestError('Request ID is required');
     }
@@ -172,10 +191,12 @@ export class ConnectionService {
           .execute();
       });
     });
-
   }
 
-  async rejectConnectionRequest(requestId: number, currentCompanyId: number): Promise<void> {
+  async rejectConnectionRequest(
+    requestId: number,
+    currentCompanyId: number
+  ): Promise<void> {
     if (!requestId) {
       throw new BadRequestError('Request ID is required');
     }
@@ -204,5 +225,4 @@ export class ConnectionService {
         .execute();
     });
   }
-
 }

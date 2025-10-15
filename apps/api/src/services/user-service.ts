@@ -11,20 +11,20 @@ import {
 import { EmailService } from './email-service';
 import {
   checkAccess,
-  listRegisteredPolicies,
+  getPoliciesForRole,
   registerPolicy,
+  Role,
 } from '@src/common/policies';
-import { PolicyService } from './policy-service';
 
-registerPolicy('view-users');
-registerPolicy('edit-users');
-registerPolicy('add-users');
+registerPolicy(Role.ADMIN, 'view-users');
+registerPolicy(Role.ADMIN, 'edit-users');
+registerPolicy(Role.ADMIN, 'add-users');
 
 export interface UserContext {
   userId: number;
   email: string;
   organizationId: number;
-  role: string;
+  role: Role;
   policies: string[];
   status: 'unverified' | 'enabled' | 'disabled' | 'deleted';
 }
@@ -46,9 +46,9 @@ export interface UserData {
   id: number;
   fullName: string;
   email: string;
-  role: string;
+  role: Role;
   organizationId: number;
-  status: string 
+  status: string;
   organizationName: string;
   organizationIdentifier: string | null;
 }
@@ -101,7 +101,7 @@ export interface ResetPasswordData {
 export interface AddUserToOrganizationData {
   fullName: string;
   email: string;
-  role: string;
+  role: Role;
   password: string;
   confirmPassword: string;
 }
@@ -125,8 +125,7 @@ export class UserService {
 
   constructor(
     private db: Kysely<Database>,
-    private emailService: EmailService,
-    private policyService: PolicyService
+    private emailService: EmailService
   ) {}
 
   /**
@@ -134,7 +133,9 @@ export class UserService {
    */
   private isVerificationTokenExpired(sentAt: Date | null): boolean {
     if (!sentAt) return true;
-    const expirationTime = new Date(sentAt.getTime() + (config.EMAIL_VERIFICATION_EXP * 1000));
+    const expirationTime = new Date(
+      sentAt.getTime() + config.EMAIL_VERIFICATION_EXP * 1000
+    );
     return new Date() > expirationTime;
   }
 
@@ -155,7 +156,7 @@ export class UserService {
    * @returns A promise that resolves to the newly created user's context.
    * @throws {BadRequestError} If passwords do not match or email is already in use.
    */
-  async signup(data: SignUpData): Promise<{ message: string; }> {
+  async signup(data: SignUpData): Promise<{ message: string }> {
     // Check if passwords match
     if (data.password !== data.confirmPassword) {
       throw new BadRequestError('Passwords do not match');
@@ -191,7 +192,7 @@ export class UserService {
         .values({
           fullName: data.fullName,
           email: data.email,
-          role: 'user',
+          role: Role.USER,
           password: hashedPassword,
           organizationId: organization.id,
           status: 'unverified', // Set as unverified initially
@@ -209,7 +210,8 @@ export class UserService {
     );
 
     return {
-      message: 'Registration successful. Please check your email to verify your account.',
+      message:
+        'Registration successful. Please check your email to verify your account.',
     };
   }
 
@@ -231,7 +233,7 @@ export class UserService {
       .selectAll()
       .where('email', '=', data.email)
       .executeTakeFirst();
-      
+
     if (!user) {
       throw new UnauthorizedError('Invalid email or password');
     }
@@ -243,7 +245,9 @@ export class UserService {
 
     // Check if user is disabled
     if (user.status === 'disabled') {
-      throw new UnauthorizedError('Account has been disabled. Please contact support.');
+      throw new UnauthorizedError(
+        'Account has been disabled. Please contact support.'
+      );
     }
 
     const isPasswordValid = await bcrypt.compare(data.password, user.password);
@@ -251,8 +255,7 @@ export class UserService {
       throw new UnauthorizedError('Invalid email or password');
     }
 
-    await this.policyService.cachePolicies(user.id);
-    const policies = await this.policyService.getCachedPolicies(user.id);
+    const policies = getPoliciesForRole(user.role);
 
     return {
       userId: user.id,
@@ -264,12 +267,16 @@ export class UserService {
     };
   }
 
-    /**
+  /**
    * Get user by ID
    */
   async get(context: UserContext, id: number): Promise<UserData> {
-    checkAccess(context, [], context.userId === id || context.role === 'administrator');
-    
+    checkAccess(
+      context,
+      [],
+      context.userId === id || context.role === 'administrator'
+    );
+
     const user = await this.db
       .selectFrom('users')
       .innerJoin('organizations', 'users.organizationId', 'organizations.id')
@@ -330,13 +337,17 @@ export class UserService {
       .where('id', '=', user.id)
       .execute();
 
-    return { message: 'Email verified successfully. Your account is now active.' };
+    return {
+      message: 'Email verified successfully. Your account is now active.',
+    };
   }
 
   /**
    * Resend email verification
    */
-  async resendEmailVerification(data: ResendVerificationData): Promise<{ message: string }> {
+  async resendEmailVerification(
+    data: ResendVerificationData
+  ): Promise<{ message: string }> {
     const { email } = data;
 
     if (!email || typeof email !== 'string') {
@@ -353,14 +364,17 @@ export class UserService {
         'users.email',
         'users.status',
         'users.emailVerificationSentAt', // Changed from email_verification_sent_at
-        'organizations.name as organizationName'
+        'organizations.name as organizationName',
       ])
       .where('users.email', '=', email.toLowerCase().trim())
       .executeTakeFirst();
 
     // Don't reveal if email exists or not
     if (!user) {
-      return { message: 'If that email exists and is unverified, a verification email has been sent.' };
+      return {
+        message:
+          'If that email exists and is unverified, a verification email has been sent.',
+      };
     }
 
     // Check if already verified
@@ -372,9 +386,11 @@ export class UserService {
     if (user.emailVerificationSentAt) {
       const oneMinuteAgo = new Date();
       oneMinuteAgo.setMinutes(oneMinuteAgo.getMinutes() - 1);
-      
+
       if (user.emailVerificationSentAt > oneMinuteAgo) {
-        throw new BadRequestError('Please wait before requesting another verification email.');
+        throw new BadRequestError(
+          'Please wait before requesting another verification email.'
+        );
       }
     }
 
@@ -391,13 +407,13 @@ export class UserService {
 
   /**
    * Generates a verification token and sends verification email.
-   * Token expiration is calculated dynamically based on emailVerificationSentAt 
+   * Token expiration is calculated dynamically based on emailVerificationSentAt
    * timestamp + EMAIL_VERIFICATION_EXP config (default 6 hours).
    */
   private async generateAndSendVerificationToken(
-    userId: number, 
-    email: string, 
-    fullName: string, 
+    userId: number,
+    email: string,
+    fullName: string,
     organizationName: string
   ): Promise<string> {
     const token = crypto.randomBytes(32).toString('hex');
@@ -543,7 +559,7 @@ export class UserService {
       };
     });
 
-    const policies = await this.policyService.getCachedPolicies(profile.userId);
+    const policies = getPoliciesForRole(profile.role);
 
     return {
       ...profile,
@@ -738,13 +754,16 @@ export class UserService {
    * @throws {NotFoundError} If the organization doesn't exist.
    */
   async addUserToOrganization(
-    context: UserContext, 
-    organizationId: number, 
+    context: UserContext,
+    organizationId: number,
     data: AddUserToOrganizationData
   ): Promise<{ message: string; userId: number }> {
-    
     // Check if user has permission to add users to this organization
-    checkAccess(context, 'add-users', context.organizationId === organizationId || context.role === 'admin');
+    checkAccess(
+      context,
+      'add-users',
+      context.organizationId === organizationId || context.role === Role.ADMIN
+    );
 
     // Check if passwords match
     if (data.password !== data.confirmPassword) {
@@ -797,9 +816,11 @@ export class UserService {
       organization.name
     );
 
+    // Return user context
     return {
-      message: 'User created successfully. They will receive an email to verify their account.',
-      userId: user.id
+      message:
+        'User created successfully. They will receive an email to verify their account.',
+      userId: user.id,
     };
   }
 }

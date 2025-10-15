@@ -1,3 +1,4 @@
+import { Role } from '@src/common/policies';
 import { Generated } from 'kysely';
 
 export interface Database {
@@ -27,7 +28,7 @@ export interface UsersTable {
   id: Generated<number>;
   fullName: string;
   email: string;
-  role: string;
+  role: Role;
   password: string;
   organizationId: number;
   status: 'unverified' | 'enabled' | 'disabled' | 'deleted';

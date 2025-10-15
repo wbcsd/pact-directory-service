@@ -1,18 +1,18 @@
 import { Kysely } from 'kysely';
 import { Database } from '@src/database/types';
 import { NotFoundError, ForbiddenError } from '@src/common/errors';
-import { registerPolicy, checkAccess } from '@src/common/policies';
+import { registerPolicy, checkAccess, Role } from '@src/common/policies';
 import { UserContext, UserData } from './user-service';
 import { EmailService } from './email-service';
 import config from '@src/common/config';
 
 // Register all policies used in this service
-registerPolicy('view-connections-own-organization');
-registerPolicy('view-connections-all-organizations');
-registerPolicy('view-own-organizations');
-registerPolicy('edit-own-organizations');
-registerPolicy('view-all-organizations');
-registerPolicy('edit-all-organizations');
+registerPolicy(Role.ADMIN, 'view-connections-own-organization');
+registerPolicy(Role.ADMIN, 'view-connections-all-organizations');
+registerPolicy(Role.ADMIN, 'view-own-organizations');
+registerPolicy(Role.ADMIN, 'edit-own-organizations');
+registerPolicy(Role.ADMIN, 'view-all-organizations');
+registerPolicy(Role.ADMIN, 'edit-all-organizations');
 
 export interface OrganizationData {
   id: number;
@@ -156,8 +156,7 @@ export class OrganizationService {
       context.organizationId === organizationId
     );
     const allowed =
-      context.role === 'administrator' &&
-      context.organizationId === organizationId;
+      context.role === Role.ADMIN && context.organizationId === organizationId;
 
     if (!allowed) {
       throw new ForbiddenError(
@@ -201,8 +200,7 @@ export class OrganizationService {
       context.organizationId === organizationId
     );
     const allowed =
-      context.role === 'administrator' &&
-      context.organizationId === organizationId;
+      context.role === Role.ADMIN && context.organizationId === organizationId;
 
     if (!allowed) {
       throw new ForbiddenError(
@@ -239,7 +237,7 @@ export class OrganizationService {
     context: UserContext,
     organizationId: number,
     userId: number,
-    update: { fullName?: string; role?: string }
+    update: { fullName?: string; role?: Role }
   ): Promise<{ message: string }> {
     checkAccess(
       context,
@@ -247,8 +245,7 @@ export class OrganizationService {
       context.organizationId === organizationId
     );
     const allowed =
-      context.role === 'administrator' &&
-      context.organizationId === organizationId;
+      context.role === Role.ADMIN && context.organizationId === organizationId;
 
     if (!allowed) {
       throw new ForbiddenError(

@@ -5,6 +5,7 @@ import { BadRequestError } from '@src/common/errors';
 import logger from '@src/common/logger';
 import { UserContext, UserService } from './user-service';
 import { OrganizationService } from './organization-service';
+import { Role } from '@src/common/policies';
 
 export interface CreateTestRunData {
   apiUrl: string;
@@ -96,8 +97,10 @@ export class TestRunService {
   /**
    * Get test results by test run ID
    */
-  async getTestResults(context: UserContext, testRunId: string): Promise<unknown> {
-
+  async getTestResults(
+    context: UserContext,
+    testRunId: string
+  ): Promise<unknown> {
     if (!testRunId) {
       throw new BadRequestError("Missing 'testRunId' parameter.");
     }
@@ -125,8 +128,10 @@ export class TestRunService {
   /**
    * List test runs with optional filtering
    */
-  async listTestRuns(context: UserContext, queryParams: ListTestRunsQuery): Promise<unknown> {
-    
+  async listTestRuns(
+    context: UserContext,
+    queryParams: ListTestRunsQuery
+  ): Promise<unknown> {
     const user = await this.userService.get(context, context.userId);
 
     try {
@@ -141,7 +146,7 @@ export class TestRunService {
         url.searchParams.append('size', queryParams.pageSize);
 
       // Non-administrator users should only see their own test runs
-      if (user.role !== 'administrator')
+      if (user.role !== Role.ADMIN)
         url.searchParams.append('adminEmail', user.email);
 
       const response = await fetch(url, {
