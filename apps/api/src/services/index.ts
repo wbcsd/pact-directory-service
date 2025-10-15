@@ -29,7 +29,7 @@ export class ServiceContainer implements Services {
   email: EmailService;
   organization: OrganizationService;
   user: UserService;
-  connection: ConnectionService
+  connection: ConnectionService;
   testRun: TestRunService;
   policy: PolicyService;
 
@@ -38,7 +38,7 @@ export class ServiceContainer implements Services {
     this.auth = new AuthService(db);
     this.organization = new OrganizationService(db, this.email);
     this.connection = new ConnectionService(db, this.organization, this.email);
-    this.user = new UserService(db, this.email);
+    this.user = new UserService(db, this.email, new PolicyService(db));
     this.testRun = new TestRunService(db, this.user, this.organization);
     this.policy = new PolicyService(db);
     // this.environment = new EnvironmentService(db);

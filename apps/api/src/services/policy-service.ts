@@ -9,9 +9,9 @@ export class PolicyService {
   private async getPoliciesByUserId(userId: number): Promise<string[]> {
     const policies = await this.db
       .selectFrom('users')
-      .innerJoin('role_policies', 'users.role', 'role_policies.role')
+      .innerJoin('roles_policies', 'users.role', 'roles_policies.role')
       .where('users.id', '=', userId)
-      .select(['role_policies.policy'])
+      .select(['roles_policies.policy'])
       .execute();
 
     return policies.map((p: { policy: string }) => p.policy);

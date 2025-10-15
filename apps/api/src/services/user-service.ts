@@ -14,6 +14,7 @@ import {
   listRegisteredPolicies,
   registerPolicy,
 } from '@src/common/policies';
+import { PolicyService } from './policy-service';
 
 registerPolicy('view-users');
 registerPolicy('edit-users');
@@ -118,7 +119,8 @@ export class UserService {
 
   constructor(
     private db: Kysely<Database>,
-    private emailService: EmailService
+    private emailService: EmailService,
+    private policyService: PolicyService
   ) {}
 
   /**
@@ -226,12 +228,15 @@ export class UserService {
       throw new UnauthorizedError('Invalid email or password');
     }
 
+    await this.policyService.cachePolicies(user.id);
+    const policies = await this.policyService.getCachedPolicies(user.id);
+
     return {
       userId: user.id,
       email: user.email,
       organizationId: user.organizationId,
       role: user.role,
-      policies: listRegisteredPolicies(),
+      policies,
     };
   }
 
@@ -364,9 +369,11 @@ export class UserService {
       };
     });
 
+    const policies = await this.policyService.getCachedPolicies(profile.userId);
+
     return {
       ...profile,
-      policies: listRegisteredPolicies(),
+      policies: policies.map((p) => p),
       connectionRequests: {
         sent: sentConnectionRequests,
         received: receivedConnectionRequests,
@@ -617,13 +624,16 @@ export class UserService {
       companyName: organization.name,
     });
 
+    await this.policyService.cachePolicies(user.id);
+    const policies = await this.policyService.getCachedPolicies(user.id);
+
     // Return user context
     return {
       userId: user.id,
       email: user.email,
       organizationId: user.organizationId,
       role: user.role,
-      policies: listRegisteredPolicies(),
+      policies,
     };
   }
 }
