@@ -17,7 +17,6 @@ import { featureFlags } from "./utils/feature-flags";
 import OrganizationUsers from "./pages/OrganizationUsers";
 import EditUserPage from "./pages/EditUserPage";
 import AddUserPage from "./pages/AddUserPage";
-import ProtectedRoute from "./components/PolicyGuard";
 import PolicyGuard from "./components/PolicyGuard";
 
 const AppRoutes: React.FC = () => {
