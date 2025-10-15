@@ -35,7 +35,7 @@ export function checkAccess(
   condition = true
 ) {
   if (Array.isArray(policy)) {
-    if (!policy.some((p) => context.policies.includes(p))) {
+    if (policy.length > 0 && !policy.some((p) => context.policies.includes(p))) {
       throw new ForbiddenError('Access denied');
     }
   } else {

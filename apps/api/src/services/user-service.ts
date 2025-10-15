@@ -259,7 +259,7 @@ export class UserService {
       email: user.email,
       organizationId: user.organizationId,
       role: user.role,
-      status: user.status
+      status: user.status,
       policies,
     };
   }
@@ -268,7 +268,7 @@ export class UserService {
    * Get user by ID
    */
   async get(context: UserContext, id: number): Promise<UserData> {
-    checkAccess(context, 'view-users', context.userId === id || context.role === 'administrator');
+    checkAccess(context, [], context.userId === id || context.role === 'administrator');
     
     const user = await this.db
       .selectFrom('users')
