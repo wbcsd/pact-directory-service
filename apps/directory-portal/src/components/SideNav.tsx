@@ -2,6 +2,7 @@ import React from "react";
 import { Text } from "@radix-ui/themes";
 import { NavLink } from "react-router-dom";
 import FeatureFlag from "./FeatureFlag";
+import PolicyGuard from "./PolicyGuard";
 
 const SideNav: React.FC = () => {
   return (
@@ -13,32 +14,38 @@ const SideNav: React.FC = () => {
             <Text>Conformance Testing</Text>
           </NavLink>
           <FeatureFlag flag="enableOrganizationManagement">
-            <>
-              <a href="#">Organization</a>
-              <NavLink
-                to="/organization/users"
-                style={{ textDecoration: "none", paddingLeft: "2em" }}
-              >
-                <Text>Users</Text>
-              </NavLink>
-            </>
+            <PolicyGuard policies={["view-own-organizations"]}>
+              <>
+                <a href="#">Organization</a>
+                <PolicyGuard policies={["view-users"]}>
+                  <NavLink
+                    to="/organization/users"
+                    style={{ textDecoration: "none", paddingLeft: "2em" }}
+                  >
+                    <Text>Users</Text>
+                  </NavLink>
+                </PolicyGuard>
+              </>
+            </PolicyGuard>
           </FeatureFlag>
           <FeatureFlag flag="enableIdentityManagement">
-            <>
-              <a href="#">Identity Management</a>
-              <NavLink
-                to="/search"
-                style={{ textDecoration: "none", paddingLeft: "2em" }}
-              >
-                <Text>Search</Text>
-              </NavLink>
-              <NavLink
-                to="/manage-connections"
-                style={{ textDecoration: "none", paddingLeft: "2em" }}
-              >
-                <Text>Manage Connections</Text>
-              </NavLink>
-            </>
+            <PolicyGuard policies={["view-connections-own-organization"]}>
+              <>
+                <a href="#">Identity Management</a>
+                <NavLink
+                  to="/search"
+                  style={{ textDecoration: "none", paddingLeft: "2em" }}
+                >
+                  <Text>Search</Text>
+                </NavLink>
+                <NavLink
+                  to="/manage-connections"
+                  style={{ textDecoration: "none", paddingLeft: "2em" }}
+                >
+                  <Text>Manage Connections</Text>
+                </NavLink>
+              </>
+            </PolicyGuard>
           </FeatureFlag>
         </nav>
       </div>

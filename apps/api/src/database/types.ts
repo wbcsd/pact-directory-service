@@ -5,7 +5,7 @@ export interface Database {
   users: UsersTable;
   roles: RolesTable;
   policies: PoliciesTable;
-  role_policies: RolePoliciesTable;
+  roles_policies: RolesPoliciesTable;
   connection_requests: ConnectionRequestTable;
   connections: ConnectionTable;
   password_reset_tokens: PasswordResetTokenTable;
@@ -46,11 +46,10 @@ export interface PoliciesTable {
   description: string;
 }
 
-export interface RolePoliciesTable {
+export interface RolesPoliciesTable {
   role: string;
   policy: string;
 }
-
 
 export interface ConnectionRequestTable {
   id: Generated<number>;
