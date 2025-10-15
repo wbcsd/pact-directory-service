@@ -92,7 +92,7 @@ export class ConnectionService {
       throw new BadRequestError('You cannot connect with yourself');
     }
 
-    if (context.role !== Role.ADMIN) {
+    if (context.role !== Role.ADMINISTRATOR) {
       throw new ForbiddenError(
         'You are not allowed to send connection requests'
       );

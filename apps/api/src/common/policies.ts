@@ -2,7 +2,7 @@ import { UserContext } from '../services/user-service';
 import { ForbiddenError } from './errors';
 
 export enum Role {
-  ADMIN = 'admin',
+  ADMINISTRATOR = 'administrator',
   USER = 'user',
   ROOT = 'root',
 }

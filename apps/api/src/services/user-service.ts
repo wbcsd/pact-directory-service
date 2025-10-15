@@ -16,9 +16,9 @@ import {
   Role,
 } from '@src/common/policies';
 
-registerPolicy(Role.ADMIN, 'view-users');
-registerPolicy(Role.ADMIN, 'edit-users');
-registerPolicy(Role.ADMIN, 'add-users');
+registerPolicy(Role.ADMINISTRATOR, 'view-users');
+registerPolicy(Role.ADMINISTRATOR, 'edit-users');
+registerPolicy(Role.ADMINISTRATOR, 'add-users');
 
 export interface UserContext {
   userId: number;
@@ -762,7 +762,8 @@ export class UserService {
     checkAccess(
       context,
       'add-users',
-      context.organizationId === organizationId || context.role === Role.ADMIN
+      context.organizationId === organizationId ||
+        context.role === Role.ADMINISTRATOR
     );
 
     // Check if passwords match

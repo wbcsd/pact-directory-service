@@ -7,12 +7,12 @@ import { EmailService } from './email-service';
 import config from '@src/common/config';
 
 // Register all policies used in this service
-registerPolicy(Role.ADMIN, 'view-connections-own-organization');
-registerPolicy(Role.ADMIN, 'view-connections-all-organizations');
-registerPolicy(Role.ADMIN, 'view-own-organizations');
-registerPolicy(Role.ADMIN, 'edit-own-organizations');
-registerPolicy(Role.ADMIN, 'view-all-organizations');
-registerPolicy(Role.ADMIN, 'edit-all-organizations');
+registerPolicy(Role.ADMINISTRATOR, 'view-connections-own-organization');
+registerPolicy(Role.ADMINISTRATOR, 'view-connections-all-organizations');
+registerPolicy(Role.ADMINISTRATOR, 'view-own-organizations');
+registerPolicy(Role.ADMINISTRATOR, 'edit-own-organizations');
+registerPolicy(Role.ADMINISTRATOR, 'view-all-organizations');
+registerPolicy(Role.ADMINISTRATOR, 'edit-all-organizations');
 
 export interface OrganizationData {
   id: number;
@@ -156,7 +156,8 @@ export class OrganizationService {
       context.organizationId === organizationId
     );
     const allowed =
-      context.role === Role.ADMIN && context.organizationId === organizationId;
+      context.role === Role.ADMINISTRATOR &&
+      context.organizationId === organizationId;
 
     if (!allowed) {
       throw new ForbiddenError(
@@ -200,7 +201,8 @@ export class OrganizationService {
       context.organizationId === organizationId
     );
     const allowed =
-      context.role === Role.ADMIN && context.organizationId === organizationId;
+      context.role === Role.ADMINISTRATOR &&
+      context.organizationId === organizationId;
 
     if (!allowed) {
       throw new ForbiddenError(
@@ -245,7 +247,8 @@ export class OrganizationService {
       context.organizationId === organizationId
     );
     const allowed =
-      context.role === Role.ADMIN && context.organizationId === organizationId;
+      context.role === Role.ADMINISTRATOR &&
+      context.organizationId === organizationId;
 
     if (!allowed) {
       throw new ForbiddenError(
