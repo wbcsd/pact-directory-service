@@ -2,7 +2,7 @@ import { Kysely } from 'kysely';
 import { Database } from '@src/database/types';
 import { NotFoundError, ForbiddenError } from '@src/common/errors';
 import { registerPolicy, checkAccess } from '@src/common/policies';
-import { UserContext, UserListData } from './user-service';
+import { UserContext, UserData } from './user-service';
 import { EmailService } from './email-service';
 import config from '@src/common/config';
 
@@ -149,7 +149,7 @@ export class OrganizationService {
   async listMembers(
     context: UserContext,
     organizationId: number
-  ): Promise<Omit<UserListData, 'password'>[]> {
+  ): Promise<UserData[]> {
     checkAccess(
       context,
       'view-own-organizations',
@@ -173,6 +173,7 @@ export class OrganizationService {
         'users.fullName as fullName',
         'users.email as email',
         'users.role as role',
+        'users.status as status',
         'organizations.name as organizationName',
         'organizations.id as organizationId',
         'organizations.uri as organizationIdentifier',
@@ -193,7 +194,7 @@ export class OrganizationService {
     context: UserContext,
     organizationId: number,
     userId: number
-  ): Promise<Omit<UserListData, 'password'>> {
+  ): Promise<UserData> {
     checkAccess(
       context,
       'view-own-organizations',
@@ -217,6 +218,7 @@ export class OrganizationService {
         'users.fullName as fullName',
         'users.email as email',
         'users.role as role',
+        'users.status as status',
         'organizations.name as organizationName',
         'organizations.id as organizationId',
         'organizations.uri as organizationIdentifier',

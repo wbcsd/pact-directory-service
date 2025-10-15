@@ -4,14 +4,16 @@ import SideNav from "../components/SideNav";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import DataTable, { Column } from "../components/DataTable";
 import { useAuth } from "../contexts/AuthContext";
-import { InputIcon } from "@radix-ui/react-icons";
+import { InputIcon, PlusIcon } from "@radix-ui/react-icons";
 import { useNavigate } from "react-router-dom";
+import StatusBadge from "../components/StatusBadge";
 
 export interface User {
   id: number;
   fullName: string;
   email: string;
   role: string;
+  status: 'unverified' | 'enabled' | 'disabled' | 'deleted';
   organizationName: string;
   organizationId: number;
   organizationIdentifier: string;
@@ -69,6 +71,13 @@ const OrganizationUsers: React.FC = () => {
       render: (row: User) => row.role,
     },
     {
+      key: "status",
+      header: "Status",
+      sortable: true,
+      sortValue: (row: User) => row.status,
+      render: (row: User) => <StatusBadge status={row.status} />,
+    },
+    {
       key: "email",
       header: "E-Mail",
       sortable: true,
@@ -107,6 +116,19 @@ const OrganizationUsers: React.FC = () => {
       <main className="main">
         <div className="header">
           <h2>Organization Users</h2>
+          <Button
+            onClick={() => navigate("/organization/users/add")}
+            style={{
+              background: "#0A0552",
+              color: "white",
+              border: "none",
+              padding: "8px 16px",
+              minHeight: "36px",
+            }}
+          >
+            <PlusIcon />
+            Add User
+          </Button>
         </div>
         <div>
           <DataTable idColumnName="id" columns={columns} data={users} />
