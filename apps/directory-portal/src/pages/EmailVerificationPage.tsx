@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Box, Callout } from "@radix-ui/themes";
 import { CheckIcon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
@@ -8,15 +8,22 @@ const EmailVerificationPage: React.FC = () => {
   const { token } = useParams<{ token: string }>();
   const [status, setStatus] = useState<"verifying" | "success" | "error">("verifying");
   const [message, setMessage] = useState("");
+  const alreadyVerified = useRef(false);
 
   useEffect(() => {
-    const verifyEmail = async () => {
-      if (!token) {
-        setStatus("error");
-        setMessage("No verification token provided");
-        return;
-      }
+    // Prevent duplicate calls (handles React Strict Mode)
+    if (alreadyVerified.current) {
+      return; 
+    }
+    if (!token) {
+      setStatus("error");
+      setMessage("No verification token provided");
+      return;
+    }
 
+    alreadyVerified.current = true;
+
+    const verifyEmail = async () => {
       try {
         const response = await fetch(
           `${import.meta.env.VITE_DIRECTORY_API}/directory/users/verify-email`,
