@@ -4,9 +4,9 @@ import { ForbiddenError } from './errors';
 const POLICIES: Map<Role, string[]> = new Map<Role, string[]>();
 
 export enum Role {
-  ADMINISTRATOR = 'administrator',
-  USER = 'user',
-  ROOT = 'root',
+  Administrator = 'administrator',
+  User = 'user',
+  Root = 'root',
 }
 
 /**

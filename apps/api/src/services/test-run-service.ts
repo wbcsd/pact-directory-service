@@ -142,7 +142,7 @@ export class TestRunService {
         url.searchParams.append('size', queryParams.pageSize);
 
       // Non-administrator users should only see their own test runs
-      if (user.role !== Role.ADMINISTRATOR)
+      if (user.role !== Role.Administrator)
         url.searchParams.append('adminEmail', user.email);
 
       const response = await fetch(url, {

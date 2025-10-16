@@ -7,12 +7,12 @@ import { EmailService } from './email-service';
 import config from '@src/common/config';
 
 // Register all policies used in this service
-registerPolicy([Role.ADMINISTRATOR, Role.ROOT], 'view-connections-own-organization');
-registerPolicy([Role.ADMINISTRATOR, Role.ROOT], 'view-connections-all-organizations');
-registerPolicy([Role.ADMINISTRATOR, Role.ROOT], 'view-own-organizations');
-registerPolicy([Role.ADMINISTRATOR, Role.ROOT], 'edit-own-organizations');
-registerPolicy([Role.ADMINISTRATOR, Role.ROOT], 'view-all-organizations');
-registerPolicy([Role.ADMINISTRATOR, Role.ROOT], 'edit-all-organizations');
+registerPolicy([Role.Administrator, Role.Root], 'view-connections-own-organization');
+registerPolicy([Role.Administrator, Role.Root], 'view-connections-all-organizations');
+registerPolicy([Role.Administrator, Role.Root], 'view-own-organizations');
+registerPolicy([Role.Administrator, Role.Root], 'edit-own-organizations');
+registerPolicy([Role.Administrator, Role.Root], 'view-all-organizations');
+registerPolicy([Role.Administrator, Role.Root], 'edit-all-organizations');
 
 export interface OrganizationData {
   id: number;
@@ -156,7 +156,7 @@ export class OrganizationService {
       context.organizationId === organizationId
     );
     const allowed =
-      context.role === Role.ADMINISTRATOR &&
+      context.role === Role.Administrator &&
       context.organizationId === organizationId;
 
     if (!allowed) {
@@ -201,7 +201,7 @@ export class OrganizationService {
       context.organizationId === organizationId
     );
     const allowed =
-      context.role === Role.ADMINISTRATOR &&
+      context.role === Role.Administrator &&
       context.organizationId === organizationId;
 
     if (!allowed) {
@@ -247,7 +247,7 @@ export class OrganizationService {
       context.organizationId === organizationId
     );
     const allowed =
-      context.role === Role.ADMINISTRATOR &&
+      context.role === Role.Administrator &&
       context.organizationId === organizationId;
 
     if (!allowed) {

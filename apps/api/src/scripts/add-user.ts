@@ -71,7 +71,7 @@ async function main() {
         email,
         password: hashedPassword,
         status: 'enabled',
-        role: (role as Role) !== Role.ADMINISTRATOR ? Role.USER : (role as Role),
+        role: (role as Role) !== Role.Administrator ? Role.User : (role as Role),
         organizationId: organization.id,
       })
       .executeTakeFirstOrThrow();
