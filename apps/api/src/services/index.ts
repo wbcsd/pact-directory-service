@@ -4,7 +4,6 @@ import { AuthService } from './auth-service';
 import { EmailService } from './email-service';
 import { OrganizationService } from './organization-service';
 import { TestRunService } from './test-run-service';
-import { PolicyService } from './policy-service';
 import { UserService } from './user-service';
 import { ConnectionService } from './connection-service';
 
@@ -19,7 +18,6 @@ export interface Services {
   email: EmailService;
   organization: OrganizationService;
   testRun: TestRunService;
-  policy: PolicyService;
   user: UserService;
   connection: ConnectionService;
 }
@@ -31,16 +29,14 @@ export class ServiceContainer implements Services {
   user: UserService;
   connection: ConnectionService;
   testRun: TestRunService;
-  policy: PolicyService;
 
   constructor(db: Kysely<Database>) {
     this.email = new EmailService();
     this.auth = new AuthService(db);
     this.organization = new OrganizationService(db, this.email);
     this.connection = new ConnectionService(db, this.organization, this.email);
-    this.user = new UserService(db, this.email, new PolicyService(db));
+    this.user = new UserService(db, this.email);
     this.testRun = new TestRunService(db, this.user, this.organization);
-    this.policy = new PolicyService(db);
     // this.environment = new EnvironmentService(db);
   }
 }

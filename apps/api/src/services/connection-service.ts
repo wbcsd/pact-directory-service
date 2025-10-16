@@ -8,7 +8,7 @@ import {
 import { OrganizationService } from './organization-service';
 import { EmailService } from './email-service';
 import { UserContext } from './user-service';
-import { checkAccess } from '@src/common/policies';
+import { checkAccess, Role } from '@src/common/policies';
 
 
 export interface ConnectionRequest {
@@ -87,7 +87,7 @@ export class ConnectionService {
       throw new BadRequestError('You cannot connect with yourself');
     }
 
-    if (context.role !== 'administrator') {
+    if (context.role !== Role.Administrator) {
       throw new ForbiddenError('You are not allowed to send connection requests');
     }
 

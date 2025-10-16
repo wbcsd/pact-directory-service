@@ -1,22 +1,35 @@
 import { UserContext } from '../services/user-service';
 import { ForbiddenError } from './errors';
 
-const POLICIES: string[] = [];
+const POLICIES: Map<Role, string[]> = new Map<Role, string[]>();
+
+export enum Role {
+  Administrator = 'administrator',
+  User = 'user',
+  Root = 'root',
+}
 
 /**
  * Registers a new policy by adding it to the global policies list.
  */
-export function registerPolicy(policy: string) {
-  if (!POLICIES.includes(policy)) {
-    POLICIES.push(policy);
-  }
+export function registerPolicy(roles: Role[], policy: string) {
+  roles.forEach((role) => {
+    if (!POLICIES.has(role)) {
+      POLICIES.set(role, []);
+    }
+    const policies = POLICIES.get(role);
+    if (policies && !policies.includes(policy)) {
+      policies.push(policy);
+      POLICIES.set(role, policies);
+    }
+  });
 }
 
 /**
  * Lists all registered policies.
  */
-export function listRegisteredPolicies(): string[] {
-  return POLICIES;
+export function getPoliciesForRole(role: Role): string[] {
+  return POLICIES.get(role) ?? [];
 }
 
 /**
@@ -35,7 +48,10 @@ export function checkAccess(
   condition = true
 ) {
   if (Array.isArray(policy)) {
-    if (policy.length > 0 && !policy.some((p) => context.policies.includes(p))) {
+    if (
+      policy.length > 0 &&
+      !policy.some((p) => context.policies.includes(p))
+    ) {
       throw new ForbiddenError('Access denied');
     }
   } else {
@@ -50,7 +66,7 @@ export function checkAccess(
 
 // Check if the user context has the required role.
 // Throws ForbiddenError if not.
-export function requireRole(context: UserContext, role: string) {
+export function requireRole(context: UserContext, role: Role) {
   if (context.role !== role) {
     throw new ForbiddenError('Access denied');
   }

@@ -26,10 +26,16 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
-
       // 👇 Style rules to match your settings
       // indent: ['error', 2, { SwitchCase: 1 }],
       // quotes: ['error', 'single', { avoidEscape: true }],
+    },
+  },
+  // 👇 Override for test files
+  {
+    files: ['**/*.test.ts', '**/*.test.tsx'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
     },
   }
 );

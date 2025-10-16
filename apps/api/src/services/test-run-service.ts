@@ -5,6 +5,7 @@ import { BadRequestError } from '@src/common/errors';
 import logger from '@src/common/logger';
 import { UserContext, UserService } from './user-service';
 import { OrganizationService } from './organization-service';
+import { Role } from '@src/common/policies';
 
 export interface CreateTestRunData {
   apiUrl: string;
@@ -141,7 +142,7 @@ export class TestRunService {
         url.searchParams.append('size', queryParams.pageSize);
 
       // Non-administrator users should only see their own test runs
-      if (user.role !== 'administrator')
+      if (user.role !== Role.Administrator)
         url.searchParams.append('adminEmail', user.email);
 
       const response = await fetch(url, {
