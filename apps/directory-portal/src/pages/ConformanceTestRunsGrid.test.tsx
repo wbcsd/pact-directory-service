@@ -71,13 +71,33 @@ const mockTestRuns = [
 const mockAdminProfile: ProfileData = {
   role: "administrator",
   email: "admin@test.com",
-  name: "Admin User",
+  fullName: "Admin User",
+  organizationId: 1,
+  organizationName: "Test Org",
+  organizationIdentifier: "test-org",
+  organizationDescription: "A test organization",
+  solutionApiUrl: "https://api.test.com",
+  registrationCode: "REG123",
+  clientId: "client-123",
+  clientSecret: "secret-xyz",
+  networkKey: "network-key",
+  policies: ["view-users", "edit-users", "add-users"],
 };
 
 const mockUserProfile: ProfileData = {
   role: "user",
   email: "user@test.com",
-  name: "Regular User",
+  fullName: "Regular User",
+organizationId: 1,
+  organizationName: "Test Org",
+  organizationIdentifier: "test-org",
+  organizationDescription: "A test organization",
+  solutionApiUrl: "https://api.test.com",
+  registrationCode: "REG123",
+  clientId: "client-123",
+  clientSecret: "secret-xyz",
+  networkKey: "network-key",
+  policies: [],  
 };
 
 describe("ConformanceTestRunsGrid", () => {

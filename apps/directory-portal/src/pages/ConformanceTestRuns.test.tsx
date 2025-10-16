@@ -71,6 +71,16 @@ const mockProfileData = {
   role: "user",
   email: "user@test.com",
   name: "Test User",
+  organizationId: 1,
+  organizationName: "Test Org",
+  organizationIdentifier: "test-org",
+  organizationDescription: "A test organization",
+  solutionApiUrl: "https://api.test.com",
+  registrationCode: "REG123",
+  clientId: "client-123",
+  clientSecret: "secret-xyz",
+  networkKey: "network-key",
+  policies: [],  
 };
 
 describe("ConformanceTestRuns", () => {
