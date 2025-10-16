@@ -5,6 +5,7 @@ import { LoginData, UserContext, AddUserToOrganizationData } from '@src/services
 import jwt from 'jsonwebtoken';
 import config from '@src/common/config';
 import logger from '@src/common/logger';
+import { Role } from '@src/common/policies';
 
 const router = Router();
 
@@ -152,7 +153,7 @@ router.post('/directory/organizations/:oid/users/:uid', authenticate, context(as
     req.context,
     organizationId,
     userId,
-    req.body as { fullName?: string; role?: string }
+    req.body as { fullName?: string; role?: Role }
   );
 }));
 

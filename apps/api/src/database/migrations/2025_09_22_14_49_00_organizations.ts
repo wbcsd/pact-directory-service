@@ -45,44 +45,9 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema.alterTable('users')
     .renameColumn('company_id', 'organization_id')
     .execute();
-
-  // Create roles table if not exists
-  await db.schema
-    .createTable('roles')
-    .ifNotExists()
-    .addColumn('name', 'varchar(255)', (col) => col.primaryKey())
-    .execute();
-
-  await db.schema
-    .createTable('policies')
-    .ifNotExists()
-    .addColumn('name', 'varchar(255)', (col) => col.primaryKey())
-    .addColumn('description', 'text')
-    .execute();
-
-  await db.schema
-    .createTable('roles_policies')
-    .ifNotExists()
-    .addColumn('role', 'varchar(255)', (col) => col.notNull())
-    .addColumn('policy', 'varchar(255)', (col) => col.notNull())
-    .addPrimaryKeyConstraint('role_policy_pk', ['role', 'policy'])
-    .execute();
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
-  await db.schema
-    .dropTable('role_policies')
-    .ifExists()
-    .execute();
-  await db.schema
-    .dropTable('policies')
-    .ifExists()
-    .execute();
-  await db.schema
-    .dropTable('roles')
-    .ifExists()
-    .execute();
-
   // Rename columns back to original names
   await db.schema.alterTable('users')
     .renameColumn('organization_id', 'company_id')

@@ -11,19 +11,20 @@ import {
 import { EmailService } from './email-service';
 import {
   checkAccess,
+  getPoliciesForRole,
   registerPolicy,
+  Role,
 } from '@src/common/policies';
-import { PolicyService } from './policy-service';
 
-registerPolicy('view-users');
-registerPolicy('edit-users');
-registerPolicy('add-users');
+registerPolicy(Role.ADMINISTRATOR, 'view-users');
+registerPolicy(Role.ADMINISTRATOR, 'edit-users');
+registerPolicy(Role.ADMINISTRATOR, 'add-users');
 
 export interface UserContext {
   userId: number;
   email: string;
   organizationId: number;
-  role: string;
+  role: Role;
   policies: string[];
   status: 'unverified' | 'enabled' | 'disabled' | 'deleted';
 }
@@ -45,7 +46,7 @@ export interface UserData {
   id: number;
   fullName: string;
   email: string;
-  role: string;
+  role: Role;
   organizationId: number;
   status: string 
   organizationName: string;
@@ -100,7 +101,7 @@ export interface ResetPasswordData {
 export interface AddUserToOrganizationData {
   fullName: string;
   email: string;
-  role: string;
+  role: Role;
   password: string;
   confirmPassword: string;
 }
@@ -124,8 +125,7 @@ export class UserService {
 
   constructor(
     private db: Kysely<Database>,
-    private emailService: EmailService,
-    private policyService: PolicyService
+    private emailService: EmailService
   ) {}
 
   /**
@@ -190,7 +190,7 @@ export class UserService {
         .values({
           fullName: data.fullName,
           email: data.email,
-          role: 'user',
+          role: Role.USER,
           password: hashedPassword,
           organizationId: organization.id,
           status: 'unverified', // Set as unverified initially
@@ -250,8 +250,7 @@ export class UserService {
       throw new UnauthorizedError('Invalid email or password');
     }
 
-    await this.policyService.cachePolicies(user.id);
-    const policies = await this.policyService.getCachedPolicies(user.id);
+    const policies = getPoliciesForRole(user.role);
 
     return {
       userId: user.id,
@@ -267,7 +266,7 @@ export class UserService {
    * Get user by ID
    */
   async get(context: UserContext, id: number): Promise<UserData> {
-    checkAccess(context, [], context.userId === id || context.role === 'administrator');
+    checkAccess(context, [], context.userId === id || context.role === Role.ADMINISTRATOR);
     
     const user = await this.db
       .selectFrom('users')
@@ -542,7 +541,7 @@ export class UserService {
       };
     });
 
-    const policies = await this.policyService.getCachedPolicies(profile.userId);
+    const policies = getPoliciesForRole(profile.role);
 
     return {
       ...profile,
@@ -743,7 +742,7 @@ export class UserService {
   ): Promise<{ message: string; userId: number }> {
     
     // Check if user has permission to add users to this organization
-    checkAccess(context, 'add-users', context.organizationId === organizationId || context.role === 'admin');
+    checkAccess(context, 'add-users', context.organizationId === organizationId || context.role === Role.ADMINISTRATOR);
 
     // Check if passwords match
     if (data.password !== data.confirmPassword) {

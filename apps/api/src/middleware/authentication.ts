@@ -15,15 +15,15 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
   try {
     const user = jwt.verify(token, config.JWT_SECRET) as UserContext;
 
-    if (user.role === 'unverified') {
+    if (user.status === 'unverified') {
       throw new UnauthorizedError('Email not verified');
     }
 
-    if (user.role === 'deleted') {
+    if (user.status === 'deleted') {
       throw new UnauthorizedError('Account deleted');
     }
 
-    if (user.role === 'disabled') {
+    if (user.status === 'disabled') {
       throw new UnauthorizedError('Account disabled');
     }
 
