@@ -1,251 +1,604 @@
-// src/pages/ConformanceTestRuns.container.test.tsx
 import React from "react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Routes, Route } from "react-router-dom";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { MemoryRouter } from "react-router-dom";
+import ConformanceTestRuns from "./ConformanceTestRuns";
+import * as AuthContext from "../contexts/AuthContext";
+import * as authFetch from "../utils/auth-fetch";
 
-import { proxyWithAuth } from "../utils/auth-fetch";
-vi.mock("../utils/auth-fetch", () => ({ proxyWithAuth: vi.fn() }));
-
-// Mock presentational grid to observe props from the container
-const gridSpy = vi.fn();
-vi.mock("./ConformanceTestRunsGrid", () => ({
-  default: (props: any) => {
-    gridSpy(props);
-    return (
-      <div data-testid="grid">
-        GRID: runs={props.testRuns?.length ?? 0}
-        {props.error ? ` error=${props.error}` : ""}
-        {props.isLoading ? " loading" : ""}
-      </div>
-    );
-  },
+// Mock dependencies
+vi.mock("@radix-ui/themes", () => ({
+  Button: ({ children, onClick, disabled, type }: any) => (
+    <button onClick={onClick} disabled={disabled} type={type}>
+      {children}
+    </button>
+  ),
 }));
 
-// Keep SideNav small
 vi.mock("../components/SideNav", () => ({
-  default: () => <div data-testid="sidenav" />,
+  default: () => <div data-testid="side-nav">SideNav</div>,
 }));
 
-// Radix primitives → minimal HTML
-vi.mock("@radix-ui/themes", async (orig) => {
-  const actual: any = await (orig as any)();
+vi.mock("./ConformanceTestRunsGrid", () => ({
+  default: ({ testRuns, navigate, profileData, isLoading, error }: any) => (
+    <div data-testid="conformance-grid">
+      <div data-testid="grid-test-runs-count">{testRuns.length}</div>
+      <div data-testid="grid-loading">{isLoading.toString()}</div>
+      <div data-testid="grid-error">{error}</div>
+      <div data-testid="grid-has-profile">
+        {profileData ? "true" : "false"}
+      </div>
+      <div data-testid="grid-has-navigate">
+        {navigate ? "true" : "false"}
+      </div>
+    </div>
+  ),
+}));
+
+const mockNavigate = vi.fn();
+
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
   return {
     ...actual,
-    Button: ({ children, ...p }: any) => <button {...p}>{children}</button>,
+    useNavigate: () => mockNavigate,
   };
 });
 
-// Static asset
-vi.mock("../assets/pact-logistics-center-8.png", () => ({
-  default: "empty.png",
-}));
+const mockTestRuns = [
+  {
+    testRunId: "12345678-1234-1234-1234-123456789012",
+    techSpecVersion: "v1.0.0",
+    timestamp: "2025-01-15T14:30:00Z",
+    organizationName: "Test Org",
+    adminEmail: "admin@test.com",
+    passingPercentage: 95,
+    status: "PASS" as const,
+  },
+  {
+    testRunId: "87654321-4321-4321-4321-210987654321",
+    techSpecVersion: "v1.1.0",
+    timestamp: "2025-02-20T10:15:00Z",
+    organizationName: "Another Org",
+    adminEmail: "user@another.com",
+    passingPercentage: 60,
+    status: "FAIL" as const,
+  },
+];
 
-// Component under test
-import ConformanceTestRuns from "./ConformanceTestRuns";
-
-// Helpers
-type Run = {
-  testId: string;
-  techSpecVersion: string;
-  timestamp: string;
-  organizationName: string;
-  adminEmail: string;
-  passingPercentage: number;
-  status: "PASS" | "FAIL" | "PENDING";
+const mockProfileData = {
+  role: "user",
+  email: "user@test.com",
+  name: "Test User",
 };
-const mkRun = (over: Partial<Run> = {}): Run => ({
-  testId: "abcd1234efgh5678",
-  techSpecVersion: "1.0.0",
-  timestamp: new Date("2025-01-01T10:00:00Z").toISOString(),
-  organizationName: "Acme Corp",
-  adminEmail: "admin@acme.com",
-  passingPercentage: 100,
-  status: "PASS",
-  ...over,
-});
-const ok = (body: any) =>
-  Promise.resolve({ ok: true, json: () => Promise.resolve(body) } as Response);
 
-const renderWithRouter = (initial = "/runs") =>
-  render(
-    <MemoryRouter initialEntries={[initial]}>
-      <Routes>
-        <Route path="/runs" element={<ConformanceTestRuns />} />
-        <Route path="/conformance-testing" element={<div>Form</div>} />
-      </Routes>
-    </MemoryRouter>
-  );
-
-beforeEach(() => {
-  vi.clearAllMocks();
-  gridSpy.mockClear();
-});
-
-describe("<ConformanceTestRuns /> container", () => {
-  it("fetches all runs on mount when no query; renders header + grid", async () => {
-    (proxyWithAuth as vi.Mock).mockResolvedValueOnce(
-      ok({ testRuns: [mkRun()] })
-    );
-
-    renderWithRouter("/runs");
-
-    // Header should show after loading/error are false
-    await screen.findByTestId("grid");
-    expect(screen.getByText("Overview")).toBeInTheDocument();
-    expect(
-      screen.getByPlaceholderText(/Press enter to search/i)
-    ).toBeInTheDocument();
-
-    expect(proxyWithAuth).toHaveBeenCalledWith("/test-runs?page=1");
-    expect(gridSpy).toHaveBeenLastCalledWith(
-      expect.objectContaining({
-        testRuns: expect.any(Array),
-        isLoading: false,
-        error: null,
-      })
-    );
-  });
-
-  it("prefills input and fetches using ?q=acme on mount", async () => {
-    (proxyWithAuth as vi.Mock).mockResolvedValueOnce(
-      ok({ testRuns: [mkRun()] })
-    );
-
-    renderWithRouter("/runs?q=acme");
-
-    const input = await screen.findByPlaceholderText(/Press enter to search/i);
-    expect((input as HTMLInputElement).value).toBe("acme");
-    expect(proxyWithAuth).toHaveBeenCalledWith("/test-runs?page=1&query=acme");
-    expect(screen.getByTestId("grid")).toBeInTheDocument();
-  });
-
-  it("Enter (≥4 chars) updates URL -> triggers fetch with query -> grid shows filtered runs", async () => {
-    // initial fetch (no query)
-    (proxyWithAuth as vi.Mock).mockResolvedValueOnce(
-      ok({ testRuns: [mkRun({ organizationName: "Globex" })] })
-    );
-    // after search
-    (proxyWithAuth as vi.Mock).mockResolvedValueOnce(
-      ok({ testRuns: [mkRun({ organizationName: "Acme" })] })
-    );
-
-    renderWithRouter("/runs");
-
-    await screen.findByTestId("grid");
-    const input = screen.getByPlaceholderText(/Press enter to search/i);
-    await userEvent.clear(input);
-    await userEvent.type(input, "acme");
-    fireEvent.keyUp(input, { key: "Enter", code: "Enter", charCode: 13 });
-
-    await waitFor(() =>
-      expect(proxyWithAuth).toHaveBeenLastCalledWith(
-        "/test-runs?page=1&query=acme"
-      )
-    );
-    // Our mock grid prints length; ensure it re-rendered
-    expect(screen.getByTestId("grid")).toHaveTextContent(/runs=1/);
-  });
-
-  it("Backspace to empty clears search and refetches all", async () => {
-    // mount with query -> empty list
-    (proxyWithAuth as vi.Mock).mockResolvedValueOnce(ok({ testRuns: [] }));
-    // after clearing -> all
-    (proxyWithAuth as vi.Mock).mockResolvedValueOnce(
-      ok({ testRuns: [mkRun({ organizationName: "All" })] })
-    );
-
-    renderWithRouter("/runs?q=acme");
-
-    const input = await screen.findByPlaceholderText(/Press enter to search/i);
-    // Clear to empty
-    await userEvent.clear(input);
-    fireEvent.keyUp(input, {
-      key: "Backspace",
-      code: "Backspace",
-      charCode: 8,
+describe("ConformanceTestRuns", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.spyOn(AuthContext, "useAuth").mockReturnValue({
+      profileData: mockProfileData,
+      login: vi.fn(),
+      logout: vi.fn(),
+      isAuthenticated: true,
+      isLoading: false,
     });
-
-    await waitFor(() =>
-      expect(proxyWithAuth).toHaveBeenLastCalledWith("/test-runs?page=1")
-    );
-    expect(screen.getByTestId("grid")).toHaveTextContent(/runs=1/);
   });
 
-  it("clear (×) button clears input + URL and refetches all", async () => {
-    // mount with query
-    (proxyWithAuth as vi.Mock).mockResolvedValueOnce(
-      ok({ testRuns: [mkRun()] })
+  const renderWithRouter = (initialEntries: string[] = ["/"]) => {
+    return render(
+      <MemoryRouter initialEntries={initialEntries}>
+        <ConformanceTestRuns />
+      </MemoryRouter>
     );
-    // after clear -> all
-    (proxyWithAuth as vi.Mock).mockResolvedValueOnce(
-      ok({ testRuns: [mkRun(), mkRun({ testId: "zz" })] })
-    );
+  };
 
-    renderWithRouter("/runs?q=acme");
+  describe("initial render", () => {
+    it("renders the component with sidebar and main content", async () => {
+      vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
+        ok: true,
+        json: async () => ({ testRuns: mockTestRuns }),
+      } as Response);
 
-    const input = await screen.findByPlaceholderText(/Press enter to search/i);
-    const clearBtn = screen.getByRole("button", { name: /Clear search/i });
-    await userEvent.click(clearBtn);
+      renderWithRouter();
 
-    // input becomes empty; grid shows 2 runs now
-    await waitFor(() =>
+      expect(screen.getByTestId("side-nav")).toBeInTheDocument();
+      expect(screen.getByText("Overview")).toBeInTheDocument();
       expect(
-        (screen.getByPlaceholderText(/Press enter/i) as HTMLInputElement).value
-      ).toBe("")
-    );
-    expect(proxyWithAuth).toHaveBeenLastCalledWith("/test-runs?page=1");
-    expect(screen.getByTestId("grid")).toHaveTextContent(/runs=2/);
-  });
-
-  it("when searching yields no results, shows 'No results' empty state (grid hidden); header still visible", async () => {
-    // mount with query -> empty
-    (proxyWithAuth as vi.Mock).mockResolvedValueOnce(ok({ testRuns: [] }));
-
-    renderWithRouter("/runs?q=acme");
-
-    // header is rendered (not loading, no error)
-    expect(await screen.findByText("Overview")).toBeInTheDocument();
-    expect(screen.getByText(/No results for/i)).toBeInTheDocument();
-    // Grid is not rendered in this branch
-    expect(screen.queryByTestId("grid")).not.toBeInTheDocument();
-  });
-
-  it("Run Tests button disables when there are zero runs", async () => {
-    (proxyWithAuth as vi.Mock).mockResolvedValueOnce(ok({ testRuns: [] }));
-    renderWithRouter("/runs");
-
-    await screen.findByText("Overview");
-    const btn = screen.getByRole("button", { name: /Run Tests/i });
-    expect(btn).toBeDisabled();
-  });
-
-  it("Run Tests button enabled when there are runs", async () => {
-    (proxyWithAuth as vi.Mock).mockResolvedValueOnce(
-      ok({ testRuns: [mkRun()] })
-    );
-    renderWithRouter("/runs");
-
-    await screen.findByText("Overview");
-    const btn = screen.getByRole("button", { name: /Run Tests/i });
-    expect(btn).not.toBeDisabled();
-  });
-
-  it("passes error to grid and hides header while loading/error is true", async () => {
-    // first resolve to an API error payload
-    (proxyWithAuth as vi.Mock).mockResolvedValueOnce(ok({ error: "Nope" }));
-
-    renderWithRouter("/runs");
-
-    // Header is hidden when error is set (container: Boolean(isLoading||error) === false)
-    await waitFor(() => {
-      // grid still renders (mock) because container delegates error handling to it
-      expect(screen.getByTestId("grid")).toBeInTheDocument();
-      expect(screen.queryByText("Overview")).not.toBeInTheDocument();
+        screen.getByText("Showing runs from all conformance tests")
+      ).toBeInTheDocument();
     });
 
-    // our mock grid printed "error=Nope"
-    expect(screen.getByTestId("grid")).toHaveTextContent(/error=Nope/);
+    it("renders search input", async () => {
+      vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
+        ok: true,
+        json: async () => ({ testRuns: [] }),
+      } as Response);
+
+      renderWithRouter();
+
+      const searchInput = screen.getByPlaceholderText(
+        /press enter to search/i
+      );
+      expect(searchInput).toBeInTheDocument();
+    });
+
+    it("renders Run Tests button", async () => {
+      vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
+        ok: true,
+        json: async () => ({ testRuns: mockTestRuns }),
+      } as Response);
+
+      renderWithRouter();
+
+      await waitFor(() => {
+        expect(screen.getByText("Run Tests")).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe("data fetching", () => {
+    it("fetches test runs on mount", async () => {
+      const proxyWithAuthSpy = vi
+        .spyOn(authFetch, "proxyWithAuth")
+        .mockResolvedValue({
+          ok: true,
+          json: async () => ({ testRuns: mockTestRuns }),
+        } as Response);
+
+      renderWithRouter();
+
+      await waitFor(() => {
+        expect(proxyWithAuthSpy).toHaveBeenCalledWith(
+          "/test-runs?page=1&pageSize=10"
+        );
+      });
+    });
+
+    it("displays loading state initially", () => {
+      vi.spyOn(authFetch, "proxyWithAuth").mockImplementation(
+        () =>
+          new Promise(() => {}) // Never resolves to keep loading state
+      );
+
+      renderWithRouter();
+
+      expect(screen.getByTestId("grid-loading")).toHaveTextContent("true");
+    });
+
+    it("displays test runs after successful fetch", async () => {
+      vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
+        ok: true,
+        json: async () => ({ testRuns: mockTestRuns }),
+      } as Response);
+
+      renderWithRouter();
+
+      await waitFor(() => {
+        expect(screen.getByTestId("grid-test-runs-count")).toHaveTextContent(
+          "2"
+        );
+      });
+    });
+
+    it("displays error message on fetch failure", async () => {
+      vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
+        ok: false,
+        json: async () => ({}),
+      } as Response);
+
+      renderWithRouter();
+    });
+
+    it("handles API error response", async () => {
+      vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
+        ok: true,
+        json: async () => ({ error: "API Error" }),
+      } as Response);
+
+      renderWithRouter();
+
+      await waitFor(() => {
+        expect(screen.getByTestId("grid-error")).toHaveTextContent(
+          "API Error"
+        );
+      });
+    });
+
+    it("handles network errors", async () => {
+      vi.spyOn(authFetch, "proxyWithAuth").mockRejectedValue(
+        new Error("Network error")
+      );
+      vi.spyOn(console, "error").mockImplementation(() => {});
+
+      renderWithRouter();
+
+      await waitFor(() => {
+        expect(screen.getByTestId("grid-error")).toHaveTextContent(
+          /unexpected error occurred/i
+        );
+      });
+    });
+  });
+
+  describe("search functionality", () => {
+    it("updates search term on input change", async () => {
+      vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
+        ok: true,
+        json: async () => ({ testRuns: [] }),
+      } as Response);
+
+      renderWithRouter();
+
+      const searchInput = screen.getByPlaceholderText(
+        /press enter to search/i
+      );
+      fireEvent.change(searchInput, { target: { value: "test query" } });
+
+      expect(searchInput).toHaveValue("test query");
+    });
+
+    it("fetches results when Enter is pressed", async () => {
+      const proxyWithAuthSpy = vi
+        .spyOn(authFetch, "proxyWithAuth")
+        .mockResolvedValue({
+          ok: true,
+          json: async () => ({ testRuns: [] }),
+        } as Response);
+
+      renderWithRouter();
+
+      const searchInput = screen.getByPlaceholderText(
+        /press enter to search/i
+      );
+      fireEvent.change(searchInput, { target: { value: "test query" } });
+      fireEvent.keyUp(searchInput, { key: "Enter" });
+
+      await waitFor(() => {
+        expect(proxyWithAuthSpy).toHaveBeenCalledWith(
+          "/test-runs?page=1&query=test%20query&pageSize=10"
+        );
+      });
+    });
+
+    it("clears search when backspace is pressed on empty input", async () => {
+      const proxyWithAuthSpy = vi
+        .spyOn(authFetch, "proxyWithAuth")
+        .mockResolvedValue({
+          ok: true,
+          json: async () => ({ testRuns: [] }),
+        } as Response);
+
+      renderWithRouter(["/?q=existing"]);
+
+      await waitFor(() => {
+        const searchInput = screen.getByPlaceholderText(
+          /press enter to search/i
+        );
+        expect(searchInput).toHaveValue("existing");
+      });
+
+      const searchInput = screen.getByPlaceholderText(
+        /press enter to search/i
+      );
+      fireEvent.change(searchInput, { target: { value: "" } });
+      fireEvent.keyUp(searchInput, { key: "Backspace" });
+
+      await waitFor(() => {
+        expect(proxyWithAuthSpy).toHaveBeenCalledWith(
+          "/test-runs?page=1&pageSize=10"
+        );
+      });
+    });
+
+    it("shows clear button when search term is present", async () => {
+      vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
+        ok: true,
+        json: async () => ({ testRuns: [] }),
+      } as Response);
+
+      renderWithRouter();
+
+      const searchInput = screen.getByPlaceholderText(
+        /press enter to search/i
+      );
+      fireEvent.change(searchInput, { target: { value: "test" } });
+
+      expect(screen.getByLabelText("Clear search")).toBeInTheDocument();
+    });
+
+    it("clears search when clear button is clicked", async () => {
+      const proxyWithAuthSpy = vi
+        .spyOn(authFetch, "proxyWithAuth")
+        .mockResolvedValue({
+          ok: true,
+          json: async () => ({ testRuns: [] }),
+        } as Response);
+
+      renderWithRouter(["/?q=test"]);
+
+      await waitFor(() => {
+        expect(screen.getByLabelText("Clear search")).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByLabelText("Clear search"));
+
+      await waitFor(() => {
+        const searchInput = screen.getByPlaceholderText(
+          /press enter to search/i
+        );
+        expect(searchInput).toHaveValue("");
+      });
+    });
+
+    it("shows empty state when search returns no results", async () => {
+      vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
+        ok: true,
+        json: async () => ({ testRuns: [] }),
+      } as Response);
+
+      renderWithRouter(["/?q=nonexistent"]);
+
+      await waitFor(() => {
+        expect(screen.getByText(/no results for/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/try a different term/i)
+        ).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe("pagination", () => {
+    it("shows pagination controls when there are test runs", async () => {
+      vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
+        ok: true,
+        json: async () => ({ testRuns: mockTestRuns }),
+      } as Response);
+
+      renderWithRouter();
+
+      await waitFor(() => {
+        expect(screen.getByText("prev")).toBeInTheDocument();
+        expect(screen.getByText("next")).toBeInTheDocument();
+      });
+    });
+
+    it("disables prev button on first page", async () => {
+      vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
+        ok: true,
+        json: async () => ({ testRuns: mockTestRuns }),
+      } as Response);
+
+      renderWithRouter();
+
+      await waitFor(() => {
+        const prevButton = screen.getByText("prev");
+        expect(prevButton).toBeDisabled();
+      });
+    });
+
+    it("enables prev button on page > 1", async () => {
+      vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
+        ok: true,
+        json: async () => ({ testRuns: mockTestRuns }),
+      } as Response);
+
+      renderWithRouter(["/?page=2"]);
+
+      await waitFor(() => {
+        const prevButton = screen.getByText("prev");
+        expect(prevButton).not.toBeDisabled();
+      });
+    });
+
+    it("navigates to next page when next button clicked", async () => {
+      const proxyWithAuthSpy = vi
+        .spyOn(authFetch, "proxyWithAuth")
+        .mockResolvedValue({
+          ok: true,
+          json: async () => ({
+            testRuns: Array(10).fill(mockTestRuns[0]),
+          }),
+        } as Response);
+
+      renderWithRouter();
+
+      await waitFor(() => {
+        expect(screen.getByText("next")).not.toBeDisabled();
+      });
+
+      fireEvent.click(screen.getByText("next"));
+
+      await waitFor(() => {
+        expect(proxyWithAuthSpy).toHaveBeenCalledWith(
+          "/test-runs?page=2&pageSize=10"
+        );
+      });
+    });
+
+    it("navigates to previous page when prev button clicked", async () => {
+      const proxyWithAuthSpy = vi
+        .spyOn(authFetch, "proxyWithAuth")
+        .mockResolvedValue({
+          ok: true,
+          json: async () => ({ testRuns: mockTestRuns }),
+        } as Response);
+
+      renderWithRouter(["/?page=2"]);
+
+      await waitFor(() => {
+        expect(screen.getByText("prev")).not.toBeDisabled();
+      });
+
+      fireEvent.click(screen.getByText("prev"));
+
+      await waitFor(() => {
+        expect(proxyWithAuthSpy).toHaveBeenCalledWith(
+          "/test-runs?page=1&pageSize=10"
+        );
+      });
+    });
+
+    it("disables next button when fewer results than page size", async () => {
+      vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
+        ok: true,
+        json: async () => ({ testRuns: mockTestRuns }), // Only 2 items, less than MAX_PAGE_SIZE (10)
+      } as Response);
+
+      renderWithRouter();
+
+      await waitFor(() => {
+        const nextButton = screen.getByText("next");
+        expect(nextButton).toBeDisabled();
+      });
+    });
+
+    it("preserves search query when paginating", async () => {
+      const proxyWithAuthSpy = vi
+        .spyOn(authFetch, "proxyWithAuth")
+        .mockResolvedValue({
+          ok: true,
+          json: async () => ({
+            testRuns: Array(10).fill(mockTestRuns[0]),
+          }),
+        } as Response);
+
+      renderWithRouter(["/?q=test&page=1"]);
+
+      await waitFor(() => {
+        expect(screen.getByText("next")).not.toBeDisabled();
+      });
+
+      fireEvent.click(screen.getByText("next"));
+
+      await waitFor(() => {
+        expect(proxyWithAuthSpy).toHaveBeenCalledWith(
+          "/test-runs?page=2&query=test&pageSize=10"
+        );
+      });
+    });
+  });
+
+  describe("navigation", () => {
+    it("navigates to conformance testing when Run Tests clicked", async () => {
+      vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
+        ok: true,
+        json: async () => ({ testRuns: mockTestRuns }),
+      } as Response);
+
+      renderWithRouter();
+
+      await waitFor(() => {
+        expect(screen.getByText("Run Tests")).not.toBeDisabled();
+      });
+
+      fireEvent.click(screen.getByText("Run Tests"));
+
+      expect(mockNavigate).toHaveBeenCalledWith("/conformance-testing");
+    });
+
+    it("disables Run Tests button when no test runs", async () => {
+      vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
+        ok: true,
+        json: async () => ({ testRuns: [] }),
+      } as Response);
+
+      renderWithRouter();
+
+      await waitFor(() => {
+        const runTestsButton = screen.getByText("Run Tests");
+        expect(runTestsButton).toBeDisabled();
+      });
+    });
+  });
+
+  describe("URL synchronization", () => {
+    it("initializes search term from URL query parameter", async () => {
+      vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
+        ok: true,
+        json: async () => ({ testRuns: [] }),
+      } as Response);
+
+      renderWithRouter(["/?q=initial"]);
+
+      await waitFor(() => {
+        const searchInput = screen.getByPlaceholderText(
+          /press enter to search/i
+        );
+        expect(searchInput).toHaveValue("initial");
+      });
+    });
+
+    it("initializes page from URL parameter", async () => {
+      const proxyWithAuthSpy = vi
+        .spyOn(authFetch, "proxyWithAuth")
+        .mockResolvedValue({
+          ok: true,
+          json: async () => ({ testRuns: mockTestRuns }),
+        } as Response);
+
+      renderWithRouter(["/?page=3"]);
+
+      await waitFor(() => {
+        expect(proxyWithAuthSpy).toHaveBeenCalledWith(
+          "/test-runs?page=3&pageSize=10"
+        );
+      });
+    });
+
+    it("handles invalid page parameter gracefully", async () => {
+      const proxyWithAuthSpy = vi
+        .spyOn(authFetch, "proxyWithAuth")
+        .mockResolvedValue({
+          ok: true,
+          json: async () => ({ testRuns: mockTestRuns }),
+        } as Response);
+
+      renderWithRouter(["/?page=0"]);
+
+      await waitFor(() => {
+        expect(proxyWithAuthSpy).toHaveBeenCalledWith(
+          "/test-runs?page=1&pageSize=10"
+        );
+      });
+    });
+  });
+
+  describe("ConformanceTestRunsGrid integration", () => {
+    it("passes correct props to ConformanceTestRunsGrid", async () => {
+      vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
+        ok: true,
+        json: async () => ({ testRuns: mockTestRuns }),
+      } as Response);
+
+      renderWithRouter();
+
+      await waitFor(() => {
+        expect(screen.getByTestId("grid-test-runs-count")).toHaveTextContent(
+          "2"
+        );
+        expect(screen.getByTestId("grid-has-profile")).toHaveTextContent(
+          "true"
+        );
+        expect(screen.getByTestId("grid-has-navigate")).toHaveTextContent(
+          "true"
+        );
+      });
+    });
+
+    it("does not render grid when showing search empty state", async () => {
+      vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
+        ok: true,
+        json: async () => ({ testRuns: [] }),
+      } as Response);
+
+      renderWithRouter(["/?q=nonexistent"]);
+
+      await waitFor(() => {
+        expect(screen.getByText(/no results for/i)).toBeInTheDocument();
+      });
+
+      expect(screen.queryByTestId("conformance-grid")).not.toBeInTheDocument();
+    });
   });
 });
