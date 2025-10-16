@@ -95,6 +95,7 @@ const ForgotPasswordPage: React.FC = () => {
               justifyContent: "center",
             }}
           >
+{/* [Content> */}
             {status === "success" ? (
               <Box>
                 <h2 style={{ marginBottom: "20px", color: "#0A0552" }}>
@@ -239,6 +240,7 @@ const ForgotPasswordPage: React.FC = () => {
                 </p>
               </>
             )}
+{/* <Content] */}
           </Box>
         </Box>
       </Box>

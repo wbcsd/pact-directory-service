@@ -122,6 +122,7 @@ const SignupPage: React.FC = () => {
           <Box
             style={{ maxWidth: "400px", margin: "0 auto", paddingTop: "40px" }}
           >
+{/* [Content> */}
             {status === "success" ? (
               <>
                 <h2 style={{ marginBottom: "30px" }}>
@@ -542,6 +543,7 @@ const SignupPage: React.FC = () => {
                 )}
               </>
             )}
+{/* <Content] */}
           </Box>
         </Box>
       </Box>

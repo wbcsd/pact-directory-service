@@ -96,6 +96,7 @@ const ResendVerificationPage: React.FC = () => {
               justifyContent: "center",
             }}
           >
+{/* [Content> */}
             {status === "success" ? (
               <Box>
                 <h2 style={{ marginBottom: "20px", color: "#0A0552" }}>
@@ -238,6 +239,7 @@ const ResendVerificationPage: React.FC = () => {
                 </p>
               </>
             )}
+{/* <Content] */}
           </Box>
         </Box>
       </Box>

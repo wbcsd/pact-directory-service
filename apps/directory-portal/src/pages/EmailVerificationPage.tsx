@@ -103,6 +103,7 @@ const EmailVerificationPage: React.FC = () => {
               justifyContent: "center",
             }}
           >
+{/* [Content> */}
             {status === "verifying" && (
               <Box style={{ textAlign: "center" }}>
                 <h2 style={{ marginBottom: "20px" }}>Verifying Email...</h2>
@@ -185,7 +186,6 @@ const EmailVerificationPage: React.FC = () => {
                 </Box>
               </Box>
             )}
-
             <p style={{ fontSize: "0.9em", marginTop: "40px", textAlign: "center" }}>
               Need help? Contact us at:{" "}
               <a
@@ -195,6 +195,7 @@ const EmailVerificationPage: React.FC = () => {
                 pact-support@wbcsd.org
               </a>
             </p>
+{/* <Content] */}
           </Box>
         </Box>
       </Box>
