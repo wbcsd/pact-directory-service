@@ -308,13 +308,6 @@ describe("ConformanceTestRuns", () => {
     });
 
     it("clears search when clear button is clicked", async () => {
-      const proxyWithAuthSpy = vi
-        .spyOn(authFetch, "proxyWithAuth")
-        .mockResolvedValue({
-          ok: true,
-          json: async () => ({ testRuns: [] }),
-        } as Response);
-
       renderWithRouter(["/?q=test"]);
 
       await waitFor(() => {
