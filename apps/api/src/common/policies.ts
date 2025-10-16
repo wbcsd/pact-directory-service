@@ -12,14 +12,17 @@ export enum Role {
 /**
  * Registers a new policy by adding it to the global policies list.
  */
-export function registerPolicy(role: Role, policy: string) {
-  if (!POLICIES.has(role)) {
-    POLICIES.set(role, []);
-  }
-  const policies = POLICIES.get(role);
-  if (policies && !policies.includes(policy)) {
-    policies.push(policy);
-  }
+export function registerPolicy(roles: Role[], policy: string) {
+  roles.forEach((role) => {
+    if (!POLICIES.has(role)) {
+      POLICIES.set(role, []);
+    }
+    const policies = POLICIES.get(role);
+    if (policies && !policies.includes(policy)) {
+      policies.push(policy);
+      POLICIES.set(role, policies);
+    }
+  });
 }
 
 /**

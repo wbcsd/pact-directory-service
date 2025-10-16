@@ -7,12 +7,12 @@ import { EmailService } from './email-service';
 import config from '@src/common/config';
 
 // Register all policies used in this service
-registerPolicy(Role.ADMINISTRATOR, 'view-connections-own-organization');
-registerPolicy(Role.ADMINISTRATOR, 'view-connections-all-organizations');
-registerPolicy(Role.ADMINISTRATOR, 'view-own-organizations');
-registerPolicy(Role.ADMINISTRATOR, 'edit-own-organizations');
-registerPolicy(Role.ADMINISTRATOR, 'view-all-organizations');
-registerPolicy(Role.ADMINISTRATOR, 'edit-all-organizations');
+registerPolicy([Role.ADMINISTRATOR, Role.ROOT], 'view-connections-own-organization');
+registerPolicy([Role.ADMINISTRATOR, Role.ROOT], 'view-connections-all-organizations');
+registerPolicy([Role.ADMINISTRATOR, Role.ROOT], 'view-own-organizations');
+registerPolicy([Role.ADMINISTRATOR, Role.ROOT], 'edit-own-organizations');
+registerPolicy([Role.ADMINISTRATOR, Role.ROOT], 'view-all-organizations');
+registerPolicy([Role.ADMINISTRATOR, Role.ROOT], 'edit-all-organizations');
 
 export interface OrganizationData {
   id: number;

@@ -16,9 +16,9 @@ import {
   Role,
 } from '@src/common/policies';
 
-registerPolicy(Role.ADMINISTRATOR, 'view-users');
-registerPolicy(Role.ADMINISTRATOR, 'edit-users');
-registerPolicy(Role.ADMINISTRATOR, 'add-users');
+registerPolicy([Role.ADMINISTRATOR, Role.ROOT], 'view-users');
+registerPolicy([Role.ADMINISTRATOR, Role.ROOT], 'edit-users');
+registerPolicy([Role.ADMINISTRATOR, Role.ROOT], 'add-users');
 
 export interface UserContext {
   userId: number;
