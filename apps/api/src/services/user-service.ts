@@ -274,7 +274,7 @@ export class UserService {
     checkAccess(
       context,
       [],
-      context.userId === id || context.role === 'administrator'
+      context.userId === id || context.role === Role.ADMINISTRATOR
     );
 
     const user = await this.db

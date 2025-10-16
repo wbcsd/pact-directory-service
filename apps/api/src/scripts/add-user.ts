@@ -1,8 +1,18 @@
 import bcrypt from 'bcrypt';
 import { db } from '@src/database/db';
+import { Role } from '@src/common/policies';
 
 async function main() {
-  const [, , email, fullName, password, role, organizationUri, organizationName] = process.argv;
+  const [
+    ,
+    ,
+    email,
+    fullName,
+    password,
+    role,
+    organizationUri,
+    organizationName,
+  ] = process.argv;
 
   if (
     !email ||
@@ -70,7 +80,8 @@ async function main() {
         email,
         password: hashedPassword,
         status: 'enabled',
-        role: role !== 'administrator' ? 'user' : role,
+        role:
+          (role as Role) !== Role.ADMINISTRATOR ? Role.USER : (role as Role),
         organizationId: organization.id,
       })
       .executeTakeFirstOrThrow();
@@ -78,7 +89,7 @@ async function main() {
     console.info(`User ${email} added to organization ${organizationName}.`);
   } catch (error) {
     console.error('Error', error);
-     
+
     process.exit(1);
   } finally {
     await db.destroy();

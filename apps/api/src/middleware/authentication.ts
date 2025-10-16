@@ -6,7 +6,6 @@ import { UnauthorizedError } from '@src/common/errors';
 import { UserContext } from '@src/services/user-service';
 
 export function authenticate(req: Request, res: Response, next: NextFunction) {
-
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer '))
     throw new UnauthorizedError('Missing token');
@@ -15,15 +14,15 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
   try {
     const user = jwt.verify(token, config.JWT_SECRET) as UserContext;
 
-    if (user.role === 'unverified') {
+    if (user.status === 'unverified') {
       throw new UnauthorizedError('Email not verified');
     }
 
-    if (user.role === 'deleted') {
+    if (user.status === 'deleted') {
       throw new UnauthorizedError('Account deleted');
     }
 
-    if (user.role === 'disabled') {
+    if (user.status === 'disabled') {
       throw new UnauthorizedError('Account disabled');
     }
 
@@ -33,4 +32,4 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
     logger.error(error);
     throw new UnauthorizedError('Invalid token');
   }
-};
+}
