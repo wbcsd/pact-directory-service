@@ -17,6 +17,7 @@ import {
   CheckIcon,
 } from "@radix-ui/react-icons";
 import HeroImage from "../assets/providers-header.webp";
+import useBodyOverflow from "../utils/use-body-overflow";
 
 const SignupPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -31,6 +32,8 @@ const SignupPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState("");
 
   const [creatingAccount, setCreatingAccount] = useState(false);
+
+  useBodyOverflow(false);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
