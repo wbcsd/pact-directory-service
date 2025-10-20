@@ -1,5 +1,5 @@
 // src/pages/LoginPage.tsx
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import * as Form from "@radix-ui/react-form";
 import { Box, Button, TextField, Callout } from "@radix-ui/themes";
 import { useNavigate, Link } from "react-router-dom";
