@@ -101,8 +101,8 @@ const EditUserPage: React.FC = () => {
         setStatus("success");
       } else {
         const errorResponse = await response!.json();
-        if (errorResponse.error) {
-          setErrorMessage(errorResponse.error);
+        if (errorResponse.message) {
+          setErrorMessage(errorResponse.message);
         }
         setStatus("error");
       }
