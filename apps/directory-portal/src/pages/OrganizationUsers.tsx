@@ -79,7 +79,7 @@ const OrganizationUsers: React.FC = () => {
     },
     {
       key: "email",
-      header: "E-Mail",
+      header: "Email",
       sortable: true,
       sortValue: (row: User) => row.email,
       render: (row: User) => row.email,
