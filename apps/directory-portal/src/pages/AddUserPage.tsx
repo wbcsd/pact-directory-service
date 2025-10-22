@@ -111,7 +111,7 @@ const AddUserPage: React.FC = () => {
         </div>
         <div>
           <Box className="form-container">
-            <Form.Root onSubmit={handleSubmit}>
+            <Form.Root autoComplete="off" onSubmit={handleSubmit}>
               {/* Email Field */}
               <Form.Field name="email">
                 <Form.Label className="field-label">
@@ -119,6 +119,7 @@ const AddUserPage: React.FC = () => {
                 </Form.Label>
                 <Form.Control asChild>
                   <TextField.Root
+                    autoComplete="off"
                     value={formData.email}
                     required
                     type="email"
@@ -171,6 +172,7 @@ const AddUserPage: React.FC = () => {
                 </Form.Label>
                 <Form.Control asChild>
                   <TextField.Root
+                    autoComplete="off"
                     value={formData.fullName}
                     required
                     placeholder="Enter full name"
@@ -249,6 +251,7 @@ const AddUserPage: React.FC = () => {
                 </Form.Label>
                 <Form.Control asChild>
                   <TextField.Root
+                    autoComplete="off"
                     value={formData.password}
                     required
                     type="password"
@@ -295,6 +298,7 @@ const AddUserPage: React.FC = () => {
                 </Form.Label>
                 <Form.Control asChild>
                   <TextField.Root
+                    autoComplete="off"
                     value={formData.confirmPassword}
                     required
                     type="password"
