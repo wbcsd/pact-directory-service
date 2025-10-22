@@ -92,9 +92,10 @@
 }
 
 .test-box-actions {
-  display: flex;
+  display: flex !important;
   align-items: center;
-  flex-direction: column;
+  justify-content: flex-end;
+  flex-direction: row;
   gap: 8px;
 }
 
