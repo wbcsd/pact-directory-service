@@ -272,6 +272,7 @@ export class OrganizationService {
       const adminCount = await this.db
         .selectFrom('users')
         .where('organizationId', '=', organizationId)
+        .where('status', '=', 'enabled')
         .where('role', '=', Role.Administrator)
         .select(['id'])
         .execute();
