@@ -75,8 +75,8 @@ const AddUserPage: React.FC = () => {
         }, 2000);
       } else {
         const errorResponse = await response!.json();
-        if (errorResponse.error) {
-          setErrorMessage(errorResponse.error);
+        if (errorResponse.message) {
+          setErrorMessage(errorResponse.message);
         } else {
           setErrorMessage("Failed to create user");
         }
