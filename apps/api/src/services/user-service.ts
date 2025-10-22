@@ -19,6 +19,9 @@ import {
 registerPolicy([Role.Administrator, Role.Root], 'view-users');
 registerPolicy([Role.Administrator, Role.Root], 'edit-users');
 registerPolicy([Role.Administrator, Role.Root], 'add-users');
+registerPolicy([Role.Root], 'view-all-users');
+registerPolicy([Role.Root], 'edit-all-users');
+registerPolicy([Role.Root], 'add-all-users');
 
 export interface UserContext {
   userId: number;
