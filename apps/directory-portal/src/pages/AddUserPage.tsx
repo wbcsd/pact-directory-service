@@ -27,7 +27,6 @@ const AddUserPage: React.FC = () => {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-    role: "",
     password: "",
     confirmPassword: "",
   });
@@ -75,8 +74,8 @@ const AddUserPage: React.FC = () => {
         }, 2000);
       } else {
         const errorResponse = await response!.json();
-        if (errorResponse.error) {
-          setErrorMessage(errorResponse.error);
+        if (errorResponse.message) {
+          setErrorMessage(errorResponse.message);
         } else {
           setErrorMessage("Failed to create user");
         }
@@ -93,10 +92,6 @@ const AddUserPage: React.FC = () => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
-
-  const handleRoleChange = (value: string) => {
-    setFormData((prevData) => ({ ...prevData, role: value }));
   };
 
   return (
@@ -208,39 +203,6 @@ const AddUserPage: React.FC = () => {
                   Full name is required.
                 </Form.Message>
               </Form.Field>
-
-              {/* Role Field */}
-              <Box className="form-field">
-                <Text className="field-label">
-                  Role<span className="required-asterisk">*</span>
-                </Text>
-                <Select.Root
-                  value={formData.role}
-                  onValueChange={handleRoleChange}
-                >
-                  <Select.Trigger className="select-trigger">
-                    <Select.Value placeholder="Select a role" />
-                    <Select.Icon>
-                      <ChevronDownIcon />
-                    </Select.Icon>
-                  </Select.Trigger>
-                  <Select.Portal>
-                    <Select.Content className="select-content">
-                      <Select.Viewport>
-                        <Select.Item
-                          value="administrator"
-                          className="select-item"
-                        >
-                          <Select.ItemText>Administrator</Select.ItemText>
-                        </Select.Item>
-                        <Select.Item value="user" className="select-item">
-                          <Select.ItemText>User</Select.ItemText>
-                        </Select.Item>
-                      </Select.Viewport>
-                    </Select.Content>
-                  </Select.Portal>
-                </Select.Root>
-              </Box>
 
               {/* Password Field */}
               <Form.Field name="password">
