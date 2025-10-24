@@ -123,6 +123,18 @@ export interface ResendVerificationData {
   email: string;
 }
 
+export interface SetPasswordData {
+  token: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export interface AddUserWithTokenData {
+  fullName: string;
+  email: string;
+  role: Role;
+}
+
 export class UserService {
   // TODO: Remove
 
@@ -130,6 +142,57 @@ export class UserService {
     private db: Kysely<Database>,
     private emailService: EmailService
   ) {}
+
+  /**
+ * Generate and send password setup token for admin-created users
+ * 
+ * This method generates a secure token that allows a user to set their password
+ * for the first time. It follows a state machine pattern:
+ * - Token starts in 'generated' state
+ * - Can transition to 'used' (when password is set) or 'expired'
+ * - Once used or expired, token cannot be reused
+ * 
+ * @param userId - The ID of the user who needs to set their password
+ * @param email - The user's email address
+ * @param fullName - The user's full name
+ * @param organizationName - The name of the organization
+ */
+  private async generateAndSendPasswordSetupToken(
+    userId: number,
+    email: string,
+    fullName: string,
+    organizationName: string
+  ): Promise<void> {
+    // Generate cryptographically secure token
+    const token = crypto.randomBytes(32).toString('hex');
+    
+    // Set expiration (e.g., 72 hours from now)
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 72);
+
+    // Store token in database with 'generated' status
+    await this.db
+      .insertInto('password_setup_tokens')
+      .values({
+        userId,
+        token,
+        status: 'generated',
+        createdAt: new Date(),
+        expiresAt,
+      })
+      .execute();
+
+    // Generate setup URL
+    const setupUrl = `${config.FRONTEND_URL}/set-password/${token}`;
+
+    // Send password setup email
+    await this.emailService.sendPasswordSetupEmail({
+      to: email,
+      name: fullName,
+      organizationName,
+      setupUrl,
+    });
+  }
 
   /**
    * Helper function to check if email verification token has expired
@@ -718,6 +781,83 @@ export class UserService {
     return {
       valid: true,
       message: 'Token is valid',
+    };
+  }
+
+  /**
+ * NEW METHOD: Adds a new user to an organization WITHOUT requiring a password upfront
+ * 
+ * Admin creates the user without a password. The user receives an email
+ * with a token to set their own password. This is an ALTERNATIVE to the 
+ * existing addUserToOrganization method.
+ * 
+ * @param context - The admin user's context
+ * @param organizationId - The ID of the organization to add the user to
+ * @param data - The user data (no password required)
+ * @returns A promise with success message and user ID
+ */
+  async addUserToOrganizationWithToken(
+    context: UserContext, 
+    organizationId: number, 
+    data: AddUserWithTokenData
+  ): Promise<{ message: string; userId: number }> {
+    
+    // Check if user has permission to add users to this organization
+    checkAccess(
+      context, 
+      'add-users', 
+      context.organizationId === organizationId || context.role === Role.Administrator
+    );
+
+    // Check if email already exists
+    const emailExists = await this.db
+      .selectFrom('users')
+      .where('email', '=', data.email)
+      .executeTakeFirst();
+
+    if (emailExists) {
+      throw new BadRequestError('Email already in use.');
+    }
+
+    // Verify organization exists
+    const organization = await this.db
+      .selectFrom('organizations')
+      .select(['id', 'name'])
+      .where('id', '=', organizationId)
+      .executeTakeFirst();
+
+    if (!organization) {
+      throw new NotFoundError('Organization not found');
+    }
+
+    // Create user WITHOUT a password - they'll set it via token
+    // Using a placeholder password that cannot be used for login
+    const placeholderPassword = await bcrypt.hash(crypto.randomBytes(32).toString('hex'), 10);
+    
+    const user = await this.db
+      .insertInto('users')
+      .values({
+        fullName: data.fullName,
+        email: data.email,
+        role: data.role,
+        password: placeholderPassword, // Placeholder - user must set via token
+        organizationId: organizationId,
+        status: 'unverified', // Status remains unverified until password is set
+      })
+      .returningAll()
+      .executeTakeFirstOrThrow();
+
+    // Generate and send password setup token
+    await this.generateAndSendPasswordSetupToken(
+      user.id,
+      user.email,
+      user.fullName,
+      organization.name
+    );
+
+    return {
+      message: 'User created successfully. They will receive an email to set their password.',
+      userId: user.id
     };
   }
 
