@@ -138,10 +138,13 @@ export interface AddUserWithTokenData {
 export class UserService {
   // TODO: Remove
 
+  private readonly PASSWORD_SETUP_TOKEN_EXPIRATION = 72;
+
   constructor(
     private db: Kysely<Database>,
     private emailService: EmailService
   ) {}
+
 
   /**
  * Generate and send password setup token for admin-created users
@@ -168,7 +171,7 @@ export class UserService {
     
     // Set expiration (e.g., 72 hours from now)
     const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 72);
+    expiresAt.setHours(expiresAt.getHours() + this.PASSWORD_SETUP_TOKEN_EXPIRATION);
 
     // Store token in database with 'generated' status
     await this.db
@@ -210,7 +213,7 @@ export class UserService {
     valid: boolean; 
     userId: number;
     email: string;
-  }> {
+  }> {  
     if (!token || typeof token !== 'string') {
       throw new BadRequestError('Token is required');
     }
