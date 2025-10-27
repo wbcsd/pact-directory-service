@@ -195,6 +195,141 @@ export class UserService {
   }
 
   /**
+   * Verify password setup token
+   * 
+   * Checks if a token is valid for setting a password:
+   * - Token must exist
+   * - Status must be 'generated' (not already used)
+   * - Must not be expired
+   * 
+   * @param token - The password setup token to verify
+   * @returns Object indicating if token is valid
+   * @throws {BadRequestError} If token is invalid, already used, or expired
+   */
+  async verifyPasswordSetupToken(token: string): Promise<{ 
+    valid: boolean; 
+    userId: number;
+    email: string;
+  }> {
+    if (!token || typeof token !== 'string') {
+      throw new BadRequestError('Token is required');
+    }
+
+    // Find token with user information
+    const tokenRecord = await this.db
+      .selectFrom('password_setup_tokens')
+      .innerJoin('users', 'password_setup_tokens.userId', 'users.id')
+      .select([
+        'password_setup_tokens.userId',
+        'password_setup_tokens.status',
+        'password_setup_tokens.expiresAt',
+        'users.email'
+      ])
+      .where('password_setup_tokens.token', '=', token)
+      .executeTakeFirst();
+
+    if (!tokenRecord) {
+      throw new BadRequestError('Invalid setup token');
+    }
+
+    // Check if token is already used
+    if (tokenRecord.status === 'used') {
+      throw new BadRequestError('This setup link has already been used');
+    }
+
+    // Check if token is expired
+    if (tokenRecord.status === 'expired' || new Date() > tokenRecord.expiresAt) {
+      // Mark as expired if not already
+      if (tokenRecord.status !== 'expired') {
+        await this.db
+          .updateTable('password_setup_tokens')
+          .set({ status: 'expired' })
+          .where('token', '=', token)
+          .execute();
+      }
+      throw new BadRequestError('Setup link has expired');
+    }
+
+    return {
+      valid: true,
+      userId: tokenRecord.userId,
+      email: tokenRecord.email
+    };
+  }
+
+
+  /**
+ * NEW METHOD: Set password using setup token
+ * 
+ * Allows a user to set their password for the first time using a valid token.
+ * This is the final step in the admin-created user flow.
+ * 
+ * State transition: 'generated' → 'used'
+ * 
+ * @param data - Object containing token and password
+ * @returns Success message
+ * @throws {BadRequestError} If validation fails or token is invalid
+ */
+  async setPasswordWithToken(data: SetPasswordData): Promise<{ message: string }> {
+    const { token, password, confirmPassword } = data;
+
+    // Validate input
+    if (!token || typeof token !== 'string') {
+      throw new BadRequestError('Token is required');
+    }
+
+    if (!password || typeof password !== 'string') {
+      throw new BadRequestError('Password is required');
+    }
+
+    if (!confirmPassword || typeof confirmPassword !== 'string') {
+      throw new BadRequestError('Password confirmation is required');
+    }
+
+    if (password !== confirmPassword) {
+      throw new BadRequestError('Passwords do not match');
+    }
+
+    if (password.length < 6) {
+      throw new BadRequestError('Password must be at least 6 characters long');
+    }
+
+    // Verify token is valid and get user ID
+    const { userId } = await this.verifyPasswordSetupToken(token);
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Use transaction to ensure atomicity
+    await this.db.transaction().execute(async (trx) => {
+      // Update user password and status
+      await trx
+        .updateTable('users')
+        .set({ 
+          password: hashedPassword,
+          status: 'enabled' // Activate the account
+        })
+        .where('id', '=', userId)
+        .execute();
+
+      // Mark token as used (state transition: generated → used)
+      await trx
+        .updateTable('password_setup_tokens')
+        .set({ 
+          status: 'used',
+          usedAt: new Date()
+        })
+        .where('token', '=', token)
+        .execute();
+    });
+
+    return { 
+      message: 'Password has been set successfully. You can now log in.' 
+    };
+  }
+
+
+  /**
    * Helper function to check if email verification token has expired
    */
   private isVerificationTokenExpired(sentAt: Date | null): boolean {

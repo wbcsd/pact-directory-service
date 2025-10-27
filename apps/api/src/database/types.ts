@@ -10,6 +10,7 @@ export interface Database {
   connection_requests: ConnectionRequestTable;
   connections: ConnectionTable;
   password_reset_tokens: PasswordResetTokenTable;
+  password_setup_tokens: PasswordSetupTokenTable;
 }
 
 export interface OrganizationsTable {
@@ -75,5 +76,15 @@ export interface PasswordResetTokenTable {
   token: string;
   expiresAt: Date;
   createdAt: Date;
+  usedAt: Date | null;
+}
+
+export interface PasswordSetupTokenTable {
+  id: Generated<number>;
+  userId: number;
+  token: string;
+  status: 'generated' | 'used' | 'expired';
+  createdAt: Date;
+  expiresAt: Date;
   usedAt: Date | null;
 }
