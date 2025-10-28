@@ -79,10 +79,11 @@ components:
     ResetPasswordRequest:
       type: object
       properties:
+        email: { type: string, format: email }
         token: { type: string }
         password: { type: string, minLength: 6 }
         confirmPassword: { type: string, minLength: 6 }
-      required: [token, password, confirmPassword]
+      required: [email, token, password, confirmPassword]
     VerifyResetTokenResponse:
       type: object
       properties:
