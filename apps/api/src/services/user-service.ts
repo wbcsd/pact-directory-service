@@ -163,10 +163,13 @@ export class UserService {
       throw new BadRequestError('Passwords do not match');
     }
 
+    // Normalize email: trim and lowercase
+    const normalizedEmail = data.email.trim().toLowerCase();
+
     // Check if email already exists
     const emailExists = await this.db
       .selectFrom('users')
-      .where('email', '=', data.email)
+      .where('email', '=', normalizedEmail)
       .executeTakeFirst();
 
     if (emailExists) {
@@ -192,7 +195,7 @@ export class UserService {
         .insertInto('users')
         .values({
           fullName: data.fullName,
-          email: data.email,
+          email: normalizedEmail,
           role: Role.User,
           password: hashedPassword,
           organizationId: organization.id,
@@ -228,10 +231,13 @@ export class UserService {
    * @throws UnauthorizedError If the email or password is incorrect.
    */
   async login(data: LoginData): Promise<UserContext> {
+    // Normalize email: trim and lowercase
+    const normalizedEmail = data.email.trim().toLowerCase();
+
     const user = await this.db
       .selectFrom('users')
       .selectAll()
-      .where('email', '=', data.email)
+      .where('email', '=', normalizedEmail)
       .executeTakeFirst();
       
     if (!user) {
@@ -752,10 +758,13 @@ export class UserService {
       throw new BadRequestError('Passwords do not match');
     }
 
+    // Normalize email: trim and lowercase
+    const normalizedEmail = data.email.trim().toLowerCase();
+
     // Check if email already exists
     const emailExists = await this.db
       .selectFrom('users')
-      .where('email', '=', data.email)
+      .where('email', '=', normalizedEmail)
       .executeTakeFirst();
 
     if (emailExists) {
@@ -781,7 +790,7 @@ export class UserService {
       .insertInto('users')
       .values({
         fullName: data.fullName,
-        email: data.email,
+        email: normalizedEmail,
         role: data.role,
         password: hashedPassword,
         organizationId: organizationId,

@@ -52,7 +52,7 @@ async function main() {
     const userExists = await db
       .selectFrom('users')
       .selectAll()
-      .where('email', '=', email)
+      .where('email', '=', email.trim().toLowerCase())
       .executeTakeFirst();
 
     if (userExists) {
@@ -68,7 +68,7 @@ async function main() {
       .insertInto('users')
       .values({
         fullName,
-        email,
+        email: email.trim().toLowerCase(),
         password: hashedPassword,
         status: 'enabled',
         role: (role as Role) !== Role.Administrator ? Role.User : (role as Role),

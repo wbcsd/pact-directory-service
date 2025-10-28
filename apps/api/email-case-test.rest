@@ -1,0 +1,74 @@
+@baseUrl = http://localhost:3010/api
+@testEmail = test@example.com
+@testEmailMixedCase = Test@example.COM
+@testEmailUpperCase = TEST@EXAMPLE.COM
+@testEmailSpaces =   Test@example.com  
+@password = testPassword123
+@organizationName = Test Organization
+
+### Test 1: Signup with mixed case email (should be stored as lowercase)
+POST {{baseUrl}}/directory/users/signup
+Content-Type: application/json
+
+{
+  "organizationName": "{{organizationName}}",
+  "fullName": "Test User",
+  "email": "{{testEmailMixedCase}}",
+  "password": "{{password}}",
+  "confirmPassword": "{{password}}"
+}
+
+### Test 2: Login with uppercase email (should find the lowercase account)
+POST {{baseUrl}}/directory/users/login
+Content-Type: application/json
+
+{
+  "email": "{{testEmailUpperCase}}",
+  "password": "{{password}}"
+}
+
+### Test 3: Login with email containing spaces (should trim and find account)
+POST {{baseUrl}}/directory/users/login
+Content-Type: application/json
+
+{
+  "email": "{{testEmailSpaces}}",
+  "password": "{{password}}"
+}
+
+### Test 4: Forgot password with mixed case email
+POST {{baseUrl}}/directory/users/forgot-password
+Content-Type: application/json
+
+{
+  "email": "{{testEmailMixedCase}}"
+}
+
+### Test 5: Resend verification with uppercase email
+POST {{baseUrl}}/directory/users/resend-verification
+Content-Type: application/json
+
+{
+  "email": "{{testEmailUpperCase}}"
+}
+
+### Test 6: Try to signup again with different case (should fail - email already in use)
+POST {{baseUrl}}/directory/users/signup
+Content-Type: application/json
+
+{
+  "organizationName": "Another Organization",
+  "fullName": "Another User",
+  "email": "TEST@EXAMPLE.COM",
+  "password": "anotherPassword123",
+  "confirmPassword": "anotherPassword123"
+}
+
+###
+# Expected Results:
+# - Test 1: Should create account with email stored as "test@example.com" (lowercase)
+# - Test 2: Should successfully login and return token
+# - Test 3: Should successfully login after trimming spaces and lowercasing
+# - Test 4: Should send password reset email
+# - Test 5: Should send verification email
+# - Test 6: Should fail with "Email already in use" error
