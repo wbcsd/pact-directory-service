@@ -132,6 +132,13 @@ export class UserService {
   ) {}
 
   /**
+   * Helper function to normalize email addresses (trim and lowercase)
+   */
+  private normalizeEmail(email: string): string {
+    return email.trim().toLowerCase();
+  }
+
+  /**
    * Helper function to check if email verification token has expired
    */
   private isVerificationTokenExpired(sentAt: Date | null): boolean {
@@ -164,7 +171,7 @@ export class UserService {
     }
 
     // Normalize email: trim and lowercase
-    const normalizedEmail = data.email.trim().toLowerCase();
+    const normalizedEmail = this.normalizeEmail(data.email);
 
     // Check if email already exists
     const emailExists = await this.db
@@ -232,7 +239,7 @@ export class UserService {
    */
   async login(data: LoginData): Promise<UserContext> {
     // Normalize email: trim and lowercase
-    const normalizedEmail = data.email.trim().toLowerCase();
+    const normalizedEmail = this.normalizeEmail(data.email);
 
     const user = await this.db
       .selectFrom('users')
@@ -360,9 +367,9 @@ export class UserService {
         'users.email',
         'users.status',
         'users.emailVerificationSentAt', // Changed from email_verification_sent_at
-        'organizations.name as organizationName'
+        'organizations.name as organizationName',
       ])
-      .where('users.email', '=', email.toLowerCase().trim())
+      .where('users.email', '=', this.normalizeEmail(email))
       .executeTakeFirst();
 
     // Don't reveal if email exists or not
@@ -586,7 +593,7 @@ export class UserService {
       .selectFrom('users')
       .innerJoin('organizations', 'users.organizationId', 'organizations.id')
       .select(['users.id', 'users.fullName', 'users.email'])
-      .where('users.email', '=', email.toLowerCase().trim())
+      .where('users.email', '=', this.normalizeEmail(email))
       .executeTakeFirst();
 
     // Always return success to prevent email enumeration attacks
@@ -759,7 +766,7 @@ export class UserService {
     }
 
     // Normalize email: trim and lowercase
-    const normalizedEmail = data.email.trim().toLowerCase();
+    const normalizedEmail = this.normalizeEmail(data.email);
 
     // Check if email already exists
     const emailExists = await this.db
