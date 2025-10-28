@@ -46,10 +46,7 @@ const AddUserPage: React.FC = () => {
         `/organizations/${profileData?.organizationId}/users`,
         {
           method: "POST",
-          body: JSON.stringify({
-            ...formData,
-            setupUrl: `${window.location.origin}/set-password`,
-          }),
+          body: JSON.stringify(formData),
         }
       );
 

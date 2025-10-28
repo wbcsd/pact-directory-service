@@ -105,7 +105,6 @@ export interface AddUserToOrganizationData {
   fullName: string;
   email: string;
   role: Role;
-  setupUrl: string;
 }
 
 export interface VerifyResetTokenResult {
@@ -157,34 +156,36 @@ export class UserService {
     userId: number,
     email: string,
     fullName: string,
-    organizationName: string,
-    setupUrl: string,
+    organizationName: string
   ): Promise<void> {
     // Generate cryptographically secure token
     const token = crypto.randomBytes(32).toString('hex');
     
     // Set expiration (e.g., 72 hours from now)
     const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + this.PASSWORD_SETUP_TOKEN_EXPIRATION);
+    expiresAt.setHours(expiresAt.getHours() + 72);
 
-    // Store token in database with 'generated' status
+    // Store token in database with type='setup'
     await this.db
-      .insertInto('password_setup_tokens')
+      .insertInto('password_tokens')
       .values({
         userId,
         token,
-        status: 'generated',
+        type: 'setup', // Distinguish from 'reset' tokens
         createdAt: new Date(),
         expiresAt,
       })
       .execute();
-     
+
+    // Generate setup URL
+    const setupUrl = `${config.FRONTEND_URL}/set-password/${token}`;
+
     // Send password setup email
     await this.emailService.sendPasswordSetupEmail({
       to: email,
       name: fullName,
       organizationName,
-      setupUrl: `${setupUrl}/${token}`,
+      setupUrl,
     });
   }
 
@@ -204,43 +205,36 @@ export class UserService {
     valid: boolean; 
     userId: number;
     email: string;
-  }> {  
+  }> {
     if (!token || typeof token !== 'string') {
       throw new BadRequestError('Token is required');
     }
 
     // Find token with user information
     const tokenRecord = await this.db
-      .selectFrom('password_setup_tokens')
-      .innerJoin('users', 'password_setup_tokens.userId', 'users.id')
+      .selectFrom('password_tokens')
+      .innerJoin('users', 'password_tokens.userId', 'users.id')
       .select([
-        'password_setup_tokens.userId',
-        'password_setup_tokens.status',
-        'password_setup_tokens.expiresAt',
+        'password_tokens.userId',
+        'password_tokens.usedAt',
+        'password_tokens.expiresAt',
         'users.email'
       ])
-      .where('password_setup_tokens.token', '=', token)
+      .where('password_tokens.token', '=', token)
+      .where('password_tokens.type', '=', 'setup')
       .executeTakeFirst();
 
     if (!tokenRecord) {
       throw new BadRequestError('Invalid setup token');
     }
 
-    // Check if token is already used
-    if (tokenRecord.status === 'used') {
+    // Check if token is already used (derive status from usedAt)
+    if (tokenRecord.usedAt !== null) {
       throw new BadRequestError('This setup link has already been used');
     }
 
-    // Check if token is expired
-    if (tokenRecord.status === 'expired' || new Date() > tokenRecord.expiresAt) {
-      // Mark as expired if not already
-      if (tokenRecord.status !== 'expired') {
-        await this.db
-          .updateTable('password_setup_tokens')
-          .set({ status: 'expired' })
-          .where('token', '=', token)
-          .execute();
-      }
+    // Check if token is expired (derive status from expiresAt and current time)
+    if (new Date() > tokenRecord.expiresAt) {
       throw new BadRequestError('Setup link has expired');
     }
 
@@ -306,11 +300,10 @@ export class UserService {
         .where('id', '=', userId)
         .execute();
 
-      // Mark token as used (state transition: generated → used)
+      // Mark token as used (state transition: GENERATED → USED)
       await trx
-        .updateTable('password_setup_tokens')
+        .updateTable('password_tokens')
         .set({ 
-          status: 'used',
           usedAt: new Date()
         })
         .where('token', '=', token)
@@ -786,10 +779,11 @@ export class UserService {
     expiresAt.setMinutes(expiresAt.getMinutes() + 15); // 15 minutes expiration
 
     await this.db
-      .insertInto('password_reset_tokens')
+      .insertInto('password_tokens')
       .values({
         userId: user.id,
         token,
+        type: 'reset',
         expiresAt,
         createdAt: new Date(),
       })
@@ -810,6 +804,8 @@ export class UserService {
         'If this email is known in our system, a reset link has been sent.',
     };
   }
+
+
 
   /**
    * Resets a user's password using a provided reset token.
@@ -848,9 +844,10 @@ export class UserService {
 
     // Validate reset token
     const foundToken = await this.db
-      .selectFrom('password_reset_tokens')
+      .selectFrom('password_tokens')
       .selectAll()
       .where('token', '=', token)
+      .where('type', '=', 'reset')
       .where('usedAt', 'is', null)
       .executeTakeFirst();
 
@@ -874,13 +871,14 @@ export class UserService {
 
     // Mark token as used
     await this.db
-      .updateTable('password_reset_tokens')
+      .updateTable('password_tokens')
       .set({ usedAt: new Date() })
       .where('token', '=', token)
       .execute();
 
     return { message: 'Password has been reset successfully' };
   }
+
 
   /**
    * Verify Reset Token - Check if reset token is valid
@@ -893,9 +891,10 @@ export class UserService {
     }
 
     const resetToken = await this.db
-      .selectFrom('password_reset_tokens')
+      .selectFrom('password_tokens')
       .selectAll()
       .where('token', '=', token)
+      .where('type', '=', 'reset')
       .where('usedAt', 'is', null)
       .executeTakeFirst();
 
@@ -981,8 +980,7 @@ export class UserService {
       user.id,
       user.email,
       user.fullName,
-      organization.name,
-      data.setupUrl
+      organization.name
     );
 
     return {

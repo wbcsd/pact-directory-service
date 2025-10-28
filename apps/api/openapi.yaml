@@ -245,8 +245,7 @@ components:
         fullName: { type: string, description: "Full name of the user", example: "John Doe" }
         email: { type: string, format: email, description: "Email address of the user", example: "john.doe@example.com" }
         role: { type: string, description: "Role of the user in the organization", example: "user" }
-        setupUrl: { type: string, description: "URL for the user to set up their password", example: "https://app.example.com/set-password?token=abc123" }
-      required: [fullName, email, role, setupUrl]
+      required: [fullName, email, role]
     SetPasswordRequest:
       type: object
       properties:
