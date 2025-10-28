@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
 import HeroImage from "../assets/providers-header.webp";
 import useBodyOverflow from "../utils/use-body-overflow";
+import "./SetPasswordPage.css";
 
 const SetPasswordPage: React.FC = () => {
   const params = useParams();
@@ -95,55 +96,22 @@ const SetPasswordPage: React.FC = () => {
 
   return (
     <>
-      <Box style={{ display: "flex", width: "100%" }}>
+      <Box className="container">
         <Box
+          className="hero-section"
           style={{
-            width: "589px",
-            minWidth: "589px",
-            minHeight: "800px",
-            background: "#0A0552",
-            height: "100%",
             backgroundImage: `url(${HeroImage})`,
-            backgroundPosition: "bottom",
-            backgroundSize: "180% auto",
-            backgroundRepeat: "no-repeat",
-            textAlign: "center",
           }}
         >
-          <h2
-            style={{
-              color: "#FFFFFF",
-              width: "360px",
-              margin: "0 auto",
-              marginTop: "16%",
-              fontSize: "1.8em",
-            }}
-          >
+          <h2 className="hero-title">
             Helping you adopt PACT standards with ease
           </h2>
         </Box>
-        <Box
-          style={{
-            padding: "20px",
-            margin: "0 auto",
-            flex: "1 1 100%",
-            background: "#FCFDFF",
-            height: "100%",
-          }}
-        >
-          <Box
-            style={{
-              maxWidth: "400px",
-              margin: "0 auto",
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-            }}
-          >
+        <Box className="main-content">
+          <Box className="content-wrapper">
             {status === "success" ? (
               <Box>
-                <h2 style={{ marginBottom: "20px", color: "#0A0552" }}>
+                <h2 className="success-title">
                   Password Reset Successful
                 </h2>
                 <Callout.Root color="green" variant="surface">
@@ -155,14 +123,10 @@ const SetPasswordPage: React.FC = () => {
                     redirected to the login page in a few seconds.
                   </Callout.Text>
                 </Callout.Root>
-                <Box style={{ marginTop: "30px", textAlign: "center" }}>
+                <Box className="success-link-container">
                   <Link
                     to="/login"
-                    style={{
-                      color: "#0A0552",
-                      textDecoration: "underline",
-                      fontSize: "0.9em",
-                    }}
+                    className="success-link"
                   >
                     Go to Login
                   </Link>
@@ -170,22 +134,16 @@ const SetPasswordPage: React.FC = () => {
               </Box>
             ) : (
               <>
-                <h2 style={{ marginBottom: "20px" }}>Set New Password</h2>
-                <p style={{ marginBottom: "30px", color: "#666" }}>
+                <h2 className="form-title">Set New Password</h2>
+                <p className="form-description">
                   Please enter your new password below. Make sure it's at least
                   6 characters long.
                 </p>
 
                 <Form.Root onSubmit={handleSubmit}>
                   <Form.Field name="password">
-                    <Form.Label
-                      style={{
-                        display: "block",
-                        marginBottom: "8px",
-                        fontWeight: "500",
-                      }}
-                    >
-                      New Password<span style={{ color: "red" }}>*</span>
+                    <Form.Label className="form-label">
+                      New Password<span className="required-asterisk">*</span>
                     </Form.Label>
                     <Form.Control asChild>
                       <TextField.Root
@@ -195,34 +153,20 @@ const SetPasswordPage: React.FC = () => {
                         placeholder="Enter your new password"
                         onChange={handlePasswordChange}
                         disabled={status === "loading"}
-                        style={{
-                          width: "100%",
-                          border: "1px solid #ccc",
-                          padding: "12px",
-                          fontSize: "16px",
-                        }}
+                        className="text-field"
                       />
                     </Form.Control>
                     <Form.Message
                       match="valueMissing"
-                      style={{
-                        color: "var(--base-color-brand--light-blue)",
-                        fontSize: "0.85em",
-                      }}
+                      className="form-message"
                     >
                       Password is required.
                     </Form.Message>
                   </Form.Field>
 
-                  <Form.Field name="confirmPassword" style={{ marginTop: "20px" }}>
-                    <Form.Label
-                      style={{
-                        display: "block",
-                        marginBottom: "8px",
-                        fontWeight: "500",
-                      }}
-                    >
-                      Confirm Password<span style={{ color: "red" }}>*</span>
+                  <Form.Field name="confirmPassword" className="confirm-password-field">
+                    <Form.Label className="form-label">
+                      Confirm Password<span className="required-asterisk">*</span>
                     </Form.Label>
                     <Form.Control asChild>
                       <TextField.Root
@@ -232,29 +176,21 @@ const SetPasswordPage: React.FC = () => {
                         placeholder="Confirm your new password"
                         onChange={handleConfirmPasswordChange}
                         disabled={status === "loading"}
-                        style={{
-                          width: "100%",
-                          border: "1px solid #ccc",
-                          padding: "12px",
-                          fontSize: "16px",
-                        }}
+                        className="text-field"
                       />
                     </Form.Control>
                     <Form.Message
                       match="valueMissing"
-                      style={{
-                        color: "var(--base-color-brand--light-blue)",
-                        fontSize: "0.85em",
-                      }}
+                      className="form-message"
                     >
                       Please confirm your password.
                     </Form.Message>
                   </Form.Field>
 
-                  <Box style={{ marginTop: "30px" }}>
+                  <Box className="submit-button-container">
                     <Form.Submit asChild>
                       <Button
-                        style={{ width: "100%" }}
+                        className="submit-button"
                         type="submit"
                         disabled={status === "loading"}
                       >
@@ -266,14 +202,10 @@ const SetPasswordPage: React.FC = () => {
                   </Box>
                 </Form.Root>
 
-                <Box style={{ marginTop: "20px", textAlign: "center" }}>
+                <Box className="back-link-container">
                   <Link
                     to="/login"
-                    style={{
-                      color: "#0A0552",
-                      textDecoration: "underline",
-                      fontSize: "0.9em",
-                    }}
+                    className="back-link"
                   >
                     Back to Login
                   </Link>
@@ -284,7 +216,7 @@ const SetPasswordPage: React.FC = () => {
                     color="bronze"
                     highContrast
                     variant="surface"
-                    style={{ marginTop: "20px" }}
+                    className="error-callout"
                   >
                     <Callout.Icon>
                       <ExclamationTriangleIcon />
@@ -295,16 +227,10 @@ const SetPasswordPage: React.FC = () => {
                   </Callout.Root>
                 )}
 
-                <p
-                  style={{
-                    fontSize: "0.9em",
-                    marginTop: "30px",
-                    textAlign: "center",
-                  }}
-                >
+                <p className="help-text">
                   Need help? Contact us at:{" "}
                   <a
-                    style={{ fontWeight: "bold" }}
+                    className="help-link"
                     href="mailto:pact-support@wbcsd.org"
                   >
                     pact-support@wbcsd.org
