@@ -46,7 +46,7 @@ const SetPasswordPage: React.FC = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_DIRECTORY_API}/directory/users/reset-password`,
+        `${import.meta.env.VITE_API_URL}/auth/set-password`,
         {
           method: "POST",
           headers: {

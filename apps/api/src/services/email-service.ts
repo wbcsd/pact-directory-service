@@ -31,6 +31,42 @@ export class EmailService {
     }
   }
 
+  /**
+   * Send password setup email to new user created by admin
+   */
+  async sendPasswordSetupEmail(params: {
+    to: string;
+    name: string;
+    organizationName: string;
+    setupUrl: string;
+  }): Promise<void> {
+    const { to, name, organizationName, setupUrl } = params;
+    
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2>Welcome to the PACT Network!</h2>
+        <p>Hi ${name},</p>
+        <p>An administrator from ${organizationName} has created an account for you. To get started, please set your password by clicking the link below:</p>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${setupUrl}"
+            style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">
+            Set Your Password
+          </a>
+        </div>
+        <p>This link will expire in 72 hours.</p>
+        <p>If you didn't expect this email or believe you received it by mistake, please contact your administrator.</p>
+        <p>Best regards,<br>The PACT Team</p>
+      </div>
+    `;
+    
+    await sgMail.send({
+      to,
+      from: config.SENDGRID_FROM_EMAIL,
+      subject: `Set your password for ${organizationName}`,
+      html: htmlContent,
+    });
+  }
+
   async sendEmailVerification(params: {
     to: string;
     name: string;

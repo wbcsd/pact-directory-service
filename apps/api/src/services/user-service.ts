@@ -105,8 +105,7 @@ export interface AddUserToOrganizationData {
   fullName: string;
   email: string;
   role: Role;
-  password: string;
-  confirmPassword: string;
+  setupUrl: string;
 }
 
 export interface VerifyResetTokenResult {
@@ -127,12 +126,6 @@ export interface SetPasswordData {
   token: string;
   password: string;
   confirmPassword: string;
-}
-
-export interface AddUserWithTokenData {
-  fullName: string;
-  email: string;
-  role: Role;
 }
 
 export class UserService {
@@ -164,7 +157,8 @@ export class UserService {
     userId: number,
     email: string,
     fullName: string,
-    organizationName: string
+    organizationName: string,
+    setupUrl: string,
   ): Promise<void> {
     // Generate cryptographically secure token
     const token = crypto.randomBytes(32).toString('hex');
@@ -184,16 +178,13 @@ export class UserService {
         expiresAt,
       })
       .execute();
-
-    // Generate setup URL
-    const setupUrl = `${config.FRONTEND_URL}/set-password/${token}`;
-
+     
     // Send password setup email
     await this.emailService.sendPasswordSetupEmail({
       to: email,
       name: fullName,
       organizationName,
-      setupUrl,
+      setupUrl: `${setupUrl}/${token}`,
     });
   }
 
@@ -934,10 +925,10 @@ export class UserService {
  * @param data - The user data (no password required)
  * @returns A promise with success message and user ID
  */
-  async addUserToOrganizationWithToken(
+  async addUserToOrganization(
     context: UserContext, 
     organizationId: number, 
-    data: AddUserWithTokenData
+    data: AddUserToOrganizationData
   ): Promise<{ message: string; userId: number }> {
     
     // Check if user has permission to add users to this organization
@@ -990,94 +981,12 @@ export class UserService {
       user.id,
       user.email,
       user.fullName,
-      organization.name
+      organization.name,
+      data.setupUrl
     );
 
     return {
       message: 'User created successfully. They will receive an email to set their password.',
-      userId: user.id
-    };
-  }
-
-  /**
-   * Adds a new user to an existing organization.
-   *
-   * - Validates that the provided passwords match.
-   * - Checks if the email is already in use.
-   * - Verifies that the organization exists.
-   * - Hashes the user's password.
-   * - Creates the user within the specified organization.
-   * - Sends a welcome email to the new user.
-   * - Returns the user's context information.
-   *
-   * @param organizationId - The ID of the organization to add the user to.
-   * @param data - The user data containing user details.
-   * @returns A promise that resolves to the newly created user's context.
-   * @throws {BadRequestError} If passwords do not match or email is already in use.
-   * @throws {NotFoundError} If the organization doesn't exist.
-   */
-  async addUserToOrganization(
-    context: UserContext, 
-    organizationId: number, 
-    data: AddUserToOrganizationData
-  ): Promise<{ message: string; userId: number }> {
-    
-    // Check if user has permission to add users to this organization
-    checkAccess(context, 'add-users', context.organizationId === organizationId || context.role === Role.Administrator);
-
-    // Check if passwords match
-    if (data.password !== data.confirmPassword) {
-      throw new BadRequestError('Passwords do not match');
-    }
-
-    // Check if email already exists
-    const emailExists = await this.db
-      .selectFrom('users')
-      .where('email', '=', data.email)
-      .executeTakeFirst();
-
-    if (emailExists) {
-      throw new BadRequestError('Email already in use.');
-    }
-
-    // Verify organization exists
-    const organization = await this.db
-      .selectFrom('organizations')
-      .select(['id', 'name'])
-      .where('id', '=', organizationId)
-      .executeTakeFirst();
-
-    if (!organization) {
-      throw new NotFoundError('Organization not found');
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(data.password, 10);
-
-    // Create user
-    const user = await this.db
-      .insertInto('users')
-      .values({
-        fullName: data.fullName,
-        email: data.email,
-        role: data.role,
-        password: hashedPassword,
-        organizationId: organizationId,
-        status: 'unverified', // Start as unverified
-      })
-      .returningAll()
-      .executeTakeFirstOrThrow();
-
-    // Generate and send verification token
-    await this.generateAndSendVerificationToken(
-      user.id,
-      user.email,
-      user.fullName,
-      organization.name
-    );
-
-    return {
-      message: 'User created successfully. They will receive an email to verify their account.',
       userId: user.id
     };
   }

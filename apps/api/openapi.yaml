@@ -245,9 +245,15 @@ components:
         fullName: { type: string, description: "Full name of the user", example: "John Doe" }
         email: { type: string, format: email, description: "Email address of the user", example: "john.doe@example.com" }
         role: { type: string, description: "Role of the user in the organization", example: "user" }
-        password: { type: string, format: password, description: "Password for the user account", minLength: 6 }
-        confirmPassword: { type: string, format: password, description: "Password confirmation" }
-      required: [fullName, email, role, password, confirmPassword]
+        setupUrl: { type: string, description: "URL for the user to set up their password", example: "https://app.example.com/set-password?token=abc123" }
+      required: [fullName, email, role, setupUrl]
+    SetPasswordRequest:
+      type: object
+      properties:
+        token: { type: string, description: "Password setup token" }
+        password: { type: string, description: "New password", minLength: 6 }
+        confirmPassword: { type: string, description: "Confirm new password", minLength: 6 }
+      required: [token, password, confirmPassword]
     UpdateUserResponse:
       type: object
       properties:
