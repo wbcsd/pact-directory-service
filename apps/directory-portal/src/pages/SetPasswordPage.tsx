@@ -190,7 +190,7 @@ const SetPasswordPage: React.FC = () => {
                   <Box className="submit-button-container">
                     <Form.Submit asChild>
                       <Button
-                        className="submit-button"
+                        className="submit-password-button"
                         type="submit"
                         disabled={status === "loading"}
                       >
