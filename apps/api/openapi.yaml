@@ -79,11 +79,10 @@ components:
     ResetPasswordRequest:
       type: object
       properties:
-        email: { type: string, format: email }
         token: { type: string }
         password: { type: string, minLength: 6 }
         confirmPassword: { type: string, minLength: 6 }
-      required: [email, token, password, confirmPassword]
+      required: [token, password, confirmPassword]
     VerifyResetTokenResponse:
       type: object
       properties:
@@ -392,6 +391,24 @@ paths:
               schema: { $ref: "#/components/schemas/GenericMessage" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "500": { $ref: "#/components/responses/InternalError" }
+  /directory/users/set-password:
+    post:
+      summary: Set inital password with token
+      tags: [Users]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SetPasswordRequest" }
+      responses:
+        "200":
+          description: Password set
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/GenericMessage" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "500": { $ref: "#/components/responses/InternalError" }        
   /directory/users/verify-reset-token/{token}:
     get:
       summary: Verify a password reset token

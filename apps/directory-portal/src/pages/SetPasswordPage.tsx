@@ -29,8 +29,8 @@ const SetPasswordPage: React.FC = () => {
       return;
     }
 
-    if (password.length < 8) {
-      setErrorMessage("Password must be at least 8 characters long");
+    if (password.length < 6) {
+      setErrorMessage("Password must be at least 6 characters long");
       setStatus("error");
       return;
     }
@@ -46,15 +46,16 @@ const SetPasswordPage: React.FC = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/auth/set-password`,
+        `${import.meta.env.VITE_DIRECTORY_API}/directory/users/set-password`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ 
-            token: token,
-            password: password 
+            token,
+            password,
+            confirmPassword,
           }),
         }
       );
@@ -172,7 +173,7 @@ const SetPasswordPage: React.FC = () => {
                 <h2 style={{ marginBottom: "20px" }}>Set New Password</h2>
                 <p style={{ marginBottom: "30px", color: "#666" }}>
                   Please enter your new password below. Make sure it's at least
-                  8 characters long.
+                  6 characters long.
                 </p>
 
                 <Form.Root onSubmit={handleSubmit}>
