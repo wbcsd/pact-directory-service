@@ -317,6 +317,13 @@ export class UserService {
 
 
   /**
+   * Helper function to normalize email addresses (trim and lowercase)
+   */
+  private normalizeEmail(email: string): string {
+    return email.trim().toLowerCase();
+  }
+
+  /**
    * Helper function to check if email verification token has expired
    */
   private isVerificationTokenExpired(sentAt: Date | null): boolean {
@@ -348,10 +355,13 @@ export class UserService {
       throw new BadRequestError('Passwords do not match');
     }
 
+    // Normalize email: trim and lowercase
+    const normalizedEmail = this.normalizeEmail(data.email);
+
     // Check if email already exists
     const emailExists = await this.db
       .selectFrom('users')
-      .where('email', '=', data.email)
+      .where('email', '=', normalizedEmail)
       .executeTakeFirst();
 
     if (emailExists) {
@@ -377,7 +387,7 @@ export class UserService {
         .insertInto('users')
         .values({
           fullName: data.fullName,
-          email: data.email,
+          email: normalizedEmail,
           role: Role.User,
           password: hashedPassword,
           organizationId: organization.id,
@@ -413,10 +423,13 @@ export class UserService {
    * @throws UnauthorizedError If the email or password is incorrect.
    */
   async login(data: LoginData): Promise<UserContext> {
+    // Normalize email: trim and lowercase
+    const normalizedEmail = this.normalizeEmail(data.email);
+
     const user = await this.db
       .selectFrom('users')
       .selectAll()
-      .where('email', '=', data.email)
+      .where('email', '=', normalizedEmail)
       .executeTakeFirst();
       
     if (!user) {
@@ -539,9 +552,9 @@ export class UserService {
         'users.email',
         'users.status',
         'users.emailVerificationSentAt', // Changed from email_verification_sent_at
-        'organizations.name as organizationName'
+        'organizations.name as organizationName',
       ])
-      .where('users.email', '=', email.toLowerCase().trim())
+      .where('users.email', '=', this.normalizeEmail(email))
       .executeTakeFirst();
 
     // Don't reveal if email exists or not
@@ -765,7 +778,7 @@ export class UserService {
       .selectFrom('users')
       .innerJoin('organizations', 'users.organizationId', 'organizations.id')
       .select(['users.id', 'users.fullName', 'users.email'])
-      .where('users.email', '=', email.toLowerCase().trim())
+      .where('users.email', '=', this.normalizeEmail(email))
       .executeTakeFirst();
 
     // Always return success to prevent email enumeration attacks
@@ -937,10 +950,13 @@ export class UserService {
       context.organizationId === organizationId || context.role === Role.Administrator
     );
 
+    // Normalize email: trim and lowercase
+    const normalizedEmail = this.normalizeEmail(data.email);
+
     // Check if email already exists
     const emailExists = await this.db
       .selectFrom('users')
-      .where('email', '=', data.email)
+      .where('email', '=', normalizedEmail)
       .executeTakeFirst();
 
     if (emailExists) {
@@ -966,7 +982,7 @@ export class UserService {
       .insertInto('users')
       .values({
         fullName: data.fullName,
-        email: data.email,
+        email: normalizedEmail,
         role: data.role,
         password: placeholderPassword, // Placeholder - user must set via token
         organizationId: organizationId,
