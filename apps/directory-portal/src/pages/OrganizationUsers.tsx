@@ -7,6 +7,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { InputIcon, PlusIcon } from "@radix-ui/react-icons";
 import { useNavigate } from "react-router-dom";
 import StatusBadge from "../components/StatusBadge";
+import PolicyGuard from "../components/PolicyGuard";
 
 export interface User {
   id: number;
@@ -116,19 +117,21 @@ const OrganizationUsers: React.FC = () => {
       <main className="main">
         <div className="header">
           <h2>Organization Users</h2>
-          <Button
-            onClick={() => navigate("/organization/users/add")}
-            style={{
-              background: "#0A0552",
-              color: "white",
-              border: "none",
-              padding: "8px 16px",
-              minHeight: "36px",
-            }}
-          >
-            <PlusIcon />
-            Add User
-          </Button>
+          <PolicyGuard policies={["add-users"]}>
+            <Button
+              onClick={() => navigate("/organization/users/add")}
+              style={{
+                background: "#0A0552",
+                color: "white",
+                border: "none",
+                padding: "8px 16px",
+                minHeight: "36px",
+              }}
+            >
+              <PlusIcon />
+              Add User
+            </Button>
+          </PolicyGuard>
         </div>
         <div>
           <DataTable idColumnName="id" columns={columns} data={users} />

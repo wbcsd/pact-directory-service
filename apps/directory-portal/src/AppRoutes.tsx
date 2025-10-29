@@ -18,6 +18,7 @@ import OrganizationUsers from "./pages/OrganizationUsers";
 import EditUserPage from "./pages/EditUserPage";
 import AddUserPage from "./pages/AddUserPage";
 import PolicyGuard from "./components/PolicyGuard";
+import SetPasswordPage from "./pages/SetPasswordPage";
 
 const AppRoutes: React.FC = () => {
   return (
@@ -25,6 +26,7 @@ const AppRoutes: React.FC = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/set-password/:token" element={<SetPasswordPage />} />
       <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
       <Route path="/verify-email/:token" element={<EmailVerificationPage />} />
       <Route path="/resend-verification" element={<ResendVerificationPage />} />
