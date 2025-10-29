@@ -13,21 +13,6 @@ const SideNav: React.FC = () => {
           <NavLink to="/conformance-test-runs">
             <Text>Conformance Testing</Text>
           </NavLink>
-          <FeatureFlag flag="enableOrganizationManagement">
-            <PolicyGuard policies={["view-own-organizations"]}>
-              <>
-                <a href="#">Organization</a>
-                <PolicyGuard policies={["view-users"]}>
-                  <NavLink
-                    to="/organization/users"
-                    style={{ textDecoration: "none", paddingLeft: "2em" }}
-                  >
-                    <Text>Users</Text>
-                  </NavLink>
-                </PolicyGuard>
-              </>
-            </PolicyGuard>
-          </FeatureFlag>
           <FeatureFlag flag="enableIdentityManagement">
             <PolicyGuard policies={["view-connections-own-organization"]}>
               <>
@@ -49,16 +34,29 @@ const SideNav: React.FC = () => {
           </FeatureFlag>
         </nav>
       </div>
-      <FeatureFlag flag="enableIdentityManagement">
-        <div className="nav-group">
-          <div className="nav-title">Settings</div>
-          <nav>
-            <NavLink to="/my-profile">
-              <Text>Profile</Text>
-            </NavLink>
-          </nav>
-        </div>
-      </FeatureFlag>
+      <div className="nav-group">
+        <div className="nav-title">Settings</div>
+        <nav>
+          <NavLink to="/my-profile">
+            <Text>Profile</Text>
+          </NavLink>
+          <FeatureFlag flag="enableOrganizationManagement">
+            <PolicyGuard policies={["view-own-organizations"]}>
+              <>
+                <a href="#">Organization</a>
+                <PolicyGuard policies={["view-users"]}>
+                  <NavLink
+                    to="/organization/users"
+                    style={{ textDecoration: "none", paddingLeft: "2em" }}
+                  >
+                    <Text>Users</Text>
+                  </NavLink>
+                </PolicyGuard>
+              </>
+            </PolicyGuard>
+          </FeatureFlag>          
+        </nav>
+      </div>
 
       <div className="nav-group">
         <div style={{ fontSize: "0.8em" }}>
