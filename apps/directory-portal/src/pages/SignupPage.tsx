@@ -86,7 +86,7 @@ const SignupPage: React.FC = () => {
 
   return (
     <>
-      <Box style={{ display: "flex", width: "100%" }}>
+      <Box style={{ display: "flex", width: "100%", minHeight: "calc(100vh - 81px)" }}>
         <Box
           style={{
             width: "589px",
@@ -107,6 +107,7 @@ const SignupPage: React.FC = () => {
               margin: "0 auto",
               marginTop: "200px",
               fontSize: "1.8em",
+              backgroundColor: "var(--accent-a12)"
             }}
           >
             Helping you adopt PACT standards with ease
