@@ -34,8 +34,7 @@ const FunctionalPageLayout: React.FC<FunctionalPageLayoutProps> = ({
             gap: "20px",
           }}
         >
-          <LoadingSpinner />
-          {loadingMessage && <span>{loadingMessage}</span>}
+          <LoadingSpinner loadingText={loadingMessage} />
         </Box>
       ) : (
         <main className="main">
