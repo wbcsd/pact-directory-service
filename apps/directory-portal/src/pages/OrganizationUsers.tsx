@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import StatusBadge from "../components/StatusBadge";
 import { GridPageLayout } from "../layouts";
 import ActionButton from "../components/ActionButton";
+import PolicyGuard from "../components/PolicyGuard";
 
 export interface User {
   id: number;
@@ -107,13 +108,15 @@ const OrganizationUsers: React.FC = () => {
   ];
 
   const headerActions = (
-    <ActionButton
-      variant="primary"
-       onClick={() => navigate("/organization/users/add")}
-    >
-      <PlusIcon />
-      Add User
-    </ActionButton>
+    <PolicyGuard policies={["add-users"]}>
+      <ActionButton
+        variant="primary"
+        onClick={() => navigate("/organization/users/add")}
+      >
+        <PlusIcon />
+        Add User
+      </ActionButton>
+    </PolicyGuard>
   );
 
   return (
