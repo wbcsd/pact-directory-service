@@ -121,7 +121,7 @@ const ConformanceTestRuns: React.FC = () => {
         <input
           autoFocus
           type="text"
-          placeholder="Press enter to search by company name, email address or user name"
+          placeholder="Press enter to search by organization name, email address or user name"
           className="searchInput"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}

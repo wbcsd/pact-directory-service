@@ -149,7 +149,7 @@ export class ConnectionService {
 
     if (connectionRequest.requestedCompanyId !== currentOrganizationId) {
       throw new ForbiddenError(
-        'Only the requested company can accept the request'
+        'Only the requested organization can accept the request'
       );
     }
 
@@ -192,7 +192,7 @@ export class ConnectionService {
 
     if (connectionRequest.requestedCompanyId !== currentCompanyId) {
       throw new ForbiddenError(
-        'Only the requested company can reject the request'
+        'Only the requested organization can reject the request'
       );
     }
 
