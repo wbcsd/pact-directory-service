@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import * as Form from "@radix-ui/react-form";
-import { Box, Button, TextField, Callout, Spinner } from "@radix-ui/themes";
+import { Box, Button, TextField, Callout } from "@radix-ui/themes";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
 import { LandingPageLayout } from "../layouts";
+import Spinner from "../components/LoadingSpinner";
+
 
 const ResetPasswordPage: React.FC = () => {
   const navigate = useNavigate();
@@ -111,8 +113,7 @@ const ResetPasswordPage: React.FC = () => {
       <LandingPageLayout>
 
           <Box>
-            <Spinner size="3" />
-            <p style={{ marginTop: "20px" }}>Verifying reset link...</p>
+            <Spinner loadingText="Verifying reset link..." />
           </Box>
 
       </LandingPageLayout>

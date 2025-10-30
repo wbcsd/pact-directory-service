@@ -1,7 +1,7 @@
 import React from "react";
 import { Box } from "@radix-ui/themes";
 import SideNav from "../components/SideNav";
-import LoadingSpinner from "../components/LoadingSpinner";
+import Spinner from "../components/LoadingSpinner";
 
 interface FunctionalPageLayoutProps {
   children: React.ReactNode;
@@ -34,7 +34,7 @@ const FunctionalPageLayout: React.FC<FunctionalPageLayoutProps> = ({
             gap: "20px",
           }}
         >
-          <LoadingSpinner loadingText={loadingMessage} />
+          <Spinner loadingText={loadingMessage} />
         </Box>
       ) : (
         <main className="main">
