@@ -28,9 +28,6 @@ const OrganizationUsers: React.FC = () => {
   const { profileData } = useAuth();
 
   useEffect(() => {
-    // Placeholder for fetching users from the API
-    if (!profileData) return;
-
     const fetchUsers = async () => {
       if (!profileData) return;
 
