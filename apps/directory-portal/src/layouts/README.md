@@ -9,7 +9,7 @@ For authentication and landing pages (login, signup, email verification, etc.)
 
 **Usage:**
 ```tsx
-import { LandingPageLayout } from "../components/layouts";
+import { LandingPageLayout } from "../layouts";
 
 const LoginPage = () => {
   return (
@@ -29,7 +29,7 @@ Base layout for all functional pages with sidebar navigation
 
 **Usage:**
 ```tsx
-import { FunctionalPageLayout } from "../components/layouts";
+import { FunctionalPageLayout } from "../layouts";
 
 const MyPage = () => {
   return (
@@ -50,7 +50,7 @@ For list/table pages with headers and action buttons
 
 **Usage:**
 ```tsx
-import { GridPageLayout } from "../components/layouts";
+import { GridPageLayout } from "../layouts";
 import ActionButton from "../components/ActionButton";
 
 const UsersPage = () => {
@@ -86,7 +86,7 @@ For edit, view, and add pages with forms
 
 **Usage:**
 ```tsx
-import { FormPageLayout } from "../components/layouts";
+import { FormPageLayout } from "../layouts";
 
 const EditUserPage = () => {
   return (
