@@ -109,10 +109,10 @@ const OrganizationUsers: React.FC = () => {
   const headerActions = (
     <ActionButton
       variant="primary"
-              onClick={() => navigate("/organization/users/add")}
-            >
-              <PlusIcon />
-              Add User
+       onClick={() => navigate("/organization/users/add")}
+    >
+      <PlusIcon />
+      Add User
     </ActionButton>
   );
 
@@ -123,7 +123,7 @@ const OrganizationUsers: React.FC = () => {
       loading={loading}
       loadingMessage="Loading users..."
     >
-          <DataTable idColumnName="id" columns={columns} data={users} />
+      <DataTable idColumnName="id" columns={columns} data={users} />
     </GridPageLayout>
   );
 };
