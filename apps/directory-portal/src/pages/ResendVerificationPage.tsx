@@ -3,7 +3,7 @@ import * as Form from "@radix-ui/react-form";
 import { Box, Button, TextField, Callout } from "@radix-ui/themes";
 import { Link } from "react-router-dom";
 import { ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
-import HeroImage from "../assets/providers-header.webp";
+import { LandingPageLayout } from "../layouts";
 
 const ResendVerificationPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -49,56 +49,10 @@ const ResendVerificationPage: React.FC = () => {
   };
 
   return (
-    <>
-      <Box style={{ display: "flex", width: "100%" }}>
-        <Box
-          style={{
-            width: "589px",
-            minWidth: "589px",
-            minHeight: "800px",
-            background: "#0A0552",
-            height: "100%",
-            backgroundImage: `url(${HeroImage})`,
-            backgroundPosition: "bottom",
-            backgroundSize: "180% auto",
-            backgroundRepeat: "no-repeat",
-            textAlign: "center",
-          }}
-        >
-          <h2
-            style={{
-              color: "#FFFFFF",
-              width: "360px",
-              margin: "0 auto",
-              marginTop: "16%",
-              fontSize: "1.8em",
-            }}
-          >
-            Helping you adopt PACT standards with ease
-          </h2>
-        </Box>
-        <Box
-          style={{
-            padding: "20px",
-            margin: "0 auto",
-            flex: "1 1 100%",
-            background: "#FCFDFF",
-            height: "100%",
-          }}
-        >
-          <Box
-            style={{
-              maxWidth: "400px",
-              margin: "0 auto",
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-            }}
-          >
+    <LandingPageLayout>
 {/* [Content> */}
-            {status === "success" ? (
-              <Box>
+      {status === "success" ? (
+        <Box>
                 <h2 style={{ marginBottom: "20px", color: "#0A0552" }}>
                   Verification Email Sent
                 </h2>
@@ -236,14 +190,11 @@ const ResendVerificationPage: React.FC = () => {
                   >
                     pact-support@wbcsd.org
                   </a>
-                </p>
+                  </p>
               </>
             )}
 {/* <Content] */}
-          </Box>
-        </Box>
-      </Box>
-    </>
+    </LandingPageLayout>
   );
 };
 

@@ -3,9 +3,9 @@ import * as Form from "@radix-ui/react-form";
 import { Box, Button, TextField, Callout } from "@radix-ui/themes";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
-import HeroImage from "../assets/providers-header.webp";
 import useBodyOverflow from "../utils/use-body-overflow";
 import "./SetPasswordPage.css";
+import { LandingPageLayout } from "../layouts";
 
 const SetPasswordPage: React.FC = () => {
   const params = useParams();
@@ -95,20 +95,8 @@ const SetPasswordPage: React.FC = () => {
   };
 
   return (
-    <>
-      <Box className="container">
-        <Box
-          className="hero-section"
-          style={{
-            backgroundImage: `url(${HeroImage})`,
-          }}
-        >
-          <h2 className="hero-title">
-            Helping you adopt PACT standards with ease
-          </h2>
-        </Box>
-        <Box className="main-content">
-          <Box className="content-wrapper">
+    <LandingPageLayout>
+
             {status === "success" ? (
               <Box>
                 <h2 className="success-title">
@@ -238,10 +226,7 @@ const SetPasswordPage: React.FC = () => {
                 </p>
               </>
             )}
-          </Box>
-        </Box>
-      </Box>
-    </>
+    </LandingPageLayout>
   );
 };
 

@@ -9,7 +9,7 @@ interface LandingPageLayoutProps {
 
 const LandingPageLayout: React.FC<LandingPageLayoutProps> = ({
   children,
-  title = "" // "Helping you adopt PACT standards with ease",
+  title = "Helping you adopt PACT standards",
 }) => {
   return (
     <Box style={{ display: "flex", width: "100%" }}>

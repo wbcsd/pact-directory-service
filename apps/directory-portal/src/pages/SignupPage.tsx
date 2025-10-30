@@ -16,8 +16,8 @@ import {
   InfoCircledIcon,
   CheckIcon,
 } from "@radix-ui/react-icons";
-import HeroImage from "../assets/providers-header.webp";
 import useBodyOverflow from "../utils/use-body-overflow";
+import { LandingPageLayout } from "../layouts";
 
 const SignupPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -85,82 +85,43 @@ const SignupPage: React.FC = () => {
   };
 
   return (
-    <>
-      <Box style={{ display: "flex", width: "100%" }}>
-        <Box
-          style={{
-            width: "589px",
-            minWidth: "589px",
-            background: "#0A0552",
-            height: "100%",
-            backgroundImage: `url(${HeroImage})`,
-            backgroundPosition: "bottom",
-            backgroundSize: "180% auto",
-            backgroundRepeat: "no-repeat",
-            textAlign: "center",
-          }}
-        >
-          <h2
-            style={{
-              color: "#FFFFFF",
-              width: "360px",
-              margin: "0 auto",
-              marginTop: "200px",
-              fontSize: "1.8em",
-            }}
-          >
-            Helping you adopt PACT standards with ease
-          </h2>
-        </Box>
-        <Box
-          style={{
-            padding: "20px",
-            // maxWidth: "650px",
-            margin: "0 auto",
-            flex: "1 1 100%",
-            background: "#FCFDFF",
-            height: "100%",
-          }}
-        >
-          <Box
-            style={{ maxWidth: "400px", margin: "0 auto", paddingTop: "40px" }}
-          >
+    <LandingPageLayout>
 {/* [Content> */}
-            {status === "success" ? (
-              <>
-                <h2 style={{ marginBottom: "30px" }}>
-                  Check Your Email
-                </h2>
-                <Callout.Root color="green" variant="surface" style={{ marginBottom: "30px" }}>
-                  <Callout.Icon>
-                    <CheckIcon />
-                  </Callout.Icon>
-                  <Callout.Text>
-                    {successMessage}
-                  </Callout.Text>
-                </Callout.Root>
-                <p style={{ marginBottom: "20px", color: "#666" }}>
-                  We've sent you a verification link. Please click the link in your email to activate your account and complete the registration process.
-                </p>
-                <Box style={{ textAlign: "center" }}>
-                  <Link
-                    to="/login"
-                    style={{
-                      color: "#0A0552",
-                      textDecoration: "underline",
-                      fontSize: "0.9em",
-                    }}
-                  >
-                    Back to Login
-                  </Link>
-                </Box>
-              </>
-            ) : (
-              <>
-                <h2 style={{ marginBottom: "30px" }}>
-                  Sign up to PACT Network Services
-                </h2>
-                <Form.Root onSubmit={handleSubmit}>
+      {status === "success" ? (
+        <>
+          <h2 style={{ marginBottom: "30px" }}>
+            Check Your Email
+          </h2>
+          <Callout.Root color="green" variant="surface" style={{ marginBottom: "30px" }}>
+            <Callout.Icon>
+              <CheckIcon />
+            </Callout.Icon>
+            <Callout.Text>
+              {successMessage}
+            </Callout.Text>
+          </Callout.Root>
+          <p style={{ marginBottom: "20px", color: "#666" }}>
+            We've sent you a verification link. Please click the link in your email to activate your account and complete the registration process.
+          </p>
+          <Box style={{ textAlign: "center" }}>
+            <Link
+              to="/login"
+              style={{
+                color: "#0A0552",
+                textDecoration: "underline",
+                fontSize: "0.9em",
+              }}
+            >
+              Back to Login
+            </Link>
+          </Box>
+        </>
+      ) : (
+        <>
+          <h2 style={{ marginBottom: "30px" }}>
+            Sign up to PACT Network Services
+          </h2>
+          <Form.Root onSubmit={handleSubmit}>
               <Form.Field name="organizationName">
                 <Form.Label
                   style={{
@@ -547,10 +508,7 @@ const SignupPage: React.FC = () => {
               </>
             )}
 {/* <Content] */}
-          </Box>
-        </Box>
-      </Box>
-    </>
+    </LandingPageLayout>
   );
 };
 
