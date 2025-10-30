@@ -34,8 +34,6 @@ const EditUserPage: React.FC = () => {
     id: 0,
     email: "",
     organizationName: "",
-    organizationId: 0,
-    organizationIdentifier: "",
   });
   const [status, setStatus] = useState<null | "success" | "error">(null);
   const [errorMessage, setErrorMessage] = useState("");
@@ -62,8 +60,6 @@ const EditUserPage: React.FC = () => {
             email: user.email,
             id: user.id,
             organizationName: user.organizationName,
-            organizationId: user.organizationId,
-            organizationIdentifier: user.organizationIdentifier,
           });
         } else {
           setErrorMessage("Failed to load user data");
@@ -105,8 +101,8 @@ const EditUserPage: React.FC = () => {
         setStatus("success");
       } else {
         const errorResponse = await response!.json();
-        if (errorResponse.error) {
-          setErrorMessage(errorResponse.error);
+        if (errorResponse.message) {
+          setErrorMessage(errorResponse.message);
         }
         setStatus("error");
       }
@@ -242,28 +238,6 @@ const EditUserPage: React.FC = () => {
                 <Text className="field-label">Organization Name</Text>
                 <TextField.Root
                   value={readOnlyData.organizationName}
-                  readOnly
-                  disabled
-                  className="readonly-field"
-                />
-              </Box>
-
-              {/* Read-only Organization ID */}
-              <Box className="form-field">
-                <Text className="field-label">Organization ID</Text>
-                <TextField.Root
-                  value={readOnlyData.organizationId.toString()}
-                  readOnly
-                  disabled
-                  className="readonly-field"
-                />
-              </Box>
-
-              {/* Read-only Organization Identifier */}
-              <Box className="form-field">
-                <Text className="field-label">Organization Identifier</Text>
-                <TextField.Root
-                  value={readOnlyData.organizationIdentifier}
                   readOnly
                   disabled
                   className="readonly-field"

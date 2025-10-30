@@ -19,6 +19,9 @@ import {
 registerPolicy([Role.Administrator, Role.Root], 'view-users');
 registerPolicy([Role.Administrator, Role.Root], 'edit-users');
 registerPolicy([Role.Administrator, Role.Root], 'add-users');
+registerPolicy([Role.Root], 'view-all-users');
+registerPolicy([Role.Root], 'edit-all-users');
+registerPolicy([Role.Root], 'add-all-users');
 
 export interface UserContext {
   userId: number;
@@ -102,8 +105,6 @@ export interface AddUserToOrganizationData {
   fullName: string;
   email: string;
   role: Role;
-  password: string;
-  confirmPassword: string;
 }
 
 export interface VerifyResetTokenResult {
@@ -120,13 +121,207 @@ export interface ResendVerificationData {
   email: string;
 }
 
+export interface SetPasswordData {
+  token: string;
+  password: string;
+  confirmPassword: string;
+}
+
 export class UserService {
   // TODO: Remove
+
+  private readonly PASSWORD_SETUP_TOKEN_EXPIRATION = 72;
 
   constructor(
     private db: Kysely<Database>,
     private emailService: EmailService
   ) {}
+
+
+  /**
+ * Generate and send password setup token for admin-created users
+ * 
+ * This method generates a secure token that allows a user to set their password
+ * for the first time. It follows a state machine pattern:
+ * - Token starts in 'generated' state
+ * - Can transition to 'used' (when password is set) or 'expired'
+ * - Once used or expired, token cannot be reused
+ * 
+ * @param userId - The ID of the user who needs to set their password
+ * @param email - The user's email address
+ * @param fullName - The user's full name
+ * @param organizationName - The name of the organization
+ */
+  private async generateAndSendPasswordSetupToken(
+    userId: number,
+    email: string,
+    fullName: string,
+    organizationName: string
+  ): Promise<void> {
+    // Generate cryptographically secure token
+    const token = crypto.randomBytes(32).toString('hex');
+    
+    // Set expiration (e.g., 72 hours from now)
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 72);
+
+    // Store token in database with type='setup'
+    await this.db
+      .insertInto('password_tokens')
+      .values({
+        userId,
+        token,
+        type: 'setup', // Distinguish from 'reset' tokens
+        createdAt: new Date(),
+        expiresAt,
+      })
+      .execute();
+
+    // Generate setup URL
+    const setupUrl = `${config.FRONTEND_URL}/set-password/${token}`;
+
+    // Send password setup email
+    await this.emailService.sendPasswordSetupEmail({
+      to: email,
+      name: fullName,
+      organizationName,
+      setupUrl,
+    });
+  }
+
+  /**
+   * Verify password setup token
+   * 
+   * Checks if a token is valid for setting a password:
+   * - Token must exist
+   * - Status must be 'generated' (not already used)
+   * - Must not be expired
+   * 
+   * @param token - The password setup token to verify
+   * @returns Object indicating if token is valid
+   * @throws {BadRequestError} If token is invalid, already used, or expired
+   */
+  async verifyPasswordSetupToken(token: string): Promise<{ 
+    valid: boolean; 
+    userId: number;
+    email: string;
+  }> {
+    if (!token || typeof token !== 'string') {
+      throw new BadRequestError('Token is required');
+    }
+
+    // Find token with user information
+    const tokenRecord = await this.db
+      .selectFrom('password_tokens')
+      .innerJoin('users', 'password_tokens.userId', 'users.id')
+      .select([
+        'password_tokens.userId',
+        'password_tokens.usedAt',
+        'password_tokens.expiresAt',
+        'users.email'
+      ])
+      .where('password_tokens.token', '=', token)
+      .where('password_tokens.type', '=', 'setup')
+      .executeTakeFirst();
+
+    if (!tokenRecord) {
+      throw new BadRequestError('Invalid setup token');
+    }
+
+    // Check if token is already used (derive status from usedAt)
+    if (tokenRecord.usedAt !== null) {
+      throw new BadRequestError('This setup link has already been used');
+    }
+
+    // Check if token is expired (derive status from expiresAt and current time)
+    if (new Date() > tokenRecord.expiresAt) {
+      throw new BadRequestError('Setup link has expired');
+    }
+
+    return {
+      valid: true,
+      userId: tokenRecord.userId,
+      email: tokenRecord.email
+    };
+  }
+
+
+  /**
+ * NEW METHOD: Set password using setup token
+ * 
+ * Allows a user to set their password for the first time using a valid token.
+ * This is the final step in the admin-created user flow.
+ * 
+ * State transition: 'generated' → 'used'
+ * 
+ * @param data - Object containing token and password
+ * @returns Success message
+ * @throws {BadRequestError} If validation fails or token is invalid
+ */
+  async setPasswordWithToken(data: SetPasswordData): Promise<{ message: string }> {
+    const { token, password, confirmPassword } = data;
+
+    // Validate input
+    if (!token || typeof token !== 'string') {
+      throw new BadRequestError('Token is required');
+    }
+
+    if (!password || typeof password !== 'string') {
+      throw new BadRequestError('Password is required');
+    }
+
+    if (!confirmPassword || typeof confirmPassword !== 'string') {
+      throw new BadRequestError('Password confirmation is required');
+    }
+
+    if (password !== confirmPassword) {
+      throw new BadRequestError('Passwords do not match');
+    }
+
+    if (password.length < 6) {
+      throw new BadRequestError('Password must be at least 6 characters long');
+    }
+
+    // Verify token is valid and get user ID
+    const { userId } = await this.verifyPasswordSetupToken(token);
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Use transaction to ensure atomicity
+    await this.db.transaction().execute(async (trx) => {
+      // Update user password and status
+      await trx
+        .updateTable('users')
+        .set({ 
+          password: hashedPassword,
+          status: 'enabled' // Activate the account
+        })
+        .where('id', '=', userId)
+        .execute();
+
+      // Mark token as used (state transition: GENERATED → USED)
+      await trx
+        .updateTable('password_tokens')
+        .set({ 
+          usedAt: new Date()
+        })
+        .where('token', '=', token)
+        .execute();
+    });
+
+    return { 
+      message: 'Password has been set successfully. You can now log in.' 
+    };
+  }
+
+
+  /**
+   * Helper function to normalize email addresses (trim and lowercase)
+   */
+  private normalizeEmail(email: string): string {
+    return email.trim().toLowerCase();
+  }
 
   /**
    * Helper function to check if email verification token has expired
@@ -160,10 +355,13 @@ export class UserService {
       throw new BadRequestError('Passwords do not match');
     }
 
+    // Normalize email: trim and lowercase
+    const normalizedEmail = this.normalizeEmail(data.email);
+
     // Check if email already exists
     const emailExists = await this.db
       .selectFrom('users')
-      .where('email', '=', data.email)
+      .where('email', '=', normalizedEmail)
       .executeTakeFirst();
 
     if (emailExists) {
@@ -189,7 +387,7 @@ export class UserService {
         .insertInto('users')
         .values({
           fullName: data.fullName,
-          email: data.email,
+          email: normalizedEmail,
           role: Role.User,
           password: hashedPassword,
           organizationId: organization.id,
@@ -225,10 +423,13 @@ export class UserService {
    * @throws UnauthorizedError If the email or password is incorrect.
    */
   async login(data: LoginData): Promise<UserContext> {
+    // Normalize email: trim and lowercase
+    const normalizedEmail = this.normalizeEmail(data.email);
+
     const user = await this.db
       .selectFrom('users')
       .selectAll()
-      .where('email', '=', data.email)
+      .where('email', '=', normalizedEmail)
       .executeTakeFirst();
       
     if (!user) {
@@ -351,9 +552,9 @@ export class UserService {
         'users.email',
         'users.status',
         'users.emailVerificationSentAt', // Changed from email_verification_sent_at
-        'organizations.name as organizationName'
+        'organizations.name as organizationName',
       ])
-      .where('users.email', '=', email.toLowerCase().trim())
+      .where('users.email', '=', this.normalizeEmail(email))
       .executeTakeFirst();
 
     // Don't reveal if email exists or not
@@ -577,7 +778,7 @@ export class UserService {
       .selectFrom('users')
       .innerJoin('organizations', 'users.organizationId', 'organizations.id')
       .select(['users.id', 'users.fullName', 'users.email'])
-      .where('users.email', '=', email.toLowerCase().trim())
+      .where('users.email', '=', this.normalizeEmail(email))
       .executeTakeFirst();
 
     // Always return success to prevent email enumeration attacks
@@ -591,10 +792,11 @@ export class UserService {
     expiresAt.setMinutes(expiresAt.getMinutes() + 15); // 15 minutes expiration
 
     await this.db
-      .insertInto('password_reset_tokens')
+      .insertInto('password_tokens')
       .values({
         userId: user.id,
         token,
+        type: 'reset',
         expiresAt,
         createdAt: new Date(),
       })
@@ -615,6 +817,8 @@ export class UserService {
         'If this email is known in our system, a reset link has been sent.',
     };
   }
+
+
 
   /**
    * Resets a user's password using a provided reset token.
@@ -653,9 +857,10 @@ export class UserService {
 
     // Validate reset token
     const foundToken = await this.db
-      .selectFrom('password_reset_tokens')
+      .selectFrom('password_tokens')
       .selectAll()
       .where('token', '=', token)
+      .where('type', '=', 'reset')
       .where('usedAt', 'is', null)
       .executeTakeFirst();
 
@@ -679,13 +884,14 @@ export class UserService {
 
     // Mark token as used
     await this.db
-      .updateTable('password_reset_tokens')
+      .updateTable('password_tokens')
       .set({ usedAt: new Date() })
       .where('token', '=', token)
       .execute();
 
     return { message: 'Password has been reset successfully' };
   }
+
 
   /**
    * Verify Reset Token - Check if reset token is valid
@@ -698,9 +904,10 @@ export class UserService {
     }
 
     const resetToken = await this.db
-      .selectFrom('password_reset_tokens')
+      .selectFrom('password_tokens')
       .selectAll()
       .where('token', '=', token)
+      .where('type', '=', 'reset')
       .where('usedAt', 'is', null)
       .executeTakeFirst();
 
@@ -719,22 +926,17 @@ export class UserService {
   }
 
   /**
-   * Adds a new user to an existing organization.
-   *
-   * - Validates that the provided passwords match.
-   * - Checks if the email is already in use.
-   * - Verifies that the organization exists.
-   * - Hashes the user's password.
-   * - Creates the user within the specified organization.
-   * - Sends a welcome email to the new user.
-   * - Returns the user's context information.
-   *
-   * @param organizationId - The ID of the organization to add the user to.
-   * @param data - The user data containing user details.
-   * @returns A promise that resolves to the newly created user's context.
-   * @throws {BadRequestError} If passwords do not match or email is already in use.
-   * @throws {NotFoundError} If the organization doesn't exist.
-   */
+ * NEW METHOD: Adds a new user to an organization WITHOUT requiring a password upfront
+ * 
+ * Admin creates the user without a password. The user receives an email
+ * with a token to set their own password. This is an ALTERNATIVE to the 
+ * existing addUserToOrganization method.
+ * 
+ * @param context - The admin user's context
+ * @param organizationId - The ID of the organization to add the user to
+ * @param data - The user data (no password required)
+ * @returns A promise with success message and user ID
+ */
   async addUserToOrganization(
     context: UserContext, 
     organizationId: number, 
@@ -742,17 +944,19 @@ export class UserService {
   ): Promise<{ message: string; userId: number }> {
     
     // Check if user has permission to add users to this organization
-    checkAccess(context, 'add-users', context.organizationId === organizationId || context.role === Role.Administrator);
+    checkAccess(
+      context, 
+      'add-users', 
+      context.organizationId === organizationId || context.role === Role.Administrator
+    );
 
-    // Check if passwords match
-    if (data.password !== data.confirmPassword) {
-      throw new BadRequestError('Passwords do not match');
-    }
+    // Normalize email: trim and lowercase
+    const normalizedEmail = this.normalizeEmail(data.email);
 
     // Check if email already exists
     const emailExists = await this.db
       .selectFrom('users')
-      .where('email', '=', data.email)
+      .where('email', '=', normalizedEmail)
       .executeTakeFirst();
 
     if (emailExists) {
@@ -770,25 +974,25 @@ export class UserService {
       throw new NotFoundError('Organization not found');
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(data.password, 10);
-
-    // Create user
+    // Create user WITHOUT a password - they'll set it via token
+    // Using a placeholder password that cannot be used for login
+    const placeholderPassword = await bcrypt.hash(crypto.randomBytes(32).toString('hex'), 10);
+    
     const user = await this.db
       .insertInto('users')
       .values({
         fullName: data.fullName,
-        email: data.email,
+        email: normalizedEmail,
         role: data.role,
-        password: hashedPassword,
+        password: placeholderPassword, // Placeholder - user must set via token
         organizationId: organizationId,
-        status: 'unverified', // Start as unverified
+        status: 'unverified', // Status remains unverified until password is set
       })
       .returningAll()
       .executeTakeFirstOrThrow();
 
-    // Generate and send verification token
-    await this.generateAndSendVerificationToken(
+    // Generate and send password setup token
+    await this.generateAndSendPasswordSetupToken(
       user.id,
       user.email,
       user.fullName,
@@ -796,7 +1000,7 @@ export class UserService {
     );
 
     return {
-      message: 'User created successfully. They will receive an email to verify their account.',
+      message: 'User created successfully. They will receive an email to set their password.',
       userId: user.id
     };
   }

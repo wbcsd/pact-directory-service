@@ -267,6 +267,26 @@ export class OrganizationService {
       throw new NotFoundError('User not found');
     }
 
+    // If this user is the last administrator, prevent role change
+    if (update.role && update.role !== Role.Administrator) {
+      const adminCount = await this.db
+        .selectFrom('users')
+        .where('organizationId', '=', organizationId)
+        .where('status', '=', 'enabled')
+        .where('role', '=', Role.Administrator)
+        .select(['id'])
+        .execute();
+
+      if (adminCount.length <= 1) {
+        const isLastAdmin = adminCount.some((admin) => admin.id === userId);
+        if (isLastAdmin) {
+          throw new ForbiddenError(
+            'Cannot change role of the last administrator in the organization'
+          );
+        }
+      }
+    }
+
     await this.db
       .updateTable('users')
       .set({

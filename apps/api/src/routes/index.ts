@@ -90,6 +90,12 @@ router.post('/directory/users/forgot-password', context(async (req) => {
   return result;
 }));
 
+// Set password using reset token
+router.post('/directory/users/set-password', context(async (req) => {
+  const result = await req.services.user.setPasswordWithToken(req.body);
+  return result;
+}));
+
 router.post('/directory/users/reset-password', context(async (req) => {
   const result = await req.services.user.resetPassword(req.body);
   return result;

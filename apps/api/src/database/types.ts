@@ -9,7 +9,7 @@ export interface Database {
   roles_policies: RolesPoliciesTable;
   connection_requests: ConnectionRequestTable;
   connections: ConnectionTable;
-  password_reset_tokens: PasswordResetTokenTable;
+  password_tokens: PasswordTokenTable;
 }
 
 export interface OrganizationsTable {
@@ -69,11 +69,12 @@ export interface ConnectionTable {
   requestedAt: Date;
 }
 
-export interface PasswordResetTokenTable {
+export interface PasswordTokenTable {
   id: Generated<number>;
   userId: number;
   token: string;
   expiresAt: Date;
   createdAt: Date;
+  type: 'reset' | 'setup';
   usedAt: Date | null;
 }

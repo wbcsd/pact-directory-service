@@ -6,6 +6,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import HeroImage from "../assets/providers-header.webp";
 import { useAuth } from "../contexts/AuthContext";
+import useBodyOverflow from "../utils/use-body-overflow";
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ const LoginPage: React.FC = () => {
     password: "",
   });
   const [errorMessage, setErrorMessage] = useState("");
+
+  useBodyOverflow(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

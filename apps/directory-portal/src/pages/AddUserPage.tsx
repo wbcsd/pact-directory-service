@@ -28,8 +28,6 @@ const AddUserPage: React.FC = () => {
     fullName: "",
     email: "",
     role: "",
-    password: "",
-    confirmPassword: "",
   });
   const [status, setStatus] = useState<null | "success" | "error">(null);
   const [errorMessage, setErrorMessage] = useState("");
@@ -38,19 +36,6 @@ const AddUserPage: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
-    // Client-side password validation
-    if (formData.password !== formData.confirmPassword) {
-      setErrorMessage("Passwords do not match");
-      setStatus("error");
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setErrorMessage("Password must be at least 6 characters long");
-      setStatus("error");
-      return;
-    }
 
     try {
       setCreating(true);
@@ -75,8 +60,8 @@ const AddUserPage: React.FC = () => {
         }, 2000);
       } else {
         const errorResponse = await response!.json();
-        if (errorResponse.error) {
-          setErrorMessage(errorResponse.error);
+        if (errorResponse.message) {
+          setErrorMessage(errorResponse.message);
         } else {
           setErrorMessage("Failed to create user");
         }
@@ -111,7 +96,7 @@ const AddUserPage: React.FC = () => {
         </div>
         <div>
           <Box className="form-container">
-            <Form.Root onSubmit={handleSubmit}>
+            <Form.Root autoComplete="off" onSubmit={handleSubmit}>
               {/* Email Field */}
               <Form.Field name="email">
                 <Form.Label className="field-label">
@@ -119,6 +104,7 @@ const AddUserPage: React.FC = () => {
                 </Form.Label>
                 <Form.Control asChild>
                   <TextField.Root
+                    autoComplete="off"
                     value={formData.email}
                     required
                     type="email"
@@ -171,6 +157,7 @@ const AddUserPage: React.FC = () => {
                 </Form.Label>
                 <Form.Control asChild>
                   <TextField.Root
+                    autoComplete="off"
                     value={formData.fullName}
                     required
                     placeholder="Enter full name"
@@ -241,98 +228,6 @@ const AddUserPage: React.FC = () => {
                   </Select.Portal>
                 </Select.Root>
               </Box>
-
-              {/* Password Field */}
-              <Form.Field name="password">
-                <Form.Label className="field-label">
-                  Password<span className="required-asterisk">*</span>
-                </Form.Label>
-                <Form.Control asChild>
-                  <TextField.Root
-                    value={formData.password}
-                    required
-                    type="password"
-                    placeholder="Enter password"
-                    onChange={handleChange}
-                    className="editable-field"
-                  >
-                    <TextField.Slot side="right">
-                      <Tooltip.Provider delayDuration={0}>
-                        <Tooltip.Root>
-                          <Tooltip.Trigger asChild>
-                            <InfoCircledIcon
-                              width={20}
-                              height={20}
-                              color="#0A0552"
-                              className="info-icon"
-                            />
-                          </Tooltip.Trigger>
-                          <Tooltip.Content
-                            className="TooltipContent"
-                            side="right"
-                            align="center"
-                            sideOffset={5}
-                          >
-                            Password must be at least 6 characters long
-                          </Tooltip.Content>
-                        </Tooltip.Root>
-                      </Tooltip.Provider>
-                    </TextField.Slot>
-                  </TextField.Root>
-                </Form.Control>
-                <Form.Message
-                  match="valueMissing"
-                  className="validation-message"
-                >
-                  Password is required.
-                </Form.Message>
-              </Form.Field>
-
-              {/* Confirm Password Field */}
-              <Form.Field name="confirmPassword">
-                <Form.Label className="field-label">
-                  Confirm Password<span className="required-asterisk">*</span>
-                </Form.Label>
-                <Form.Control asChild>
-                  <TextField.Root
-                    value={formData.confirmPassword}
-                    required
-                    type="password"
-                    placeholder="Confirm password"
-                    onChange={handleChange}
-                    className="editable-field"
-                  >
-                    <TextField.Slot side="right">
-                      <Tooltip.Provider delayDuration={0}>
-                        <Tooltip.Root>
-                          <Tooltip.Trigger asChild>
-                            <InfoCircledIcon
-                              width={20}
-                              height={20}
-                              color="#0A0552"
-                              className="info-icon"
-                            />
-                          </Tooltip.Trigger>
-                          <Tooltip.Content
-                            className="TooltipContent"
-                            side="right"
-                            align="center"
-                            sideOffset={5}
-                          >
-                            Re-enter the password to confirm
-                          </Tooltip.Content>
-                        </Tooltip.Root>
-                      </Tooltip.Provider>
-                    </TextField.Slot>
-                  </TextField.Root>
-                </Form.Control>
-                <Form.Message
-                  match="valueMissing"
-                  className="validation-message"
-                >
-                  Please confirm your password.
-                </Form.Message>
-              </Form.Field>
 
               {/* Organization Info Display */}
               <Box className="form-field">
