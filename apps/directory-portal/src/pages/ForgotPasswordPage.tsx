@@ -49,7 +49,7 @@ const ForgotPasswordPage: React.FC = () => {
 
   return (
     <LandingPageLayout>
-{/* [Content> */}
+
             {status === "success" ? (
               <Box>
                 <h2 style={{ marginBottom: "20px", color: "#0A0552" }}>
@@ -194,7 +194,7 @@ const ForgotPasswordPage: React.FC = () => {
                 </p>
               </>
             )}
-{/* <Content] */}
+
     </LandingPageLayout>
   );
 };

@@ -57,7 +57,7 @@ const EmailVerificationPage: React.FC = () => {
 
   return (
     <LandingPageLayout>
-{/* [Content> */}
+
             {status === "verifying" && (
               <Box style={{ textAlign: "center" }}>
                 <h2 style={{ marginBottom: "20px" }}>Verifying Email...</h2>
@@ -149,7 +149,7 @@ const EmailVerificationPage: React.FC = () => {
                 pact-support@wbcsd.org
               </a>
             </p>
-{/* <Content] */}
+
     </LandingPageLayout>
   );
 };

@@ -50,7 +50,7 @@ const ResendVerificationPage: React.FC = () => {
 
   return (
     <LandingPageLayout>
-{/* [Content> */}
+
       {status === "success" ? (
         <Box>
                 <h2 style={{ marginBottom: "20px", color: "#0A0552" }}>
@@ -193,7 +193,7 @@ const ResendVerificationPage: React.FC = () => {
                   </p>
               </>
             )}
-{/* <Content] */}
+
     </LandingPageLayout>
   );
 };

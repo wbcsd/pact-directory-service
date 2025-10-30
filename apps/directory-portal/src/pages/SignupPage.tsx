@@ -86,7 +86,7 @@ const SignupPage: React.FC = () => {
 
   return (
     <LandingPageLayout>
-{/* [Content> */}
+
       {status === "success" ? (
         <>
           <h2 style={{ marginBottom: "30px" }}>
@@ -507,7 +507,7 @@ const SignupPage: React.FC = () => {
                 )}
               </>
             )}
-{/* <Content] */}
+
     </LandingPageLayout>
   );
 };

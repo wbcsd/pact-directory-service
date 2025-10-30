@@ -65,7 +65,7 @@ const LoginPage: React.FC = () => {
 
   return (
     <LandingPageLayout>
-{/* [Content> */}
+
       <h2 style={{ marginBottom: "30px" }}>
         Log in to PACT Network Services
       </h2>
@@ -188,7 +188,7 @@ const LoginPage: React.FC = () => {
           <Callout.Text>{errorMessage}</Callout.Text>
         </Callout.Root>
       )}
-{/* <Content] */}
+
     </LandingPageLayout>
   );
 };
