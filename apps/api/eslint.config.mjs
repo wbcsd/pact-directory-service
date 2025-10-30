@@ -74,5 +74,18 @@ export default tseslint.config(
         version: ">=21.0.0",
       },
     },
-  }
+  },
+{
+    files: ["**/*.test.ts"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-non-null-assertion": "off",
+      "@typescript-eslint/no-unused-expressions": "off",
+      "no-console": "off",
+      "max-len": ["warn", { code: 140 }],
+    },
+  },
 );
