@@ -104,6 +104,7 @@ describe('EmailService', () => {
       name: 'Jane Smith',
       organizationName: 'Test Company',
       verificationUrl: 'https://example.com/verify/token456',
+      setupUrl: 'https://example.com/setup/token123',
     };
 
     it('should send email verification with correct parameters', async () => {
@@ -193,13 +194,11 @@ describe('EmailService', () => {
       expect(logger.info).toHaveBeenCalledWith(`Email sent to ${mockParams.name}`);
     });
 
-    it('should catch and log SendGrid errors without throwing', async () => {
+    it('should throw SendGrid errors', async () => {
       const error = new Error('SendGrid error');
       mockSgMailSend.mockRejectedValueOnce(error);
 
-      await emailService.sendConnectionRequestEmail(mockParams);
-
-      expect(logger.error).toHaveBeenCalledWith('sendConnectionRequestEmail error', error);
+      await expect(emailService.sendConnectionRequestEmail(mockParams)).rejects.toThrow('SendGrid error');
     });
   });
 
@@ -259,19 +258,17 @@ describe('EmailService', () => {
       expect(logger.info).toHaveBeenCalledWith(`Password reset email sent to ${mockParams.to}`);
     });
 
-    it('should catch and log SendGrid errors without throwing', async () => {
+    it('should throw SendGrid errors', async () => {
       const error = new Error('SendGrid error');
       mockSgMailSend.mockRejectedValueOnce(error);
 
-      await emailService.sendPasswordResetEmail(mockParams);
-
-      expect(logger.error).toHaveBeenCalledWith('sendPasswordResetEmail error', error);
+      await expect(emailService.sendPasswordResetEmail(mockParams)).rejects.toThrow('SendGrid error');
     });
   });
 
   describe('Development mode behavior', () => {
-    it('should mock email sending and log in development mode', async () => {
-      (config as any).NODE_ENV = 'development';
+    it('should mock email sending and log when api key env var is not present', async () => {
+      (config as any).SENDGRID_API_KEY = '';
       const devEmailService = new EmailService();
 
       const mockParams = {
