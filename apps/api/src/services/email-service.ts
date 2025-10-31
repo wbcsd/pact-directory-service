@@ -92,12 +92,33 @@ export class EmailService {
       </div>
     `;
 
-    await sgMail.send({
-      to,
-      from: config.SENDGRID_FROM_EMAIL,
-      subject: `Please verify your email address for ${organizationName}`,
-      html: htmlContent,
-    });
+    const textContent = [
+      `Hello ${name},`,
+      '',
+      'Thank you for registering with us. To complete your registration and activate your account, please verify your email address by clicking the link below:',
+      '',
+      verificationUrl,
+      '',
+      'This link will expire in 24 hours.',
+      '',
+      "If you didn't create this account, you can safely ignore this email.",
+      '',
+      'Best regards,',
+      'The PACT Team',
+    ].join('\n');
+
+    try {
+      await sgMail.send({
+        to,
+        from: config.SENDGRID_FROM_EMAIL,
+        subject: `Please verify your email address for ${organizationName}`,
+        html: htmlContent,
+        text: textContent,
+      });
+      logger.info(`Email verification sent to ${to}`);
+    } catch (error) {
+      logger.error('sendEmailVerification error', error);
+    }
   }
   
   async sendConnectionRequestEmail({
