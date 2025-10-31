@@ -4,5 +4,5 @@
     "sourceMap": false,
     "removeComments": true
   },
-  "exclude": ["spec", "src/public/", "scripts"]
+  "exclude": ["spec", "src/public/", "scripts", "src/**/*.test.ts"],
 }
