@@ -40,10 +40,10 @@ const EmailVerificationPage: React.FC = () => {
 
         if (response.ok) {
           setStatus("success");
-          setMessage(data.message || "Email verified successfully. Your account is now active.");
+          setMessage(data.message || "Your account is now active.");
         } else {
           setStatus("error");
-          setMessage(data.message || "Verification failed. The token may be invalid or expired.");
+          setMessage(data.message || "The token may be invalid or expired.");
         }
       } catch (error) {
         console.error("Verification error:", error);
@@ -123,9 +123,6 @@ const EmailVerificationPage: React.FC = () => {
                     {message}
                   </Callout.Text>
                 </Callout.Root>
-                <p style={{ marginBottom: "30px", color: "#666" }}>
-                  Your account is now active and you can start using PACT Network Services.
-                </p>
                 <Box style={{ textAlign: "center" }}>
                   <Link
                     to="/login"
