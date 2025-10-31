@@ -9,7 +9,7 @@ export default tseslint.config(
   ...tseslint.configs.strictTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
   {
-    ignores: ["**/node_modules/*", "**/*.mjs", "**/*.js"],
+    ignores: ["**/node_modules/*", "**/*.mjs", "**/*.js", "**/*.test.ts"],
   },
   {
     languageOptions: {
