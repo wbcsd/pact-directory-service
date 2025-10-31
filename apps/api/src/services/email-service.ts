@@ -58,13 +58,35 @@ export class EmailService {
         <p>Best regards,<br>The PACT Team</p>
       </div>
     `;
+
+    // text content array as fallback
+    const textContent = [
+      `Hello ${name},`,
+      '',
+      `An administrator from ${organizationName} has created an account for you. To get started, please set your password by clicking the link below:`,
+      '',
+      setupUrl,
+      '',
+      'This link will expire in 72 hours.',
+      '',
+      "If you didn't expect this email or believe you received it by mistake, please contact your administrator.",
+      '',
+      'Best regards,',
+      'The PACT Team',
+    ].join('\n');
     
-    await sgMail.send({
-      to,
-      from: config.SENDGRID_FROM_EMAIL,
-      subject: `Set your password for ${organizationName}`,
-      html: htmlContent,
-    });
+    try {
+      await sgMail.send({
+        to,
+        from: config.SENDGRID_FROM_EMAIL,
+        subject: `Set your password for ${organizationName}`,
+        html: htmlContent,
+        text: textContent
+      });
+      logger.info(`Password setup email sent to ${to}`);
+    } catch (error) {
+      logger.error('sendPasswordSetupEmail error', error);
+    }
   }
 
   async sendEmailVerification(params: {

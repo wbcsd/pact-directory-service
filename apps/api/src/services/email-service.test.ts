@@ -94,7 +94,8 @@ describe('EmailService', () => {
       const error = new Error('SendGrid error');
       mockSgMailSend.mockRejectedValueOnce(error);
 
-      await expect(emailService.sendPasswordSetupEmail(mockParams)).rejects.toThrow('SendGrid error');
+      await emailService.sendPasswordSetupEmail(mockParams);
+      expect(logger.error).toHaveBeenCalledWith('sendPasswordSetupEmail error', error);
     });
   });
 
@@ -142,7 +143,8 @@ describe('EmailService', () => {
       const error = new Error('SendGrid error');
       mockSgMailSend.mockRejectedValueOnce(error);
 
-      await expect(emailService.sendEmailVerification(mockParams)).rejects.toThrow('SendGrid error');
+      await emailService.sendEmailVerification(mockParams);
+      expect(logger.error).toHaveBeenCalledWith('sendEmailVerification error', error);
     });
   });
 
@@ -270,8 +272,8 @@ describe('EmailService', () => {
   });
 
   describe('Development mode behavior', () => {
-    it('should mock email sending and log in development mode', async () => {
-      (config as any).NODE_ENV = 'development';
+    it('should mock email sending and log when api key env var is not present', async () => {
+      (config as any).SENDGRID_API_KEY = '';
       const devEmailService = new EmailService();
 
       const mockParams = {
