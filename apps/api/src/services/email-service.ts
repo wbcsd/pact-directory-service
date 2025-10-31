@@ -75,18 +75,14 @@ export class EmailService {
       'The PACT Team',
     ].join('\n');
     
-    try {
-      await sgMail.send({
-        to,
-        from: config.SENDGRID_FROM_EMAIL,
-        subject: `Set your password for ${organizationName}`,
-        html: htmlContent,
-        text: textContent
-      });
-      logger.info(`Password setup email sent to ${to}`);
-    } catch (error) {
-      logger.error('sendPasswordSetupEmail error', error);
-    }
+    await sgMail.send({
+      to,
+      from: config.SENDGRID_FROM_EMAIL,
+      subject: `Set your password for ${organizationName}`,
+      html: htmlContent,
+      text: textContent
+    });
+    logger.info(`Password setup email sent to ${to}`);
   }
 
   async sendEmailVerification(params: {
@@ -129,18 +125,14 @@ export class EmailService {
       'The PACT Team',
     ].join('\n');
 
-    try {
-      await sgMail.send({
-        to,
-        from: config.SENDGRID_FROM_EMAIL,
-        subject: `Please verify your email address for ${organizationName}`,
-        html: htmlContent,
-        text: textContent,
-      });
-      logger.info(`Email verification sent to ${to}`);
-    } catch (error) {
-      logger.error('sendEmailVerification error', error);
-    }
+    await sgMail.send({
+      to,
+      from: config.SENDGRID_FROM_EMAIL,
+      subject: `Please verify your email address for ${organizationName}`,
+      html: htmlContent,
+      text: textContent,
+    });
+    logger.info(`Email verification sent to ${to}`);
   }
   
   async sendConnectionRequestEmail({
@@ -156,12 +148,8 @@ export class EmailService {
       html: `<p>Hello ${name},</p><p>${companyName} has requested to connect with your organization on the PACT Network. Please log in to your account to accept or reject the request.</p><p>You can manage your connections from https://pact-directory-portal.onrender.com/manage-connections</p><p>Best regards,<br>The PACT Network</p>`,
     };
 
-    try {
-      await sgMail.send(msg);
-      logger.info(`Email sent to ${name}`);
-    } catch (error) {
-      logger.error('sendConnectionRequestEmail error', error);
-    }
+    await sgMail.send(msg);
+    logger.info(`Email sent to ${name}`);
   }
 
   async sendPasswordResetEmail({
@@ -214,12 +202,7 @@ export class EmailService {
       html: htmlContent,
     };
 
-    try {
-      await sgMail.send(msg);
-      logger.info(`Password reset email sent to ${to}`);
-    } catch (error) {
-      logger.error('sendPasswordResetEmail error', error);
-    }
+    await sgMail.send(msg);
+    logger.info(`Password reset email sent to ${to}`);
   }
-
 }
