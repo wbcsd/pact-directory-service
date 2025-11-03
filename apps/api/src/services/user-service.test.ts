@@ -1,7 +1,5 @@
 import { UserService } from './user-service';
 import { EmailService } from './email-service';
-import { Kysely } from 'kysely';
-import { Database } from '@src/database/types';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import config from '@src/common/config';
@@ -11,6 +9,7 @@ import {
   NotFoundError,
 } from '@src/common/errors';
 import { Role } from '@src/common/policies';
+import { createMockDatabase } from '../common/mock-utils';
 
 // Mock dependencies
 jest.mock('bcrypt');
@@ -20,20 +19,15 @@ jest.mock('./email-service');
 
 describe('UserService', () => {
   let userService: UserService;
-  let mockDb: jest.Mocked<Kysely<Database>>;
+  let dbMocks: ReturnType<typeof createMockDatabase>;
   let mockEmailService: jest.Mocked<EmailService>;
 
   beforeEach(() => {
     // Reset all mocks
     jest.clearAllMocks();
 
-    // Mock database
-    mockDb = {
-      selectFrom: jest.fn(),
-      insertInto: jest.fn(),
-      updateTable: jest.fn(),
-      transaction: jest.fn(),
-    } as any;
+    // Create standardized database mocks
+    dbMocks = createMockDatabase();
 
     // Mock email service
     mockEmailService = {
@@ -46,7 +40,7 @@ describe('UserService', () => {
     (config as any).FRONTEND_URL = 'http://localhost:3000';
     (config as any).EMAIL_VERIFICATION_EXP = 21600; // 6 hours in seconds
 
-    userService = new UserService(mockDb, mockEmailService);
+    userService = new UserService(dbMocks.db as any, mockEmailService);
   });
 
   describe('signup', () => {
@@ -68,64 +62,29 @@ describe('UserService', () => {
         toString: jest.fn().mockReturnValue('mocktoken123'),
       });
 
-      // Mock email check
-      mockDb.selectFrom = jest.fn().mockReturnValue({
-        where: jest.fn().mockReturnValue({
-          executeTakeFirst: jest.fn().mockResolvedValue(null),
-        }),
-      });
+      // Mock email check - user doesn't exist
+      dbMocks.executors.executeTakeFirst.mockResolvedValue(null);
 
-      // Mock transaction
-      mockDb.transaction = jest.fn().mockReturnValue({
-        execute: jest.fn().mockImplementation(async (callback) => {
-          const mockTrx = {
-            insertInto: jest.fn().mockReturnValue({
-              values: jest.fn().mockReturnValue({
-                returning: jest.fn().mockReturnValue({
-                  executeTakeFirstOrThrow: jest
-                    .fn()
-                    .mockResolvedValue({ id: mockOrgId }),
+      // Mock transaction execution
+      dbMocks.transaction().execute.mockImplementation(async (callback: any) => {
+        const mockTrx = {
+          insertInto: jest.fn().mockReturnValue({
+            values: jest.fn().mockReturnValue({
+              returning: jest.fn().mockReturnValue({
+                executeTakeFirstOrThrow: jest.fn().mockResolvedValue({ id: mockOrgId }),
+              }),
+              returningAll: jest.fn().mockReturnValue({
+                executeTakeFirstOrThrow: jest.fn().mockResolvedValue({
+                  id: mockUserId,
+                  email: 'john@example.com',
+                  fullName: 'John Doe',
+                  organizationId: mockOrgId,
                 }),
               }),
             }),
-          };
-
-          // Second insertInto call for user
-          mockTrx.insertInto = jest
-            .fn()
-            .mockReturnValueOnce({
-              values: jest.fn().mockReturnValue({
-                returning: jest.fn().mockReturnValue({
-                  executeTakeFirstOrThrow: jest
-                    .fn()
-                    .mockResolvedValue({ id: mockOrgId }),
-                }),
-              }),
-            })
-            .mockReturnValueOnce({
-              values: jest.fn().mockReturnValue({
-                returningAll: jest.fn().mockReturnValue({
-                  executeTakeFirstOrThrow: jest.fn().mockResolvedValue({
-                    id: mockUserId,
-                    email: 'john@example.com',
-                    fullName: 'John Doe',
-                    organizationId: mockOrgId,
-                  }),
-                }),
-              }),
-            });
-
-          return callback(mockTrx);
-        }),
-      });
-
-      // Mock updateTable for verification token
-      mockDb.updateTable = jest.fn().mockReturnValue({
-        set: jest.fn().mockReturnValue({
-          where: jest.fn().mockReturnValue({
-            execute: jest.fn().mockResolvedValue(undefined),
           }),
-        }),
+        };
+        return callback(mockTrx);
       });
 
       const result = await userService.signup(signupData);
@@ -149,20 +108,11 @@ describe('UserService', () => {
     });
 
     it('should throw BadRequestError if email already exists', async () => {
-      mockDb.selectFrom = jest.fn().mockReturnValue({
-        where: jest.fn().mockReturnValue({
-          executeTakeFirst: jest
-            .fn()
-            .mockResolvedValue({ email: 'john@example.com' }),
-        }),
-      });
+      // Mock that email already exists
+      dbMocks.executors.executeTakeFirst.mockResolvedValue({ email: 'john@example.com' });
 
-      await expect(userService.signup(signupData)).rejects.toThrow(
-        BadRequestError
-      );
-      await expect(userService.signup(signupData)).rejects.toThrow(
-        'Email already in use'
-      );
+      await expect(userService.signup(signupData)).rejects.toThrow(BadRequestError);
+      await expect(userService.signup(signupData)).rejects.toThrow('Email already in use');
     });
 
     it('should normalize email to lowercase and trim', async () => {
@@ -181,9 +131,9 @@ describe('UserService', () => {
           executeTakeFirst: jest.fn().mockResolvedValue(null),
         }),
       });
-      mockDb.selectFrom = mockSelectFrom;
+      dbMocks.db.selectFrom = mockSelectFrom;
 
-      mockDb.transaction = jest.fn().mockReturnValue({
+      dbMocks.db.transaction = jest.fn().mockReturnValue({
         execute: jest.fn().mockImplementation(async (callback) => {
           const mockTrx = {
             insertInto: jest
@@ -214,7 +164,7 @@ describe('UserService', () => {
         }),
       });
 
-      mockDb.updateTable = jest.fn().mockReturnValue({
+      dbMocks.db.updateTable = jest.fn().mockReturnValue({
         set: jest.fn().mockReturnValue({
           where: jest.fn().mockReturnValue({
             execute: jest.fn().mockResolvedValue(undefined),
@@ -244,14 +194,8 @@ describe('UserService', () => {
         status: 'enabled' as const,
       };
 
-      mockDb.selectFrom = jest.fn().mockReturnValue({
-        selectAll: jest.fn().mockReturnValue({
-          where: jest.fn().mockReturnValue({
-            executeTakeFirst: jest.fn().mockResolvedValue(mockUser),
-          }),
-        }),
-      });
-
+      // Mock user exists and password matches
+      dbMocks.executors.executeTakeFirst.mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
       const result = await userService.login(loginData);
@@ -264,20 +208,11 @@ describe('UserService', () => {
     });
 
     it('should throw UnauthorizedError if user does not exist', async () => {
-      mockDb.selectFrom = jest.fn().mockReturnValue({
-        selectAll: jest.fn().mockReturnValue({
-          where: jest.fn().mockReturnValue({
-            executeTakeFirst: jest.fn().mockResolvedValue(null),
-          }),
-        }),
-      });
+      // Mock user not found
+      dbMocks.executors.executeTakeFirst.mockResolvedValue(null);
 
-      await expect(userService.login(loginData)).rejects.toThrow(
-        UnauthorizedError
-      );
-      await expect(userService.login(loginData)).rejects.toThrow(
-        'Invalid email or password'
-      );
+      await expect(userService.login(loginData)).rejects.toThrow(UnauthorizedError);
+      await expect(userService.login(loginData)).rejects.toThrow('Invalid email or password');
     });
 
     it('should throw UnauthorizedError if password is invalid', async () => {
@@ -290,7 +225,7 @@ describe('UserService', () => {
         status: 'enabled' as const,
       };
 
-      mockDb.selectFrom = jest.fn().mockReturnValue({
+      dbMocks.db.selectFrom = jest.fn().mockReturnValue({
         selectAll: jest.fn().mockReturnValue({
           where: jest.fn().mockReturnValue({
             executeTakeFirst: jest.fn().mockResolvedValue(mockUser),
@@ -318,7 +253,7 @@ describe('UserService', () => {
         status: 'deleted' as const,
       };
 
-      mockDb.selectFrom = jest.fn().mockReturnValue({
+      dbMocks.db.selectFrom = jest.fn().mockReturnValue({
         selectAll: jest.fn().mockReturnValue({
           where: jest.fn().mockReturnValue({
             executeTakeFirst: jest.fn().mockResolvedValue(mockUser),
@@ -344,7 +279,7 @@ describe('UserService', () => {
         status: 'disabled' as const,
       };
 
-      mockDb.selectFrom = jest.fn().mockReturnValue({
+      dbMocks.db.selectFrom = jest.fn().mockReturnValue({
         selectAll: jest.fn().mockReturnValue({
           where: jest.fn().mockReturnValue({
             executeTakeFirst: jest.fn().mockResolvedValue(mockUser),
@@ -371,7 +306,7 @@ describe('UserService', () => {
         emailVerificationSentAt: new Date(),
       };
 
-      mockDb.selectFrom = jest.fn().mockReturnValue({
+      dbMocks.db.selectFrom = jest.fn().mockReturnValue({
         selectAll: jest.fn().mockReturnValue({
           where: jest.fn().mockReturnValue({
             where: jest.fn().mockReturnValue({
@@ -381,7 +316,7 @@ describe('UserService', () => {
         }),
       });
 
-      mockDb.updateTable = jest.fn().mockReturnValue({
+      dbMocks.db.updateTable = jest.fn().mockReturnValue({
         set: jest.fn().mockReturnValue({
           where: jest.fn().mockReturnValue({
             execute: jest.fn().mockResolvedValue(undefined),
@@ -401,7 +336,7 @@ describe('UserService', () => {
     });
 
     it('should throw BadRequestError if token is invalid', async () => {
-      mockDb.selectFrom = jest.fn().mockReturnValue({
+      dbMocks.db.selectFrom = jest.fn().mockReturnValue({
         selectAll: jest.fn().mockReturnValue({
           where: jest.fn().mockReturnValue({
             where: jest.fn().mockReturnValue({
@@ -428,7 +363,7 @@ describe('UserService', () => {
         emailVerificationSentAt: expiredDate,
       };
 
-      mockDb.selectFrom = jest.fn().mockReturnValue({
+      dbMocks.db.selectFrom = jest.fn().mockReturnValue({
         selectAll: jest.fn().mockReturnValue({
           where: jest.fn().mockReturnValue({
             where: jest.fn().mockReturnValue({
@@ -459,7 +394,7 @@ describe('UserService', () => {
         toString: jest.fn().mockReturnValue('resetToken123'),
       });
 
-      mockDb.selectFrom = jest.fn().mockReturnValue({
+      dbMocks.db.selectFrom = jest.fn().mockReturnValue({
         innerJoin: jest.fn().mockReturnValue({
           select: jest.fn().mockReturnValue({
             where: jest.fn().mockReturnValue({
@@ -469,7 +404,7 @@ describe('UserService', () => {
         }),
       });
 
-      mockDb.insertInto = jest.fn().mockReturnValue({
+      dbMocks.db.insertInto = jest.fn().mockReturnValue({
         values: jest.fn().mockReturnValue({
           execute: jest.fn().mockResolvedValue(undefined),
         }),
@@ -484,7 +419,7 @@ describe('UserService', () => {
     });
 
     it('should return generic message for non-existing user', async () => {
-      mockDb.selectFrom = jest.fn().mockReturnValue({
+      dbMocks.db.selectFrom = jest.fn().mockReturnValue({
         innerJoin: jest.fn().mockReturnValue({
           select: jest.fn().mockReturnValue({
             where: jest.fn().mockReturnValue({
@@ -526,7 +461,7 @@ describe('UserService', () => {
         usedAt: null,
       };
 
-      mockDb.selectFrom = jest.fn().mockReturnValue({
+      dbMocks.db.selectFrom = jest.fn().mockReturnValue({
         selectAll: jest.fn().mockReturnValue({
           where: jest.fn().mockReturnValue({
             where: jest.fn().mockReturnValue({
@@ -538,7 +473,7 @@ describe('UserService', () => {
         }),
       });
 
-      mockDb.updateTable = jest.fn().mockReturnValue({
+      dbMocks.db.updateTable = jest.fn().mockReturnValue({
         set: jest.fn().mockReturnValue({
           where: jest.fn().mockReturnValue({
             execute: jest.fn().mockResolvedValue(undefined),
@@ -583,7 +518,7 @@ describe('UserService', () => {
     });
 
     it('should throw BadRequestError if token is invalid', async () => {
-      mockDb.selectFrom = jest.fn().mockReturnValue({
+      dbMocks.db.selectFrom = jest.fn().mockReturnValue({
         selectAll: jest.fn().mockReturnValue({
           where: jest.fn().mockReturnValue({
             where: jest.fn().mockReturnValue({
@@ -612,7 +547,7 @@ describe('UserService', () => {
         usedAt: null,
       };
 
-      mockDb.selectFrom = jest.fn().mockReturnValue({
+      dbMocks.db.selectFrom = jest.fn().mockReturnValue({
         selectAll: jest.fn().mockReturnValue({
           where: jest.fn().mockReturnValue({
             where: jest.fn().mockReturnValue({
@@ -648,7 +583,7 @@ describe('UserService', () => {
         email: 'john@example.com',
       };
 
-      mockDb.selectFrom = jest.fn().mockReturnValue({
+      dbMocks.db.selectFrom = jest.fn().mockReturnValue({
         innerJoin: jest.fn().mockReturnValue({
           select: jest.fn().mockReturnValue({
             where: jest.fn().mockReturnValue({
@@ -660,7 +595,7 @@ describe('UserService', () => {
         }),
       });
 
-      mockDb.transaction = jest.fn().mockReturnValue({
+      dbMocks.db.transaction = jest.fn().mockReturnValue({
         execute: jest.fn().mockImplementation(async (callback) => {
           const mockTrx = {
             updateTable: jest.fn().mockReturnValue({
@@ -704,7 +639,7 @@ describe('UserService', () => {
         email: 'john@example.com',
       };
 
-      mockDb.selectFrom = jest.fn().mockReturnValue({
+      dbMocks.db.selectFrom = jest.fn().mockReturnValue({
         innerJoin: jest.fn().mockReturnValue({
           select: jest.fn().mockReturnValue({
             where: jest.fn().mockReturnValue({
@@ -746,7 +681,7 @@ describe('UserService', () => {
         toString: jest.fn().mockReturnValue('setupToken123'),
       });
 
-      mockDb.selectFrom = jest
+      dbMocks.db.selectFrom = jest
         .fn()
         .mockReturnValueOnce({
           where: jest.fn().mockReturnValue({
@@ -763,7 +698,7 @@ describe('UserService', () => {
           }),
         });
 
-      mockDb.insertInto = jest
+      dbMocks.db.insertInto = jest
         .fn()
         .mockReturnValueOnce({
           values: jest.fn().mockReturnValue({
@@ -797,7 +732,7 @@ describe('UserService', () => {
     });
 
     it('should throw BadRequestError if email already exists', async () => {
-      mockDb.selectFrom = jest.fn().mockReturnValue({
+      dbMocks.db.selectFrom = jest.fn().mockReturnValue({
         where: jest.fn().mockReturnValue({
           executeTakeFirst: jest
             .fn()
@@ -814,7 +749,7 @@ describe('UserService', () => {
     });
 
     it('should throw NotFoundError if organization does not exist', async () => {
-      mockDb.selectFrom = jest
+      dbMocks.db.selectFrom = jest
         .fn()
         .mockReturnValueOnce({
           where: jest.fn().mockReturnValue({
