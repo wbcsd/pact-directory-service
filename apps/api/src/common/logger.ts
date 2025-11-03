@@ -27,15 +27,12 @@ const wrap =
       }
     };
 
-const logger =
-  config.LOG_OUTPUT === 'console'
-    ? console
-    : {
-      info: wrap('info'),
-      error: wrap('error'),
-      warn: wrap('warn'),
-      debug: wrap('debug'),
-    };
+const logger = {
+  info: config.LOG_OUTPUT === 'console' ? console.info : wrap('info'),
+  error: config.LOG_OUTPUT === 'console' ? console.error : wrap('error'),
+  warn: config.LOG_OUTPUT === 'console' ? console.warn : wrap('warn'),
+  debug: config.LOG_OUTPUT === 'console' ? console.debug : wrap('debug'),
+};
 
 const loggerMiddleware =
   config.LOG_OUTPUT === 'console'

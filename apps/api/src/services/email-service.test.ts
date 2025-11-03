@@ -30,6 +30,7 @@ describe('EmailService', () => {
     (logger.debug as jest.Mock) = jest.fn();
     (logger.info as jest.Mock) = jest.fn();
     (logger.error as jest.Mock) = jest.fn();
+    (logger.warn as jest.Mock) = jest.fn();
 
     emailService = new EmailService();
   });
