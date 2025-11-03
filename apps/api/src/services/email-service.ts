@@ -20,7 +20,7 @@ export class EmailService {
 
   constructor() {
     // In development mode, mock the send function to avoid sending real emails
-    if (!Boolean(config.SENDGRID_API_KEY.trim())) {
+    if (!config.SENDGRID_API_KEY.trim()) {
       sgMail.send = async (msg: any) => {
         logger.debug('--- SENDGRID MOCK SEND ---');
         logger.debug(msg);

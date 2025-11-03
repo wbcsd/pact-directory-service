@@ -46,7 +46,6 @@ describe('UserService', () => {
     (config as any).FRONTEND_URL = 'http://localhost:3000';
     (config as any).EMAIL_VERIFICATION_EXP = 21600; // 6 hours in seconds
 
-    // @ts-expect-error
     userService = new UserService(mockDb, mockEmailService);
   });
 

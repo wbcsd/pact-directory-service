@@ -64,7 +64,6 @@ describe('OrganizationService', () => {
 
     mockEmailService = {} as jest.Mocked<EmailService>;
 
-    // @ts-expect-error
     organizationService = new OrganizationService(mockDb, mockEmailService);
   });
 
