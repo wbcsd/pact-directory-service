@@ -44,7 +44,6 @@ describe('AuthService', () => {
       selectFrom: selectFromMock,
     } as unknown as jest.Mocked<Kysely<Database>>;
 
-    // @ts-expect-error
     authService = new AuthService(db);
   });
 

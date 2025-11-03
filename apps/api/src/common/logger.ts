@@ -37,7 +37,6 @@ const logger = {
 const loggerMiddleware =
   config.LOG_OUTPUT === 'console'
     ? (req: any, res: any, next: any) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       next();
     }
     : pinoHttp({ logger: pinoInstance });
