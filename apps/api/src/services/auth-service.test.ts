@@ -1,50 +1,21 @@
 // unit test for auth-service.ts
-import { Kysely } from 'kysely';
 import jwt from 'jsonwebtoken';
-import { Database } from '../database/types';
 import { AuthService } from './auth-service';
 import { UnauthorizedError } from '@src/common/errors';
+import { createMockDatabase } from '../common/mock-utils';
 
 jest.mock('jsonwebtoken');
 
 describe('AuthService', () => {
-  let db: jest.Mocked<Kysely<Database>>;
   let authService: AuthService;
-
-  // Mock query builder chains used by Kysely
-  const selectFromMock = jest.fn();
-  const leftJoinMock = jest.fn();
-  const selectMock = jest.fn();
-  const selectAllMock = jest.fn();
-  const whereMock = jest.fn();
-  const executeTakeFirstMock = jest.fn();
+  let dbMocks: ReturnType<typeof createMockDatabase>;
 
   beforeEach(() => {
     jest.resetAllMocks();
-
-    // Build a mock query chain
-    selectFromMock.mockReturnValue({
-      leftJoin: leftJoinMock,
-      select: selectMock,
-      selectAll: selectAllMock,
-      where: whereMock,
-    });
-
-    leftJoinMock.mockReturnValue({
-      select: selectMock,
-      selectAll: selectAllMock,
-      where: whereMock,
-    });
-
-    selectMock.mockReturnValue({ where: whereMock });
-    selectAllMock.mockReturnValue({ where: whereMock });
-    whereMock.mockReturnValue({ where: whereMock, executeTakeFirst: executeTakeFirstMock });
-
-    db = {
-      selectFrom: selectFromMock,
-    } as unknown as jest.Mocked<Kysely<Database>>;
-
-    authService = new AuthService(db);
+    
+    // Create standardized database mocks
+    dbMocks = createMockDatabase();
+    authService = new AuthService(dbMocks.db as any);
   });
 
   it('should be defined', () => {
@@ -60,7 +31,7 @@ describe('AuthService', () => {
 
     it('should throw UnauthorizedError for invalid client_id', async () => {
       // clientOrganization not found
-      executeTakeFirstMock
+      dbMocks.executors.executeTakeFirst
         .mockResolvedValueOnce(null) // client org
         .mockResolvedValueOnce({ id: 'n1' }); // network org dummy
 
@@ -68,7 +39,7 @@ describe('AuthService', () => {
     });
 
     it('should throw UnauthorizedError for invalid client_secret', async () => {
-      executeTakeFirstMock
+      dbMocks.executors.executeTakeFirst
         .mockResolvedValueOnce({
           id: 'c1',
           clientSecret: 'wrong-secret',
@@ -83,11 +54,11 @@ describe('AuthService', () => {
         }); // network org
 
       await expect(authService.token(loginData)).rejects.toThrow(UnauthorizedError);
-      expect(executeTakeFirstMock).toHaveBeenCalledTimes(2);
+      expect(dbMocks.executors.executeTakeFirst).toHaveBeenCalledTimes(2);
     });
 
     it('should throw UnauthorizedError if no connection exists', async () => {
-      executeTakeFirstMock
+      dbMocks.executors.executeTakeFirst
         .mockResolvedValueOnce({
           id: 'c1',
           clientSecret: 'secret123',
@@ -103,14 +74,14 @@ describe('AuthService', () => {
         .mockResolvedValueOnce(null); // no connection
 
       await expect(authService.token(loginData)).rejects.toThrow(UnauthorizedError);
-      expect(executeTakeFirstMock).toHaveBeenCalledTimes(3);
+      expect(dbMocks.executors.executeTakeFirst).toHaveBeenCalledTimes(3);
     });
 
     it('should return a token for valid credentials and connection', async () => {
       const mockToken = 'jwt-token';
       (jwt.sign as jest.Mock).mockReturnValue(mockToken);
 
-      executeTakeFirstMock
+      dbMocks.executors.executeTakeFirst
         .mockResolvedValueOnce({
           id: 'c1',
           clientSecret: 'secret123',

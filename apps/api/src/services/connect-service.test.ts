@@ -1,5 +1,3 @@
-import { Kysely } from 'kysely';
-import { Database } from '@src/database/types';
 import { ConnectionService } from './connection-service';
 import { OrganizationService } from './organization-service';
 import { EmailService } from './email-service';
@@ -9,6 +7,7 @@ import {
   ForbiddenError,
 } from '@src/common/errors';
 import { checkAccess, Role } from '@src/common/policies';
+import { createMockDatabase } from '../common/mock-utils';
 
 // Mock dependencies
 jest.mock('@src/common/policies', () => ({
@@ -17,17 +16,10 @@ jest.mock('@src/common/policies', () => ({
 }));
 
 describe('ConnectionService', () => {
-  let db: any;
+  let dbMocks: ReturnType<typeof createMockDatabase>;
   let organizationService: jest.Mocked<OrganizationService>;
   let emailService: jest.Mocked<EmailService>;
   let connectionService: ConnectionService;
-
-  const mockExecute = jest.fn();
-  const mockExecuteTakeFirst = jest.fn();
-  const mockExecuteTakeFirstOrThrow = jest.fn();
-  const mockTransactionExecute = jest.fn();
-  const mockInsertInto = jest.fn();
-  const mockUpdateTable = jest.fn();
 
   const context = {
     organizationId: 1,
@@ -38,23 +30,8 @@ describe('ConnectionService', () => {
   beforeEach(() => {
     jest.resetAllMocks();
 
-    // Mock DB query chain
-    db = {
-      selectFrom: jest.fn().mockReturnThis(),
-      selectAll: jest.fn().mockReturnThis(),
-      where: jest.fn().mockReturnThis(),
-      execute: mockExecute,
-      executeTakeFirst: mockExecuteTakeFirst,
-      executeTakeFirstOrThrow: mockExecuteTakeFirstOrThrow,
-      insertInto: mockInsertInto.mockReturnThis(),
-      updateTable: mockUpdateTable.mockReturnThis(),
-      returningAll: jest.fn().mockReturnThis(),
-      values: jest.fn().mockReturnThis(),
-      set: jest.fn().mockReturnThis(),
-      transaction: jest.fn().mockReturnValue({
-        execute: mockTransactionExecute,
-      }),
-    };
+    // Create standardized database mocks
+    dbMocks = createMockDatabase();
 
     organizationService = {
       get: jest.fn(),
@@ -65,12 +42,12 @@ describe('ConnectionService', () => {
       sendConnectionRequestEmail: jest.fn(),
     } as any;
 
-    connectionService = new ConnectionService(db, organizationService, emailService);
+    connectionService = new ConnectionService(dbMocks.db as any, organizationService, emailService);
   });
 
   describe('listConnections', () => {
     it('should call checkAccess twice and return connections', async () => {
-      mockExecute.mockResolvedValue([{ id: 1 }]);
+      dbMocks.executors.execute.mockResolvedValue([{ id: 1 }]);
       const result = await connectionService.listConnections(context as any, 1);
       expect(checkAccess).toHaveBeenCalledTimes(2);
       expect(result).toEqual([{ id: 1 }]);
@@ -79,9 +56,9 @@ describe('ConnectionService', () => {
 
   describe('listConnectionRequests', () => {
     it('should return connection requests', async () => {
-      mockExecute.mockResolvedValue([{ id: 1, status: 'pending' }]);
+      dbMocks.executors.execute.mockResolvedValue([{ id: 1, status: 'pending' }]);
       const result = await connectionService.listConnectionRequests(context as any, 1);
-      expect(mockExecute).toHaveBeenCalled();
+      expect(dbMocks.executors.execute).toHaveBeenCalled();
       expect(result).toEqual([{ id: 1, status: 'pending' }]);
     });
   });
@@ -141,7 +118,7 @@ describe('ConnectionService', () => {
         .mockResolvedValueOnce({ id: 1, organizationName: 'Org1' } as any)
         .mockResolvedValueOnce({ id: 2, organizationName: 'Org2' } as any);
       organizationService.listSubOrganizations.mockResolvedValue([{ id: 1 }] as any);
-      mockExecuteTakeFirstOrThrow.mockResolvedValue({
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValue({
         id: 123,
         status: 'pending',
       });
@@ -152,7 +129,7 @@ describe('ConnectionService', () => {
         requestingOrgId
       );
 
-      expect(db.insertInto).toHaveBeenCalledWith('connection_requests');
+      expect(dbMocks.db.insertInto).toHaveBeenCalledWith('connection_requests');
       expect(emailService.sendConnectionRequestEmail).toHaveBeenCalledWith(
         expect.objectContaining({
           to: 'admin@example.com',
@@ -170,12 +147,12 @@ describe('ConnectionService', () => {
     });
 
     it('should throw NotFoundError if connection request not found', async () => {
-      mockExecuteTakeFirst.mockResolvedValueOnce(null);
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(null);
       await expect(connectionService.acceptConnectionRequest(1, 1)).rejects.toThrow(NotFoundError);
     });
 
     it('should throw ForbiddenError if current org does not match requestedCompanyId', async () => {
-      mockExecuteTakeFirst.mockResolvedValueOnce({
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
         id: 1,
         requestedCompanyId: 2,
         requestingCompanyId: 3,
@@ -185,19 +162,19 @@ describe('ConnectionService', () => {
     });
 
     it('should accept connection request successfully', async () => {
-      mockExecuteTakeFirst.mockResolvedValueOnce({
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
         id: 1,
         requestedCompanyId: 1,
         requestingCompanyId: 2,
         createdAt: new Date(),
       });
-      mockTransactionExecute.mockImplementation(async (fn: any) => await fn(db));
+      dbMocks.transaction().execute.mockImplementation(async (fn: any) => await fn(dbMocks.db));
 
       await connectionService.acceptConnectionRequest(1, 1);
 
-      expect(db.transaction).toHaveBeenCalled();
-      expect(mockInsertInto).toHaveBeenCalledWith('connections');
-      expect(mockUpdateTable).toHaveBeenCalledWith('connection_requests');
+      expect(dbMocks.db.transaction).toHaveBeenCalled();
+      expect(dbMocks.db.insertInto).toHaveBeenCalledWith('connections');
+      expect(dbMocks.db.updateTable).toHaveBeenCalledWith('connection_requests');
     });
   });
 
@@ -207,12 +184,12 @@ describe('ConnectionService', () => {
     });
 
     it('should throw NotFoundError if connection request not found', async () => {
-      mockExecuteTakeFirst.mockResolvedValueOnce(null);
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(null);
       await expect(connectionService.rejectConnectionRequest(1, 1)).rejects.toThrow(NotFoundError);
     });
 
     it('should throw ForbiddenError if current org does not match requestedCompanyId', async () => {
-      mockExecuteTakeFirst.mockResolvedValueOnce({
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
         id: 1,
         requestedCompanyId: 2,
       });
@@ -220,16 +197,16 @@ describe('ConnectionService', () => {
     });
 
     it('should reject connection request successfully', async () => {
-      mockExecuteTakeFirst.mockResolvedValueOnce({
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
         id: 1,
         requestedCompanyId: 1,
       });
-      mockTransactionExecute.mockImplementation(async (fn: any) => await fn(db));
+      dbMocks.transaction().execute.mockImplementation(async (fn: any) => await fn(dbMocks.db));
 
       await connectionService.rejectConnectionRequest(1, 1);
 
-      expect(db.transaction).toHaveBeenCalled();
-      expect(mockUpdateTable).toHaveBeenCalledWith('connection_requests');
+      expect(dbMocks.db.transaction).toHaveBeenCalled();
+      expect(dbMocks.db.updateTable).toHaveBeenCalledWith('connection_requests');
     });
   });
 });
