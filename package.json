@@ -5,8 +5,5 @@
     "apps/api",
     "apps/directory-portal"
   ],
-  "private": true,
-  "dependencies": {
-    "pino-http": "^10.5.0"
-  }
+  "private": true
 }
