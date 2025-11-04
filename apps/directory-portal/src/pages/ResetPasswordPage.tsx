@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import * as Form from "@radix-ui/react-form";
-import { Box, Button, TextField, Callout, Spinner } from "@radix-ui/themes";
+import { Box, Button, TextField, Callout } from "@radix-ui/themes";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
-import HeroImage from "../assets/providers-header.webp";
+import { LandingPageLayout } from "../layouts";
+import Spinner from "../components/LoadingSpinner";
+
 
 const ResetPasswordPage: React.FC = () => {
   const navigate = useNavigate();
@@ -108,102 +110,19 @@ const ResetPasswordPage: React.FC = () => {
 
   if (tokenStatus === "verifying") {
     return (
-      <Box style={{ display: "flex", width: "100%" }}>
-        <Box
-          style={{
-            width: "589px",
-            minWidth: "589px",
-            minHeight: "800px",
-            background: "#0A0552",
-            height: "100%",
-            backgroundImage: `url(${HeroImage})`,
-            backgroundPosition: "bottom",
-            backgroundSize: "180% auto",
-            backgroundRepeat: "no-repeat",
-            textAlign: "center",
-          }}
-        >
-          <h2
-            style={{
-              color: "#FFFFFF",
-              width: "360px",
-              margin: "0 auto",
-              marginTop: "16%",
-              fontSize: "1.8em",
-            }}
-          >
-            Helping you adopt PACT standards with ease
-          </h2>
-        </Box>
-        <Box
-          style={{
-            padding: "20px",
-            margin: "0 auto",
-            flex: "1 1 100%",
-            background: "#FCFDFF",
-            height: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Box style={{ textAlign: "center" }}>
-            <Spinner size="3" />
-            <p style={{ marginTop: "20px" }}>Verifying reset link...</p>
+      <LandingPageLayout>
+
+          <Box>
+            <Spinner loadingText="Verifying reset link..." />
           </Box>
-        </Box>
-      </Box>
+
+      </LandingPageLayout>
     );
   }
 
   if (tokenStatus === "invalid") {
     return (
-      <Box style={{ display: "flex", width: "100%" }}>
-        <Box
-          style={{
-            width: "589px",
-            minWidth: "589px",
-            minHeight: "800px",
-            background: "#0A0552",
-            height: "100%",
-            backgroundImage: `url(${HeroImage})`,
-            backgroundPosition: "bottom",
-            backgroundSize: "180% auto",
-            backgroundRepeat: "no-repeat",
-            textAlign: "center",
-          }}
-        >
-          <h2
-            style={{
-              color: "#FFFFFF",
-              width: "360px",
-              margin: "0 auto",
-              marginTop: "16%",
-              fontSize: "1.8em",
-            }}
-          >
-            Helping you adopt PACT standards with ease
-          </h2>
-        </Box>
-        <Box
-          style={{
-            padding: "20px",
-            margin: "0 auto",
-            flex: "1 1 100%",
-            background: "#FCFDFF",
-            height: "100%",
-          }}
-        >
-          <Box
-            style={{
-              maxWidth: "400px",
-              margin: "0 auto",
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-            }}
-          >
+      <LandingPageLayout>
             <h2 style={{ marginBottom: "20px", color: "#0A0552" }}>
               Invalid Reset Link
             </h2>
@@ -241,60 +160,13 @@ const ResetPasswordPage: React.FC = () => {
                 Back to Login
               </Link>
             </Box>
-          </Box>
-        </Box>
-      </Box>
+      </LandingPageLayout>
     );
   }
 
   return (
-    <>
-      <Box style={{ display: "flex", width: "100%" }}>
-        <Box
-          style={{
-            width: "589px",
-            minWidth: "589px",
-            minHeight: "800px",
-            background: "#0A0552",
-            height: "100%",
-            backgroundImage: `url(${HeroImage})`,
-            backgroundPosition: "bottom",
-            backgroundSize: "180% auto",
-            backgroundRepeat: "no-repeat",
-            textAlign: "center",
-          }}
-        >
-          <h2
-            style={{
-              color: "#FFFFFF",
-              width: "360px",
-              margin: "0 auto",
-              marginTop: "16%",
-              fontSize: "1.8em",
-            }}
-          >
-            Helping you adopt PACT standards with ease
-          </h2>
-        </Box>
-        <Box
-          style={{
-            padding: "20px",
-            margin: "0 auto",
-            flex: "1 1 100%",
-            background: "#FCFDFF",
-            height: "100%",
-          }}
-        >
-          <Box
-            style={{
-              maxWidth: "400px",
-              margin: "0 auto",
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-            }}
-          >
+    <LandingPageLayout>
+
             {status === "success" ? (
               <Box>
                 <h2 style={{ marginBottom: "20px", color: "#0A0552" }}>
@@ -468,10 +340,8 @@ const ResetPasswordPage: React.FC = () => {
                 </p>
               </>
             )}
-          </Box>
-        </Box>
-      </Box>
-    </>
+            
+    </LandingPageLayout>
   );
 };
 

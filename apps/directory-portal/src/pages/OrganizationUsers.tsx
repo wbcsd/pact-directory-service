@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
-import { Button } from "@radix-ui/themes";
-import SideNav from "../components/SideNav";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import DataTable, { Column } from "../components/DataTable";
 import { useAuth } from "../contexts/AuthContext";
 import { InputIcon, PlusIcon } from "@radix-ui/react-icons";
 import { useNavigate } from "react-router-dom";
 import StatusBadge from "../components/StatusBadge";
+import { GridPageLayout } from "../layouts";
+import ActionButton from "../components/ActionButton";
 import PolicyGuard from "../components/PolicyGuard";
 
 export interface User {
@@ -23,15 +23,16 @@ export interface User {
 const OrganizationUsers: React.FC = () => {
   // fetch users from api
   const [users, setUsers] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
   const navigate = useNavigate();
   const { profileData } = useAuth();
 
   useEffect(() => {
-    // Placeholder for fetching users from the API
-    if (!profileData) return;
-
     const fetchUsers = async () => {
+      if (!profileData) return;
+
       try {
+        setLoading(true);
         const response = await fetchWithAuth(
           `/organizations/${profileData?.organizationId}/users`
         );
@@ -43,6 +44,8 @@ const OrganizationUsers: React.FC = () => {
         }
       } catch (error) {
         console.error("Error fetching users:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -80,7 +83,7 @@ const OrganizationUsers: React.FC = () => {
     },
     {
       key: "email",
-      header: "Email",
+      header: "E-Mail",
       sortable: true,
       sortValue: (row: User) => row.email,
       render: (row: User) => row.email,
@@ -89,55 +92,39 @@ const OrganizationUsers: React.FC = () => {
       key: "actions",
       header: "",
       render: (row: User) => (
-        <Button
-          onClick={() => {
-            navigate(`/organization/users/${row.id}`);
-          }}
-          style={{
-            background: "transparent",
-            color: "#0A0552",
-            border: "1px solid #EBF0F5",
-            padding: "8px 12px",
-            minHeight: "0",
-          }}
+        <ActionButton
+          variant="secondary"
+          size="small"
+          onClick={() => navigate(`/organization/users/${row.id}`)}
         >
           <InputIcon />
           Edit
-        </Button>
+        </ActionButton>
       ),
     },
   ];
 
+  const headerActions = (
+    <PolicyGuard policies={["add-users"]}>
+      <ActionButton
+        variant="primary"
+        onClick={() => navigate("/organization/users/add")}
+      >
+        <PlusIcon />
+        Add User
+      </ActionButton>
+    </PolicyGuard>
+  );
+
   return (
-    <>
-      <aside className="sidebar">
-        <div className="marker-divider"></div>
-        <SideNav />
-      </aside>
-      <main className="main">
-        <div className="header">
-          <h2>Organization Users</h2>
-          <PolicyGuard policies={["add-users"]}>
-            <Button
-              onClick={() => navigate("/organization/users/add")}
-              style={{
-                background: "#0A0552",
-                color: "white",
-                border: "none",
-                padding: "8px 16px",
-                minHeight: "36px",
-              }}
-            >
-              <PlusIcon />
-              Add User
-            </Button>
-          </PolicyGuard>
-        </div>
-        <div>
-          <DataTable idColumnName="id" columns={columns} data={users} />
-        </div>
-      </main>
-    </>
+    <GridPageLayout
+      title="Organization Users"
+      actions={headerActions}
+      loading={loading}
+      loadingMessage="Loading users..."
+    >
+      <DataTable idColumnName="id" columns={columns} data={users} />
+    </GridPageLayout>
   );
 };
 export default OrganizationUsers;
