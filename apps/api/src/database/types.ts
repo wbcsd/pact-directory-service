@@ -36,6 +36,7 @@ export interface UsersTable {
   emailVerificationSentAt: Date | null;
   createdAt: Generated<Date>;
   updatedAt: Generated<Date>;
+  lastLogin: Date | null;
 }
 
 export interface RolesTable {
