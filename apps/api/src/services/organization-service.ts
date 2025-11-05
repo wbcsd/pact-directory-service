@@ -1,18 +1,18 @@
 import { Kysely } from 'kysely';
 import { Database } from '@src/database/types';
 import { NotFoundError, ForbiddenError } from '@src/common/errors';
-import { registerPolicy, checkAccess, Role } from '@src/common/policies';
+import { registerPolicy, checkAccess, Role, hasPolicy } from '@src/common/policies';
 import { UserContext, UserData } from './user-service';
 import { EmailService } from './email-service';
 import config from '@src/common/config';
 
 // Register all policies used in this service
 registerPolicy([Role.Administrator, Role.Root], 'view-connections-own-organization');
-registerPolicy([Role.Administrator, Role.Root], 'view-connections-all-organizations');
+registerPolicy([Role.Root], 'view-connections-all-organizations');
 registerPolicy([Role.Administrator, Role.Root], 'view-own-organizations');
 registerPolicy([Role.Administrator, Role.Root], 'edit-own-organizations');
-registerPolicy([Role.Administrator, Role.Root], 'view-all-organizations');
-registerPolicy([Role.Administrator, Role.Root], 'edit-all-organizations');
+registerPolicy([Role.Root], 'view-all-organizations');
+registerPolicy([Role.Root], 'edit-all-organizations');
 
 export interface OrganizationData {
   id: number;
@@ -152,20 +152,11 @@ export class OrganizationService {
   ): Promise<UserData[]> {
     checkAccess(
       context,
-      'view-own-organizations',
-      context.organizationId === organizationId
+      ['view-own-organizations', 'view-all-organizations'],
     );
-    const allowed =
-      context.role === Role.Administrator &&
-      context.organizationId === organizationId;
-
-    if (!allowed) {
-      throw new ForbiddenError(
-        'You are not allowed to view members of this organization'
-      );
-    }
+    
     // join with organizations to get organization name
-    const users = await this.db
+    let usersQuery = this.db
       .selectFrom('users')
       .innerJoin('organizations', 'users.organizationId', 'organizations.id')
       .select([
@@ -174,12 +165,21 @@ export class OrganizationService {
         'users.email as email',
         'users.role as role',
         'users.status as status',
+        'users.lastLogin as lastLogin',
         'organizations.name as organizationName',
         'organizations.id as organizationId',
         'organizations.uri as organizationIdentifier',
-      ])
-      .where('users.organizationId', '=', organizationId)
-      .execute();
+      ]);
+
+    // If the user does not have the 'view-all-organizations' policy, restrict to their own organization
+    // and exclude Root users
+    if (!hasPolicy(context, 'view-all-organizations')) {
+      usersQuery = usersQuery
+        .where('users.organizationId', '=', organizationId)
+        .where('users.role', '!=', Role.Root);
+    } 
+
+    const users = await usersQuery.execute();
 
     return users;
   }

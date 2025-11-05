@@ -46,7 +46,7 @@ const AppRoutes: React.FC = () => {
           <Route
             path="/organization/users"
             element={
-              <PolicyGuard policies={["view-own-organizations"]}>
+              <PolicyGuard policies={["view-own-organizations", "view-all-organizations"]} predicate="or">
                 <OrganizationUsers />
               </PolicyGuard>
             }
@@ -54,7 +54,7 @@ const AppRoutes: React.FC = () => {
           <Route
             path="/organization/users/:id"
             element={
-              <PolicyGuard policies={["edit-own-organizations"]}>
+              <PolicyGuard policies={["edit-own-organizations", "edit-all-organizations"]} predicate="or">
                 <EditUserPage />
               </PolicyGuard>
             }

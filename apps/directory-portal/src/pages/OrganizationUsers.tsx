@@ -15,6 +15,7 @@ export interface User {
   email: string;
   role: string;
   status: 'unverified' | 'enabled' | 'disabled' | 'deleted';
+  lastLogin: string | null;
   organizationName: string;
   organizationId: number;
   organizationIdentifier: string;
@@ -87,6 +88,14 @@ const OrganizationUsers: React.FC = () => {
       sortable: true,
       sortValue: (row: User) => row.email,
       render: (row: User) => row.email,
+    },
+    {
+      key: "lastLogin",
+      header: "Last Login",
+      sortable: true,
+      sortValue: (row: User) => (row.lastLogin ? new Date(row.lastLogin).getTime() : 0),
+      render: (row: User) =>
+        row.lastLogin ? new Date(row.lastLogin).toLocaleString() : "Never",
     },
     {
       key: "actions",

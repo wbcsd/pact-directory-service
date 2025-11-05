@@ -14,7 +14,7 @@ const SideNav: React.FC = () => {
             <Text>Conformance Testing</Text>
           </NavLink>
           <FeatureFlag flag="enableIdentityManagement">
-            <PolicyGuard policies={["view-connections-own-organization"]}>
+            <PolicyGuard policies={["view-connections-own-organization", "view-connections-all-organizations"]}>
               <>
                 <a href="#">Identity Management</a>
                 <NavLink
@@ -41,7 +41,7 @@ const SideNav: React.FC = () => {
             <Text>Profile</Text>
           </NavLink>
           <FeatureFlag flag="enableOrganizationManagement">
-            <PolicyGuard policies={["view-own-organizations"]}>
+            <PolicyGuard policies={["view-own-organizations", "view-all-organizations"]} predicate="or">
               <>
                 <a href="#">Organization</a>
                 <PolicyGuard policies={["view-users"]}>

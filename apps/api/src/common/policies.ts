@@ -71,3 +71,8 @@ export function requireRole(context: UserContext, role: Role) {
     throw new ForbiddenError('Access denied');
   }
 }
+
+// Return true if the user context has the required policy.
+export function hasPolicy(context: UserContext, policy: string): boolean {
+  return context.policies.includes(policy);
+}
