@@ -15,6 +15,7 @@ import {
   registerPolicy,
   Role,
 } from '@src/common/policies';
+import logger from '@src/common/logger';
 
 registerPolicy([Role.Administrator, Role.Root], 'view-users');
 registerPolicy([Role.Administrator, Role.Root], 'edit-users');
@@ -452,6 +453,16 @@ export class UserService {
     }
 
     const policies = getPoliciesForRole(user.role);
+
+    try {
+      await this.db
+        .updateTable('users')
+        .set({ lastLogin: new Date() })
+        .where('id', '=', user.id)
+        .execute()
+    } catch (error) {
+      logger.error('Failed to update lastLogin for user:', user.id, error);
+    }
 
     return {
       userId: user.id,
