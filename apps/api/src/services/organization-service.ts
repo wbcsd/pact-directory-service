@@ -8,11 +8,13 @@ import config from '@src/common/config';
 
 // Register all policies used in this service
 registerPolicy([Role.Administrator, Role.Root], 'view-connections-own-organization');
-registerPolicy([Role.Administrator, Role.Root], 'view-connections-all-organizations');
+registerPolicy([Role.Administrator, Role.Root], 'edit-connections-own-organization');
+registerPolicy([Role.Root], 'view-connections-all-organizations');
+registerPolicy([Role.Root], 'edit-connections-all-organizations');
 registerPolicy([Role.Administrator, Role.Root], 'view-own-organizations');
 registerPolicy([Role.Administrator, Role.Root], 'edit-own-organizations');
-registerPolicy([Role.Administrator, Role.Root], 'view-all-organizations');
-registerPolicy([Role.Administrator, Role.Root], 'edit-all-organizations');
+registerPolicy([Role.Root], 'view-all-organizations');
+registerPolicy([Role.Root], 'edit-all-organizations');
 
 export interface OrganizationData {
   id: number;
@@ -91,6 +93,9 @@ export class OrganizationService {
     if (paging?.query) {
       qb = qb.where('name', 'ilike', `%${paging.query}%`);
     }
+    if (!context.policies.includes('view-all-organizations')) {
+      qb = qb.where('id', '=', context.organizationId!);
+    }
     if (paging?.page) {
       qb = qb
         .offset((paging.page - 1) * (paging.pageSize ?? 50))
@@ -111,7 +116,14 @@ export class OrganizationService {
    * @param parentId - The ID of the parent organization whose sub-organizations are to be listed.
    * @returns A promise that resolves to an array of `CompanyData` objects representing the sub-organizations.
    */
-  async listSubOrganizations(parentId: number): Promise<OrganizationData[]> {
+  async listSubOrganizations(context: UserContext, parentId: number): Promise<OrganizationData[]> {
+    // Check access rights, user must have view-all-organizations policy or
+    // view-own-organizations policy and belong to the parent organization
+    const allowed = context.policies.includes('view-all-organizations') ||
+                    (context.policies.includes('view-own-organizations') && context.organizationId === parentId);
+    if (!allowed) {
+      throw new ForbiddenError('You are not allowed to view sub-organizations of this organization');
+    }
     const qb = this.db
       .withRecursive('children', (db) =>
         db
@@ -148,24 +160,19 @@ export class OrganizationService {
    */
   async listMembers(
     context: UserContext,
-    organizationId: number
+    organizationId?: number
   ): Promise<UserData[]> {
-    checkAccess(
-      context,
-      'view-own-organizations',
-      context.organizationId === organizationId
-    );
-    const allowed =
-      context.role === Role.Administrator &&
-      context.organizationId === organizationId;
-
+    // Check that user has view-all-organizations policy or 
+    // view-own-organizations for members in their own organization
+    const allowed = 
+      context.policies.includes('view-all-organizations') ||
+      context.policies.includes('view-own-organizations') && context.organizationId === organizationId;
     if (!allowed) {
-      throw new ForbiddenError(
-        'You are not allowed to view members of this organization'
-      );
+      throw new ForbiddenError('You are not allowed to view members of this organization');
     }
+    
     // join with organizations to get organization name
-    const users = await this.db
+    let usersQuery = this.db
       .selectFrom('users')
       .innerJoin('organizations', 'users.organizationId', 'organizations.id')
       .select([
@@ -174,12 +181,19 @@ export class OrganizationService {
         'users.email as email',
         'users.role as role',
         'users.status as status',
+        'users.lastLogin as lastLogin',
         'organizations.name as organizationName',
         'organizations.id as organizationId',
         'organizations.uri as organizationIdentifier',
-      ])
-      .where('users.organizationId', '=', organizationId)
-      .execute();
+      ]);
+
+    // Filter by organizationId if provided
+    if (organizationId) {
+      usersQuery = usersQuery
+        .where('users.organizationId', '=', organizationId)
+    } 
+
+    const users = await usersQuery.execute();
 
     return users;
   }
@@ -195,19 +209,16 @@ export class OrganizationService {
     organizationId: number,
     userId: number
   ): Promise<UserData> {
-    checkAccess(
-      context,
-      'view-own-organizations',
-      context.organizationId === organizationId
-    );
-    const allowed =
-      context.role === Role.Administrator &&
-      context.organizationId === organizationId;
-
+    // Check that user has view-all-organizations policy or 
+    // view-own-organizations for members in their own organization
+    const allowed = 
+      context.policies.includes('view-all-organizations') ||
+      context.policies.includes('view-own-organizations') && context.organizationId === organizationId;
     if (!allowed) {
-      throw new ForbiddenError(
-        'You are not allowed to view members of this organization'
-      );
+      throw new ForbiddenError('You are not allowed to view members of this organization');
+    }
+    if (!allowed) {
+      throw new ForbiddenError('You are not allowed to view members of this organization');
     }
     // join with organizations to get organization name
     const user = await this.db
@@ -241,19 +252,16 @@ export class OrganizationService {
     userId: number,
     update: { fullName?: string; role?: Role }
   ): Promise<{ message: string }> {
-    checkAccess(
-      context,
-      'edit-own-organizations',
-      context.organizationId === organizationId
-    );
-    const allowed =
-      context.role === Role.Administrator &&
-      context.organizationId === organizationId;
-
+    // Check that user has edit-all-organizations policy or 
+    // view-own-organizations for members in their own organization
+    const allowed = 
+      context.policies.includes('edit-all-organizations') ||
+      context.policies.includes('edit-own-organizations') && context.organizationId === organizationId;
     if (!allowed) {
-      throw new ForbiddenError(
-        'You are not allowed to edit members of this organization'
-      );
+      throw new ForbiddenError('You are not allowed to edit members of this organization');
+    }
+    if (!allowed) {
+      throw new ForbiddenError('You are not allowed to edit members of this organization');
     }
 
     const user = await this.db

@@ -3,8 +3,9 @@ import { ReactElement } from "react";
 
 const PolicyGuard: React.FC<{
   policies?: string[];
+  predicate?: "and" | "or";
   children: ReactElement;
-}> = ({ policies, children }) => {
+}> = ({ policies, predicate, children }) => {
   const { profileData } = useAuth();
 
   // If no policies are specified, render normally
@@ -12,9 +13,9 @@ const PolicyGuard: React.FC<{
     return children;
   }
 
-  // Check if user has all required policies
-  const hasRequiredPolicies = policies.every((policy) =>
-    profileData?.policies?.includes(policy)
+  // Check if user has all required policies taking predicate into account
+  const hasRequiredPolicies = policies[predicate === "and" ? "every" : "some"](policy =>
+    profileData?.policies.includes(policy)
   );
 
   // If user doesn't have required policies, return null
