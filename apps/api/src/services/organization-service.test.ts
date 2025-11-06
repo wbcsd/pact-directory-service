@@ -5,17 +5,6 @@ import { EmailService } from './email-service';
 import { OrganizationService } from './organization-service';
 import { createMockDatabase } from '../common/mock-utils';
 
-// Mock dependencies
-jest.mock('@src/common/policies', () => ({
-  registerPolicy: jest.fn(),
-  checkAccess: jest.fn(),
-  Role: {
-    Administrator: 'administrator',
-    Root: 'root',
-    User: 'user',
-  },
-}));
-
 jest.mock('@src/common/config', () => ({
   default: {
     DEFAULT_PAGE_SIZE: 50,
