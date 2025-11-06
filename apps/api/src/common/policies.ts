@@ -33,46 +33,51 @@ export function getPoliciesForRole(role: Role): string[] {
 }
 
 /**
- * Checks whether the user has access based on the provided policy or policies and an optional condition.
- *
- * Throws a `ForbiddenError` if the user does not have the required policy or if the condition is not met.
+ * Checks if a user context has at least one of the required policy or policies.
+ * 
+ * @param context - The user context containing available policies
+ * @param policy - A single policy string or array of policies check against
+ * @returns True if the user has at least one of the required policies and the condition is met, false otherwise
+ * 
+ * @example
+ * ```typescript
+ * 
+ * // Check single policy
+ * hasAccess(userContext, 'read'); 
+ * 
+ * // Check multiple policies (user needs at least one)
+ * hasAccess(userContext, ['read', 'admin']); // true
+ * 
+ * ```
+ */
+export function hasAccess(
+  context: UserContext, 
+  policy: string | string[],
+): boolean {
+  if (Array.isArray(policy)) {
+    if (policy.length > 0 && !policy.some((p) => context.policies.includes(p))) {
+      return false;
+    }
+  } else if (!context.policies.includes(policy)) {
+      return false;
+  }
+  return true;
+}
+
+/**
+ * Throws a `ForbiddenError` if the user does not have at least one of the required policies.
  *
  * @param context - The user context containing the user's policies.
  * @param policy - A single policy or an array of policies to check against the user's policies.
- * @param condition - An optional boolean condition that must be true for access to be granted. Defaults to `true`.
  * @throws {ForbiddenError} If access is denied due to missing policy or failed condition.
  */
 export function checkAccess(
   context: UserContext,
-  policy: string | string[],
-  condition = true
+  policy: string | string[]
 ) {
-  if (Array.isArray(policy)) {
-    if (
-      policy.length > 0 &&
-      !policy.some((p) => context.policies.includes(p))
-    ) {
-      throw new ForbiddenError('Access denied');
-    }
-  } else {
-    if (!context.policies.includes(policy)) {
-      throw new ForbiddenError('Access denied');
-    }
-  }
-  if (!condition) {
+  if (!hasAccess(context, policy)) {
     throw new ForbiddenError('Access denied');
   }
 }
 
-// Check if the user context has the required role.
-// Throws ForbiddenError if not.
-export function requireRole(context: UserContext, role: Role) {
-  if (context.role !== role) {
-    throw new ForbiddenError('Access denied');
-  }
-}
 
-// Return true if the user context has the required policy.
-export function hasPolicy(context: UserContext, policy: string): boolean {
-  return context.policies.includes(policy);
-}
