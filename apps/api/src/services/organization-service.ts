@@ -4,7 +4,7 @@ import { NotFoundError, ForbiddenError } from '@src/common/errors';
 import { registerPolicy, checkAccess, Role } from '@src/common/policies';
 import { UserContext, UserData } from './user-service';
 import { EmailService } from './email-service';
-import config from '@src/common/config';
+import { ListQuery, ListResult } from '@src/common/list-query';
 
 // Register all policies used in this service
 registerPolicy([Role.Administrator, Role.Root], 'view-connections-own-organization');
@@ -26,11 +26,6 @@ export interface OrganizationData {
   solutionApiUrl: string | null;
 }
 
-interface PagingParams {
-  query?: string;
-  page?: number;
-  pageSize?: number;
-}
 
 export class OrganizationService {
   constructor(
@@ -71,12 +66,12 @@ export class OrganizationService {
   }
 
   /**
-   * List all organizations, optionally filter by a search query
+   * List all organizations with pagination, filtering, and sorting
    */
   async list(
     context: UserContext,
-    paging?: PagingParams
-  ): Promise<OrganizationData[]> {
+    query: ListQuery
+  ): Promise<ListResult<OrganizationData>> {
     checkAccess(context, ['view-own-organizations', 'view-all-organizations']);
 
     let qb = this.db
@@ -90,18 +85,40 @@ export class OrganizationService {
         'solutionApiUrl',
         'parentId',
       ]);
-    if (paging?.query) {
-      qb = qb.where('name', 'ilike', `%${paging.query}%`);
-    }
+
+    // If not view-all-organizations, restrict to own organization
     if (!context.policies.includes('view-all-organizations')) {
       qb = qb.where('id', '=', context.organizationId!);
     }
-    if (paging?.page) {
-      qb = qb
-        .offset((paging.page - 1) * (paging.pageSize ?? 50))
-        .limit(paging.pageSize ?? config.DEFAULT_PAGE_SIZE);
+    
+    // Apply search filter
+    if (query.search) {
+      qb = qb.where('name', 'ilike', `%${query.search}%`);
     }
-    return qb.execute();
+
+    // Get total count for pagination
+    const total = (
+      await qb.clearSelect()
+        .select((eb) => eb.fn.count('id').as('total'))
+        .executeTakeFirstOrThrow()
+    ).total as number;
+
+    // Apply sorting
+    if (query.sortBy && query.sortBy in ['name','uri']) {
+      qb = qb.orderBy(query.sortBy as any, query.sortOrder ?? 'asc');
+    } else {
+      // Default sorting by name
+      qb = qb.orderBy('name', 'asc');
+    }
+
+    // Apply pagination
+    const data = await qb.offset(query.offset).limit(query.limit).execute();
+
+    // Return data with pagination information
+    return {
+      data,
+      pagination: query.pagination(total)
+    };
   }
 
   /**
@@ -156,23 +173,25 @@ export class OrganizationService {
    * Retrieves a list of user profiles who are members of the specified organization.
    *
    * @param organizationId - The unique identifier of the organization.
-   * @returns A promise that resolves to an array of `UserContext` objects representing the organization's members.
+   * @param query - Query parameters for filtering, sorting, and pagination
+   * @returns A promise that resolves to paginated list of organization members.
    */
   async listMembers(
     context: UserContext,
-    organizationId?: number
-  ): Promise<UserData[]> {
+    organizationId: number,
+    query: ListQuery
+  ): Promise<ListResult<UserData>> {
     // Check that user has view-all-organizations policy or 
     // view-own-organizations for members in their own organization
     const allowed = 
       context.policies.includes('view-all-organizations') ||
       context.policies.includes('view-own-organizations') && context.organizationId === organizationId;
+
     if (!allowed) {
       throw new ForbiddenError('You are not allowed to view members of this organization');
     }
-    
     // join with organizations to get organization name
-    let usersQuery = this.db
+    let qb = this.db
       .selectFrom('users')
       .innerJoin('organizations', 'users.organizationId', 'organizations.id')
       .select([
@@ -189,13 +208,41 @@ export class OrganizationService {
 
     // Filter by organizationId if provided
     if (organizationId) {
-      usersQuery = usersQuery
-        .where('users.organizationId', '=', organizationId)
-    } 
+      qb = qb.where('users.organizationId', '=', organizationId)
+    }
 
-    const users = await usersQuery.execute();
+    // Apply search filter
+    if (query?.search) {
+      qb = qb.where((eb) =>
+        eb.or([
+          eb('users.fullName', 'ilike', `%${query.search}%`),
+          eb('users.email', 'ilike', `%${query.search}%`)
+        ])
+      );
+    }
 
-    return users;
+    // Get total count for pagination
+    const total = (
+      await qb.clearSelect()
+        .select((eb) => eb.fn.count('users.id').as('total'))
+        .executeTakeFirstOrThrow()
+    ).total as number;
+
+    // Apply sorting
+    if (query?.sortBy && query.sortBy in ['email','fullName','role','status']) {
+      qb = qb.orderBy(`users.${query.sortBy}` as any, query.sortOrder ?? 'asc');
+    } else {
+      // Default sorting by full name
+      qb = qb.orderBy('users.fullName', 'asc');
+    }
+
+    // Apply pagination and get data
+    const data = await qb.offset(query.offset).limit(query.limit).execute();
+
+    return {
+      data,
+      pagination: query.pagination(total)
+    };
   }
 
   /**
