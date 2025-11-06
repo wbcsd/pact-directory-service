@@ -667,7 +667,7 @@ describe('UserService', () => {
       email: 'admin@example.com',
       organizationId: 1,
       role: Role.Administrator,
-      policies: ['add-users'],
+      policies: ['edit-users'],
       status: 'enabled' as const,
     };
 

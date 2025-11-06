@@ -7,10 +7,10 @@ import {
   BadRequestError,
   UnauthorizedError,
   NotFoundError,
+  ForbiddenError,
 } from '@src/common/errors';
 import { EmailService } from './email-service';
 import {
-  checkAccess,
   getPoliciesForRole,
   registerPolicy,
   Role,
@@ -19,10 +19,8 @@ import logger from '@src/common/logger';
 
 registerPolicy([Role.Administrator, Role.Root], 'view-users');
 registerPolicy([Role.Administrator, Role.Root], 'edit-users');
-registerPolicy([Role.Administrator, Role.Root], 'add-users');
 registerPolicy([Role.Root], 'view-all-users');
 registerPolicy([Role.Root], 'edit-all-users');
-registerPolicy([Role.Root], 'add-all-users');
 
 export interface UserContext {
   userId: number;
@@ -478,7 +476,11 @@ export class UserService {
    * Get user by ID
    */
   async get(context: UserContext, id: number): Promise<UserData> {
-    checkAccess(context, [], context.userId === id || context.role === Role.Administrator);
+
+    const allowed = context.userId === id || context.policies.includes('view-users') || context.policies.includes('view-all-users');
+    if (!allowed) {
+      throw new ForbiddenError('You are not allowed to view this user');
+    }
     
     const user = await this.db
       .selectFrom('users')
@@ -498,6 +500,10 @@ export class UserService {
 
     if (!user) {
       throw new NotFoundError('User not found');
+    }
+    
+    if (user.organizationId !== context.organizationId && !context.policies.includes('view-all-users')) {
+      throw new ForbiddenError('You are not allowed to view this user');
     }
 
     return user;
@@ -955,11 +961,12 @@ export class UserService {
   ): Promise<{ message: string; userId: number }> {
     
     // Check if user has permission to add users to this organization
-    checkAccess(
-      context, 
-      'add-users', 
-      context.organizationId === organizationId || context.role === Role.Administrator
-    );
+    const allowed = 
+      context.policies.includes('edit-all-users') ||
+      context.policies.includes('edit-users') || context.organizationId === organizationId;
+    if (!allowed) {
+      throw new ForbiddenError('You are not allowed to add users to this organization');
+    }
 
     // Normalize email: trim and lowercase
     const normalizedEmail = this.normalizeEmail(data.email);
