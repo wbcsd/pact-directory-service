@@ -81,7 +81,7 @@ const mockAdminProfile: ProfileData = {
   clientId: "client-123",
   clientSecret: "secret-xyz",
   networkKey: "network-key",
-  policies: ["view-users", "edit-users", "add-users"],
+  policies: ["view-users", "edit-users"],
 };
 
 const mockUserProfile: ProfileData = {

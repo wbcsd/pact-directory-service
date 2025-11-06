@@ -72,7 +72,7 @@ const ConformanceTestRuns: React.FC = () => {
         return;
       }
 
-      setTestRuns(data.testRuns || []);
+      setTestRuns(data.data || []);
     } catch (err) {
       console.error("Error fetching test runs:", err);
       setError(

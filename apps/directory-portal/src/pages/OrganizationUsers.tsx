@@ -39,7 +39,7 @@ const OrganizationUsers: React.FC = () => {
         );
         if (response!.ok) {
           const members = await response!.json();
-          setUsers(members);
+          setUsers(members.data);
         } else {
           console.error("Failed to fetch users");
         }
@@ -114,7 +114,7 @@ const OrganizationUsers: React.FC = () => {
   ];
 
   const headerActions = (
-    <PolicyGuard policies={["add-users"]}>
+    <PolicyGuard policies={["edit-users"]}>
       <ActionButton
         variant="primary"
         onClick={() => navigate("/organization/users/add")}

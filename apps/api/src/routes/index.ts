@@ -195,7 +195,7 @@ router.post('/proxy/test', authenticate, context(async (req) => {
 }));
 
 router.get('/proxy/test-runs', authenticate, context(async (req) => {
-  return req.services.testRun.listTestRuns(req.context, req.query);
+  return req.services.testRun.listTestRuns(req.context, ListQuery.parse(req.query));
 }));
 
 router.get('/proxy/test-results', authenticate, context(async (req) => {

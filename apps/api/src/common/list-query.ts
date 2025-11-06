@@ -1,4 +1,38 @@
-// Common query parameters interface for list operations
+/**
+ * A utility class for handling common list query operations including 
+ * pagination, filtering, searching, and sorting.
+ * 
+ * This class parses query parameters from HTTP requests and provides 
+ * a standardized way to handle:
+ * - Pagination with page and pageSize parameters
+ * - Text search functionality
+ * - Dynamic filtering with key-value pairs
+ * - Sorting by field and order
+ * 
+ * @example
+ * ```typescript
+ * // Parse from query object
+ * const listQuery = new ListQuery({
+ *   page: '2',
+ *   pageSize: '25',
+ *   search: 'john doe',
+ *   sortBy: 'createdAt',
+ *   sortOrder: 'desc',
+ *   filters: { status: 'active', role: ['admin', 'user'] }
+ * });
+ * 
+ * Usage in database query:
+ * 
+ * const qb = db.selectFrom();
+ * if (listQuery.search) {
+ *   qb = qb.where('name', 'like', `%${listQuery.search}%`);
+ * }
+ * if (listQuery.sortBy) {
+ *   qb = qb.orderBy(listQuery.sortBy, listQuery.sortOrder);
+ * }
+ * qb = qb.offset(listQuery.offset).limit(listQuery.limit);
+ * 
+ **/
 export class ListQuery {
   // Pagination
   page: number;
@@ -80,16 +114,52 @@ export class ListQuery {
     }
   }
 
+  /**
+   * Parses a query object and creates a new ListQuery instance.
+   * 
+   * @param query - The raw query object to be parsed into a ListQuery
+   * @returns A new ListQuery instance created from the provided query object
+   */
   static parse(query: any): ListQuery {
     return new ListQuery(query);
   }
 
+  /**
+   * Creates a new ListQuery instance with default empty parameters.
+   * 
+   * @returns A new ListQuery instance initialized with an empty configuration object
+   */
   static default(): ListQuery {
     return new ListQuery({});
   }
 }
 
-// Result wrapper for paginated lists
+/**
+ * List result containing data and pagination metadata.
+ * 
+ * @template T - The type of items in the data array
+ * 
+ * @example
+ * ```typescript
+ * const result: ListResult<User> = {
+ *   data: [{ id: 1, name: 'John' }],
+ *   pagination: {
+ *     page: 1,
+ *     pageSize: 10,
+ *     total: 1,
+ *     totalPages: 1,
+ *     hasNext: false,
+ *     hasPrevious: false
+ *   }
+ * };
+ * 
+ * // populate pagination info
+ * 
+ * const totalItems = await db.countFrom('users').executeTakeFirst();
+ * result.data = await db.selectFrom('users').execute();
+ * result.pagination = listQuery.pagination(totalItems);
+ * ```
+ */
 export interface ListResult<T> {
   data: T[];
   pagination: {
@@ -99,23 +169,6 @@ export interface ListResult<T> {
     totalPages: number;
     hasNext: boolean;
     hasPrevious: boolean;
-  };
-}
-
-// Common sorting configuration
-export interface SortConfig {
-  [field: string]: {
-    column: string;
-    allowedRoles?: string[];
-  };
-}
-
-// Common filter configuration  
-export interface FilterConfig {
-  [field: string]: {
-    column: string;
-    operator: 'equals' | 'ilike' | 'in' | 'gte' | 'lte';
-    allowedRoles?: string[];
   };
 }
 
