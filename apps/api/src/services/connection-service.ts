@@ -8,8 +8,6 @@ import {
 import { OrganizationService } from './organization-service';
 import { EmailService } from './email-service';
 import { UserContext } from './user-service';
-import { checkAccess, Role } from '@src/common/policies';
-
 
 export interface ConnectionRequest {
   id: number;
@@ -40,8 +38,12 @@ export class ConnectionService {
     context: UserContext,
     organizationId: number
   ): Promise<Connection[]> {
-    checkAccess(context, 'view-connections-own-organization', context.organizationId === organizationId);
-    checkAccess(context, 'view-connections-all-organizations');
+    const allowed = 
+      context.policies.includes('view-connections-all-organizations') ||
+      context.policies.includes('view-connections-own-organization') && context.organizationId === organizationId;
+    if (!allowed) {
+      throw new ForbiddenError('You are not allowed to view connections of this organization');
+    }
     const connections = await this.db
       .selectFrom('connections')
       .selectAll()
@@ -87,7 +89,10 @@ export class ConnectionService {
       throw new BadRequestError('You cannot connect with yourself');
     }
 
-    if (context.role !== Role.Administrator) {
+    const allowed = 
+      context.policies.includes('edit-connections-all-organizations') ||
+      context.policies.includes('edit-connections-own-organization') && context.organizationId === requestingOrganizationId;
+    if (!allowed) {
       throw new ForbiddenError('You are not allowed to send connection requests');
     }
 
@@ -103,7 +108,7 @@ export class ConnectionService {
 
     // Ensure the user is either an admin of the requesting organization or a member of a child organization
     if (context.organizationId !== requestingOrganizationId) {
-      const subOrgs = await this.organizationService.listSubOrganizations(context.organizationId);
+      const subOrgs = await this.organizationService.listSubOrganizations(context, context.organizationId);
       if (!subOrgs.find(o => o.id === requestingOrganizationId)) {
         throw new ForbiddenError('Can only send an invitation from a child organization or your own organization');
       }

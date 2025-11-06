@@ -6,14 +6,9 @@ import {
   NotFoundError,
   ForbiddenError,
 } from '@src/common/errors';
-import { checkAccess, Role } from '@src/common/policies';
+import { Role } from '@src/common/policies';
 import { createMockDatabase } from '../common/mock-utils';
-
-// Mock dependencies
-jest.mock('@src/common/policies', () => ({
-  checkAccess: jest.fn(),
-  Role: { Administrator: 'Administrator', User: 'User' },
-}));
+import { UserContext } from './user-service';
 
 describe('ConnectionService', () => {
   let dbMocks: ReturnType<typeof createMockDatabase>;
@@ -21,10 +16,22 @@ describe('ConnectionService', () => {
   let emailService: jest.Mocked<EmailService>;
   let connectionService: ConnectionService;
 
-  const context = {
+  const regularUserContext: UserContext= {
     organizationId: 1,
+    userId: 1,
+    email: 'user@example.com',
+    role: Role.User,
+    policies: [],
+    status: 'enabled',
+  };
+
+  const adminUserContext: UserContext = {
+    organizationId: 1,
+    userId: 1,
     email: 'admin@example.com',
     role: Role.Administrator,
+    policies: ['view-connections-own-organization','edit-connections-own-organization'],
+    status: 'enabled',
   };
 
   beforeEach(() => {
@@ -46,10 +53,9 @@ describe('ConnectionService', () => {
   });
 
   describe('listConnections', () => {
-    it('should call checkAccess twice and return connections', async () => {
+    it('should return connections', async () => {
       dbMocks.executors.execute.mockResolvedValue([{ id: 1 }]);
-      const result = await connectionService.listConnections(context as any, 1);
-      expect(checkAccess).toHaveBeenCalledTimes(2);
+      const result = await connectionService.listConnections(adminUserContext, 1);
       expect(result).toEqual([{ id: 1 }]);
     });
   });
@@ -57,7 +63,7 @@ describe('ConnectionService', () => {
   describe('listConnectionRequests', () => {
     it('should return connection requests', async () => {
       dbMocks.executors.execute.mockResolvedValue([{ id: 1, status: 'pending' }]);
-      const result = await connectionService.listConnectionRequests(context as any, 1);
+      const result = await connectionService.listConnectionRequests(adminUserContext, 1);
       expect(dbMocks.executors.execute).toHaveBeenCalled();
       expect(result).toEqual([{ id: 1, status: 'pending' }]);
     });
@@ -69,27 +75,26 @@ describe('ConnectionService', () => {
 
     it('should throw BadRequestError if requestedOrganizationId is missing', async () => {
       await expect(
-        connectionService.createConnectionRequest(context as any, undefined as any, 1)
+        connectionService.createConnectionRequest(adminUserContext, undefined as any, 1)
       ).rejects.toThrow(BadRequestError);
     });
 
     it('should throw BadRequestError if requesting and requested orgs are same', async () => {
       await expect(
-        connectionService.createConnectionRequest(context as any, 1, 1)
+        connectionService.createConnectionRequest(adminUserContext, 1, 1)
       ).rejects.toThrow(BadRequestError);
     });
 
     it('should throw ForbiddenError if user is not Administrator', async () => {
-      const nonAdminCtx = { ...context, role: Role.User };
       await expect(
-        connectionService.createConnectionRequest(nonAdminCtx as any, 2, 1)
+        connectionService.createConnectionRequest(regularUserContext, 2, 1)
       ).rejects.toThrow(ForbiddenError);
     });
 
     it('should throw NotFoundError if requesting org not found', async () => {
       organizationService.get.mockResolvedValueOnce(null as any);
       await expect(
-        connectionService.createConnectionRequest(context as any, 2, 1)
+        connectionService.createConnectionRequest(adminUserContext, 2, 1)
       ).rejects.toThrow(NotFoundError);
     });
 
@@ -98,7 +103,7 @@ describe('ConnectionService', () => {
         .mockResolvedValueOnce({ id: 1, organizationName: 'Org1' } as any)
         .mockResolvedValueOnce(null as any);
       await expect(
-        connectionService.createConnectionRequest(context as any, 2, 1)
+        connectionService.createConnectionRequest(adminUserContext, 2, 1)
       ).rejects.toThrow(NotFoundError);
     });
 
@@ -106,10 +111,10 @@ describe('ConnectionService', () => {
       organizationService.get
         .mockResolvedValue({ id: 1, organizationName: 'Org1' } as any);
       organizationService.listSubOrganizations.mockResolvedValue([{ id: 99 }] as any);
-      const otherContext = { ...context, organizationId: 3 };
+      const otherContext = { ...adminUserContext, organizationId: 3 };
 
       await expect(
-        connectionService.createConnectionRequest(otherContext as any, 2, 1)
+        connectionService.createConnectionRequest(otherContext, 2, 1)
       ).rejects.toThrow(ForbiddenError);
     });
 
@@ -124,7 +129,7 @@ describe('ConnectionService', () => {
       });
 
       const result = await connectionService.createConnectionRequest(
-        context as any,
+        adminUserContext,
         requestedOrgId,
         requestingOrgId
       );
