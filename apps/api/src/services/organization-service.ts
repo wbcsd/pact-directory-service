@@ -191,7 +191,6 @@ export class OrganizationService {
     if (organizationId) {
       usersQuery = usersQuery
         .where('users.organizationId', '=', organizationId)
-        .where('users.role', '!=', Role.Root);
     } 
 
     const users = await usersQuery.execute();
