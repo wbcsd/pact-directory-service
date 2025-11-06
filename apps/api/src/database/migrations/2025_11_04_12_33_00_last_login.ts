@@ -9,7 +9,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function down(db: Kysely<any>): Promise<void> {
   // Remove last_login column from users table
   await db.schema.alterTable('users').dropColumn('last_login').execute();
