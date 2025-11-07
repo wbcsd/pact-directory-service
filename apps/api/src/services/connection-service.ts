@@ -8,6 +8,7 @@ import {
 import { OrganizationService } from './organization-service';
 import { EmailService } from './email-service';
 import { UserContext } from './user-service';
+import { ListQuery, ListResult } from '@src/common/list-query';
 
 export interface ConnectionRequest {
   id: number;
@@ -36,40 +37,87 @@ export class ConnectionService {
 
   async listConnections(
     context: UserContext,
-    organizationId: number
-  ): Promise<Connection[]> {
+    organizationId: number,
+    query: ListQuery = ListQuery.default()
+  ): Promise<ListResult<Connection>> {
     const allowed = 
       context.policies.includes('view-connections-all-organizations') ||
       context.policies.includes('view-connections-own-organization') && context.organizationId === organizationId;
     if (!allowed) {
       throw new ForbiddenError('You are not allowed to view connections of this organization');
     }
-    const connections = await this.db
+    let qb = this.db
       .selectFrom('connections')
       .selectAll()
       .where((e) => e.or([
         e('connectedCompanyOneId', '=', organizationId),
         e('connectedCompanyTwoId', '=', organizationId)
-      ]))
-      .execute();
-    return connections;
+      ]));
+
+    // Get total count for pagination
+    const total = (
+      await qb.clearSelect().select((eb) => eb.fn.count('id').as('total')).executeTakeFirstOrThrow()
+    ).total as number;
+
+    // Apply sorting
+    if (query.sortBy! in ['createdAt', 'requestedAt']) {
+      qb = qb.orderBy(query.sortBy as any, query.sortOrder ?? 'desc');
+    } else {
+      // Default sorting by creation date
+      qb = qb.orderBy('createdAt', 'desc');
+    }
+
+    // Apply pagination and get data
+    const data = await qb.offset(query.offset).limit(query.limit).execute();
+
+    return {
+      data,
+      pagination: query.pagination(total)
+    };
   }
 
   async listConnectionRequests(
     context: UserContext,
-    organizationId: number
-  ): Promise<ConnectionRequest[]> {
-    // This is the connection request sent by the current user on behalf of
-    // their company
-    const connectionRequests = await this.db
+    organizationId: number,
+    query: ListQuery
+  ): Promise<ListResult<ConnectionRequest>> {
+
+    const allowed = 
+      context.policies.includes('view-connections-all-organizations') ||
+      context.policies.includes('view-connections-own-organization') && context.organizationId === organizationId;
+    if (!allowed) {
+      throw new ForbiddenError('You are not allowed to view connection requests of this organization');
+    }
+
+    let qb = this.db
       .selectFrom('connection_requests')
       .selectAll()
       .where((e) => e.or([
         e('requestingCompanyId', '=', organizationId),
         e('requestedCompanyId', '=', organizationId)
-      ]))
-      .execute();
-    return connectionRequests;
+      ]));
+
+    // Get total count for pagination
+    const total = (await 
+      qb.clearSelect().select((eb) => eb.fn.count('id').as('total')).executeTakeFirstOrThrow()
+    ).total as number;
+
+    // Apply sorting
+    if (query.sortBy && query.sortBy in ['createdAt', 'status']) {
+      qb = qb.orderBy(query.sortBy as any, query.sortOrder ?? 'asc');
+    } else {
+      // Default sorting by creation date
+      qb = qb.orderBy('createdAt', 'desc');
+    }
+
+    // Apply pagination and get data
+    const data = await qb.offset(query.offset).limit(query.limit).execute();
+
+    // Return data with pagination info
+    return {
+      data,
+      pagination: query.pagination(total)
+    };
   }
 
   /**

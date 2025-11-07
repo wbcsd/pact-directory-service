@@ -242,10 +242,20 @@ components:
     AddUserToOrganizationRequest:
       type: object
       properties:
-        fullName: { type: string, description: "Full name of the user", example: "John Doe" }
-        email: { type: string, format: email, description: "Email address of the user", example: "john.doe@example.com" }
-        role: { type: string, description: "Role of the user in the organization", example: "user" }
+        fullName: { type: string }
+        email: { type: string, format: email }
+        role: { type: string }
       required: [fullName, email, role]
+    PaginationInfo:
+      type: object
+      properties:
+        page: { type: integer, minimum: 1 }
+        pageSize: { type: integer, minimum: 1, maximum: 100 }
+        total: { type: integer, minimum: 0 }
+        totalPages: { type: integer, minimum: 0 }
+        hasNext: { type: boolean }
+        hasPrevious: { type: boolean }
+      required: [page, pageSize, total, totalPages, hasNext, hasPrevious]
     SetPasswordRequest:
       type: object
       properties:
@@ -466,19 +476,44 @@ paths:
       security: [{ bearerAuth: [] }]
       parameters:
         - in: query
-          name: query
+          name: page
+          required: false
+          schema: { type: integer, minimum: 1, default: 1 }
+          description: Page number for pagination
+        - in: query
+          name: pageSize
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+          description: Number of items per page
+        - in: query
+          name: search
           required: false
           schema: { type: string }
-          description: Search query to filter organizations by name
+          description: Search organizations by name
+        - in: query
+          name: sortBy
+          required: false
+          schema: { type: string, enum: [name, uri] }
+          description: Field to sort by
+        - in: query
+          name: sortOrder
+          required: false
+          schema: { type: string, enum: [asc, desc], default: asc }
+          description: Sort order
       responses:
         "200":
-          description: List of organizations
+          description: List of organizations with pagination
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/OrganizationProfileResponse"
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/OrganizationProfileResponse"
+                  pagination:
+                    $ref: "#/components/schemas/PaginationInfo"
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
   /directory/organizations/{id}/users:
@@ -492,15 +527,45 @@ paths:
           required: true
           schema: { type: integer }
           description: Organization ID
+        - in: query
+          name: page
+          required: false
+          schema: { type: integer, minimum: 1, default: 1 }
+          description: Page number for pagination
+        - in: query
+          name: pageSize
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+          description: Number of items per page
+        - in: query
+          name: search
+          required: false
+          schema: { type: string }
+          description: Search users by name or email
+        - in: query
+          name: sortBy
+          required: false
+          schema: { type: string, enum: [email, fullName, role, status] }
+          description: Field to sort by
+        - in: query
+          name: sortOrder
+          required: false
+          schema: { type: string, enum: [asc, desc], default: asc }
+          description: Sort order
       responses:
         "200":
-          description: List of users in the organization
+          description: List of users in the organization with pagination
           content:
             application/json:
               schema:
-                type: array
-                items: 
-                  $ref: "#/components/schemas/Member"
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Member"
+                  pagination:
+                    $ref: "#/components/schemas/PaginationInfo"
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
@@ -591,7 +656,7 @@ paths:
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
   /directory/organizations/{id}/connections:
-    post:
+    get:
       summary: List connections for an organization
       tags: [Organizations]
       security: [{ bearerAuth: [] }]
@@ -601,20 +666,46 @@ paths:
           required: true
           schema: { type: integer }
           description: Organization ID
+        - in: query
+          name: page
+          required: false
+          schema: { type: integer, minimum: 1, default: 1 }
+          description: Page number for pagination
+        - in: query
+          name: pageSize
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+          description: Number of items per page
+        - in: query
+          name: sortBy
+          required: false
+          schema: { type: string, enum: [createdAt, requestedAt] }
+          description: Field to sort by
+        - in: query
+          name: sortOrder
+          required: false
+          schema: { type: string, enum: [asc, desc], default: desc }
+          description: Sort order
       responses:
         "200":
-          description: List of connections for the organization
+          description: List of connections for the organization with pagination
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    organizationId: { type: integer }
-                    organizationName: { type: string }
-                    requestedAt: { type: string, format: date-time }
-                    createdAt: { type: string, format: date-time }
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: integer }
+                        connectedCompanyOneId: { type: integer }
+                        connectedCompanyTwoId: { type: integer }
+                        createdAt: { type: string, format: date-time }
+                        requestedAt: { type: string, format: date-time }
+                  pagination:
+                    $ref: "#/components/schemas/PaginationInfo"
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
@@ -702,23 +793,34 @@ paths:
       security: [{ bearerAuth: [] }]
       parameters:
         - in: query
-          name: query
+          name: search
           required: false
           schema: { type: string }
+          description: Search test runs by query string
         - in: query
           name: page
           required: false
-          schema: { type: integer, minimum: 1 }
+          schema: { type: integer, minimum: 1, default: 1 }
+          description: Page number for pagination
         - in: query
           name: pageSize
           required: false
-          schema: { type: integer, minimum: 1 }
+          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+          description: Number of items per page
       responses:
         "200":
-          description: Proxy response
+          description: List of test runs with pagination (proxied from external service)
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/ExternalProxyResponse' }
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ExternalProxyResponse"
+                  pagination:
+                    $ref: "#/components/schemas/PaginationInfo"
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '500': { $ref: '#/components/responses/InternalError' }

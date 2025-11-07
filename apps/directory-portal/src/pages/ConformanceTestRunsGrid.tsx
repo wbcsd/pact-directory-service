@@ -54,7 +54,7 @@ const ConformanceTestRunsGrid: React.FC<Props> = ({
         </NavLink>
       ),
     },
-    ...(profileData?.role === "administrator"
+    ...(profileData?.role === "administrator" || profileData?.role === "root"
       ? [
           {
             key: "organizationName",

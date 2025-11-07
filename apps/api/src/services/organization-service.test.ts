@@ -4,6 +4,7 @@ import { UserContext } from './user-service';
 import { EmailService } from './email-service';
 import { OrganizationService } from './organization-service';
 import { createMockDatabase } from '../common/mock-utils';
+import { ListQuery } from '@src/common/list-query';
 
 jest.mock('@src/common/config', () => ({
   default: {
@@ -128,10 +129,11 @@ describe('OrganizationService', () => {
       ];
 
       dbMocks.executors.execute.mockResolvedValue(mockOrganizations);
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValue({ total: 2 });
 
-      const result = await organizationService.list(rootUserContext);
+      const result = await organizationService.list(rootUserContext, ListQuery.parse({}));
 
-      expect(result).toEqual(mockOrganizations);
+      expect(result.data).toEqual(mockOrganizations);
       expect(dbMocks.db.selectFrom).toHaveBeenCalledWith('organizations');
     });
 
@@ -149,12 +151,13 @@ describe('OrganizationService', () => {
       ];
 
       dbMocks.executors.execute.mockResolvedValue(mockOrganizations);
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValue({ total: 1 });
 
-      const result = await organizationService.list(rootUserContext, {
+      const result = await organizationService.list(rootUserContext, new ListQuery({
         query: 'Test',
-      });
+      }));
 
-      expect(result).toEqual(mockOrganizations);
+      expect(result.data).toEqual(mockOrganizations);
       // Remove the nonsensical query builder expectation - we test business logic, not mocking details
     });
 
@@ -172,13 +175,14 @@ describe('OrganizationService', () => {
       ];
 
       dbMocks.executors.execute.mockResolvedValue(mockOrganizations);
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValue({ total: 2 });
 
-      const result = await organizationService.list(rootUserContext, {
+      const result = await organizationService.list(rootUserContext, ListQuery.parse({
         page: 2,
         pageSize: 10,
-      });
+      }));
 
-      expect(result).toEqual(mockOrganizations);
+      expect(result.data).toEqual(mockOrganizations);
       // Remove nonsensical pagination query expectations - focus on business logic
     });
   });
@@ -241,22 +245,23 @@ describe('OrganizationService', () => {
       ];
 
       dbMocks.executors.execute.mockResolvedValue(mockMembers);
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValue({ total: 1 }); 
 
-      const result = await organizationService.listMembers(adminUserContext, 1);
+      const result = await organizationService.listMembers(adminUserContext, 1, new ListQuery({}));
 
-      expect(result).toEqual(mockMembers);
+      expect(result.data).toEqual(mockMembers);
       expect(dbMocks.db.selectFrom).toHaveBeenCalledWith('users');
     });
 
     it('should throw ForbiddenError when user is not administrator or root', async () => {
       await expect(
-        organizationService.listMembers(regularUserContext, 1)
+        organizationService.listMembers(regularUserContext, 1, new ListQuery({}))
       ).rejects.toThrow(ForbiddenError);
     });
 
     it('should throw ForbiddenError when accessing different organization', async () => {
       await expect(
-        organizationService.listMembers(adminUserContext, 2)
+        organizationService.listMembers(adminUserContext, 2, new ListQuery({}))
       ).rejects.toThrow(ForbiddenError);
     });
   });

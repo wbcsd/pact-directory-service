@@ -9,6 +9,7 @@ import {
 import { Role } from '@src/common/policies';
 import { createMockDatabase } from '../common/mock-utils';
 import { UserContext } from './user-service';
+import { ListQuery } from '@src/common/list-query';
 
 describe('ConnectionService', () => {
   let dbMocks: ReturnType<typeof createMockDatabase>;
@@ -54,18 +55,20 @@ describe('ConnectionService', () => {
 
   describe('listConnections', () => {
     it('should return connections', async () => {
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValue([{ total: 1 }]);
       dbMocks.executors.execute.mockResolvedValue([{ id: 1 }]);
       const result = await connectionService.listConnections(adminUserContext, 1);
-      expect(result).toEqual([{ id: 1 }]);
+      expect(result.data).toEqual([{ id: 1 }]);
     });
   });
 
   describe('listConnectionRequests', () => {
     it('should return connection requests', async () => {
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValue([{ total: 1 }]);
       dbMocks.executors.execute.mockResolvedValue([{ id: 1, status: 'pending' }]);
-      const result = await connectionService.listConnectionRequests(adminUserContext, 1);
+      const result = await connectionService.listConnectionRequests(adminUserContext, 1, ListQuery.parse({}));
       expect(dbMocks.executors.execute).toHaveBeenCalled();
-      expect(result).toEqual([{ id: 1, status: 'pending' }]);
+      expect(result.data).toEqual([{ id: 1, status: 'pending' }]);
     });
   });
 
