@@ -179,10 +179,14 @@ describe("ConformanceTestRuns", () => {
     it("displays test runs after successful fetch", async () => {
       vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
         ok: true,
-        json: async () => ({ testRuns: mockTestRuns }),
+        json: async () => ({ data: mockTestRuns }),
       } as Response);
 
       renderWithRouter();
+
+      await waitFor(() => {
+        expect(screen.getByTestId("grid-loading")).toHaveTextContent("false");
+      });
 
       await waitFor(() => {
         expect(screen.getByTestId("grid-test-runs-count")).toHaveTextContent(
@@ -266,7 +270,7 @@ describe("ConformanceTestRuns", () => {
 
       await waitFor(() => {
         expect(proxyWithAuthSpy).toHaveBeenCalledWith(
-          "/test-runs?page=1&query=test%20query&pageSize=10"
+          "/test-runs?page=1&search=test%20query&pageSize=10"
         );
       });
     });
@@ -355,7 +359,7 @@ describe("ConformanceTestRuns", () => {
     it("shows pagination controls when there are test runs", async () => {
       vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
         ok: true,
-        json: async () => ({ testRuns: mockTestRuns }),
+        json: async () => ({ data: mockTestRuns }),
       } as Response);
 
       renderWithRouter();
@@ -369,7 +373,7 @@ describe("ConformanceTestRuns", () => {
     it("disables prev button on first page", async () => {
       vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
         ok: true,
-        json: async () => ({ testRuns: mockTestRuns }),
+        json: async () => ({ data: mockTestRuns }),
       } as Response);
 
       renderWithRouter();
@@ -383,7 +387,7 @@ describe("ConformanceTestRuns", () => {
     it("enables prev button on page > 1", async () => {
       vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
         ok: true,
-        json: async () => ({ testRuns: mockTestRuns }),
+        json: async () => ({ data: mockTestRuns }),
       } as Response);
 
       renderWithRouter(["/?page=2"]);
@@ -400,7 +404,7 @@ describe("ConformanceTestRuns", () => {
         .mockResolvedValue({
           ok: true,
           json: async () => ({
-            testRuns: Array(10).fill(mockTestRuns[0]),
+            data: Array(10).fill(mockTestRuns[0]),
           }),
         } as Response);
 
@@ -424,7 +428,7 @@ describe("ConformanceTestRuns", () => {
         .spyOn(authFetch, "proxyWithAuth")
         .mockResolvedValue({
           ok: true,
-          json: async () => ({ testRuns: mockTestRuns }),
+          json: async () => ({ data: mockTestRuns }),
         } as Response);
 
       renderWithRouter(["/?page=2"]);
@@ -445,7 +449,7 @@ describe("ConformanceTestRuns", () => {
     it("disables next button when fewer results than page size", async () => {
       vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
         ok: true,
-        json: async () => ({ testRuns: mockTestRuns }), // Only 2 items, less than MAX_PAGE_SIZE (10)
+        json: async () => ({ data: mockTestRuns }), // Only 2 items, less than MAX_PAGE_SIZE (10)
       } as Response);
 
       renderWithRouter();
@@ -462,7 +466,7 @@ describe("ConformanceTestRuns", () => {
         .mockResolvedValue({
           ok: true,
           json: async () => ({
-            testRuns: Array(10).fill(mockTestRuns[0]),
+            data: Array(10).fill(mockTestRuns[0]),
           }),
         } as Response);
 
@@ -476,7 +480,7 @@ describe("ConformanceTestRuns", () => {
 
       await waitFor(() => {
         expect(proxyWithAuthSpy).toHaveBeenCalledWith(
-          "/test-runs?page=2&query=test&pageSize=10"
+          "/test-runs?page=2&search=test&pageSize=10"
         );
       });
     });
@@ -486,7 +490,7 @@ describe("ConformanceTestRuns", () => {
     it("navigates to conformance testing when Run Tests clicked", async () => {
       vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
         ok: true,
-        json: async () => ({ testRuns: mockTestRuns }),
+        json: async () => ({ data: mockTestRuns }),
       } as Response);
 
       renderWithRouter();
@@ -554,7 +558,7 @@ describe("ConformanceTestRuns", () => {
         .spyOn(authFetch, "proxyWithAuth")
         .mockResolvedValue({
           ok: true,
-          json: async () => ({ testRuns: mockTestRuns }),
+          json: async () => ({ data: mockTestRuns }),
         } as Response);
 
       renderWithRouter(["/?page=0"]);
@@ -571,7 +575,7 @@ describe("ConformanceTestRuns", () => {
     it("passes correct props to ConformanceTestRunsGrid", async () => {
       vi.spyOn(authFetch, "proxyWithAuth").mockResolvedValue({
         ok: true,
-        json: async () => ({ testRuns: mockTestRuns }),
+        json: async () => ({ data: mockTestRuns }),
       } as Response);
 
       renderWithRouter();

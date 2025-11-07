@@ -57,7 +57,7 @@ const ConformanceTestRuns: React.FC = () => {
 
     try {
       let url = `/test-runs?page=${page}${
-        query ? `&query=${encodeURIComponent(query)}` : ""
+        query ? `&search=${encodeURIComponent(query)}` : ""
       }`;
 
       url += `&pageSize=${MAX_PAGE_SIZE}`;
