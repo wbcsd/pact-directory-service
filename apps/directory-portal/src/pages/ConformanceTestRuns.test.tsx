@@ -71,6 +71,7 @@ const mockProfileData = {
   role: "user",
   email: "user@test.com",
   name: "Test User",
+  fullName: "Test User",
   organizationId: 1,
   organizationName: "Test Org",
   organizationIdentifier: "test-org",
@@ -91,7 +92,7 @@ describe("ConformanceTestRuns", () => {
       login: vi.fn(),
       logout: vi.fn(),
       isAuthenticated: true,
-      isLoading: false,
+      refreshProfileData: vi.fn(),
     });
   });
 
