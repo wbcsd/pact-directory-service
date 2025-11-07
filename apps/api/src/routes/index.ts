@@ -174,6 +174,15 @@ router.get('/directory/organizations/:id/connections', authenticate, context(asy
 }));
 
 // Connections between organizations
+router.get('/directory/organizations/:id/connection-requests', authenticate, context(async (req) => {
+  return req.services.connection.listConnectionRequests(
+    req.context, 
+    parseInt(req.params.id), 
+    ListQuery.parse(req.query)
+  );
+}));
+
+// Connections between organizations
 router.post('/directory/organizations/create-connection-request', authenticate, context(async (req) => {
   return req.services.connection.createConnectionRequest(
     req.context,
