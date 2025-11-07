@@ -21,22 +21,22 @@ const SearchPage: React.FC = () => {
   const handleSearch = async () => {
     try {
       const response = await fetchWithAuth(
-        `/organizations?query=${encodeURIComponent(searchQuery)}`
+        `/organizations?search=${encodeURIComponent(searchQuery)}`
       );
 
       if (!response || !response.ok) {
         throw new Error("Failed to fetch search results");
       }
 
-      const data = await response.json();
+      const body = await response.json();
 
-      if (data.length === 0) {
+      if (body.data.length === 0) {
         setNoResults(true);
       } else {
         setNoResults(false);
       }
 
-      setSearchResults(data);
+      setSearchResults(body.data);
     } catch (error) {
       console.error("Error fetching search results:", error);
     }
