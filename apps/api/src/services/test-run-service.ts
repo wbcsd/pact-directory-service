@@ -142,7 +142,8 @@ export class TestRunService {
       if (query.search)
         url.searchParams.append('query', query.search);
 
-      if (query.page) url.searchParams.append('page', query.page.toString());
+      if (query.page) 
+        url.searchParams.append('page', query.page.toString());
 
       if (query.pageSize)
         url.searchParams.append('size', query.pageSize.toString());

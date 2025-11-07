@@ -1,6 +1,6 @@
 @baseUrl = http://localhost:3010/api
-@jwtToken = <PASTE_YOUR_JWT_TOKEN_HERE>
-@searchQuery = example
+@jwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsImVtYWlsIjoidGVzdEBleGFtcGxlLmNvbSIsIm9yZ2FuaXphdGlvbklkIjozLCJyb2xlIjoiYWRtaW5pc3RyYXRvciIsInN0YXR1cyI6ImVuYWJsZWQiLCJwb2xpY2llcyI6WyJ2aWV3LWNvbm5lY3Rpb25zLW93bi1vcmdhbml6YXRpb24iLCJlZGl0LWNvbm5lY3Rpb25zLW93bi1vcmdhbml6YXRpb24iLCJ2aWV3LW93bi1vcmdhbml6YXRpb25zIiwiZWRpdC1vd24tb3JnYW5pemF0aW9ucyIsInZpZXctdXNlcnMiLCJlZGl0LXVzZXJzIl0sImlhdCI6MTc2MjUwNTk1MywiZXhwIjoxNzYyNTI3NTUzfQ.NtmecUVWRLjEtZvU1hCNAgBMFrpEJ31d3Xyw7sXtfyY
+@searchQuery = DINGDONG
 @testRunId = e4caed81-b4a7-42ef-9fef-b569398649c5
 @testCaseId = 060efbc1-db69-4e3f-8f4a-e23e371219c2
 @testEmail = test@example.com
@@ -11,14 +11,14 @@
 @organizationName = Test Organization
 
 
-# get test runs using VSCode Rest Client
-GET {{baseUrl}}/proxy/test-runs
+# get test runs using VSCode Rest Client (with pagination)
+GET {{baseUrl}}/proxy/test-runs?page=1&pageSize=10
 Authorization: Bearer {{jwtToken}}
 Content-Type: application/json
 Accept: application/json
 ###
-# search test runs using VSCode Rest Client
-GET {{baseUrl}}/proxy/test-runs?query={{searchQuery}}&limit=2
+# search test runs using VSCode Rest Client (with search and pagination)
+GET {{baseUrl}}/proxy/test-runs?search={{searchQuery}}&page=1&pageSize=5
 Authorization: Bearer {{jwtToken}}
 Content-Type: application/json
 Accept: application/json
@@ -101,3 +101,114 @@ Content-Type: application/json
 # - Test 4: Should send password reset email
 # - Test 5: Should send verification email
 # - Test 6: Should fail with "Email already in use" error
+
+###
+# ======================
+# ListQuery Examples
+# ======================
+
+### List Organizations (with pagination)
+GET {{baseUrl}}/directory/organizations?page=1&pageSize=10
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### Search Organizations (by name)
+GET {{baseUrl}}/directory/organizations?search=test&page=1&pageSize=5
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### List Organizations (sorted by name ascending)
+GET {{baseUrl}}/directory/organizations?sortBy=name&sortOrder=asc&page=1&pageSize=10
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### List Organizations (sorted by URI descending)
+GET {{baseUrl}}/directory/organizations?sortBy=uri&sortOrder=desc&page=1&pageSize=10
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### List Organization Members (with pagination)
+GET {{baseUrl}}/directory/organizations/3/users?page=1&pageSize=10
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### Search Organization Members (by name or email)
+GET {{baseUrl}}/directory/organizations/3/users?search=test&page=1&pageSize=5
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### List Organization Members (sorted by email ascending)
+GET {{baseUrl}}/directory/organizations/3/users?sortBy=email&sortOrder=asc&page=1&pageSize=10
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### List Organization Members (sorted by fullName descending)
+GET {{baseUrl}}/directory/organizations/3/users?sortBy=fullName&sortOrder=desc&page=1&pageSize=10
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### List Organization Members (sorted by role)
+GET {{baseUrl}}/directory/organizations/3/users?sortBy=role&sortOrder=asc&page=1&pageSize=10
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### List Organization Members (sorted by status)
+GET {{baseUrl}}/directory/organizations/3/users?sortBy=status&sortOrder=asc&page=1&pageSize=10
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### List Organization Connections (with pagination)
+GET {{baseUrl}}/directory/organizations/3/connections?page=1&pageSize=10
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### List Organization Connections (sorted by createdAt descending - most recent first)
+GET {{baseUrl}}/directory/organizations/3/connections?sortBy=createdAt&sortOrder=desc&page=1&pageSize=10
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### List Organization Connections (sorted by requestedAt ascending - oldest requests first)
+GET {{baseUrl}}/directory/organizations/3/connections?sortBy=requestedAt&sortOrder=asc&page=1&pageSize=10
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### List Test Runs (with pagination)
+GET {{baseUrl}}/proxy/test-runs?page=1&pageSize=10
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### Search Test Runs (with search term and pagination)
+GET {{baseUrl}}/proxy/test-runs?search=pact&page=1&pageSize=5
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### List Test Runs (second page with larger page size)
+GET {{baseUrl}}/proxy/test-runs?page=2&pageSize=20
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+###
+# ======================
+# ListQuery Response Format
+# ======================
+# All list endpoints now return objects with this structure:
+# {
+#   "data": [...],           // Array of results
+#   "pagination": {
+#     "page": 1,            // Current page number
+#     "pageSize": 10,       // Items per page
+#     "total": 100,         // Total number of items
+#     "totalPages": 10,     // Total number of pages
+#     "hasNext": true,      // Whether there's a next page
+#     "hasPrevious": false  // Whether there's a previous page
+#   }
+# }
+#
+# Available Query Parameters:
+# - page: Page number (default: 1, minimum: 1)
+# - pageSize: Items per page (default: 50, minimum: 1, maximum: 100)
+# - search: Text search (varies by endpoint)
+# - sortBy: Field to sort by (varies by endpoint)
+# - sortOrder: "asc" or "desc" (default varies by endpoint)
+# - filters: Key-value filters (future feature)
+###
