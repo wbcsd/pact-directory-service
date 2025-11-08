@@ -15,7 +15,7 @@ const PolicyGuard: React.FC<{
 
   // Check if user has all required policies taking predicate into account
   const hasRequiredPolicies = policies[predicate === "and" ? "every" : "some"](policy =>
-    profileData?.policies.includes(policy)
+    profileData?.policies?.includes(policy) || false
   );
 
   // If user doesn't have required policies, return null

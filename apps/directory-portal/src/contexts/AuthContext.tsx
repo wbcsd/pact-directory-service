@@ -3,19 +3,17 @@ import { fetchWithAuth } from "../utils/auth-fetch";
 
 // Define our profile data type
 export interface ProfileData {
+  id: number;
   organizationName: string;
-  organizationIdentifier: string;
-  organizationDescription: string;
+  organizationIdentifier: string | null;
   organizationId: number;
   fullName: string;
   email: string;
-  role: string; // 'user' | 'administrator'
-  solutionApiUrl: string;
-  registrationCode: string;
-  clientId: string;
-  clientSecret: string;
-  networkKey: string;
-  policies: string[];
+  role: string;
+  status: string;
+  organizationDescription?: string | null;
+  solutionApiUrl?: string | null;
+  policies?: string[];
 }
 
 // Define the context shape
@@ -41,18 +39,16 @@ export const useAuth = () => useContext(AuthContext);
 
 // Default empty profile data
 const emptyProfileData: ProfileData = {
+  id: 0,
   organizationName: "",
   organizationIdentifier: "",
-  organizationDescription: "",
   organizationId: 0,
   fullName: "",
   email: "",
-  role: "user", // Default to 'user' role
+  role: "user",
+  status: "enabled",
+  organizationDescription: "",
   solutionApiUrl: "",
-  registrationCode: "",
-  clientId: "",
-  clientSecret: "",
-  networkKey: "",
   policies: [],
 };
 
