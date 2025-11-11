@@ -218,11 +218,6 @@ export class OrganizationService {
         'organizations.uri as organizationIdentifier',
       ]);
 
-    // Filter by organizationId if provided
-    if (organizationId) {
-      qb = qb.where('users.organizationId', '=', organizationId)
-    }
-
     // Apply search filter
     if (query?.search) {
       qb = qb.where((eb) =>

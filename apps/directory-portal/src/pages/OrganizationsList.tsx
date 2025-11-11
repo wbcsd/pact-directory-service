@@ -1,6 +1,7 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { fetchWithAuth } from "../utils/auth-fetch";
-import DataTable, { Column } from "../components/DataTable";
+import SearcheableDataTable, { PaginationInfo } from "../components/SearcheableDataTable";
+import { Column } from "../components/DataTable";
 import { useAuth } from "../contexts/AuthContext";
 import { InputIcon } from "@radix-ui/react-icons";
 import { useNavigate } from "react-router-dom";
@@ -19,34 +20,38 @@ export interface Organization {
 }
 
 const Organizations: React.FC = () => {
-  const [organizations, setOrganizations] = React.useState<Organization[]>([]);
-  const [loading, setLoading] = React.useState(true);
   const navigate = useNavigate();
   const { profileData } = useAuth();
 
-  useEffect(() => {
-    const fetchOrganizations = async () => {
-      if (!profileData) return;
+  // Fetch function for DataTableWithSearch
+  const fetchOrganizations = async (params: {
+    page: number;
+    pageSize: number;
+    search?: string;
+  }): Promise<{ data: Organization[]; pagination: PaginationInfo }> => {
+    if (!profileData) {
+      throw new Error("Profile data not available");
+    }
 
-      try {
-        setLoading(true);
-        const response = await fetchWithAuth("/organizations");
+    // Build query string
+    const queryParams = new URLSearchParams({
+      page: params.page.toString(),
+      pageSize: params.pageSize.toString(),
+    });
 
-        if (response!.ok) {
-          const result = await response!.json();
-          setOrganizations(result.data);
-        } else {
-          console.error("Failed to fetch organizations");
-        }
-      } catch (error) {
-        console.error("Error fetching organizations:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (params.search) {
+      queryParams.append("search", params.search);
+    }
 
-    fetchOrganizations();
-  }, [profileData]);
+    const response = await fetchWithAuth(`/organizations?${queryParams.toString()}`);
+    
+    if (!response || !response.ok) {
+      throw new Error("Failed to fetch organizations");
+    }
+
+    const result = await response.json();
+    return result;
+  };
 
   const columns: Column<Organization>[] = [
     {
@@ -104,10 +109,22 @@ const Organizations: React.FC = () => {
   return (
     <GridPageLayout
       title="Organizations"
-      loading={loading}
+      loading={false}
       loadingMessage="Loading organizations..."
     >
-      <DataTable idColumnName="id" columns={columns} data={organizations} />
+      <SearcheableDataTable<Organization>
+        title="Organizations"
+        subtitle="Manage and view all organizations in the system"
+        searchPlaceholder="Search by organization name or identifier..."
+        fetchData={fetchOrganizations}
+        columns={columns}
+        idColumnName="id"
+        defaultPageSize={50}
+        emptyState={{
+          title: "No organizations found",
+          description: "No organizations match your search criteria",
+        }}
+      />
     </GridPageLayout>
   );
 };
