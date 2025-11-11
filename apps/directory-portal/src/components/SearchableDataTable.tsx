@@ -177,9 +177,7 @@ function SearchableDataTable<T extends object>({
       {!isLoading && !error && (
         <Box className="results-info">
           <Text size="2" style={{ color: "#888" }}>
-            Showing {data.length} of {pagination.total} result
-            {pagination.total !== 1 ? "s" : ""}
-            {debouncedSearchTerm && ` for "${debouncedSearchTerm}"`}
+            {debouncedSearchTerm && `Searching for "${debouncedSearchTerm}"`}
           </Text>
         </Box>
       )}

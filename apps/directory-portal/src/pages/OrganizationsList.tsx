@@ -100,7 +100,7 @@ const Organizations: React.FC = () => {
           onClick={() => navigate(`/organizations/${row.id}`)}
         >
           <InputIcon />
-          View
+          Edit
         </ActionButton>
       ),
     },
