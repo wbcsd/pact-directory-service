@@ -1,7 +1,7 @@
 import { Kysely } from 'kysely';
 import { Database } from '@src/database/types';
 import { NotFoundError, ForbiddenError } from '@src/common/errors';
-import { registerPolicy, checkAccess, Role } from '@src/common/policies';
+import { registerPolicy, checkAccess, Role, hasAccess } from '@src/common/policies';
 import { UserContext, UserData } from './user-service';
 import { EmailService } from './email-service';
 import { ListQuery, ListResult } from '@src/common/list-query';
@@ -81,24 +81,36 @@ export class OrganizationService {
   async list(
     context: UserContext,
     query: ListQuery
-  ): Promise<ListResult<OrganizationData>> {
+  ): Promise<ListResult<OrganizationData & { userCount: string | number | bigint, lastActivity: Date | null }>> {
     checkAccess(context, ['view-own-organizations', 'view-all-organizations']);
 
-    let qb = this.db
-      .selectFrom('organizations')
-      .select([
-        'id',
-        'name as organizationName',
-        'uri as organizationIdentifier',
-        'description as organizationDescription',
-        'networkKey',
-        'solutionApiUrl',
-        'parentId',
-      ]);
+  let qb = this.db
+    .selectFrom('organizations')
+    .leftJoin('users', 'users.organizationId', 'organizations.id')
+    .select([
+      'organizations.id',
+      'organizations.name as organizationName',
+      'organizations.uri as organizationIdentifier',
+      'organizations.description as organizationDescription',
+      'organizations.solutionApiUrl',
+      'organizations.networkKey',
+      'organizations.parentId',
+      (eb) => eb.fn.count('users.id').as('userCount'),
+      (eb) => eb.fn.max('users.lastLogin').as('lastActivity')
+    ])
+    .groupBy([
+      'organizations.id',
+      'organizations.name',
+      'organizations.uri',
+      'organizations.description',
+      'organizations.solutionApiUrl',
+      'organizations.networkKey',
+      'organizations.parentId',
+    ]);
 
-    // If not view-all-organizations, restrict to own organization
+    // If user doesn't have view-all-organizations, restrict to their own organization
     if (!context.policies.includes('view-all-organizations')) {
-      qb = qb.where('id', '=', context.organizationId!);
+      qb = qb.where('organizations.id', '=', context.organizationId);
     }
     
     // Apply search filter
@@ -109,7 +121,7 @@ export class OrganizationService {
     // Get total count for pagination
     const total = (
       await qb.clearSelect()
-        .select((eb) => eb.fn.count('id').as('total'))
+        .select((eb) => eb.fn.countAll().as('total'))
         .executeTakeFirstOrThrow()
     ).total as number;
 
@@ -118,7 +130,7 @@ export class OrganizationService {
       qb = qb.orderBy(query.sortBy as any, query.sortOrder ?? 'asc');
     } else {
       // Default sorting by name
-      qb = qb.orderBy('name', 'asc');
+      qb = qb.orderBy('organizations.name', 'asc');
     }
 
     // Apply pagination
@@ -216,11 +228,6 @@ export class OrganizationService {
         'organizations.uri as organizationIdentifier',
       ]);
 
-    // Filter by organizationId if provided
-    if (organizationId) {
-      qb = qb.where('users.organizationId', '=', organizationId)
-    }
-
     // Apply search filter
     if (query?.search) {
       qb = qb.where((eb) =>
@@ -230,6 +237,11 @@ export class OrganizationService {
         ])
       );
     }
+
+    // Restrict to the specified organization if role < root
+    if (!hasAccess(context, 'view-all-organizations')) {
+      qb = qb.where('users.organizationId', '=', context.organizationId);
+    } 
 
     // Get total count for pagination
     const total = (
