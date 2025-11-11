@@ -116,6 +116,8 @@ describe('OrganizationService', () => {
           networkKey: 'key1',
           solutionApiUrl: 'https://api1.test.com',
           parentId: null,
+          userCount: 5,
+          lastActivity: null,
         },
         {
           id: 2,
@@ -125,6 +127,8 @@ describe('OrganizationService', () => {
           networkKey: 'key2',
           solutionApiUrl: 'https://api2.test.com',
           parentId: null,
+          userCount: 10,
+          lastActivity: null,
         },
       ];
 

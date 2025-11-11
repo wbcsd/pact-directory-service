@@ -43,6 +43,9 @@ export const createMockQueryChain = (executors = createMockExecutors()) => ({
   // CTE methods
   withRecursive: jest.fn().mockReturnThis(),
   unionAll: jest.fn().mockReturnThis(),
+
+  // grouping methods
+  groupBy: jest.fn().mockReturnThis(),
   
   // Execution methods
   ...executors,
