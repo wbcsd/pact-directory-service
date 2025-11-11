@@ -12,10 +12,10 @@ export interface Organization {
   organizationName: string;
   organizationIdentifier: string;
   organizationDescription: string;
-  solutionApiUrl: string;
   networkKey: string;
   parentId: number;
   userCount: string | number;
+  lastActivity: string | null;
 }
 
 const Organizations: React.FC = () => {
@@ -71,11 +71,19 @@ const Organizations: React.FC = () => {
       render: (row: Organization) => row.userCount.toString(),
     },
     {
-      key: "solutionApiUrl",
-      header: "API URL",
+      key: "lastActivity",
+      header: "Last Activity",
       sortable: true,
-      sortValue: (row: Organization) => row.solutionApiUrl || "",
-      render: (row: Organization) => row.solutionApiUrl || "—",
+      sortValue: (row: Organization) => {
+        const date = new Date(row.lastActivity ?? "");
+        return isNaN(date.getTime()) ? 0 : date.getTime();
+      },
+      render: (row: Organization) => {
+        const date = new Date(row.lastActivity ?? "");
+        return isNaN(date.getTime())
+          ? "—"
+          : date.toLocaleDateString() + " " + date.toLocaleTimeString();
+      },
     },
     {
       key: "actions",

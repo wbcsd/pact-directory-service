@@ -71,7 +71,7 @@ export class OrganizationService {
   async list(
     context: UserContext,
     query: ListQuery
-  ): Promise<ListResult<OrganizationData & { userCount: string | number | bigint }>> {
+  ): Promise<ListResult<OrganizationData & { userCount: string | number | bigint, lastActivity: Date | null }>> {
     checkAccess(context, ['view-own-organizations', 'view-all-organizations']);
 
   let qb = this.db
@@ -85,7 +85,8 @@ export class OrganizationService {
       'organizations.solutionApiUrl',
       'organizations.networkKey',
       'organizations.parentId',
-      (eb) => eb.fn.count('users.id').as('userCount')
+      (eb) => eb.fn.count('users.id').as('userCount'),
+      (eb) => eb.fn.max('users.lastLogin').as('lastActivity')
     ])
     .groupBy([
       'organizations.id',

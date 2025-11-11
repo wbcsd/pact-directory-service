@@ -525,7 +525,12 @@ paths:
                             - type: string
                             - type: integer
                           description: "Count of users in the organization"
-                      required: [id, organizationName, organizationIdentifier, userCount]
+                        lastActivity: 
+                          type: string
+                          format: date-time
+                          nullable: true
+                          description: "Timestamp of the most recent user activity in the organization"
+                      required: [id, organizationName, organizationIdentifier, userCount, lastActivity]
                   pagination:
                     $ref: "#/components/schemas/PaginationInfo"
         "400": { $ref: "#/components/responses/BadRequest" }
