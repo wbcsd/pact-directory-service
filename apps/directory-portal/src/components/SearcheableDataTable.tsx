@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Box, TextField, Button, Text } from "@radix-ui/themes";
-import { MagnifyingGlassIcon, ReloadIcon } from "@radix-ui/react-icons";
+import { Box, Button, Text } from "@radix-ui/themes";
+import { ReloadIcon, Cross2Icon } from "@radix-ui/react-icons";
 import DataTable, { Column } from "./DataTable";
 import "./SearcheableDataTable.css";
 
@@ -13,7 +13,7 @@ export interface PaginationInfo {
   hasPrevious: boolean;
 }
 
-export interface DataTableWithSearchProps<T> {
+export interface SearcheableDataTableProps<T> {
   // Display configuration
   title: string;
   subtitle?: string;
@@ -48,7 +48,7 @@ export interface DataTableWithSearchProps<T> {
   searchDebounceMs?: number;
 }
 
-function SearchableDataTable<T extends object>({
+function SearcheableDataTable<T extends object>({
   title,
   subtitle,
   searchPlaceholder = "Search...",
@@ -60,7 +60,7 @@ function SearchableDataTable<T extends object>({
   headerActions,
   refreshTrigger = 0,
   searchDebounceMs = 500,
-}: DataTableWithSearchProps<T>) {
+}: SearcheableDataTableProps<T>) {
   const [data, setData] = useState<T[]>([]);
   const [pagination, setPagination] = useState<PaginationInfo>({
     page: 1,
@@ -133,40 +133,45 @@ function SearchableDataTable<T extends object>({
 
   return (
     <Box className="data-table-with-search">
-      {/* Header Section */}
-      <Box className="table-header">
-        <Box className="table-header-text">
-          <h2>{title}</h2>
-          {subtitle && (
-            <Text size="2" style={{ color: "#888" }}>
-              {subtitle}
-            </Text>
-          )}
-        </Box>
-        <Box className="table-header-actions">{headerActions}</Box>
-      </Box>
+      <div className="table-header-wrapper">
+          <div className="table-header-text">
+            <h2>{title}</h2>
+            {subtitle && (
+              <Text size="2" className="headerSubtext">
+                {subtitle}
+              </Text>
+            )}
+          </div>
+          <Box className="table-header-actions">{headerActions}</Box>
 
-      {/* Search and Controls */}
-      <Box className="table-controls">
-        <Box className="search-container">
-          <MagnifyingGlassIcon className="search-icon" />
-          <TextField.Root
-            placeholder={searchPlaceholder}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-          />
-        </Box>
-        <Button
-          variant="soft"
-          onClick={handleRefresh}
-          disabled={isLoading}
-          className="refresh-button"
-        >
-          <ReloadIcon />
-          Refresh
-        </Button>
-      </Box>
+        {/* Search and Controls */}
+          <div className="searchWrapper">
+            <input
+              type="text"
+              placeholder={searchPlaceholder}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="searchInput"
+            />
+            {searchTerm && (
+              <button
+                className="clearButton"
+                onClick={() => setSearchTerm("")}
+                aria-label="Clear search"
+              >
+                <Cross2Icon />
+              </button>
+            )}
+          </div>
+          <Button
+            onClick={handleRefresh}
+            disabled={isLoading}
+            className="refresh-button"
+          >
+            <ReloadIcon />
+            Refresh
+          </Button>
+      </div>
 
       {/* Results Count */}
       {!isLoading && !error && (
@@ -191,32 +196,28 @@ function SearchableDataTable<T extends object>({
 
       {/* Pagination Controls */}
       {!error && data.length > 0 && (
-        <Box className="pagination-controls">
-          <Box className="pagination-info">
-            <Text size="2" style={{ color: "#888" }}>
-              Page {pagination.page} of {pagination.totalPages}
-            </Text>
-          </Box>
-          <Box className="pagination-buttons">
-            <Button
-              variant="soft"
-              onClick={() => handlePageChange(pagination.page - 1)}
-              disabled={!pagination.hasPrevious || isLoading}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="soft"
-              onClick={() => handlePageChange(pagination.page + 1)}
-              disabled={!pagination.hasNext || isLoading}
-            >
-              Next
-            </Button>
-          </Box>
-        </Box>
+        <div className="paging-wrapper">
+          <Button
+            variant="soft"
+            onClick={() => handlePageChange(pagination.page - 1)}
+            disabled={!pagination.hasPrevious || isLoading}
+          >
+            Previous
+          </Button>
+          <Text size="2" style={{ color: "#888" }}>
+            Page {pagination.page} of {pagination.totalPages}
+          </Text>
+          <Button
+            variant="soft"
+            onClick={() => handlePageChange(pagination.page + 1)}
+            disabled={!pagination.hasNext || isLoading}
+          >
+            Next
+          </Button>
+        </div>
       )}
     </Box>
   );
 }
 
-export default SearchableDataTable;
+export default SearcheableDataTable;
