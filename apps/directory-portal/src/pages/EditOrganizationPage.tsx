@@ -26,9 +26,6 @@ export interface Organization {
   organizationIdentifier: string;
   organizationDescription: string;
   networkKey: string;
-  parentId: number;
-  userCount: string | number;
-  lastActivity: string | null;
 }
 
 const EditOrganizationPage: React.FC = () => {
@@ -42,9 +39,6 @@ const EditOrganizationPage: React.FC = () => {
   const [readOnlyData, setReadOnlyData] = useState({
     id: 0,
     organizationIdentifier: "",
-    parentId: 0,
-    userCount: "",
-    lastActivity: "",
   });
   const [status, setStatus] = useState<null | "success" | "error">(null);
   const [errorMessage, setErrorMessage] = useState("");
@@ -71,9 +65,6 @@ const EditOrganizationPage: React.FC = () => {
           setReadOnlyData({
             id: organization.id,
             organizationIdentifier: organization.organizationIdentifier,
-            parentId: organization.parentId,
-            userCount: organization.userCount.toString(),
-            lastActivity: organization.lastActivity || "N/A",
           });
         } else {
           setErrorMessage("Failed to load organization data");
@@ -303,39 +294,6 @@ const EditOrganizationPage: React.FC = () => {
                   API URL is required.
                 </Form.Message>
               </Form.Field>
-
-              {/* Read-only Parent ID */}
-              <Box className="form-field">
-                <Text className="field-label">Parent ID</Text>
-                <TextField.Root
-                  value={readOnlyData.parentId.toString()}
-                  readOnly
-                  disabled
-                  className="readonly-field"
-                />
-              </Box>
-
-              {/* Read-only User Count */}
-              <Box className="form-field">
-                <Text className="field-label">User Count</Text>
-                <TextField.Root
-                  value={readOnlyData.userCount}
-                  readOnly
-                  disabled
-                  className="readonly-field"
-                />
-              </Box>
-
-              {/* Read-only Last Activity */}
-              <Box className="form-field">
-                <Text className="field-label">Last Activity</Text>
-                <TextField.Root
-                  value={readOnlyData.lastActivity}
-                  readOnly
-                  disabled
-                  className="readonly-field"
-                />
-              </Box>
 
               <Box className="button-group">
                 <Button
