@@ -108,7 +108,7 @@ const Organizations: React.FC = () => {
 
   return (
     <GridPageLayout
-      title="Organizations"
+      title=""
       loading={false}
       loadingMessage="Loading organizations..."
     >
