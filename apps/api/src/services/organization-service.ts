@@ -1,7 +1,7 @@
 import { Kysely } from 'kysely';
 import { Database } from '@src/database/types';
 import { NotFoundError, ForbiddenError } from '@src/common/errors';
-import { registerPolicy, checkAccess, Role } from '@src/common/policies';
+import { registerPolicy, checkAccess, Role, hasAccess } from '@src/common/policies';
 import { UserContext, UserData } from './user-service';
 import { EmailService } from './email-service';
 import { ListQuery, ListResult } from '@src/common/list-query';
@@ -227,6 +227,11 @@ export class OrganizationService {
         ])
       );
     }
+
+    // Restrict to the specified organization if role < root
+    if (!hasAccess(context, 'view-all-organizations')) {
+      qb = qb.where('users.organizationId', '=', context.organizationId);
+    } 
 
     // Get total count for pagination
     const total = (

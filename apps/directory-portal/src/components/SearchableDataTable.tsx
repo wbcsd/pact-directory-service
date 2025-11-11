@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Box, Button, Text } from "@radix-ui/themes";
 import { ReloadIcon, Cross2Icon } from "@radix-ui/react-icons";
 import DataTable, { Column } from "./DataTable";
-import "./SearcheableDataTable.css";
+import "./SearchableDataTable.css";
 
 export interface PaginationInfo {
   page: number;
@@ -13,7 +13,7 @@ export interface PaginationInfo {
   hasPrevious: boolean;
 }
 
-export interface SearcheableDataTableProps<T> {
+export interface SearchableDataTableProps<T> {
   // Display configuration
   title: string;
   subtitle?: string;
@@ -48,7 +48,7 @@ export interface SearcheableDataTableProps<T> {
   searchDebounceMs?: number;
 }
 
-function SearcheableDataTable<T extends object>({
+function SearchableDataTable<T extends object>({
   title,
   subtitle,
   searchPlaceholder = "Search...",
@@ -60,7 +60,7 @@ function SearcheableDataTable<T extends object>({
   headerActions,
   refreshTrigger = 0,
   searchDebounceMs = 500,
-}: SearcheableDataTableProps<T>) {
+}: SearchableDataTableProps<T>) {
   const [data, setData] = useState<T[]>([]);
   const [pagination, setPagination] = useState<PaginationInfo>({
     page: 1,
@@ -220,4 +220,4 @@ function SearcheableDataTable<T extends object>({
   );
 }
 
-export default SearcheableDataTable;
+export default SearchableDataTable;
