@@ -489,12 +489,12 @@ paths:
           name: search
           required: false
           schema: { type: string }
-          description: Search organizations by name
+          description: Search organizations by name (case-insensitive)
         - in: query
           name: sortBy
           required: false
           schema: { type: string, enum: [name, uri] }
-          description: Field to sort by
+          description: Field to sort by (defaults to name)
         - in: query
           name: sortOrder
           required: false
@@ -502,7 +502,7 @@ paths:
           description: Sort order
       responses:
         "200":
-          description: List of organizations with pagination
+          description: List of organizations with user counts and pagination
           content:
             application/json:
               schema:
@@ -511,7 +511,21 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: "#/components/schemas/OrganizationProfileResponse"
+                      type: object
+                      properties:
+                        id: { type: integer }
+                        organizationName: { type: string }
+                        organizationIdentifier: { type: string }
+                        organizationDescription: { type: string }
+                        solutionApiUrl: { type: string }
+                        networkKey: { type: string }
+                        parentId: { type: integer }
+                        userCount: 
+                          oneOf:
+                            - type: string
+                            - type: integer
+                          description: "Count of users in the organization"
+                      required: [id, organizationName, organizationIdentifier, userCount]
                   pagination:
                     $ref: "#/components/schemas/PaginationInfo"
         "400": { $ref: "#/components/responses/BadRequest" }

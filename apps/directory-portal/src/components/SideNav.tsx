@@ -43,7 +43,12 @@ const SideNav: React.FC = () => {
           <FeatureFlag flag="enableOrganizationManagement">
             <PolicyGuard policies={["view-own-organizations", "view-all-organizations"]}>
               <>
-                <a href="#">Organization</a>
+                <NavLink
+                  to="/organizations"
+                  style={{ textDecoration: "none", paddingLeft: "2em" }}
+                >
+                  <Text>Organizations</Text>
+                </NavLink>
                 <PolicyGuard policies={["view-users"]}>
                   <NavLink
                     to="/organization/users"
