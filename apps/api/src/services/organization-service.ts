@@ -24,6 +24,8 @@ export interface OrganizationData {
   organizationDescription: string | null;
   networkKey: string | null;
   solutionApiUrl: string | null;
+  clientId?: string | null;
+  clientSecret?: string | null;
 }
 
 
@@ -44,20 +46,28 @@ export class OrganizationService {
       throw new ForbiddenError('You are not allowed to view this organization');
     }
 
-    const organization = await this.db
-      .selectFrom('organizations')
-      .select([
-        'id',
-        'name as organizationName',
-        'uri as organizationIdentifier',
-        'description as organizationDescription',
-        'networkKey',
-        'solutionApiUrl',
-        'parentId',
-      ])
-      .where('id', '=', id)
-      .executeTakeFirst();
+    let qb = this.db
+        .selectFrom('organizations')
+        .select([
+          'id',
+          'name as organizationName',
+          'uri as organizationIdentifier',
+          'description as organizationDescription',
+          'networkKey',
+          'solutionApiUrl',
+          'parentId',
+        ]);
 
+        // Include credentials for own organization
+    if (context.organizationId === id) {
+      qb = qb.select([
+        'clientId',
+        'clientSecret'
+      ]);
+    }
+    qb = qb.where('id', '=', id);
+
+    const organization = await qb.executeTakeFirst();
     if (!organization) {
       throw new NotFoundError('Organization not found');
     }

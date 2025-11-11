@@ -73,12 +73,12 @@ describe('ConnectionService', () => {
   });
 
   describe('createConnectionRequest', () => {
-    const requestedOrgId = 2;
     const requestingOrgId = 1;
+    const requestedOrgId = 2;
 
     it('should throw BadRequestError if requestedOrganizationId is missing', async () => {
       await expect(
-        connectionService.createConnectionRequest(adminUserContext, undefined as any, 1)
+        connectionService.createConnectionRequest(adminUserContext, 1, undefined as any)
       ).rejects.toThrow(BadRequestError);
     });
 
@@ -90,14 +90,14 @@ describe('ConnectionService', () => {
 
     it('should throw ForbiddenError if user is not Administrator', async () => {
       await expect(
-        connectionService.createConnectionRequest(regularUserContext, 2, 1)
+        connectionService.createConnectionRequest(regularUserContext, 1, 2)
       ).rejects.toThrow(ForbiddenError);
     });
 
     it('should throw NotFoundError if requesting org not found', async () => {
       organizationService.get.mockResolvedValueOnce(null as any);
       await expect(
-        connectionService.createConnectionRequest(adminUserContext, 2, 1)
+        connectionService.createConnectionRequest(adminUserContext, 1, 2)
       ).rejects.toThrow(NotFoundError);
     });
 
@@ -106,7 +106,7 @@ describe('ConnectionService', () => {
         .mockResolvedValueOnce({ id: 1, organizationName: 'Org1' } as any)
         .mockResolvedValueOnce(null as any);
       await expect(
-        connectionService.createConnectionRequest(adminUserContext, 2, 1)
+        connectionService.createConnectionRequest(adminUserContext, 1, 2)
       ).rejects.toThrow(NotFoundError);
     });
 
@@ -117,7 +117,7 @@ describe('ConnectionService', () => {
       const otherContext = { ...adminUserContext, organizationId: 3 };
 
       await expect(
-        connectionService.createConnectionRequest(otherContext, 2, 1)
+        connectionService.createConnectionRequest(otherContext, 1, 2)
       ).rejects.toThrow(ForbiddenError);
     });
 
@@ -133,8 +133,8 @@ describe('ConnectionService', () => {
 
       const result = await connectionService.createConnectionRequest(
         adminUserContext,
-        requestedOrgId,
-        requestingOrgId
+        requestingOrgId,
+        requestedOrgId
       );
 
       expect(dbMocks.db.insertInto).toHaveBeenCalledWith('connection_requests');

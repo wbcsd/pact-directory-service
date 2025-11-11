@@ -119,68 +119,28 @@ components:
     MyProfileResponse:
       type: object
       properties:
-        userId: { type: integer }
-        email: { type: string, format: email }
-        organizationId: { type: integer }
-        role: { type: string }
-        policies:
-          type: array
-          items: { type: string }
+        id: { type: integer }
         fullName: { type: string }
+        email: { type: string, format: email }
+        role: { type: string }
+        organizationId: { type: integer }
+        status: { type: string }
         organizationName: { type: string }
         organizationIdentifier: { type: string }
         organizationDescription: { type: string }
         solutionApiUrl: { type: string }
-        clientId: { type: string }
-        clientSecret: { type: string }
-        networkKey: { type: string }
-        connectionRequests:
-          type: object
-          properties:
-            sent:
-              type: array
-              items:
-                type: object
-                properties:
-                  createdAt: { type: string, format: date-time }
-                  status: { type: string }
-                  organizationName: { type: string }
-                  organizationId: { type: integer }
-                required: [createdAt, status, organizationName, organizationId]
-            received:
-              type: array
-              items:
-                type: object
-                properties:
-                  id: { type: integer }
-                  createdAt: { type: string, format: date-time }
-                  status: { type: string }
-                  organizationName: { type: string }
-                  organizationId: { type: integer }
-                required: [id, createdAt, status, organizationName, organizationId]
-          required: [sent, received]
-        connectedOrganizations:
+        policies:
           type: array
-          items:
-            type: object
-            properties:
-              organizationId: { type: integer }
-              organizationName: { type: string }
-              requestedAt: { type: string, format: date-time }
-              createdAt: { type: string, format: date-time }
-            required: [organizationId, organizationName, requestedAt, createdAt]
+          items: { type: string }
       required:
-        - userId
-        - email
-        - organizationId
-        - role
-        - policies
+        - id
         - fullName
+        - email
+        - role
+        - organizationId
+        - status
         - organizationName
         - organizationIdentifier
-        - solutionApiUrl
-        - connectionRequests
-        - connectedOrganizations
     OrganizationProfileResponse:
       type: object
       properties:
@@ -191,6 +151,8 @@ components:
         networkKey: { type: string }
         solutionApiUrl: { type: string }
         parentId: { type: integer }
+        clientId: { type: string, description: "Only included when viewing own organization" }
+        clientSecret: { type: string, description: "Only included when viewing own organization" }
       required: [id, organizationName, organizationIdentifier, solutionApiUrl]
     OrganizationsMembersResponse:
       type: object
@@ -704,6 +666,61 @@ paths:
                         connectedCompanyTwoId: { type: integer }
                         createdAt: { type: string, format: date-time }
                         requestedAt: { type: string, format: date-time }
+                  pagination:
+                    $ref: "#/components/schemas/PaginationInfo"
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /directory/organizations/{id}/connection-requests:
+    get:
+      summary: List connection requests for an organization
+      tags: [Organizations]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          description: Organization ID
+        - in: query
+          name: page
+          required: false
+          schema: { type: integer, minimum: 1, default: 1 }
+          description: Page number for pagination
+        - in: query
+          name: pageSize
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+          description: Number of items per page
+        - in: query
+          name: sortBy
+          required: false
+          schema: { type: string, enum: [createdAt, status] }
+          description: Field to sort by
+        - in: query
+          name: sortOrder
+          required: false
+          schema: { type: string, enum: [asc, desc], default: desc }
+          description: Sort order
+      responses:
+        "200":
+          description: List of connection requests for the organization with pagination
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: integer }
+                        requestingCompanyId: { type: integer }
+                        requestedCompanyId: { type: integer }
+                        status: { type: string, enum: [pending, accepted, rejected] }
+                        createdAt: { type: string, format: date-time }
+                        updatedAt: { type: string, format: date-time }
                   pagination:
                     $ref: "#/components/schemas/PaginationInfo"
         "401": { $ref: "#/components/responses/Unauthorized" }

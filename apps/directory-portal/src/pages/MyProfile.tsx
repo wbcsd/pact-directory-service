@@ -1,21 +1,11 @@
-import React, { useState } from "react";
-import { Box, Flex } from "@radix-ui/themes";
+import React from "react";
+import { Box } from "@radix-ui/themes";
 import SideNav from "../components/SideNav";
 import Spinner from "../components/LoadingSpinner";
 import { useAuth } from "../contexts/AuthContext";
 
 const MyProfile: React.FC = () => {
   const { profileData } = useAuth();
-
-  const [showCredentials, setShowCredentials] = useState(false);
-
-  const toggleCredentials = () => {
-    setShowCredentials((prevState) => !prevState);
-  };
-
-  const maskValue = (value: string) => {
-    return value ? value.replace(/.(?=.{4})/g, "*") : "";
-  };
 
   return (
     <>
@@ -47,7 +37,7 @@ const MyProfile: React.FC = () => {
           </div>
           <div>
             <h3>Organization Description</h3>
-            <p>{profileData.organizationDescription}</p>
+            <p>{profileData.organizationDescription || "No description available"}</p>
           </div>
           <div>
             <h3>Account Admin Full Name</h3>
@@ -59,53 +49,7 @@ const MyProfile: React.FC = () => {
           </div>
           <div>
             <h3>Solution API URL</h3>
-            <p>{profileData.solutionApiUrl}</p>
-          </div>
-
-          <Flex gap={"3"} style={{ marginTop: "20px", marginBottom: "5px" }}>
-            <Box>
-              <h2 style={{ margin: 0 }}>Credentials</h2>
-            </Box>
-            <Box
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-              }}
-            >
-              <a
-                onClick={toggleCredentials}
-                style={{
-                  color: "var(--base-color-brand--light-blue)",
-                  cursor: "pointer",
-                  fontSize: "0.90em",
-                  textDecoration: "underline",
-                  marginTop: "10px",
-                }}
-              >
-                {showCredentials ? "Hide Credentials" : "Show Credentials"}
-              </a>
-            </Box>
-          </Flex>
-          <div>
-            <h3>Network Key</h3>
-            <p>{profileData.networkKey}</p>
-          </div>
-          <div>
-            <h3>ClientId</h3>
-            <p>
-              {showCredentials
-                ? profileData.clientId
-                : maskValue(profileData.clientId)}
-            </p>
-          </div>
-          <div>
-            <h3>ClientSecret</h3>
-            <p>
-              {showCredentials
-                ? profileData.clientSecret
-                : maskValue(profileData.clientSecret)}
-            </p>
+            <p>{profileData.solutionApiUrl || "Not configured"}</p>
           </div>
         </main>
       )}

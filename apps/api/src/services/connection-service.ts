@@ -125,8 +125,8 @@ export class ConnectionService {
    */
   async createConnectionRequest(
     context: UserContext, 
+    requestingOrganizationId: number,
     requestedOrganizationId: number,
-    requestingOrganizationId: number
   ): Promise<ConnectionRequest> {
 
     if (!requestedOrganizationId) {
