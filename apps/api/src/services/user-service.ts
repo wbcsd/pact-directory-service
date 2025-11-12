@@ -349,6 +349,7 @@ export class UserService {
           name: data.organizationName,
           uri: '',
           solutionApiUrl: '',
+          status: 'active',
         })
         .returning('id')
         .executeTakeFirstOrThrow();

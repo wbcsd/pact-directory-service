@@ -22,6 +22,7 @@ export interface OrganizationsTable {
   clientSecret: string | null;
   networkKey: string | null;
   description: string | null;
+  status: 'active' | 'disabled';
 }
 
 export interface UsersTable {

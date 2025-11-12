@@ -26,6 +26,7 @@ export interface OrganizationData {
   solutionApiUrl: string | null;
   clientId?: string | null;
   clientSecret?: string | null;
+  status: 'active' | 'disabled';
 }
 
 
@@ -56,6 +57,7 @@ export class OrganizationService {
           'networkKey',
           'solutionApiUrl',
           'parentId',
+          'status',
         ]);
 
         // Include credentials for own organization
@@ -85,6 +87,7 @@ export class OrganizationService {
       organizationName?: string;
       organizationDescription?: string;
       solutionApiUrl?: string;
+      status?: 'active' | 'disabled';
     }
   ): Promise<{ message: string }> {
     checkAccess(context, ['edit-own-organizations', 'edit-all-organizations']);
@@ -110,6 +113,7 @@ export class OrganizationService {
         ...(update.organizationName && { name: update.organizationName }),
         ...(update.organizationDescription && { description: update.organizationDescription }),
         ...(update.solutionApiUrl && { solutionApiUrl: update.solutionApiUrl }),
+        ...(update.status && { status: update.status }),
       })
       .where('id', '=', id)
       .execute();
@@ -139,6 +143,7 @@ export class OrganizationService {
       'organizations.solutionApiUrl',
       'organizations.networkKey',
       'organizations.parentId',
+      'organizations.status',
       (eb) => eb.fn.count('users.id').as('userCount'),
       (eb) => eb.fn.max('users.lastLogin').as('lastActivity')
     ])
@@ -150,6 +155,7 @@ export class OrganizationService {
       'organizations.solutionApiUrl',
       'organizations.networkKey',
       'organizations.parentId',
+      'organizations.status',
     ]);
 
     // If user doesn't have view-all-organizations, restrict to their own organization
@@ -229,6 +235,7 @@ export class OrganizationService {
         'networkKey',
         'solutionApiUrl',
         'parentId',
+        'status',
       ]);
 
     const companies = await qb.execute();
