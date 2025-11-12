@@ -45,7 +45,7 @@ const SideNav: React.FC = () => {
               <>
                 <NavLink
                   to="/organizations"
-                  style={{ textDecoration: "none", paddingLeft: "2em" }}
+                  style={{ textDecoration: "none" }}
                 >
                   <Text>Organizations</Text>
                 </NavLink>
