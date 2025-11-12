@@ -25,7 +25,7 @@ export interface Organization {
   organizationName: string;
   organizationIdentifier: string;
   organizationDescription: string;
-  networkKey: string;
+  solutionApiUrl: string;
 }
 
 const EditOrganizationPage: React.FC = () => {
@@ -34,7 +34,7 @@ const EditOrganizationPage: React.FC = () => {
   const [formData, setFormData] = useState({
     organizationName: "",
     organizationDescription: "",
-    networkKey: "",
+    solutionApiUrl: "",
   });
   const [readOnlyData, setReadOnlyData] = useState({
     id: 0,
@@ -60,7 +60,7 @@ const EditOrganizationPage: React.FC = () => {
           setFormData({
             organizationName: organization.organizationName,
             organizationDescription: organization.organizationDescription,
-            networkKey: organization.networkKey,
+            solutionApiUrl: organization.solutionApiUrl || "",
           });
           setReadOnlyData({
             id: organization.id,
@@ -250,14 +250,14 @@ const EditOrganizationPage: React.FC = () => {
                 </Form.Control>
               </Form.Field>
 
-              {/* Editable API URL (networkKey) */}
-              <Form.Field name="networkKey">
+              {/* Editable API URL (solutionApiUrl) */}
+              <Form.Field name="solutionApiUrl">
                 <Form.Label className="field-label">
                   API URL<span className="required-asterisk">*</span>
                 </Form.Label>
                 <Form.Control asChild>
                   <TextField.Root
-                    value={formData.networkKey}
+                    value={formData.solutionApiUrl}
                     required
                     placeholder="Enter API URL"
                     onChange={handleChange}

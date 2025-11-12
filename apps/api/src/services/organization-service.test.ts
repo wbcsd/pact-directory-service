@@ -105,6 +105,60 @@ describe('OrganizationService', () => {
     });
   });
 
+  describe('update', () => {
+    it('should update organization when user has access', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValue({ id: 1 });
+      dbMocks.executors.execute.mockResolvedValue(undefined);
+
+      const updateData = {
+        organizationName: 'Updated Org',
+        organizationDescription: 'Updated Description',
+        solutionApiUrl: 'https://api.updated.com',
+      };
+
+      const result = await organizationService.update(
+        adminUserContext,
+        1,
+        updateData
+      );
+
+      expect(result).toEqual({ message: 'Organization updated successfully' });
+      expect(dbMocks.db.updateTable).toHaveBeenCalledWith('organizations');
+    });
+
+    it('should throw ForbiddenError when user does not have access', async () => {
+      const updateData = {
+        organizationName: 'Updated Org',
+      };
+
+      await expect(
+        organizationService.update(regularUserContext, 1, updateData)
+      ).rejects.toThrow(ForbiddenError);
+    });
+
+    it('should throw ForbiddenError when user tries to update different organization', async () => {
+      const updateData = {
+        organizationName: 'Updated Org',
+      };
+
+      await expect(
+        organizationService.update(adminUserContext, 2, updateData)
+      ).rejects.toThrow(ForbiddenError);
+    });
+
+    it('should throw NotFoundError when organization does not exist', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValue(undefined);
+
+      const updateData = {
+        organizationName: 'Updated Org',
+      };
+
+      await expect(
+        organizationService.update(adminUserContext, 1, updateData)
+      ).rejects.toThrow(NotFoundError);
+    });
+  });
+
   describe('list', () => {
     it('should return list of organizations', async () => {
       const mockOrganizations = [

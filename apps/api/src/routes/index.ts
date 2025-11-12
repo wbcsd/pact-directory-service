@@ -117,6 +117,15 @@ router.get('/directory/organizations/:id', authenticate, context(async (req) => 
   return req.services.organization.get(req.context, parseInt(req.params.id));
 }));
 
+// Update organization details
+router.post('/directory/organizations/:id', authenticate, context(async (req) => {
+  return req.services.organization.update(
+    req.context,
+    parseInt(req.params.id),
+    req.body
+  );
+}));
+
 // List all users in an organization.
 router.get('/directory/organizations/:id/users', authenticate, context(async (req) => {
   return req.services.organization.listMembers(
