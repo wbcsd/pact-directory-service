@@ -5,6 +5,7 @@ import { defineConfig } from "eslint/config";
 
 export default defineConfig([
   { 
+    tsConfigRootDir: "./",
     files: ["**/*.{js,mjs,cjs,ts,mts,cts}"], 
     plugins: { js }, 
     extends: ["js/recommended"], 
