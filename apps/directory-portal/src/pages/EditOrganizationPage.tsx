@@ -45,6 +45,7 @@ const EditOrganizationPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const { profileData } = useAuth();
+  let timeoutRef = 0;
 
   useEffect(() => {
     const fetchOrganization = async () => {
@@ -104,6 +105,10 @@ const EditOrganizationPage: React.FC = () => {
 
       if (response!.ok) {
         setStatus("success");
+        clearTimeout(timeoutRef);
+        timeoutRef = window.setTimeout(() => {
+          navigate("/organizations");
+        }, 1500);
       } else {
         const errorResponse = await response!.json();
         if (errorResponse.message) {
