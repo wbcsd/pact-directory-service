@@ -76,6 +76,50 @@ export class OrganizationService {
   }
 
   /**
+   * Update an organization
+   */
+  async update(
+    context: UserContext,
+    id: number,
+    update: {
+      organizationName?: string;
+      organizationDescription?: string;
+      solutionApiUrl?: string;
+    }
+  ): Promise<{ message: string }> {
+    checkAccess(context, ['edit-own-organizations', 'edit-all-organizations']);
+
+    // Only root can edit other organizations
+    if (context.organizationId !== id && !hasAccess(context, 'edit-all-organizations')) {
+      throw new ForbiddenError('You are not allowed to edit this organization');
+    }
+
+    const organization = await this.db
+      .selectFrom('organizations')
+      .select(['id'])
+      .where('id', '=', id)
+      .executeTakeFirst();
+
+    if (!organization) {
+      throw new NotFoundError('Organization not found');
+    }
+
+    await this.db
+      .updateTable('organizations')
+      .set({
+        ...(update.organizationName && { name: update.organizationName }),
+        ...(update.organizationDescription && { description: update.organizationDescription }),
+        ...(update.solutionApiUrl && { solutionApiUrl: update.solutionApiUrl }),
+      })
+      .where('id', '=', id)
+      .execute();
+
+    return {
+      message: 'Organization updated successfully',
+    };
+  }
+
+  /**
    * List all organizations with pagination, filtering, and sorting
    */
   async list(

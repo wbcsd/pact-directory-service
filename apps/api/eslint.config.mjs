@@ -8,7 +8,10 @@ export default defineConfig([
     files: ["**/*.{js,mjs,cjs,ts,mts,cts}"], 
     plugins: { js }, 
     extends: ["js/recommended"], 
-    languageOptions: { globals: globals.node } 
+    languageOptions: { globals: globals.node },
+    parserOptions: {
+      tsconfigRootDir: import.meta.dirname,
+    }
   },
   tseslint.configs.recommended,
   { rules: { 

@@ -20,6 +20,7 @@ import AddUserPage from "./pages/AddUserPage";
 import PolicyGuard from "./components/PolicyGuard";
 import SetPasswordPage from "./pages/SetPasswordPage";
 import OrganizationsList from "./pages/OrganizationsList";
+import EditOrganizationPage from "./pages/EditOrganizationPage";
 
 const AppRoutes: React.FC = () => {
   return (
@@ -42,6 +43,7 @@ const AppRoutes: React.FC = () => {
       {featureFlags.enableOrganizationManagement === true && (
         <>
           <Route path="/organizations" element={<OrganizationsList />} />
+          <Route path="/organizations/:id" element={<EditOrganizationPage />} />
           <Route path="/organization/users" element={<OrganizationUsers />} />
           <Route path="/organization/users/add" element={<AddUserPage />} />
           <Route path="/organization/users/:id" element={<EditUserPage />} />
