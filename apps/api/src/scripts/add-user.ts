@@ -39,6 +39,7 @@ async function main() {
           clientId: '',
           clientSecret: '',
           networkKey: '',
+          status: 'active',
         })
         .returningAll()
         .executeTakeFirstOrThrow();

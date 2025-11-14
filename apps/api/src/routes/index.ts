@@ -79,9 +79,7 @@ router.post('/directory/users/login', context(async (req) => {
 
 // User profile
 router.get('/directory/users/me', authenticate, context(async (req) => {
-  const user = await req.services.user.getMyProfile(
-    req.context.email, 
-    req.context.organizationId);
+  const user = await req.services.user.getMyProfile(req.context.email);
   return user;
 }));
 
