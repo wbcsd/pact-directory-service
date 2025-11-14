@@ -349,6 +349,7 @@ export class UserService {
           name: data.organizationName,
           uri: '',
           solutionApiUrl: '',
+          status: 'active',
         })
         .returning('id')
         .executeTakeFirstOrThrow();
@@ -619,7 +620,6 @@ export class UserService {
    */
   async getMyProfile(
     email: string,
-    organizationId: number
   ): Promise<UserData | null> {
     const profile = await this.db
       .selectFrom('organizations as o')

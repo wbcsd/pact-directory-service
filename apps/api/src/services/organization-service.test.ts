@@ -60,6 +60,7 @@ describe('OrganizationService', () => {
         networkKey: 'key123',
         solutionApiUrl: 'https://api.test.com',
         parentId: null,
+        status: 'active',
       };
 
       dbMocks.executors.executeTakeFirst.mockResolvedValue(mockOrganization);
@@ -95,6 +96,7 @@ describe('OrganizationService', () => {
         networkKey: 'key123',
         solutionApiUrl: 'https://api.test.com',
         parentId: null,
+        status: 'active',
       };
 
       dbMocks.executors.executeTakeFirst.mockResolvedValue(mockOrganization);
@@ -114,6 +116,7 @@ describe('OrganizationService', () => {
         organizationName: 'Updated Org',
         organizationDescription: 'Updated Description',
         solutionApiUrl: 'https://api.updated.com',
+        status: 'disabled' as 'active' | 'disabled',
       };
 
       const result = await organizationService.update(
@@ -172,6 +175,7 @@ describe('OrganizationService', () => {
           parentId: null,
           userCount: 5,
           lastActivity: null,
+          status: 'active',
         },
         {
           id: 2,
@@ -183,6 +187,7 @@ describe('OrganizationService', () => {
           parentId: null,
           userCount: 10,
           lastActivity: null,
+          status: 'disabled',
         },
       ];
 
@@ -205,6 +210,7 @@ describe('OrganizationService', () => {
           networkKey: 'key1',
           solutionApiUrl: 'https://api.test.com',
           parentId: null,
+          status: 'active',
         },
       ];
 
@@ -229,6 +235,7 @@ describe('OrganizationService', () => {
           networkKey: 'key1',
           solutionApiUrl: 'https://api.test.com',
           parentId: null,
+          status: 'active',
         },
       ];
 
@@ -256,6 +263,7 @@ describe('OrganizationService', () => {
           networkKey: 'key1',
           solutionApiUrl: 'https://api.test.com',
           parentId: null,
+          status: 'active',
         },
         {
           id: 2,
@@ -265,6 +273,7 @@ describe('OrganizationService', () => {
           networkKey: 'key2',
           solutionApiUrl: 'https://api2.test.com',
           parentId: 1,
+          status: 'active',
         },
       ];
 

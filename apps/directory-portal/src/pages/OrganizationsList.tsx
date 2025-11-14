@@ -17,6 +17,7 @@ export interface Organization {
   parentId: number;
   userCount: string | number;
   lastActivity: string | null;
+  status: 'active' | 'disabled';
 }
 
 const Organizations: React.FC = () => {
@@ -67,6 +68,13 @@ const Organizations: React.FC = () => {
       sortable: true,
       sortValue: (row: Organization) => row.organizationIdentifier,
       render: (row: Organization) => row.organizationIdentifier,
+    },
+    {
+      key: "status",
+      header: "Status",
+      sortable: true,
+      sortValue: (row: Organization) => row.status,
+      render: (row: Organization) => row.status,
     },
     {
       key: "userCount",
