@@ -116,7 +116,7 @@ describe('OrganizationService', () => {
         organizationName: 'Updated Org',
         organizationDescription: 'Updated Description',
         solutionApiUrl: 'https://api.updated.com',
-        status: 'disabled' as 'disabled',
+        status: 'disabled' as 'active' | 'disabled',
       };
 
       const result = await organizationService.update(
