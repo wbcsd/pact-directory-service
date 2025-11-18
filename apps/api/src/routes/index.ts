@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { authenticate } from '../middleware/authentication';
 import { Services } from '@src/services';
-import { LoginData, UserContext, AddUserToOrganizationData } from '@src/services/user-service';
+import { LoginData, UserContext, AddUserToOrganizationData, UserStatus } from '@src/services/user-service';
 import { ListQuery } from '@src/common/list-query';
 import jwt from 'jsonwebtoken';
 import config from '@src/common/config';
@@ -167,7 +167,7 @@ router.post('/directory/organizations/:oid/users/:uid', authenticate, context(as
     req.context,
     organizationId,
     userId,
-    req.body as { fullName?: string; role?: Role }
+    req.body as { fullName?: string; role?: Role, status?: UserStatus }
   );
 }));
 

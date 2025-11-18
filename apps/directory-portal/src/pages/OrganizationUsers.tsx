@@ -46,6 +46,7 @@ const OrganizationUsers: React.FC = () => {
     try {
       setLoading(true);
       const response = await fetchWithAuth(
+        // TODO: Update to use orgId from params if implementing multi-org admin
         `/organizations/${profileData?.organizationId}/users`
       );
       if (response!.ok) {
@@ -66,169 +67,71 @@ const OrganizationUsers: React.FC = () => {
     selectedUserIds.includes(user.id)
   );
 
-  // Business rules validation
-  const getAdminCount = () => {
-    return users.filter(u => u.role === 'admin' && u.status === 'enabled').length;
-  };
+  // runUsers Bulk action (enable/disable)
+  // Only count the promise as fulfilled if the response is ok
+  const runBulkAction = async (
+    action: 'enable' | 'disable',
+    usersToProcess: User[]
+  ) => {
+    setBulkActionLoading(true);
+    try {
+      const results = await Promise.allSettled(
+        usersToProcess.map(async user => {
+          const response = await fetchWithAuth(
+            `/organizations/${user.organizationId}/users/${user.id}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status: action === 'enable' ? 'enabled' : 'disabled' })
+            }
+          );
 
-  const canDisableSelectedUsers = () => {
-    const selectedAdmins = selectedUsers.filter(u => u.role === 'admin' && u.status === 'enabled');
-    const totalAdmins = getAdminCount();
-    
-    // Can't disable all admins
-    if (selectedAdmins.length >= totalAdmins) {
-      return {
-        canDisable: false,
-        reason: "Cannot disable all administrators. At least one admin must remain enabled."
-      };
-    }
-    
-    // Check if any selected users are already disabled or deleted
-    const disabledOrDeleted = selectedUsers.filter(u => 
-      u.status === 'disabled' || u.status === 'deleted'
-    );
-    
-    if (disabledOrDeleted.length === selectedUsers.length) {
-      return {
-        canDisable: false,
-        reason: "All selected users are already disabled or deleted."
-      };
-    }
-    
-    return { canDisable: true };
-  };
+          if (!response!.ok) {
+            return Promise.reject(`Failed to ${action} user ID ${user.id}`);
+          }
+        })
+      );
 
-  const canEnableSelectedUsers = () => {
-    // Can't enable deleted users
-    const deletedUsers = selectedUsers.filter(u => u.status === 'deleted');
-    if (deletedUsers.length > 0) {
-      return {
-        canEnable: false,
-        reason: "Cannot enable deleted users."
-      };
+      const successCount = results.filter(r => r.status === 'fulfilled').length;
+      const failCount = results.filter(r => r.status === 'rejected').length;
+
+      if (successCount > 0) {
+        showNotification(
+          'success',
+          `Successfully ${action}d ${successCount} user${successCount > 1 ? 's' : ''}${failCount > 0 ? `, ${failCount} failed` : ''}`
+        );
+        await fetchUsers();
+        setSelectedUserIds([]);
+      } else {
+        showNotification('error', `Failed to ${action} users`);
+      }
+    } catch (error) {
+      showNotification('error', `An error occurred during bulk ${action} operation`);
+      console.error(`Bulk ${action} error:`, error);
+    } finally {
+      setBulkActionLoading(false);
     }
-    
-    // Can't enable unverified users
-    const unverifiedUsers = selectedUsers.filter(u => u.status === 'unverified');
-    if (unverifiedUsers.length > 0) {
-      return {
-        canEnable: false,
-        reason: "Cannot enable unverified users."
-      };
-    }
-    
-    // Check if all selected users are already enabled
-    const alreadyEnabled = selectedUsers.filter(u => u.status === 'enabled');
-    if (alreadyEnabled.length === selectedUsers.length) {
-      return {
-        canEnable: false,
-        reason: "All selected users are already enabled."
-      };
-    }
-    
-    return { canEnable: true };
-  };
+  }
 
   // Bulk operations
   const handleBulkDisable = async () => {
-    const validation = canDisableSelectedUsers();
-    if (!validation.canDisable) {
-      showNotification('error', validation.reason!);
-      return;
-    }
-
     setBulkActionLoading(true);
-    try {
-      const usersToDisable = selectedUsers.filter(u => 
-        u.status !== 'disabled' && u.status !== 'deleted'
-      );
-      
-      const results = await Promise.allSettled(
-        usersToDisable.map(user =>
-          fetchWithAuth(
-            `/organizations/${profileData?.organizationId}/users/${user.id}`,
-            {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ status: 'disabled' })
-            }
-          )
-        )
-      );
-
-      const successCount = results.filter(r => r.status === 'fulfilled').length;
-      const failCount = results.filter(r => r.status === 'rejected').length;
-
-      if (successCount > 0) {
-        showNotification(
-          'success',
-          `Successfully disabled ${successCount} user${successCount > 1 ? 's' : ''}${failCount > 0 ? `, ${failCount} failed` : ''}`
-        );
-        await fetchUsers();
-        setSelectedUserIds([]);
-      } else {
-        showNotification('error', 'Failed to disable users');
-      }
-    } catch (error) {
-      showNotification('error', 'An error occurred during bulk disable operation');
-      console.error('Bulk disable error:', error);
-    } finally {
-      setBulkActionLoading(false);
-    }
+    const usersToDisable = selectedUsers.filter(u => 
+      u.status !== 'disabled' && u.status !== 'deleted'
+    );
+    await runBulkAction('disable', usersToDisable);
   };
 
   const handleBulkEnable = async () => {
-    const validation = canEnableSelectedUsers();
-    if (!validation.canEnable) {
-      showNotification('error', validation.reason!);
-      return;
-    }
-
     setBulkActionLoading(true);
-    try {
-      const usersToEnable = selectedUsers.filter(u => u.status === 'disabled');
-      
-      const results = await Promise.allSettled(
-        usersToEnable.map(user =>
-          fetchWithAuth(
-            `/organizations/${profileData?.organizationId}/users/${user.id}`,
-            {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ status: 'enabled' })
-            }
-          )
-        )
-      );
-
-      const successCount = results.filter(r => r.status === 'fulfilled').length;
-      const failCount = results.filter(r => r.status === 'rejected').length;
-
-      if (successCount > 0) {
-        showNotification(
-          'success',
-          `Successfully enabled ${successCount} user${successCount > 1 ? 's' : ''}${failCount > 0 ? `, ${failCount} failed` : ''}`
-        );
-        await fetchUsers();
-        setSelectedUserIds([]);
-      } else {
-        showNotification('error', 'Failed to enable users');
-      }
-    } catch (error) {
-      showNotification('error', 'An error occurred during bulk enable operation');
-      console.error('Bulk enable error:', error);
-    } finally {
-      setBulkActionLoading(false);
-    }
+    const usersToEnable = selectedUsers.filter(u => u.status === 'disabled');
+    await runBulkAction('enable', usersToEnable);
   };
 
   const showNotification = (type: 'success' | 'error', message: string) => {
     setNotification({ type, message });
     setTimeout(() => setNotification(null), 5000);
   };
-
-  const disableValidation = canDisableSelectedUsers();
-  const enableValidation = canEnableSelectedUsers();
 
   const columns: Column<User>[] = [
     {
@@ -281,7 +184,7 @@ const OrganizationUsers: React.FC = () => {
         <ActionButton
           variant="secondary"
           size="small"
-          onClick={() => navigate(`/organization/users/${row.id}`)}
+          onClick={() => navigate(`/organization/${row.organizationId}/users/${row.id}`)}
         >
           <InputIcon />
           Edit
@@ -341,16 +244,14 @@ const OrganizationUsers: React.FC = () => {
                   <Button
                     color="green"
                     onClick={handleBulkEnable}
-                    disabled={bulkActionLoading || !enableValidation.canEnable}
-                    title={enableValidation.canEnable ? undefined : enableValidation.reason}
+                    disabled={bulkActionLoading}
                   >
                     {bulkActionLoading ? 'Processing...' : 'Enable Selected'}
                   </Button>
                   <Button
                     color="orange"
                     onClick={handleBulkDisable}
-                    disabled={bulkActionLoading || !disableValidation.canDisable}
-                    title={disableValidation.canDisable ? undefined : disableValidation.reason}
+                    disabled={bulkActionLoading}
                   >
                     {bulkActionLoading ? 'Processing...' : 'Disable Selected'}
                   </Button>

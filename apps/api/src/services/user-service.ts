@@ -22,13 +22,15 @@ registerPolicy([Role.Administrator, Role.Root], 'edit-users');
 registerPolicy([Role.Root], 'view-all-users');
 registerPolicy([Role.Root], 'edit-all-users');
 
+export type UserStatus = 'unverified' | 'enabled' | 'disabled' | 'deleted';
+
 export interface UserContext {
   userId: number;
   email: string;
   organizationId: number;
   role: Role;
   policies: string[];
-  status: 'unverified' | 'enabled' | 'disabled' | 'deleted';
+  status: UserStatus
 }
 
 export interface SignUpData {
