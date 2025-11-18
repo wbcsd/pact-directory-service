@@ -51,6 +51,7 @@
 
 /* Notification Toast */
 .notification {
+  display: flex !important;
   position: fixed;
   top: 20px;
   right: 20px;
