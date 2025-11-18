@@ -1,0 +1,157 @@
+/* Bulk Action Bar */
+.bulk-action-bar {
+  background: none;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bulk-action-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.bulk-action-content > span {
+  color: white;
+  font-weight: 600;
+}
+
+.bulk-action-buttons {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.bulk-action-buttons button {
+  min-width: 120px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.bulk-action-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Notification Toast */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-width: 300px;
+  max-width: 500px;
+  z-index: 1000;
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.notification-success {
+  background: #10B981;
+  color: white;
+}
+
+.notification-error {
+  background: #EF4444;
+  color: white;
+}
+
+.notification-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.notification-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .bulk-action-content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .bulk-action-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .bulk-action-buttons button {
+    width: 100%;
+  }
+  
+  .notification {
+    left: 20px;
+    right: 20px;
+    min-width: auto;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .bulk-action-bar,
+  .notification,
+  .bulk-action-buttons button {
+    animation: none;
+    transition: none;
+  }
+  
+  .bulk-action-buttons button:not(:disabled):hover {
+    transform: none;
+  }
+}
+
+/* Focus States for Accessibility */
+.bulk-action-buttons button:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+.notification-close:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
