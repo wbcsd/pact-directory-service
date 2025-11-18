@@ -181,27 +181,29 @@ const OrganizationUsers: React.FC = () => {
       key: "actions",
       header: "",
       render: (row: User) => (
-        <PolicyGuard policies={["edit-users"]}>
           <>
-          <ActionButton
-            title="Edit User Details"
-            variant="secondary"
-            size="small"
-            onClick={() => navigate(`/organization/${row.organizationId}/users/${row.id}`)}
-          >
-            <InputIcon />
-          </ActionButton>
+          <PolicyGuard policies={["edit-users", "edit-all-users"]}>
+            <ActionButton
+              title="Edit User Details"
+              variant="secondary"
+              size="small"
+              onClick={() => navigate(`/organization/${row.organizationId}/users/${row.id}`)}
+            >
+              <InputIcon />
+            </ActionButton>
+          </PolicyGuard>
           <span>&nbsp;</span>
-          <ActionButton
-            title="Add New User"
-            variant="secondary"
-            size="small"
-            onClick={() => navigate(`/organization/${row.organizationId}/${row.organizationName}/add-user`)}
-          >
-            <PlusIcon />
-          </ActionButton>
+          <PolicyGuard policies={["edit-all-users"]}>
+            <ActionButton
+              title="Add New User"
+              variant="secondary"
+              size="small"
+              onClick={() => navigate(`/organization/${row.organizationId}/${row.organizationName}/add-user`)}
+            >
+              <PlusIcon />
+            </ActionButton>
+          </PolicyGuard>
           </>
-        </PolicyGuard>
       ),
     },
   ];
@@ -214,6 +216,16 @@ const OrganizationUsers: React.FC = () => {
   return (
     <GridPageLayout
       title="Organization Users"
+      actions={
+        <PolicyGuard policies={["edit-users"]}>
+          <Button
+            onClick={() => navigate(`/organization/${profileData?.organizationId}/${profileData?.organizationName}/add-user`)}
+          >
+            <PlusIcon />
+            <span style={{ marginLeft: '4px' }}>Add User</span>
+          </Button>
+        </PolicyGuard>
+      }
       loading={loading}
       loadingMessage="Loading users..."
     >
@@ -239,7 +251,7 @@ const OrganizationUsers: React.FC = () => {
               {selectedUserIds.length} user{selectedUserIds.length > 1 ? 's' : ''} selected
             </Text>
             <div className="bulk-action-buttons">
-              <PolicyGuard policies={["edit-users"]}>
+              <PolicyGuard policies={["edit-users", "edit-all-users"]}>
                 <>
                   <Button
                     color="green"

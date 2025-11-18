@@ -49,7 +49,7 @@ const SideNav: React.FC = () => {
                 >
                   <Text>Organizations</Text>
                 </NavLink>
-                <PolicyGuard policies={["view-users"]}>
+                <PolicyGuard policies={["view-users", "view-all-users"]}>
                   <NavLink
                     to="/organization/users"
                     style={{ textDecoration: "none", paddingLeft: "2em" }}

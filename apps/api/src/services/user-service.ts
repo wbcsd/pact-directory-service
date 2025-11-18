@@ -17,8 +17,8 @@ import {
 } from '@src/common/policies';
 import logger from '@src/common/logger';
 
-registerPolicy([Role.Administrator, Role.Root], 'view-users');
-registerPolicy([Role.Administrator, Role.Root], 'edit-users');
+registerPolicy([Role.Administrator], 'view-users');
+registerPolicy([Role.Administrator], 'edit-users');
 registerPolicy([Role.Root], 'view-all-users');
 registerPolicy([Role.Root], 'edit-all-users');
 

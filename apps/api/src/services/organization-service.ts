@@ -7,12 +7,12 @@ import { EmailService } from './email-service';
 import { ListQuery, ListResult } from '@src/common/list-query';
 
 // Register all policies used in this service
-registerPolicy([Role.Administrator, Role.Root], 'view-connections-own-organization');
-registerPolicy([Role.Administrator, Role.Root], 'edit-connections-own-organization');
+registerPolicy([Role.Administrator], 'view-connections-own-organization');
+registerPolicy([Role.Administrator], 'edit-connections-own-organization');
+registerPolicy([Role.Administrator], 'view-own-organizations');
+registerPolicy([Role.Administrator], 'edit-own-organizations');
 registerPolicy([Role.Root], 'view-connections-all-organizations');
 registerPolicy([Role.Root], 'edit-connections-all-organizations');
-registerPolicy([Role.Administrator, Role.Root], 'view-own-organizations');
-registerPolicy([Role.Administrator, Role.Root], 'edit-own-organizations');
 registerPolicy([Role.Root], 'view-all-organizations');
 registerPolicy([Role.Root], 'edit-all-organizations');
 
