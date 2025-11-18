@@ -4,6 +4,7 @@ import { Button } from "@radix-ui/themes";
 interface ActionButtonProps {
   onClick: () => void;
   children: React.ReactNode;
+  title?: string;
   variant?: "primary" | "secondary" | "outline";
   size?: "small" | "medium" | "large";
   disabled?: boolean;
@@ -13,6 +14,7 @@ interface ActionButtonProps {
 const ActionButton: React.FC<ActionButtonProps> = ({
   onClick,
   children,
+  title,
   variant = "primary",
   size = "medium",
   disabled = false,
@@ -60,6 +62,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 
   return (
     <Button
+      title={title}
       type={type}
       onClick={onClick}
       disabled={disabled}

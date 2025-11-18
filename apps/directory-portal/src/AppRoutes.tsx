@@ -45,7 +45,7 @@ const AppRoutes: React.FC = () => {
           <Route path="/organizations" element={<OrganizationsList />} />
           <Route path="/organizations/:id" element={<EditOrganizationPage />} />
           <Route path="/organization/users" element={<OrganizationUsers />} />
-          <Route path="/organization/:orgId/users/add" element={<AddUserPage />} />
+          <Route path="/organization/:orgId/:orgName/add-user" element={<AddUserPage />} />
           <Route path="/organization/:orgId/users/:userId" element={<EditUserPage />} />
           <Route
             path="/organization/users"

@@ -175,35 +175,36 @@ const OrganizationUsers: React.FC = () => {
       sortable: true,
       sortValue: (row: User) => (row.lastLogin ? new Date(row.lastLogin).getTime() : 0),
       render: (row: User) =>
-        row.lastLogin ? new Date(row.lastLogin).toLocaleString() : "Never",
+        row.lastLogin ? new Date(row.lastLogin).toLocaleString() : "—",
     },
     {
       key: "actions",
       header: "",
       render: (row: User) => (
-        <ActionButton
-          variant="secondary"
-          size="small"
-          onClick={() => navigate(`/organization/${row.organizationId}/users/${row.id}`)}
-        >
-          <InputIcon />
-          Edit
-        </ActionButton>
+        <PolicyGuard policies={["edit-users"]}>
+          <>
+          <ActionButton
+            title="Edit User Details"
+            variant="secondary"
+            size="small"
+            onClick={() => navigate(`/organization/${row.organizationId}/users/${row.id}`)}
+          >
+            <InputIcon />
+          </ActionButton>
+          <span>&nbsp;</span>
+          <ActionButton
+            title="Add New User"
+            variant="secondary"
+            size="small"
+            onClick={() => navigate(`/organization/${row.organizationId}/${row.organizationName}/add-user`)}
+          >
+            <PlusIcon />
+          </ActionButton>
+          </>
+        </PolicyGuard>
       ),
     },
   ];
-
-  const headerActions = (
-    <PolicyGuard policies={["edit-users"]}>
-      <ActionButton
-        variant="primary"
-        onClick={() => navigate("/organization/users/add")}
-      >
-        <PlusIcon />
-        Add User
-      </ActionButton>
-    </PolicyGuard>
-  );
 
   // Disable row selection for deleted users
   const disabledRowIds = users
@@ -213,7 +214,6 @@ const OrganizationUsers: React.FC = () => {
   return (
     <GridPageLayout
       title="Organization Users"
-      actions={headerActions}
       loading={loading}
       loadingMessage="Loading users..."
     >

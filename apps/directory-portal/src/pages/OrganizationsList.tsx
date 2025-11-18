@@ -103,12 +103,12 @@ const Organizations: React.FC = () => {
       header: "",
       render: (row: Organization) => (
         <ActionButton
+          title="Edit Organization Details"
           variant="secondary"
           size="small"
           onClick={() => navigate(`/organizations/${row.id}`)}
         >
           <InputIcon />
-          Edit
         </ActionButton>
       ),
     },
