@@ -11,7 +11,6 @@ import ActionButton from "../components/ActionButton";
 export interface Organization {
   id: number;
   organizationName: string;
-  organizationIdentifier: string;
   organizationDescription: string;
   networkKey: string;
   parentId: number;
@@ -61,13 +60,6 @@ const Organizations: React.FC = () => {
       sortable: true,
       sortValue: (row: Organization) => row.organizationName,
       render: (row: Organization) => row.organizationName,
-    },
-    {
-      key: "organizationIdentifier",
-      header: "Identifier",
-      sortable: true,
-      sortValue: (row: Organization) => row.organizationIdentifier,
-      render: (row: Organization) => row.organizationIdentifier,
     },
     {
       key: "status",

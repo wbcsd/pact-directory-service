@@ -32,10 +32,6 @@ const MyProfile: React.FC = () => {
           </div>
 
           <div>
-            <h3>Organization Identifier</h3>
-            <p>{profileData.organizationIdentifier}</p>
-          </div>
-          <div>
             <h3>Organization Description</h3>
             <p>{profileData.organizationDescription || "No description available"}</p>
           </div>

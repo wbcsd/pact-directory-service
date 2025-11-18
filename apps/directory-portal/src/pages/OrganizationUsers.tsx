@@ -20,7 +20,6 @@ export interface User {
   lastLogin: string | null;
   organizationName: string;
   organizationId: number;
-  organizationIdentifier: string;
 }
 
 const OrganizationUsers: React.FC = () => {

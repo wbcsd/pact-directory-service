@@ -9,7 +9,6 @@ import { fetchWithAuth } from "../utils/auth-fetch";
 interface SearchResults {
   id: number;
   organizationName: string;
-  organizationIdentifier: string;
   email: string;
 }
 
@@ -99,7 +98,6 @@ const SearchPage: React.FC = () => {
               <thead>
                 <tr>
                   <th>Organization Name</th>
-                  <th>Organization Identifier</th>
                   <th>Account Admin Email</th>
                 </tr>
               </thead>
@@ -111,7 +109,6 @@ const SearchPage: React.FC = () => {
                         {result.organizationName}
                       </Link>
                     </td>
-                    <td>{result.organizationIdentifier}</td>
                     <td>{result.email}</td>
                   </tr>
                 ))}

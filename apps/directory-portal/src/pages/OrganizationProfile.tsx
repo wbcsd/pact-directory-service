@@ -24,7 +24,6 @@ const OrganizationProfile: React.FC = () => {
 
   const [profileData, setProfileData] = useState({
     organizationName: "",
-    organizationIdentifier: "",
     organizationDescription: "",
     fullName: "",
     email: "",
@@ -78,7 +77,7 @@ const OrganizationProfile: React.FC = () => {
         const connectionRequestsData = await connectionRequestsResponse.json();
 
         // Check if organizations are connected
-        const isConnected = connectionsData.data.some((conn: any) => 
+        const isConnected = connectionsData.data.some((conn: Record<string, string>) => 
           conn.connectedCompanyOneId.toString() === id || 
           conn.connectedCompanyTwoId.toString() === id
         );
@@ -90,7 +89,7 @@ const OrganizationProfile: React.FC = () => {
         }
 
         // Check sent connection requests
-        const sentRequest = connectionRequestsData.data.find((req: any) => 
+        const sentRequest = connectionRequestsData.data.find((req: Record<string, string>) => 
           req.requestedCompanyId.toString() === id && req.status === 'pending'
         );
 
@@ -101,7 +100,7 @@ const OrganizationProfile: React.FC = () => {
         }
 
         // Check received connection requests  
-        const receivedRequest = connectionRequestsData.data.find((req: any) => 
+        const receivedRequest = connectionRequestsData.data.find((req: Record<string, string>) => 
           req.requestingCompanyId.toString() === id && req.status === 'pending'
         );
 
@@ -245,10 +244,6 @@ const OrganizationProfile: React.FC = () => {
           )}
 
           <Box>
-            <div>
-              <h3>Organization Identifier</h3>
-              <p>{profileData.organizationIdentifier}</p>
-            </div>
             <div>
               <h3>Organization Description</h3>
               <p>{profileData.organizationDescription}</p>

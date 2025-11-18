@@ -5,7 +5,6 @@ import { fetchWithAuth } from "../utils/auth-fetch";
 export interface ProfileData {
   id: number;
   organizationName: string;
-  organizationIdentifier: string | null;
   organizationId: number;
   fullName: string;
   email: string;
@@ -41,7 +40,6 @@ export const useAuth = () => useContext(AuthContext);
 const emptyProfileData: ProfileData = {
   id: 0,
   organizationName: "",
-  organizationIdentifier: "",
   organizationId: 0,
   fullName: "",
   email: "",

@@ -24,7 +24,6 @@ import "./EditOrganizationPage.css";
 export interface Organization {
   id: number;
   organizationName: string;
-  organizationIdentifier: string;
   organizationDescription: string;
   solutionApiUrl: string;
   status: "active" | "disabled";
@@ -41,7 +40,6 @@ const EditOrganizationPage: React.FC = () => {
   });
   const [readOnlyData, setReadOnlyData] = useState({
     id: 0,
-    organizationIdentifier: "",
   });
   const [status, setStatus] = useState<null | "success" | "error">(null);
   const [errorMessage, setErrorMessage] = useState("");
@@ -69,7 +67,6 @@ const EditOrganizationPage: React.FC = () => {
           });
           setReadOnlyData({
             id: organization.id,
-            organizationIdentifier: organization.organizationIdentifier,
           });
         } else {
           setErrorMessage("Failed to load organization data");
@@ -166,17 +163,6 @@ const EditOrganizationPage: React.FC = () => {
                 <Text className="field-label">Organization ID</Text>
                 <TextField.Root
                   value={readOnlyData.id.toString()}
-                  readOnly
-                  disabled
-                  className="readonly-field"
-                />
-              </Box>
-
-              {/* Read-only Organization Identifier */}
-              <Box className="form-field">
-                <Text className="field-label">Organization Identifier</Text>
-                <TextField.Root
-                  value={readOnlyData.organizationIdentifier}
                   readOnly
                   disabled
                   className="readonly-field"

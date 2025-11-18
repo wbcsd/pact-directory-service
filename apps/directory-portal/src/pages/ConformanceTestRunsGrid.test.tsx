@@ -69,34 +69,28 @@ const mockTestRuns = [
 ];
 
 const mockAdminProfile: ProfileData = {
+  id: 0,
+  status: "active",
   role: "administrator",
   email: "admin@test.com",
   fullName: "Admin User",
   organizationId: 1,
   organizationName: "Test Org",
-  organizationIdentifier: "test-org",
   organizationDescription: "A test organization",
   solutionApiUrl: "https://api.test.com",
-  registrationCode: "REG123",
-  clientId: "client-123",
-  clientSecret: "secret-xyz",
-  networkKey: "network-key",
   policies: ["view-users", "edit-users"],
 };
 
 const mockUserProfile: ProfileData = {
+  id: 0,
+  status: "active",
   role: "user",
   email: "user@test.com",
   fullName: "Regular User",
 organizationId: 1,
   organizationName: "Test Org",
-  organizationIdentifier: "test-org",
   organizationDescription: "A test organization",
   solutionApiUrl: "https://api.test.com",
-  registrationCode: "REG123",
-  clientId: "client-123",
-  clientSecret: "secret-xyz",
-  networkKey: "network-key",
   policies: [],  
 };
 
