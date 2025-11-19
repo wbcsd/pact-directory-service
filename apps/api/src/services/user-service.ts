@@ -17,10 +17,12 @@ import {
 } from '@src/common/policies';
 import logger from '@src/common/logger';
 
-registerPolicy([Role.Administrator, Role.Root], 'view-users');
-registerPolicy([Role.Administrator, Role.Root], 'edit-users');
+registerPolicy([Role.Administrator], 'view-users');
+registerPolicy([Role.Administrator], 'edit-users');
 registerPolicy([Role.Root], 'view-all-users');
 registerPolicy([Role.Root], 'edit-all-users');
+
+export type UserStatus = 'unverified' | 'enabled' | 'disabled' | 'deleted';
 
 export interface UserContext {
   userId: number;
@@ -28,7 +30,7 @@ export interface UserContext {
   organizationId: number;
   role: Role;
   policies: string[];
-  status: 'unverified' | 'enabled' | 'disabled' | 'deleted';
+  status: UserStatus
 }
 
 export interface SignUpData {

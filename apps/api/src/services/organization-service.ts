@@ -2,17 +2,17 @@ import { Kysely } from 'kysely';
 import { Database } from '@src/database/types';
 import { NotFoundError, ForbiddenError } from '@src/common/errors';
 import { registerPolicy, checkAccess, Role, hasAccess } from '@src/common/policies';
-import { UserContext, UserData } from './user-service';
+import { UserContext, UserData, UserStatus } from './user-service';
 import { EmailService } from './email-service';
 import { ListQuery, ListResult } from '@src/common/list-query';
 
 // Register all policies used in this service
-registerPolicy([Role.Administrator, Role.Root], 'view-connections-own-organization');
-registerPolicy([Role.Administrator, Role.Root], 'edit-connections-own-organization');
+registerPolicy([Role.Administrator], 'view-connections-own-organization');
+registerPolicy([Role.Administrator], 'edit-connections-own-organization');
+registerPolicy([Role.Administrator], 'view-own-organizations');
+registerPolicy([Role.Administrator], 'edit-own-organizations');
 registerPolicy([Role.Root], 'view-connections-all-organizations');
 registerPolicy([Role.Root], 'edit-connections-all-organizations');
-registerPolicy([Role.Administrator, Role.Root], 'view-own-organizations');
-registerPolicy([Role.Administrator, Role.Root], 'edit-own-organizations');
 registerPolicy([Role.Root], 'view-all-organizations');
 registerPolicy([Role.Root], 'edit-all-organizations');
 
@@ -370,7 +370,7 @@ export class OrganizationService {
     context: UserContext,
     organizationId: number,
     userId: number,
-    update: { fullName?: string; role?: Role }
+    update: { fullName?: string; role?: Role, status?: UserStatus }
   ): Promise<{ message: string }> {
     // Check that user has edit-all-organizations policy or 
     // view-own-organizations for members in their own organization
@@ -393,6 +393,25 @@ export class OrganizationService {
 
     if (!user) {
       throw new NotFoundError('User not found');
+    }
+    
+    // If this user is the last one that's enabled, prevent disabling
+    if (update.status === 'disabled') {
+      const enabledCount = await this.db
+        .selectFrom('users')
+        .where('organizationId', '=', organizationId)
+        .where('status', '=', 'enabled')
+        .select(['id'])
+        .execute();
+
+      if (enabledCount.length <= 1) {
+        const isLastEnabled = enabledCount.some((u) => u.id === userId);
+        if (isLastEnabled) {
+          throw new ForbiddenError(
+            'Cannot disable the last enabled user in the organization'
+          );
+        }
+      }
     }
 
     // If this user is the last administrator, prevent role change
@@ -420,6 +439,7 @@ export class OrganizationService {
       .set({
         ...(update.fullName && { fullName: update.fullName }),
         ...(update.role && { role: update.role }),
+        ...(update.status && { status: update.status }),
       })
       .where('id', '=', userId)
       .execute();

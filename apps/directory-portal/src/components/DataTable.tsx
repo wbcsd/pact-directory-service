@@ -1,183 +1,249 @@
 import React, { useState, useMemo } from "react";
-import { Box, Callout } from "@radix-ui/themes";
-import {
-  ExclamationTriangleIcon,
-  ChevronUpIcon,
-  ChevronDownIcon,
-  CaretSortIcon,
-} from "@radix-ui/react-icons";
+import { Box, Spinner, Text, Checkbox } from "@radix-ui/themes";
 import "./DataTable.css";
-import Spinner from "../components/LoadingSpinner";
-import EmptyImage from "../assets/pact-logistics-center-8.png";
 
 export interface Column<T> {
   key: string;
   header: string;
+  sortable?: boolean;
+  sortValue?: (row: T) => string | number;
   render: (row: T) => React.ReactNode;
-  sortable?: boolean; // New: whether this column is sortable
-  sortValue?: (row: T) => string | number; // New: custom sort value extractor
 }
 
-interface TableProps<T> {
+export interface DataTableProps<T> {
   idColumnName: keyof T;
   data: T[];
   columns: Column<T>[];
   isLoading?: boolean;
-  loadingPosition?: "top-left" | "top-right";
   error?: string | null;
   emptyState?: {
     title: string;
     description?: string;
     action?: React.ReactNode;
   };
+  
+  // Selection props
+  selectable?: boolean;
+  selectedIds?: (string | number)[];
+  onSelectionChange?: (selectedIds: (string | number)[]) => void;
+  selectAllText?: string;
+  disabledRowIds?: (string | number)[]; // IDs of rows that cannot be selected
 }
 
-type SortConfig = {
-  key: string;
-  direction: "asc" | "desc";
-} | null;
+type SortDirection = "asc" | "desc" | null;
+
+interface SortConfig {
+  key: string | null;
+  direction: SortDirection;
+}
 
 function DataTable<T extends object>({
+  idColumnName,
   data,
   columns,
   isLoading = false,
-  loadingPosition = "top-right",
-  idColumnName,
-  error,
+  error = null,
   emptyState,
-}: TableProps<T>) {
-  const [sortConfig, setSortConfig] = useState<SortConfig>(null);
+  selectable = false,
+  selectedIds = [],
+  onSelectionChange,
+  selectAllText = "Select all",
+  disabledRowIds = [],
+}: DataTableProps<T>) {
+  const [sortConfig, setSortConfig] = useState<SortConfig>({
+    key: null,
+    direction: null,
+  });
 
+  // Sort data
   const sortedData = useMemo(() => {
-    if (!sortConfig) return data;
+    if (!sortConfig.key || !sortConfig.direction) {
+      return data;
+    }
 
     const column = columns.find((col) => col.key === sortConfig.key);
-    if (!column) return data;
+    if (!column?.sortValue) {
+      return data;
+    }
 
     const sorted = [...data].sort((a, b) => {
-      let aValue: string | number;
-      let bValue: string | number;
+      const aValue = column.sortValue!(a);
+      const bValue = column.sortValue!(b);
 
-      if (column.sortValue) {
-        aValue = column.sortValue(a);
-        bValue = column.sortValue(b);
-      } else {
-        // Default: use the rendered content as string
-        aValue = String(column.render(a));
-        bValue = String(column.render(b));
+      if (aValue < bValue) {
+        return sortConfig.direction === "asc" ? -1 : 1;
       }
-
-      if (typeof aValue === "number" && typeof bValue === "number") {
-        return sortConfig.direction === "asc"
-          ? aValue - bValue
-          : bValue - aValue;
+      if (aValue > bValue) {
+        return sortConfig.direction === "asc" ? 1 : -1;
       }
-
-      const aStr = String(aValue).toLowerCase();
-      const bStr = String(bValue).toLowerCase();
-
-      if (aStr < bStr) return sortConfig.direction === "asc" ? -1 : 1;
-      if (aStr > bStr) return sortConfig.direction === "asc" ? 1 : -1;
       return 0;
     });
 
     return sorted;
   }, [data, sortConfig, columns]);
 
+  // Handle sort
   const handleSort = (columnKey: string) => {
     const column = columns.find((col) => col.key === columnKey);
-    if (!column || Boolean(column.sortable) === false) return;
+    if (!column?.sortable) return;
 
-    setSortConfig((current) => {
-      if (!current || current.key !== columnKey) {
+    setSortConfig((prevConfig) => {
+      if (prevConfig.key !== columnKey) {
         return { key: columnKey, direction: "asc" };
       }
-      if (current.direction === "asc") {
+      if (prevConfig.direction === "asc") {
         return { key: columnKey, direction: "desc" };
       }
-      return null; // Reset sorting
+      return { key: null, direction: null };
     });
   };
 
-  if (error) {
+  // Selection handlers
+  const selectableRowIds = useMemo(() => {
+    return data
+      .map((row) => row[idColumnName] as string | number)
+      .filter((id) => !disabledRowIds.includes(id));
+  }, [data, idColumnName, disabledRowIds]);
+
+  const handleSelectAll = () => {
+    if (!onSelectionChange) return;
+    
+    if (selectedIds.length === selectableRowIds.length && selectableRowIds.length > 0) {
+      // Deselect all
+      onSelectionChange([]);
+    } else {
+      // Select all selectable rows
+      onSelectionChange(selectableRowIds);
+    }
+  };
+
+  const handleRowSelect = (rowId: string | number) => {
+    if (!onSelectionChange) return;
+    
+    if (disabledRowIds.includes(rowId)) return;
+    
+    if (selectedIds.includes(rowId)) {
+      onSelectionChange(selectedIds.filter((id) => id !== rowId));
+    } else {
+      onSelectionChange([...selectedIds, rowId]);
+    }
+  };
+
+  const isAllSelected = selectableRowIds.length > 0 && 
+                        selectedIds.length === selectableRowIds.length;
+  const isSomeSelected = selectedIds.length > 0 && selectedIds.length < selectableRowIds.length;
+
+  // Render loading state
+  if (isLoading) {
     return (
-      <Box className="errorBox">
-        <Callout.Root color="red" size="2">
-          <Callout.Icon>
-            <ExclamationTriangleIcon />
-          </Callout.Icon>
-          <Callout.Text>{error}</Callout.Text>
-        </Callout.Root>
+      <Box className="loadingBox">
+        <Spinner size="3" />
       </Box>
     );
   }
 
-  if (!isLoading && data.length === 0) {
+  // Render error state
+  if (error) {
     return (
-      <div className="emptyState">
-        <img src={EmptyImage} alt="No data" />
-        <h2>{emptyState?.title ?? "No Data"}</h2>
-        {emptyState?.description && (
-          <div className="emptyHint">{emptyState.description}</div>
-        )}
-        {emptyState?.action}
-      </div>
+      <Box className="errorBox">
+        <Text color="red" size="3">
+          {error}
+        </Text>
+      </Box>
+    );
+  }
+
+  // Render empty state
+  if (data.length === 0) {
+    if (emptyState) {
+      return (
+        <Box className="emptyState">
+          <Text size="5" weight="medium">
+            {emptyState.title}
+          </Text>
+          {emptyState.description && (
+            <Text size="2" className="emptyHint">
+              {emptyState.description}
+            </Text>
+          )}
+          {emptyState.action && <Box mt="4">{emptyState.action}</Box>}
+        </Box>
+      );
+    }
+    return (
+      <Box className="emptyState">
+        <Text size="3" color="gray">
+          No data available
+        </Text>
+      </Box>
     );
   }
 
   return (
-    <div className="table-wrapper">
-      {isLoading && (
-        <div className={`loading-indicator ${loadingPosition}`}>
-          <Spinner />
-        </div>
-      )}
-      <table className="generic-table">
+    <div className="table-container">
+      <table className="data-table">
         <thead>
           <tr>
-            {columns.map((col) => {
-              const isSortable = Boolean(col.sortable);
-              const isActive = sortConfig?.key === col.key;
-
-              return (
-                <th
-                  key={col.key}
-                  onClick={() => handleSort(col.key)}
-                  className={isSortable ? "sortable" : ""}
-                  style={{ cursor: isSortable ? "pointer" : "default" }}
-                >
-                  <div className="th-content">
-                    <span>{col.header}</span>
-                    {isSortable && (
-                      <span className="sort-icon">
-                        {isActive ? (
-                          sortConfig.direction === "asc" ? (
-                            <ChevronUpIcon />
-                          ) : (
-                            <ChevronDownIcon />
-                          )
-                        ) : (
-                          <CaretSortIcon />
-                        )}
-                      </span>
-                    )}
-                  </div>
-                </th>
-              );
-            })}
+            {selectable && (
+              <th className="checkbox-column">
+                <Checkbox
+                  checked={isAllSelected}
+                  onCheckedChange={handleSelectAll}
+                  disabled={selectableRowIds.length === 0}
+                  aria-label={selectAllText}
+                  className={isSomeSelected ? "indeterminate" : ""}
+                />
+              </th>
+            )}
+            {columns.map((column) => (
+              <th
+                key={column.key}
+                className={column.sortable ? "sortable" : ""}
+                onClick={() => column.sortable && handleSort(column.key)}
+              >
+                <div className="header-content">
+                  <span>{column.header}</span>
+                  {column.sortable && sortConfig.key === column.key && (
+                    <span className="sort-indicator">
+                      {sortConfig.direction === "asc" ? "↑" : "↓"}
+                    </span>
+                  )}
+                </div>
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {sortedData.map((row, rowIdx) => (
-            <tr key={(row[idColumnName] as string) ?? rowIdx}>
-              {columns.map((col) => (
-                <td key={col.key}>{col.render(row)}</td>
-              ))}
-            </tr>
-          ))}
+          {sortedData.map((row) => {
+            const rowId = row[idColumnName] as string | number;
+            const isSelected = selectedIds.includes(rowId);
+            const isDisabled = disabledRowIds.includes(rowId);
+            
+            return (
+              <tr
+                key={String(rowId)}
+                className={`${isSelected ? "selected-row" : ""} ${isDisabled ? "disabled-row" : ""}`}
+              >
+                {selectable && (
+                  <td className="checkbox-column">
+                    <Checkbox
+                      checked={isSelected}
+                      onCheckedChange={() => handleRowSelect(rowId)}
+                      disabled={isDisabled}
+                      aria-label={`Select row ${rowId}`}
+                    />
+                  </td>
+                )}
+                {columns.map((column) => (
+                  <td key={column.key}>{column.render(row)}</td>
+                ))}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
   );
 }
+
 export default DataTable;
