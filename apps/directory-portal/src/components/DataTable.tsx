@@ -16,6 +16,7 @@ export interface DataTableProps<T> {
   columns: Column<T>[];
   isLoading?: boolean;
   error?: string | null;
+  onRowClick?: (row: T) => void;
   emptyState?: {
     title: string;
     description?: string;
@@ -47,6 +48,7 @@ function DataTable<T extends object>({
   selectable = false,
   selectedIds = [],
   onSelectionChange,
+  onRowClick,
   selectAllText = "Select all",
   disabledRowIds = [],
 }: DataTableProps<T>) {
@@ -221,6 +223,7 @@ function DataTable<T extends object>({
             
             return (
               <tr
+                onClick={() => onRowClick && onRowClick(row)}
                 key={String(rowId)}
                 className={`${isSelected ? "selected-row" : ""} ${isDisabled ? "disabled-row" : ""}`}
               >
