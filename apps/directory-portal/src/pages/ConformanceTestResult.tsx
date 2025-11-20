@@ -399,6 +399,7 @@ const ConformanceTestResult: React.FC = () => {
               idColumnName="testKey"
               data={testCases.sort(sortTestCases)}
               columns={columns}
+              onRowClick={(row) => selectTestAndScroll(row)}
               isLoading={isLoading}
               error={error}
               emptyState={{

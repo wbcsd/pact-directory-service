@@ -105,6 +105,9 @@ const ConformanceTestRunsGrid: React.FC<Props> = ({
       data={testRuns}
       columns={columns}
       isLoading={isLoading}
+      onRowClick={(row) =>
+        navigate(`/conformance-test-result?testRunId=${row.testRunId}`)
+      }
       error={error}
       emptyState={{
         title: "You currently have no tests",
