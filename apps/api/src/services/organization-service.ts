@@ -386,7 +386,7 @@ export class OrganizationService {
 
     const user = await this.db
       .selectFrom('users')
-      .select(['id'])
+      .select(['id', 'status'])
       .where('id', '=', userId)
       .where('organizationId', '=', organizationId)
       .executeTakeFirst();
@@ -394,9 +394,19 @@ export class OrganizationService {
     if (!user) {
       throw new NotFoundError('User not found');
     }
-    
-    // If this user is the last one that's enabled, prevent disabling
+
+    // Can only enable a user that is currently disabled
+    if (update.status === 'enabled' && user?.status !== 'disabled') {
+      throw new ForbiddenError('Can only enable a disabled user');
+    }
+
     if (update.status === 'disabled') {
+      // Only allow disabling if the user was enabled before
+      if (user?.status !== 'enabled') {
+        throw new ForbiddenError('Can only disable an enabled user');
+      }
+
+      // If this user is the last one that's enabled, prevent disabling
       const enabledCount = await this.db
         .selectFrom('users')
         .where('organizationId', '=', organizationId)

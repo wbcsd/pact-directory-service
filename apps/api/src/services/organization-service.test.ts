@@ -446,5 +446,44 @@ describe('OrganizationService', () => {
       expect(result).toEqual({ message: 'User updated successfully' });
       expect(dbMocks.db.updateTable).toHaveBeenCalledWith('users');
     });
+
+    it('should only allow enabled or disabled users to be updated', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValue({ id: 2, status: 'deleted' });
+
+      await expect(
+        organizationService.updateMember(
+          adminUserContext,
+          1,
+          2,
+          { status: 'enabled' }
+        )
+      ).rejects.toThrow(ForbiddenError);
+    });
+
+    it('should only allow enabling a disabled user', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValue({ id: 2, status: 'enabled' });
+
+      await expect(
+        organizationService.updateMember(
+          adminUserContext,
+          1,
+          2,
+          { status: 'enabled' }
+        )
+      ).rejects.toThrow(ForbiddenError);
+    });
+
+    it('should only allow disabling an enabled user', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValue({ id: 2, status: 'disabled' });
+
+      await expect(
+        organizationService.updateMember(
+          adminUserContext,
+          1,
+          2,
+          { status: 'disabled' }
+        )
+      ).rejects.toThrow(ForbiddenError);
+    });
   });
 });
