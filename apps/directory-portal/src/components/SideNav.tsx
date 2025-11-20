@@ -41,24 +41,24 @@ const SideNav: React.FC = () => {
             <Text>Profile</Text>
           </NavLink>
           <FeatureFlag flag="enableOrganizationManagement">
-            <PolicyGuard policies={["view-own-organizations", "view-all-organizations"]}>
-              <>
+            <>
+            <PolicyGuard policies={["view-all-organizations"]}>
                 <NavLink
                   to="/organizations"
                   style={{ textDecoration: "none" }}
                 >
                   <Text>Organizations</Text>
                 </NavLink>
-                <PolicyGuard policies={["view-users", "view-all-users"]}>
-                  <NavLink
-                    to="/organization/users"
-                    style={{ textDecoration: "none", paddingLeft: "2em" }}
-                  >
-                    <Text>Users</Text>
-                  </NavLink>
-                </PolicyGuard>
-              </>
             </PolicyGuard>
+            <PolicyGuard policies={["view-users", "view-all-users"]}>
+              <NavLink
+                to="/organization/users"
+                style={{ textDecoration: "none" }}
+              >
+                <Text>Users</Text>
+              </NavLink>
+            </PolicyGuard>
+            </>
           </FeatureFlag>          
         </nav>
       </div>
