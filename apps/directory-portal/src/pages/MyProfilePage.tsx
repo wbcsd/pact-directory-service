@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as Form from "@radix-ui/react-form";
 import {
   Box,
@@ -22,8 +22,8 @@ import "./MyProfilePage.css";
 const MyProfilePage: React.FC = () => {
   const { profileData } = useAuth();
   const [formData, setFormData] = useState({
-    fullName: profileData?.fullName || "",
-    solutionApiUrl: profileData?.solutionApiUrl || "",
+    fullName: "",
+    solutionApiUrl: "",
   });
   const [status, setStatus] = useState<null | "success" | "error">(null);
   const [errorMessage, setErrorMessage] = useState("");
@@ -34,6 +34,15 @@ const MyProfilePage: React.FC = () => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  useEffect(() => {
+    if (profileData) {
+      setFormData({
+        fullName: profileData.fullName || "",
+        solutionApiUrl: profileData.solutionApiUrl || "",
+      });
+    }
+  }, [profileData]);
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setStatus(null);
@@ -41,22 +50,38 @@ const MyProfilePage: React.FC = () => {
 
     try {
       setUpdating(true);
+      const updatePromises = [];
 
-      const response = await fetchWithAuth("/directory/users/me", {
-        method: "PUT",
-        body: JSON.stringify({
-          fullName: formData.fullName,
-          solutionApiUrl: formData.solutionApiUrl,
-        }),
-      });
+      // Queue an update for full name if changed
+      if (formData.fullName !== profileData?.fullName && formData.fullName.trim() !== "") {
+        updatePromises.push(async () => {
+          const response = await fetchWithAuth(`/organizations/${profileData?.organizationId}/users/${profileData?.id}`, {
+            method: "POST",
+            body: JSON.stringify({ fullName: formData.fullName }),
+          });
+          return response!.ok;
+         }
+        );
+      }
 
-      setUpdating(false);
+      // Queue an update for solution API URL if changed
+      if (formData.solutionApiUrl !== profileData?.solutionApiUrl && formData.solutionApiUrl.trim() !== "") {
+        updatePromises.push(async () => {
+          const response = await fetchWithAuth(`/organizations/${profileData?.organizationId}`, {
+            method: "POST",
+            body: JSON.stringify({ solutionApiUrl: formData.solutionApiUrl }),
+          });
+          return response!.ok;
+        });
+      }
 
-      if (response?.ok) {
+      const results = await Promise.all(updatePromises.map((fn) => fn()));
+      const allSuccessful = results.every((res) => res === true);
+
+      if (allSuccessful) {
         setStatus("success");
       } else {
-        const errorResponse = await response!.json();
-        setErrorMessage(errorResponse.message || "Failed to update profile");
+        setErrorMessage("Failed to update profile");
         setStatus("error");
       }
     } catch (error) {
