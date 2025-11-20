@@ -63,13 +63,6 @@ const Organizations: React.FC = () => {
       render: (row: Organization) => row.organizationName,
     },
     {
-      key: "organizationIdentifier",
-      header: "Identifier",
-      sortable: true,
-      sortValue: (row: Organization) => row.organizationIdentifier,
-      render: (row: Organization) => row.organizationIdentifier,
-    },
-    {
       key: "status",
       header: "Status",
       sortable: true,

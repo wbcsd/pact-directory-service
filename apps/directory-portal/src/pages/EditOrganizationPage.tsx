@@ -172,17 +172,6 @@ const EditOrganizationPage: React.FC = () => {
                 />
               </Box>
 
-              {/* Read-only Organization Identifier */}
-              <Box className="form-field">
-                <Text className="field-label">Organization Identifier</Text>
-                <TextField.Root
-                  value={readOnlyData.organizationIdentifier}
-                  readOnly
-                  disabled
-                  className="readonly-field"
-                />
-              </Box>
-
               {/* Editable Organization Name */}
               <Form.Field name="organizationName">
                 <Form.Label className="field-label">
