@@ -243,7 +243,7 @@ const AddUserPage: React.FC = () => {
                 <Button
                   type="button"
                   className="cancel-button"
-                  onClick={() => navigate("/organization/users")}
+                  onClick={() => navigate(-1)}
                 >
                   Cancel
                 </Button>

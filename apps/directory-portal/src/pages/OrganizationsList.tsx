@@ -3,10 +3,11 @@ import { fetchWithAuth } from "../utils/auth-fetch";
 import SearchableDataTable, { PaginationInfo } from "../components/SearchableDataTable";
 import { Column } from "../components/DataTable";
 import { useAuth } from "../contexts/AuthContext";
-import { InputIcon } from "@radix-ui/react-icons";
+import { InputIcon, PlusIcon } from "@radix-ui/react-icons";
 import { useNavigate } from "react-router-dom";
 import { GridPageLayout } from "../layouts";
 import ActionButton from "../components/ActionButton";
+import PolicyGuard from "../components/PolicyGuard";
 
 export interface Organization {
   id: number;
@@ -94,7 +95,9 @@ const Organizations: React.FC = () => {
     {
       key: "actions",
       header: "",
+      extendedStyle: { textAlign: 'right' },
       render: (row: Organization) => (
+        <>
         <ActionButton
           title="Edit Organization Details"
           variant="secondary"
@@ -103,6 +106,18 @@ const Organizations: React.FC = () => {
         >
           <InputIcon />
         </ActionButton>
+          <span>&nbsp;</span>
+          <PolicyGuard policies={["edit-all-users"]}>
+            <ActionButton
+              title="Add New User"
+              variant="secondary"
+              size="small"
+              onClick={() => navigate(`/organization/${row.id}/${row.organizationName}/add-user`)}
+            >
+              <PlusIcon /><span>Add User</span>
+            </ActionButton>
+          </PolicyGuard>
+        </>     
       ),
     },
   ];
