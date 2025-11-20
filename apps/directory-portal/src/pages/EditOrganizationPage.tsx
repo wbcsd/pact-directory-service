@@ -240,13 +240,12 @@ const EditOrganizationPage: React.FC = () => {
               {/* Editable API URL (solutionApiUrl) */}
               <Form.Field name="solutionApiUrl">
                 <Form.Label className="field-label">
-                  API URL<span className="required-asterisk">*</span>
+                  Organization Website
                 </Form.Label>
                 <Form.Control asChild>
                   <TextField.Root
                     value={formData.solutionApiUrl}
-                    required
-                    placeholder="Enter API URL"
+                    placeholder="Enter website"
                     onChange={handleChange}
                     className="editable-field"
                   >
@@ -267,19 +266,13 @@ const EditOrganizationPage: React.FC = () => {
                             align="center"
                             sideOffset={5}
                           >
-                            The API endpoint URL for this organization
+                            The website address for this organization
                           </Tooltip.Content>
                         </Tooltip.Root>
                       </Tooltip.Provider>
                     </TextField.Slot>
                   </TextField.Root>
                 </Form.Control>
-                <Form.Message
-                  match="valueMissing"
-                  className="validation-message"
-                >
-                  API URL is required.
-                </Form.Message>
               </Form.Field>
 
  {/* Status Toggle Switch */}
