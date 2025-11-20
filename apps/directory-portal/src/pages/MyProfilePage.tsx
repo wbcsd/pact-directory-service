@@ -51,9 +51,9 @@ const MyProfilePage: React.FC = () => {
     event.preventDefault();
     setStatus(null);
     setErrorMessage("");
+    setUpdating(true);
 
     try {
-      setUpdating(true);
       const updatePromises = [];
 
       // Queue an update for full name if changed
@@ -114,6 +114,8 @@ const MyProfilePage: React.FC = () => {
       setStatus("error");
       setErrorMessage("An error occurred while updating your profile");
       console.error("An error occurred:", error);
+    } finally {
+      setUpdating(false);
     }
   };
 
