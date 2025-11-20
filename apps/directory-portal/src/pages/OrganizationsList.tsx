@@ -116,7 +116,7 @@ const Organizations: React.FC = () => {
       <SearchableDataTable<Organization>
         title="Organizations"
         subtitle="Manage and view all organizations in the system"
-        searchPlaceholder="Search by organization name or identifier..."
+        searchPlaceholder="Search by organization name..."
         fetchData={fetchOrganizations}
         columns={columns}
         idColumnName="id"

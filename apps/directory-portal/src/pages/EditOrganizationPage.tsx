@@ -39,10 +39,6 @@ const EditOrganizationPage: React.FC = () => {
     solutionApiUrl: "",
     status: "active" as "active" | "disabled",
   });
-  const [readOnlyData, setReadOnlyData] = useState({
-    id: 0,
-    organizationIdentifier: "",
-  });
   const [status, setStatus] = useState<null | "success" | "error">(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(true);
@@ -66,10 +62,6 @@ const EditOrganizationPage: React.FC = () => {
             organizationDescription: organization.organizationDescription,
             solutionApiUrl: organization.solutionApiUrl || "",
             status: organization.status,
-          });
-          setReadOnlyData({
-            id: organization.id,
-            organizationIdentifier: organization.organizationIdentifier,
           });
         } else {
           setErrorMessage("Failed to load organization data");
@@ -161,16 +153,6 @@ const EditOrganizationPage: React.FC = () => {
         <div>
           <Box className="form-container">
             <Form.Root onSubmit={handleSubmit}>
-              {/* Read-only Organization ID */}
-              <Box className="form-field">
-                <Text className="field-label">Organization ID</Text>
-                <TextField.Root
-                  value={readOnlyData.id.toString()}
-                  readOnly
-                  disabled
-                  className="readonly-field"
-                />
-              </Box>
 
               {/* Editable Organization Name */}
               <Form.Field name="organizationName">

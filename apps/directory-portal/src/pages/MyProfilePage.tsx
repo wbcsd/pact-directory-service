@@ -288,7 +288,7 @@ const MyProfilePage: React.FC = () => {
             {/* Editable Solution API URL */}
             <Form.Field name="solutionApiUrl">
               <Form.Label className="field-label">
-                Solution API URL
+                Organization Website
               </Form.Label>
               <Form.Control asChild>
                 <TextField.Root
