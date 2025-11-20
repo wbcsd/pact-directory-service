@@ -141,17 +141,6 @@ const MyProfilePage: React.FC = () => {
 
         <Box className="form-container">
           <Form.Root onSubmit={handleSubmit}>
-            {/* Read-only User ID */}
-            <Box className="form-field">
-              <Text className="field-label">User ID</Text>
-              <TextField.Root
-                value={profileData.id.toString()}
-                readOnly
-                disabled
-                className="readonly-field"
-              />
-            </Box>
-
             {/* Read-only Email */}
             <Box className="form-field">
               <Text className="field-label">Email Address</Text>
@@ -314,7 +303,7 @@ const MyProfilePage: React.FC = () => {
                           align="center"
                           sideOffset={5}
                         >
-                          The API endpoint URL for your organization
+                          The address of your organization's website
                         </Tooltip.Content>
                       </Tooltip.Root>
                     </Tooltip.Provider>
