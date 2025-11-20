@@ -181,29 +181,16 @@ const OrganizationUsers: React.FC = () => {
       key: "actions",
       header: "",
       render: (row: User) => (
-          <>
-          <PolicyGuard policies={["edit-users", "edit-all-users"]}>
-            <ActionButton
-              title="Edit User Details"
-              variant="secondary"
-              size="small"
-              onClick={() => navigate(`/organization/${row.organizationId}/users/${row.id}`)}
-            >
-              <InputIcon />
-            </ActionButton>
-          </PolicyGuard>
-          <span>&nbsp;</span>
-          <PolicyGuard policies={["edit-all-users"]}>
-            <ActionButton
-              title="Add New User"
-              variant="secondary"
-              size="small"
-              onClick={() => navigate(`/organization/${row.organizationId}/${row.organizationName}/add-user`)}
-            >
-              <PlusIcon />
-            </ActionButton>
-          </PolicyGuard>
-          </>
+        <PolicyGuard policies={["edit-users", "edit-all-users"]}>
+          <ActionButton
+            title="Edit User Details"
+            variant="secondary"
+            size="small"
+            onClick={() => navigate(`/organization/${row.organizationId}/users/${row.id}`)}
+          >
+            <InputIcon />
+          </ActionButton>
+        </PolicyGuard>
       ),
     },
   ];

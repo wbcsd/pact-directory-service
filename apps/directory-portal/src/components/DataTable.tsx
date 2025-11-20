@@ -6,6 +6,7 @@ export interface Column<T> {
   key: string;
   header: string;
   sortable?: boolean;
+  extendedStyle?: React.CSSProperties;
   sortValue?: (row: T) => string | number;
   render: (row: T) => React.ReactNode;
 }
@@ -238,7 +239,7 @@ function DataTable<T extends object>({
                   </td>
                 )}
                 {columns.map((column) => (
-                  <td key={column.key}>{column.render(row)}</td>
+                  <td key={column.key} style={column.extendedStyle}>{column.render(row)}</td>
                 ))}
               </tr>
             );
