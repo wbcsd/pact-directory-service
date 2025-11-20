@@ -1,10 +1,10 @@
 import { Kysely } from 'kysely';
 
 export async function up(db: Kysely<any>): Promise<void> {
-  // Add status column to organizations table
+  // Add status column to organizations table with default 'active'
   await db.schema
     .alterTable('organizations')
-    .addColumn('status', 'varchar(255)')
+    .addColumn('status', 'text', (col) => col.notNull().defaultTo('active'))
     .execute();
 }
 
