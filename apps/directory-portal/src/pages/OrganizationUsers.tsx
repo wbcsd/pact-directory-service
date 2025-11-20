@@ -215,7 +215,7 @@ const OrganizationUsers: React.FC = () => {
 
   return (
     <GridPageLayout
-      title="Organization Users"
+      title="Users"
       actions={
         <PolicyGuard policies={["edit-users"]}>
           <Button
