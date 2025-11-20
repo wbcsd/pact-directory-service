@@ -23,6 +23,8 @@ const MyProfilePage: React.FC = () => {
   const { profileData } = useAuth();
   const [formData, setFormData] = useState({
     fullName: "",
+    organizationName: "",
+    organizationDescription: "",
     solutionApiUrl: "",
   });
   const [status, setStatus] = useState<null | "success" | "error">(null);
@@ -39,6 +41,8 @@ const MyProfilePage: React.FC = () => {
       setFormData({
         fullName: profileData.fullName || "",
         solutionApiUrl: profileData.solutionApiUrl || "",
+        organizationDescription: profileData.organizationDescription || "",
+        organizationName: profileData.organizationName || "",
       });
     }
   }, [profileData]);
@@ -70,6 +74,28 @@ const MyProfilePage: React.FC = () => {
           const response = await fetchWithAuth(`/organizations/${profileData?.organizationId}`, {
             method: "POST",
             body: JSON.stringify({ solutionApiUrl: formData.solutionApiUrl }),
+          });
+          return response!.ok;
+        });
+      }
+
+      // Queue an update for organization description if changed
+      if (formData.organizationDescription !== profileData?.organizationDescription && formData.organizationDescription.trim() !== "") {
+        updatePromises.push(async () => {
+          const response = await fetchWithAuth(`/organizations/${profileData?.organizationId}`, {
+            method: "POST",
+            body: JSON.stringify({ organizationDescription: formData.organizationDescription }),
+          });
+          return response!.ok;
+        });
+      }
+
+      // Queue an update for organization name if changed
+      if (formData.organizationName !== profileData?.organizationName && formData.organizationName.trim() !== "") {
+        updatePromises.push(async () => {
+          const response = await fetchWithAuth(`/organizations/${profileData?.organizationId}`, {
+            method: "POST",
+            body: JSON.stringify({ organizationName: formData.organizationName }),
           });
           return response!.ok;
         });
@@ -177,38 +203,85 @@ const MyProfilePage: React.FC = () => {
               </Form.Message>
             </Form.Field>
 
-            {/* Read-only Organization Name */}
-            <Box className="form-field">
-              <Text className="field-label">Organization Name</Text>
-              <TextField.Root
-                value={profileData.organizationName || ""}
-                readOnly
-                disabled
-                className="readonly-field"
-              />
-            </Box>
+            {/* Editable Organization Name */}
+            <Form.Field name="organizationName">
+              <Form.Label className="field-label">
+                Organization Name<span className="required-asterisk">*</span>
+              </Form.Label>
+              <Form.Control asChild>
+                <TextField.Root
+                  value={formData.organizationName}
+                  required
+                  placeholder="Enter Organization name"
+                  onChange={handleChange}
+                  className="editable-field"
+                >
+                  <TextField.Slot side="right">
+                    <Tooltip.Provider delayDuration={0}>
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <InfoCircledIcon
+                            width={20}
+                            height={20}
+                            color="#0A0552"
+                            className="info-icon"
+                          />
+                        </Tooltip.Trigger>
+                        <Tooltip.Content
+                          className="TooltipContent"
+                          side="right"
+                          align="center"
+                          sideOffset={5}
+                        >
+                          Your organization name
+                        </Tooltip.Content>
+                      </Tooltip.Root>
+                    </Tooltip.Provider>
+                  </TextField.Slot>
+                </TextField.Root>
+              </Form.Control>
+              <Form.Message match="valueMissing" className="validation-message">
+                Organization name is required.
+              </Form.Message>
+            </Form.Field>
 
-            {/* Read-only Organization Identifier */}
-            <Box className="form-field">
-              <Text className="field-label">Organization Identifier</Text>
-              <TextField.Root
-                value={profileData.organizationIdentifier || ""}
-                readOnly
-                disabled
-                className="readonly-field"
-              />
-            </Box>
-
-            {/* Read-only Organization Description */}
-            <Box className="form-field">
-              <Text className="field-label">Organization Description</Text>
-              <TextField.Root
-                value={profileData.organizationDescription || "No description available"}
-                readOnly
-                disabled
-                className="readonly-field"
-              />
-            </Box>
+            {/* Editable Organization Description */}
+            <Form.Field name="organizationDescription">
+              <Form.Label className="field-label">
+                Organization Description
+              </Form.Label>
+              <Form.Control asChild>
+                <TextField.Root
+                  value={formData.organizationDescription}
+                  placeholder="Enter Organization Description"
+                  onChange={handleChange}
+                  className="editable-field"
+                >
+                  <TextField.Slot side="right">
+                    <Tooltip.Provider delayDuration={0}>
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <InfoCircledIcon
+                            width={20}
+                            height={20}
+                            color="#0A0552"
+                            className="info-icon"
+                          />
+                        </Tooltip.Trigger>
+                        <Tooltip.Content
+                          className="TooltipContent"
+                          side="right"
+                          align="center"
+                          sideOffset={5}
+                        >
+                          The organization description
+                        </Tooltip.Content>
+                      </Tooltip.Root>
+                    </Tooltip.Provider>
+                  </TextField.Slot>
+                </TextField.Root>
+              </Form.Control>
+            </Form.Field>
 
             {/* Editable Solution API URL */}
             <Form.Field name="solutionApiUrl">
