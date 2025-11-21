@@ -1,0 +1,380 @@
+import React, { useState, useEffect } from "react";
+import * as Form from "@radix-ui/react-form";
+import * as Switch from "@radix-ui/react-switch";
+import {
+  Box,
+  Button,
+  TextField,
+  Text,
+  Callout,
+  Spinner,
+} from "@radix-ui/themes";
+import * as Tooltip from "@radix-ui/react-tooltip";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  ExclamationTriangleIcon,
+  InfoCircledIcon,
+  CheckIcon,
+} from "@radix-ui/react-icons";
+import SideNav from "../components/SideNav";
+import { useAuth } from "../contexts/AuthContext";
+import { fetchWithAuth } from "../utils/auth-fetch";
+import "./EditOrganizationPage.css";
+
+export interface Organization {
+  id: number;
+  organizationName: string;
+  organizationIdentifier: string;
+  organizationDescription: string;
+  solutionApiUrl: string;
+  status: "active" | "disabled";
+}
+
+const EditOrganizationPage: React.FC = () => {
+  const navigate = useNavigate();
+  const { id: organizationId } = useParams<{ id: string }>();
+  const [formData, setFormData] = useState({
+    organizationName: "",
+    organizationDescription: "",
+    solutionApiUrl: "",
+    status: "active" as "active" | "disabled",
+  });
+  const [status, setStatus] = useState<null | "success" | "error">(null);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const { profileData } = useAuth();
+  let timeoutRef = 0;
+
+  useEffect(() => {
+    const fetchOrganization = async () => {
+      if (!profileData) return;
+
+      try {
+        const response = await fetchWithAuth(
+          `/organizations/${organizationId}`
+        );
+
+        if (response!.ok) {
+          const organization: Organization = await response!.json();
+          setFormData({
+            organizationName: organization.organizationName,
+            organizationDescription: organization.organizationDescription,
+            solutionApiUrl: organization.solutionApiUrl || "",
+            status: organization.status,
+          });
+        } else {
+          setErrorMessage("Failed to load organization data");
+          setStatus("error");
+        }
+      } catch (error) {
+        setErrorMessage("Error loading organization data");
+        setStatus("error");
+        console.error("An error occurred:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrganization();
+  }, [organizationId, profileData]);
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const cleanedFormData = {
+      ...formData,
+    };
+
+    try {
+      setUpdating(true);
+
+      const response = await fetchWithAuth(
+        `/organizations/${organizationId}`,
+        {
+          method: "POST",
+          body: JSON.stringify(cleanedFormData),
+        }
+      );
+
+      setUpdating(false);
+
+      if (response!.ok) {
+        setStatus("success");
+        clearTimeout(timeoutRef);
+        timeoutRef = window.setTimeout(() => {
+          navigate("/organizations");
+        }, 1500);
+      } else {
+        const errorResponse = await response!.json();
+        if (errorResponse.message) {
+          setErrorMessage(errorResponse.message);
+        }
+        setStatus("error");
+      }
+    } catch (error) {
+      setStatus("error");
+      setErrorMessage("An error occurred while updating the organization");
+      console.error("An error occurred:", error);
+    }
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handleStatusChange = (checked: boolean) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      status: checked ? "active" : "disabled",
+    }));
+  };  
+
+  if (loading) {
+    return (
+      <Box className="loading-container">
+        <Spinner loading />
+        <Text className="loading-text">Loading organization data...</Text>
+      </Box>
+    );
+  }
+
+  return (
+    <>
+      <aside className="sidebar">
+        <div className="marker-divider"></div>
+        <SideNav />
+      </aside>
+      <main className="main">
+        <div className="header">
+          <h2>Edit Organization</h2>
+        </div>
+        <div>
+          <Box className="form-container">
+            <Form.Root onSubmit={handleSubmit}>
+
+              {/* Editable Organization Name */}
+              <Form.Field name="organizationName">
+                <Form.Label className="field-label">
+                  Organization Name<span className="required-asterisk">*</span>
+                </Form.Label>
+                <Form.Control asChild>
+                  <TextField.Root
+                    value={formData.organizationName}
+                    required
+                    placeholder="Enter organization name"
+                    onChange={handleChange}
+                    className="editable-field"
+                  >
+                    <TextField.Slot side="right">
+                      <Tooltip.Provider delayDuration={0}>
+                        <Tooltip.Root>
+                          <Tooltip.Trigger asChild>
+                            <InfoCircledIcon
+                              width={20}
+                              height={20}
+                              color="#0A0552"
+                              className="info-icon"
+                            />
+                          </Tooltip.Trigger>
+                          <Tooltip.Content
+                            className="TooltipContent"
+                            side="right"
+                            align="center"
+                            sideOffset={5}
+                          >
+                            The display name of the organization
+                          </Tooltip.Content>
+                        </Tooltip.Root>
+                      </Tooltip.Provider>
+                    </TextField.Slot>
+                  </TextField.Root>
+                </Form.Control>
+                <Form.Message
+                  match="valueMissing"
+                  className="validation-message"
+                >
+                  Organization name is required.
+                </Form.Message>
+              </Form.Field>
+
+              {/* Editable Organization Description */}
+              <Form.Field name="organizationDescription">
+                <Form.Label className="field-label">
+                  Organization Description
+                </Form.Label>
+                <Form.Control asChild>
+                  <TextField.Root
+                    value={formData.organizationDescription}
+                    placeholder="Enter organization description"
+                    onChange={handleChange}
+                    className="editable-field"
+                  >
+                    <TextField.Slot side="right">
+                      <Tooltip.Provider delayDuration={0}>
+                        <Tooltip.Root>
+                          <Tooltip.Trigger asChild>
+                            <InfoCircledIcon
+                              width={20}
+                              height={20}
+                              color="#0A0552"
+                              className="info-icon"
+                            />
+                          </Tooltip.Trigger>
+                          <Tooltip.Content
+                            className="TooltipContent"
+                            side="right"
+                            align="center"
+                            sideOffset={5}
+                          >
+                            A brief description of the organization
+                          </Tooltip.Content>
+                        </Tooltip.Root>
+                      </Tooltip.Provider>
+                    </TextField.Slot>
+                  </TextField.Root>
+                </Form.Control>
+              </Form.Field>
+
+              {/* Editable API URL (solutionApiUrl) */}
+              <Form.Field name="solutionApiUrl">
+                <Form.Label className="field-label">
+                  Organization Website
+                </Form.Label>
+                <Form.Control asChild>
+                  <TextField.Root
+                    value={formData.solutionApiUrl}
+                    placeholder="Enter website"
+                    onChange={handleChange}
+                    className="editable-field"
+                  >
+                    <TextField.Slot side="right">
+                      <Tooltip.Provider delayDuration={0}>
+                        <Tooltip.Root>
+                          <Tooltip.Trigger asChild>
+                            <InfoCircledIcon
+                              width={20}
+                              height={20}
+                              color="#0A0552"
+                              className="info-icon"
+                            />
+                          </Tooltip.Trigger>
+                          <Tooltip.Content
+                            className="TooltipContent"
+                            side="right"
+                            align="center"
+                            sideOffset={5}
+                          >
+                            The website address for this organization
+                          </Tooltip.Content>
+                        </Tooltip.Root>
+                      </Tooltip.Provider>
+                    </TextField.Slot>
+                  </TextField.Root>
+                </Form.Control>
+              </Form.Field>
+
+ {/* Status Toggle Switch */}
+              <Box className="form-field">
+                <div className="switch-container">
+                  <div className="switch-label-group">
+                    <Text className="field-label">Organization Status</Text>
+                    <Tooltip.Provider delayDuration={0}>
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <InfoCircledIcon
+                            width={20}
+                            height={20}
+                            color="#0A0552"
+                            className="info-icon"
+                          />
+                        </Tooltip.Trigger>
+                        <Tooltip.Content
+                          className="TooltipContent"
+                          side="right"
+                          align="center"
+                          sideOffset={5}
+                        >
+                          Enable or disable access to this organization
+                        </Tooltip.Content>
+                      </Tooltip.Root>
+                    </Tooltip.Provider>
+                  </div>
+                  <div className="switch-row">
+                    <Switch.Root
+                      className="switch-root"
+                      id="status-switch"
+                      checked={formData.status === "active"}
+                      onCheckedChange={handleStatusChange}
+                    >
+                      <Switch.Thumb className="switch-thumb" />
+                    </Switch.Root>
+                    <label htmlFor="status-switch" className="switch-text">
+                      {formData.status === "active" ? (
+                        <span className="status-active">Active</span>
+                      ) : (
+                        <span className="status-disabled">Disabled</span>
+                      )}
+                    </label>
+                  </div>
+                </div>
+              </Box>
+
+              <Box className="button-group">
+                <Button
+                  type="button"
+                  className="cancel-button"
+                  onClick={() => navigate("/organizations")}
+                >
+                  Cancel
+                </Button>
+                <Form.Submit asChild>
+                  <Button disabled={updating} className="submit-button">
+                    {updating && <Spinner loading />}
+                    {updating ? "Updating..." : "Save Changes"}
+                  </Button>
+                </Form.Submit>
+              </Box>
+            </Form.Root>
+
+            {status === "success" && (
+              <Callout.Root
+                color="green"
+                highContrast
+                variant="surface"
+                mt={"4"}
+              >
+                <Callout.Icon>
+                  <CheckIcon />
+                </Callout.Icon>
+                <Callout.Text>
+                  Organization updated successfully!
+                </Callout.Text>
+              </Callout.Root>
+            )}
+
+            {status === "error" && (
+              <Callout.Root
+                color="bronze"
+                highContrast
+                variant="surface"
+                mt={"4"}
+              >
+                <Callout.Icon>
+                  <ExclamationTriangleIcon />
+                </Callout.Icon>
+                <Callout.Text>
+                  {errorMessage ||
+                    "Error updating organization, please try again."}
+                </Callout.Text>
+              </Callout.Root>
+            )}
+          </Box>
+        </div>
+      </main>
+    </>
+  );
+};
+
+export default EditOrganizationPage;

@@ -10,7 +10,7 @@ import {
   Spinner,
 } from "@radix-ui/themes";
 import * as Tooltip from "@radix-ui/react-tooltip";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   ExclamationTriangleIcon,
   InfoCircledIcon,
@@ -18,7 +18,6 @@ import {
   ChevronDownIcon,
 } from "@radix-ui/react-icons";
 import SideNav from "../components/SideNav";
-import { useAuth } from "../contexts/AuthContext";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import "./EditUserPage.css";
 
@@ -30,9 +29,9 @@ const AddUserPage: React.FC = () => {
     role: "",
   });
   const [status, setStatus] = useState<null | "success" | "error">(null);
+  const { orgId, orgName } = useParams<{ orgId: string, orgName: string }>();
   const [errorMessage, setErrorMessage] = useState("");
   const [creating, setCreating] = useState(false);
-  const { profileData } = useAuth();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -43,7 +42,7 @@ const AddUserPage: React.FC = () => {
       setErrorMessage("");
 
       const response = await fetchWithAuth(
-        `/organizations/${profileData?.organizationId}/users`,
+        `/organizations/${orgId}/users`,
         {
           method: "POST",
           body: JSON.stringify(formData),
@@ -92,7 +91,7 @@ const AddUserPage: React.FC = () => {
       </aside>
       <main className="main">
         <div className="header">
-          <h2>Add New User</h2>
+          <h2>Create user for {orgName}</h2>
         </div>
         <div>
           <Box className="form-container">
@@ -233,7 +232,7 @@ const AddUserPage: React.FC = () => {
               <Box className="form-field">
                 <Text className="field-label">Organization</Text>
                 <TextField.Root
-                  value={profileData?.organizationName || ""}
+                  value={orgName || ""}
                   readOnly
                   disabled
                   className="readonly-field"
@@ -244,7 +243,7 @@ const AddUserPage: React.FC = () => {
                 <Button
                   type="button"
                   className="cancel-button"
-                  onClick={() => navigate("/organization/users")}
+                  onClick={() => navigate(-1)}
                 >
                   Cancel
                 </Button>

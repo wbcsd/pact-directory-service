@@ -15,6 +15,7 @@ export const createMockQueryChain = (executors = createMockExecutors()) => ({
   selectFrom: jest.fn().mockReturnThis(),
   select: jest.fn().mockReturnThis(),
   selectAll: jest.fn().mockReturnThis(),
+  clearSelect: jest.fn().mockReturnThis(),
   
   // Join methods
   leftJoin: jest.fn().mockReturnThis(),
@@ -23,6 +24,10 @@ export const createMockQueryChain = (executors = createMockExecutors()) => ({
   
   // Filter methods
   where: jest.fn().mockReturnThis(),
+
+  // Order methods
+  orderBy: jest.fn().mockReturnThis(),
+  orderByDesc: jest.fn().mockReturnThis(),
   
   // Modification methods
   insertInto: jest.fn().mockReturnThis(),
@@ -38,6 +43,9 @@ export const createMockQueryChain = (executors = createMockExecutors()) => ({
   // CTE methods
   withRecursive: jest.fn().mockReturnThis(),
   unionAll: jest.fn().mockReturnThis(),
+
+  // grouping methods
+  groupBy: jest.fn().mockReturnThis(),
   
   // Execution methods
   ...executors,

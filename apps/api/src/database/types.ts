@@ -22,6 +22,7 @@ export interface OrganizationsTable {
   clientSecret: string | null;
   networkKey: string | null;
   description: string | null;
+  status: 'active' | 'disabled';
 }
 
 export interface UsersTable {
@@ -36,6 +37,7 @@ export interface UsersTable {
   emailVerificationSentAt: Date | null;
   createdAt: Generated<Date>;
   updatedAt: Generated<Date>;
+  lastLogin: Date | null;
 }
 
 export interface RolesTable {

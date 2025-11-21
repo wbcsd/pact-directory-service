@@ -4,6 +4,7 @@ import { Database } from '@src/database/types';
 import { BadRequestError } from '@src/common/errors';
 import logger from '@src/common/logger';
 import { UserContext, UserService } from './user-service';
+import { ListQuery, ListResult } from '@src/common/list-query';
 import { OrganizationService } from './organization-service';
 import { Role } from '@src/common/policies';
 
@@ -18,15 +19,20 @@ export interface CreateTestRunData {
   audience?: string;
 }
 
-export interface ListTestRunsQuery {
-  query?: string;
-  page?: string;
-  pageSize?: string;
-}
-
 export interface TestRunUserContext {
   organizationId: string;
   userId: string;
+}
+
+export interface TestRunData {
+  testRunId: string;
+  timestamp: string;
+  organizationName: string;
+  adminEmail: string;
+  adminName: string;
+  techSpecVersion: string;
+  status: string;
+  passingPercentage: number;
 }
 
 export class TestRunService {
@@ -126,23 +132,24 @@ export class TestRunService {
   /**
    * List test runs with optional filtering
    */
-  async listTestRuns(context: UserContext, queryParams: ListTestRunsQuery): Promise<unknown> {
+  async listTestRuns(context: UserContext, query: ListQuery): Promise<ListResult<TestRunData>> {
     
     const user = await this.userService.get(context, context.userId);
 
     try {
       const url = new URL(`${config.CONFORMANCE_API_INTERNAL}/testruns`);
 
-      if (queryParams.query)
-        url.searchParams.append('query', queryParams.query);
+      if (query.search)
+        url.searchParams.append('query', query.search);
 
-      if (queryParams.page) url.searchParams.append('page', queryParams.page);
+      if (query.page) 
+        url.searchParams.append('page', query.page.toString());
 
-      if (queryParams.pageSize)
-        url.searchParams.append('size', queryParams.pageSize);
+      if (query.pageSize)
+        url.searchParams.append('size', query.pageSize.toString());
 
       // Non-administrator users should only see their own test runs
-      if (user.role !== Role.Administrator)
+      if (user.role !== Role.Administrator && user.role !== Role.Root)
         url.searchParams.append('adminEmail', user.email);
 
       const response = await fetch(url, {
@@ -152,8 +159,11 @@ export class TestRunService {
         },
       });
 
-      const data: unknown = await response.json();
-      return data;
+      const { testRuns, count } = await response.json();
+      return { 
+        data: testRuns, 
+        pagination: query.pagination(count ?? 0)
+      }
     } catch (error) {
       logger.error('listTestRuns error', error);
       throw new Error('Failed to fetch recent test runs.');

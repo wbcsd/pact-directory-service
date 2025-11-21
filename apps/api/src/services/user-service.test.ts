@@ -10,6 +10,7 @@ import {
 } from '@src/common/errors';
 import { Role } from '@src/common/policies';
 import { createMockDatabase } from '../common/mock-utils';
+import logger from '@src/common/logger';
 
 // Mock dependencies
 jest.mock('bcrypt');
@@ -666,7 +667,7 @@ describe('UserService', () => {
       email: 'admin@example.com',
       organizationId: 1,
       role: Role.Administrator,
-      policies: ['add-users'],
+      policies: ['edit-users'],
       status: 'enabled' as const,
     };
 
@@ -767,6 +768,71 @@ describe('UserService', () => {
       await expect(
         userService.addUserToOrganization(context, 999, userData)
       ).rejects.toThrow(NotFoundError);
+    });
+
+    it('should update lastLogin when succesfully logging in', async () => {
+      const mockUser = {
+        id: 1,
+        email: 'mock@user.com',
+        password: 'hashedPassword',
+        role: Role.User,
+        organizationId: 1,
+        status: 'enabled' as const,
+      };
+
+      // Mock user exists and password matches
+      dbMocks.executors.executeTakeFirst.mockResolvedValue(mockUser);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+      const result = await userService.login({
+        email: 'mock@user.com',
+        password: 'anyPassword',
+      });
+
+      expect(result.userId).toBe(mockUser.id);
+      expect(dbMocks.db.updateTable).toHaveBeenCalledWith('users');
+    });
+
+    it('should log error if updating lastLogin fails', async () => {
+      const mockUser = {
+        id: 1,
+        email: 'mock@user.com',
+        password: 'hashedPassword',
+        role: Role.User,
+        organizationId: 1,
+        status: 'enabled' as const,
+      };
+
+      // Mock user exists and password matches
+      dbMocks.executors.executeTakeFirst.mockResolvedValue(mockUser);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+      // Mock updateTable to throw error
+      dbMocks.db.updateTable = jest.fn().mockReturnValue({
+        set: jest.fn().mockReturnValue({
+          where: jest.fn().mockReturnValue({
+            execute: jest.fn().mockRejectedValue(new Error('DB error')),
+          }),
+        }),
+      });
+
+      const loggerErrorSpy = jest
+        .spyOn(logger, 'error')
+        .mockImplementation(() => {});
+
+      const result = await userService.login({
+        email: 'mock@user.com',
+        password: 'anyPassword',
+      });
+
+      expect(result.userId).toBe(mockUser.id);
+      expect(loggerErrorSpy).toHaveBeenCalledWith(
+        'Failed to update lastLogin for user:',
+        mockUser.id,
+        expect.any(Error)
+      );
+
+      loggerErrorSpy.mockRestore();
     });
   });
 });

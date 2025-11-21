@@ -19,13 +19,12 @@ import {
 } from "@radix-ui/react-icons";
 import SideNav from "../components/SideNav";
 import { User } from "./OrganizationUsers";
-import { useAuth } from "../contexts/AuthContext";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import "./EditUserPage.css";
 
 const EditUserPage: React.FC = () => {
   const navigate = useNavigate();
-  const { id: userId } = useParams<{ id: string }>();
+  const { orgId, userId } = useParams<{ orgId: string, userId: string }>();
   const [formData, setFormData] = useState({
     fullName: "",
     role: "",
@@ -39,15 +38,12 @@ const EditUserPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
-  const { profileData } = useAuth();
 
   useEffect(() => {
     const fetchUser = async () => {
-      if (!profileData) return;
-
       try {
         const response = await fetchWithAuth(
-          `/organizations/${profileData?.organizationId}/users/${userId}`
+          `/organizations/${orgId}/users/${userId}`
         );
 
         if (response!.ok) {
@@ -75,7 +71,7 @@ const EditUserPage: React.FC = () => {
     };
 
     fetchUser();
-  }, [userId, profileData]);
+  }, [userId, orgId]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -88,7 +84,7 @@ const EditUserPage: React.FC = () => {
       setUpdating(true);
 
       const response = await fetchWithAuth(
-        `/organizations/${profileData?.organizationId}/users/${userId}`,
+        `/organizations/${orgId}/users/${userId}`,
         {
           method: "POST",
           body: JSON.stringify(cleanedFormData),

@@ -7,21 +7,22 @@ import {
   BadRequestError,
   UnauthorizedError,
   NotFoundError,
+  ForbiddenError,
 } from '@src/common/errors';
 import { EmailService } from './email-service';
 import {
-  checkAccess,
   getPoliciesForRole,
   registerPolicy,
   Role,
 } from '@src/common/policies';
+import logger from '@src/common/logger';
 
-registerPolicy([Role.Administrator, Role.Root], 'view-users');
-registerPolicy([Role.Administrator, Role.Root], 'edit-users');
-registerPolicy([Role.Administrator, Role.Root], 'add-users');
+registerPolicy([Role.Administrator], 'view-users');
+registerPolicy([Role.Administrator], 'edit-users');
 registerPolicy([Role.Root], 'view-all-users');
 registerPolicy([Role.Root], 'edit-all-users');
-registerPolicy([Role.Root], 'add-all-users');
+
+export type UserStatus = 'unverified' | 'enabled' | 'disabled' | 'deleted';
 
 export interface UserContext {
   userId: number;
@@ -29,7 +30,7 @@ export interface UserContext {
   organizationId: number;
   role: Role;
   policies: string[];
-  status: 'unverified' | 'enabled' | 'disabled' | 'deleted';
+  status: UserStatus
 }
 
 export interface SignUpData {
@@ -54,41 +55,12 @@ export interface UserData {
   status: string 
   organizationName: string;
   organizationIdentifier: string | null;
+  organizationDescription?: string | null;
+  solutionApiUrl?: string | null;
+  policies?: string[];
 }
 
-export interface AccountData extends UserContext {
-  fullName: string;
-  organizationName: string;
-  organizationIdentifier: string | null;
-  solutionApiUrl: string | null;
-  clientId: string | null;
-  clientSecret: string | null;
-  networkKey: string | null;
-  organizationDescription: string | null;
-  // TODO: remove connections from here and move to ConnectionService
-  connectionRequests: {
-    sent: {
-      createdAt: Date;
-      status: string;
-      organizationName: string;
-      organizationId: number;
-    }[];
-    received: {
-      id: number;
-      createdAt: Date;
-      status: string;
-      organizationName: string;
-      organizationId: number;
-    }[];
-  };
-  // TODO: remove connections from here and move to ConnectionService
-  connectedOrganizations: {
-    organizationId: number;
-    organizationName: string;
-    requestedAt: Date;
-    createdAt: Date;
-  }[];
-}
+
 
 export interface ForgotPasswordData {
   email: string;
@@ -379,6 +351,7 @@ export class UserService {
           name: data.organizationName,
           uri: '',
           solutionApiUrl: '',
+          status: 'active',
         })
         .returning('id')
         .executeTakeFirstOrThrow();
@@ -453,6 +426,16 @@ export class UserService {
 
     const policies = getPoliciesForRole(user.role);
 
+    try {
+      await this.db
+        .updateTable('users')
+        .set({ lastLogin: new Date() })
+        .where('id', '=', user.id)
+        .execute()
+    } catch (error) {
+      logger.error('Failed to update lastLogin for user:', user.id, error);
+    }
+
     return {
       userId: user.id,
       email: user.email,
@@ -467,7 +450,11 @@ export class UserService {
    * Get user by ID
    */
   async get(context: UserContext, id: number): Promise<UserData> {
-    checkAccess(context, [], context.userId === id || context.role === Role.Administrator);
+
+    const allowed = context.userId === id || context.policies.includes('view-users') || context.policies.includes('view-all-users');
+    if (!allowed) {
+      throw new ForbiddenError('You are not allowed to view this user');
+    }
     
     const user = await this.db
       .selectFrom('users')
@@ -487,6 +474,10 @@ export class UserService {
 
     if (!user) {
       throw new NotFoundError('User not found');
+    }
+    
+    if (user.organizationId !== context.organizationId && !context.policies.includes('view-all-users')) {
+      throw new ForbiddenError('You are not allowed to view this user');
     }
 
     return user;
@@ -627,18 +618,16 @@ export class UserService {
   }
 
   /**
-   * Get user's profile including organization info, connection requests and connections
+   * Get user's profile with basic user and organization info
    */
-  // TODO: remove connections from here and move to ConnectionService
   async getMyProfile(
     email: string,
-    organizationId: number
-  ): Promise<AccountData | null> {
+  ): Promise<UserData | null> {
     const profile = await this.db
       .selectFrom('organizations as o')
       .innerJoin('users as u', 'o.id', 'u.organizationId')
       .select([
-        'u.id as userId',
+        'u.id as id',
         'u.fullName',
         'u.email',
         'u.role',
@@ -648,10 +637,6 @@ export class UserService {
         'o.uri as organizationIdentifier',
         'o.description as organizationDescription',
         'o.solutionApiUrl',
-        'o.clientId',
-        'o.clientSecret',
-        'o.networkKey',
-        'o.description',
       ])
       .where('u.email', '=', email)
       .executeTakeFirst();
@@ -660,98 +645,11 @@ export class UserService {
       throw new NotFoundError('User not found');
     }
 
-    // Connection requests
-    const sentConnectionRequests = await this.db
-      .selectFrom('connection_requests')
-      .innerJoin(
-        'organizations',
-        'connection_requests.requestedCompanyId',
-        'organizations.id'
-      )
-      .select([
-        'connection_requests.createdAt',
-        'connection_requests.status',
-        'organizations.name as organizationName',
-        'requestedCompanyId as organizationId',
-      ])
-      .where('requestingCompanyId', '=', organizationId)
-      .execute();
-
-    const receivedConnectionRequests = await this.db
-      .selectFrom('connection_requests')
-      .innerJoin(
-        'organizations',
-        'connection_requests.requestingCompanyId',
-        'organizations.id'
-      )
-      .select([
-        'connection_requests.id',
-        'connection_requests.createdAt',
-        'connection_requests.status',
-        'organizations.name as organizationName',
-        'requestingCompanyId as organizationId',
-      ])
-      .where('requestedCompanyId', '=', organizationId)
-      .execute();
-
-    // connections
-    const connections = await this.db
-      .selectFrom('connections')
-      .innerJoin(
-        'organizations as companiesOne',
-        'connections.connectedCompanyOneId',
-        'companiesOne.id'
-      )
-      .innerJoin(
-        'organizations as companiesTwo',
-        'connections.connectedCompanyTwoId',
-        'companiesTwo.id'
-      )
-      .select([
-        'connections.connectedCompanyOneId',
-        'connections.connectedCompanyTwoId',
-        'connections.requestedAt',
-        'connections.createdAt',
-        'companiesOne.name as companyOneName',
-        'companiesTwo.name as companyTwoName',
-      ])
-      .where((qb) =>
-        qb('connectedCompanyOneId', '=', organizationId).or(
-          'connectedCompanyTwoId',
-          '=',
-          organizationId
-        )
-      )
-      .execute();
-
-    const connectedOrganizations = connections.map((connection) => {
-      if (connection.connectedCompanyOneId === organizationId) {
-        return {
-          organizationId: connection.connectedCompanyTwoId,
-          organizationName: connection.companyTwoName,
-          requestedAt: connection.requestedAt,
-          createdAt: connection.createdAt,
-        };
-      }
-
-      return {
-        organizationId: connection.connectedCompanyOneId,
-        organizationName: connection.companyOneName,
-        requestedAt: connection.requestedAt,
-        createdAt: connection.createdAt,
-      };
-    });
-
     const policies = getPoliciesForRole(profile.role);
 
     return {
       ...profile,
       policies: policies.map((p) => p),
-      connectionRequests: {
-        sent: sentConnectionRequests,
-        received: receivedConnectionRequests,
-      },
-      connectedOrganizations,
     };
   }
 
@@ -944,11 +842,12 @@ export class UserService {
   ): Promise<{ message: string; userId: number }> {
     
     // Check if user has permission to add users to this organization
-    checkAccess(
-      context, 
-      'add-users', 
-      context.organizationId === organizationId || context.role === Role.Administrator
-    );
+    const allowed = 
+      context.policies.includes('edit-all-users') ||
+      context.policies.includes('edit-users') || context.organizationId === organizationId;
+    if (!allowed) {
+      throw new ForbiddenError('You are not allowed to add users to this organization');
+    }
 
     // Normalize email: trim and lowercase
     const normalizedEmail = this.normalizeEmail(data.email);

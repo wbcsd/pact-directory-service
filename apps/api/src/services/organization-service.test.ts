@@ -4,17 +4,7 @@ import { UserContext } from './user-service';
 import { EmailService } from './email-service';
 import { OrganizationService } from './organization-service';
 import { createMockDatabase } from '../common/mock-utils';
-
-// Mock dependencies
-jest.mock('@src/common/policies', () => ({
-  registerPolicy: jest.fn(),
-  checkAccess: jest.fn(),
-  Role: {
-    Administrator: 'administrator',
-    Root: 'root',
-    User: 'user',
-  },
-}));
+import { ListQuery } from '@src/common/list-query';
 
 jest.mock('@src/common/config', () => ({
   default: {
@@ -27,13 +17,25 @@ describe('OrganizationService', () => {
   let dbMocks: ReturnType<typeof createMockDatabase>;
   let mockEmailService: jest.Mocked<EmailService>;
 
-  const mockUserContext: UserContext = {
+  const regularUserContext: UserContext = {
     userId: 1,
     organizationId: 1,
-    role: Role.Administrator,
-    policies: ['view-own-organizations', 'edit-own-organizations', 'view-all-organizations'],
+    role: Role.User,
+    policies: [],
     email: 'mock@user.com',
     status: 'enabled'
+  };
+
+  const adminUserContext: UserContext = {
+    ...regularUserContext,
+    role: Role.Administrator,
+    policies: ['view-own-organizations', 'edit-own-organizations'],
+  };
+
+  const rootUserContext: UserContext = {
+    ...adminUserContext,
+    role: Role.Root,
+    policies: ['view-own-organizations', 'edit-own-organizations', 'view-all-organizations', 'edit-all-organizations'],
   };
 
   beforeEach(() => {
@@ -58,58 +60,105 @@ describe('OrganizationService', () => {
         networkKey: 'key123',
         solutionApiUrl: 'https://api.test.com',
         parentId: null,
+        status: 'active',
       };
 
       dbMocks.executors.executeTakeFirst.mockResolvedValue(mockOrganization);
 
-      const result = await organizationService.get(mockUserContext, 1);
+      const result = await organizationService.get(adminUserContext, 1);
 
       expect(result).toEqual(mockOrganization);
       expect(dbMocks.db.selectFrom).toHaveBeenCalledWith('organizations');
     });
 
     it('should throw ForbiddenError when user does not have access', async () => {
-      const unauthorizedContext = {
-        ...mockUserContext,
-        organizationId: 2,
-        policies: [],
-      };
-
       await expect(
-        organizationService.get(unauthorizedContext, 1)
+        // Get the organization with different ID than user's organization
+        organizationService.get(regularUserContext, 2)
       ).rejects.toThrow(ForbiddenError);
     });
 
     it('should throw NotFoundError when organization does not exist', async () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue(undefined);
-
-      await expect(organizationService.get(mockUserContext, 999)).rejects.toThrow(
+      // Use root context to bypass access check, focusing on not found scenario
+      await expect(organizationService.get(rootUserContext, -1)).rejects.toThrow(
         NotFoundError
       );
     });
 
     it('should allow access when user has view-all-organizations policy', async () => {
-      const adminContext = {
-        ...mockUserContext,
-        organizationId: 2,
-        policies: ['view-all-organizations'],
-      };
 
       const mockOrganization = {
-        id: 1,
+        id: 2,
         organizationName: 'Test Org',
         organizationIdentifier: 'test-org',
         organizationDescription: 'Test Description',
         networkKey: 'key123',
         solutionApiUrl: 'https://api.test.com',
         parentId: null,
+        status: 'active',
       };
 
       dbMocks.executors.executeTakeFirst.mockResolvedValue(mockOrganization);
 
-      const result = await organizationService.get(adminContext, 1);
+      const result = await organizationService.get(rootUserContext, 1);
 
       expect(result).toEqual(mockOrganization);
+    });
+  });
+
+  describe('update', () => {
+    it('should update organization when user has access', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValue({ id: 1 });
+      dbMocks.executors.execute.mockResolvedValue(undefined);
+
+      const updateData = {
+        organizationName: 'Updated Org',
+        organizationDescription: 'Updated Description',
+        solutionApiUrl: 'https://api.updated.com',
+        status: 'disabled' as 'active' | 'disabled',
+      };
+
+      const result = await organizationService.update(
+        adminUserContext,
+        1,
+        updateData
+      );
+
+      expect(result).toEqual({ message: 'Organization updated successfully' });
+      expect(dbMocks.db.updateTable).toHaveBeenCalledWith('organizations');
+    });
+
+    it('should throw ForbiddenError when user does not have access', async () => {
+      const updateData = {
+        organizationName: 'Updated Org',
+      };
+
+      await expect(
+        organizationService.update(regularUserContext, 1, updateData)
+      ).rejects.toThrow(ForbiddenError);
+    });
+
+    it('should throw ForbiddenError when user tries to update different organization', async () => {
+      const updateData = {
+        organizationName: 'Updated Org',
+      };
+
+      await expect(
+        organizationService.update(adminUserContext, 2, updateData)
+      ).rejects.toThrow(ForbiddenError);
+    });
+
+    it('should throw NotFoundError when organization does not exist', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValue(undefined);
+
+      const updateData = {
+        organizationName: 'Updated Org',
+      };
+
+      await expect(
+        organizationService.update(adminUserContext, 1, updateData)
+      ).rejects.toThrow(NotFoundError);
     });
   });
 
@@ -124,6 +173,9 @@ describe('OrganizationService', () => {
           networkKey: 'key1',
           solutionApiUrl: 'https://api1.test.com',
           parentId: null,
+          userCount: 5,
+          lastActivity: null,
+          status: 'active',
         },
         {
           id: 2,
@@ -133,14 +185,18 @@ describe('OrganizationService', () => {
           networkKey: 'key2',
           solutionApiUrl: 'https://api2.test.com',
           parentId: null,
+          userCount: 10,
+          lastActivity: null,
+          status: 'disabled',
         },
       ];
 
       dbMocks.executors.execute.mockResolvedValue(mockOrganizations);
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValue({ total: 2 });
 
-      const result = await organizationService.list(mockUserContext);
+      const result = await organizationService.list(rootUserContext, ListQuery.parse({}));
 
-      expect(result).toEqual(mockOrganizations);
+      expect(result.data).toEqual(mockOrganizations);
       expect(dbMocks.db.selectFrom).toHaveBeenCalledWith('organizations');
     });
 
@@ -154,16 +210,18 @@ describe('OrganizationService', () => {
           networkKey: 'key1',
           solutionApiUrl: 'https://api.test.com',
           parentId: null,
+          status: 'active',
         },
       ];
 
       dbMocks.executors.execute.mockResolvedValue(mockOrganizations);
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValue({ total: 1 });
 
-      const result = await organizationService.list(mockUserContext, {
+      const result = await organizationService.list(rootUserContext, new ListQuery({
         query: 'Test',
-      });
+      }));
 
-      expect(result).toEqual(mockOrganizations);
+      expect(result.data).toEqual(mockOrganizations);
       // Remove the nonsensical query builder expectation - we test business logic, not mocking details
     });
 
@@ -177,17 +235,19 @@ describe('OrganizationService', () => {
           networkKey: 'key1',
           solutionApiUrl: 'https://api.test.com',
           parentId: null,
+          status: 'active',
         },
       ];
 
       dbMocks.executors.execute.mockResolvedValue(mockOrganizations);
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValue({ total: 2 });
 
-      const result = await organizationService.list(mockUserContext, {
+      const result = await organizationService.list(rootUserContext, ListQuery.parse({
         page: 2,
         pageSize: 10,
-      });
+      }));
 
-      expect(result).toEqual(mockOrganizations);
+      expect(result.data).toEqual(mockOrganizations);
       // Remove nonsensical pagination query expectations - focus on business logic
     });
   });
@@ -203,6 +263,7 @@ describe('OrganizationService', () => {
           networkKey: 'key1',
           solutionApiUrl: 'https://api.test.com',
           parentId: null,
+          status: 'active',
         },
         {
           id: 2,
@@ -212,12 +273,13 @@ describe('OrganizationService', () => {
           networkKey: 'key2',
           solutionApiUrl: 'https://api2.test.com',
           parentId: 1,
+          status: 'active',
         },
       ];
 
       dbMocks.executors.execute.mockResolvedValue(mockSubOrganizations);
 
-      const result = await organizationService.listSubOrganizations(1);
+      const result = await organizationService.listSubOrganizations(adminUserContext, 1);
 
       expect(result).toEqual(mockSubOrganizations);
       expect(dbMocks.db.withRecursive).toHaveBeenCalledWith('children', expect.any(Function));
@@ -250,27 +312,23 @@ describe('OrganizationService', () => {
       ];
 
       dbMocks.executors.execute.mockResolvedValue(mockMembers);
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValue({ total: 1 }); 
 
-      const result = await organizationService.listMembers(mockUserContext, 1);
+      const result = await organizationService.listMembers(adminUserContext, 1, new ListQuery({}));
 
-      expect(result).toEqual(mockMembers);
+      expect(result.data).toEqual(mockMembers);
       expect(dbMocks.db.selectFrom).toHaveBeenCalledWith('users');
     });
 
-    it('should throw ForbiddenError when user is not administrator', async () => {
-      const userContext = {
-        ...mockUserContext,
-        role: Role.User,
-      };
-
+    it('should throw ForbiddenError when user is not administrator or root', async () => {
       await expect(
-        organizationService.listMembers(userContext, 1)
+        organizationService.listMembers(regularUserContext, 1, new ListQuery({}))
       ).rejects.toThrow(ForbiddenError);
     });
 
     it('should throw ForbiddenError when accessing different organization', async () => {
       await expect(
-        organizationService.listMembers(mockUserContext, 2)
+        organizationService.listMembers(adminUserContext, 2, new ListQuery({}))
       ).rejects.toThrow(ForbiddenError);
     });
   });
@@ -290,7 +348,7 @@ describe('OrganizationService', () => {
 
       dbMocks.executors.executeTakeFirst.mockResolvedValue(mockMember);
 
-      const result = await organizationService.getMember(mockUserContext, 1, 2);
+      const result = await organizationService.getMember(adminUserContext, 1, 2);
 
       expect(result).toEqual(mockMember);
       expect(dbMocks.db.selectFrom).toHaveBeenCalledWith('users');
@@ -300,18 +358,13 @@ describe('OrganizationService', () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue(undefined);
 
       await expect(
-        organizationService.getMember(mockUserContext, 1, 999)
+        organizationService.getMember(adminUserContext, 1, 999)
       ).rejects.toThrow(NotFoundError);
     });
 
     it('should throw ForbiddenError when user is not administrator', async () => {
-      const userContext = {
-        ...mockUserContext,
-        role: Role.User,
-      };
-
       await expect(
-        organizationService.getMember(userContext, 1, 2)
+        organizationService.getMember(regularUserContext, 1, 2)
       ).rejects.toThrow(ForbiddenError);
     });
   });
@@ -324,7 +377,7 @@ describe('OrganizationService', () => {
         .mockResolvedValueOnce(undefined); // update result
 
       const result = await organizationService.updateMember(
-        mockUserContext,
+        adminUserContext,
         1,
         2,
         { fullName: 'Updated Name', role: Role.User }
@@ -338,7 +391,7 @@ describe('OrganizationService', () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue(undefined);
 
       await expect(
-        organizationService.updateMember(mockUserContext, 1, 999, {
+        organizationService.updateMember(adminUserContext, 1, 999, {
           fullName: 'Updated Name',
         })
       ).rejects.toThrow(NotFoundError);
@@ -349,20 +402,15 @@ describe('OrganizationService', () => {
       dbMocks.executors.execute.mockResolvedValue([{ id: 1 }]); // only one admin
 
       await expect(
-        organizationService.updateMember(mockUserContext, 1, 1, {
+        organizationService.updateMember(adminUserContext, 1, 1, {
           role: Role.User,
         })
       ).rejects.toThrow(ForbiddenError);
     });
 
     it('should throw ForbiddenError when user is not administrator', async () => {
-      const userContext = {
-        ...mockUserContext,
-        role: Role.User,
-      };
-
       await expect(
-        organizationService.updateMember(userContext, 1, 2, {
+        organizationService.updateMember(regularUserContext, 1, 2, {
           fullName: 'Updated Name',
         })
       ).rejects.toThrow(ForbiddenError);
@@ -375,7 +423,7 @@ describe('OrganizationService', () => {
         .mockResolvedValueOnce(undefined); // update result
 
       const result = await organizationService.updateMember(
-        mockUserContext,
+        adminUserContext,
         1,
         2,
         { role: Role.User }
@@ -389,7 +437,7 @@ describe('OrganizationService', () => {
       dbMocks.executors.execute.mockResolvedValue(undefined);
 
       const result = await organizationService.updateMember(
-        mockUserContext,
+        adminUserContext,
         1,
         2,
         { fullName: 'Updated Name' }
@@ -397,6 +445,45 @@ describe('OrganizationService', () => {
 
       expect(result).toEqual({ message: 'User updated successfully' });
       expect(dbMocks.db.updateTable).toHaveBeenCalledWith('users');
+    });
+
+    it('should only allow enabled or disabled users to be updated', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValue({ id: 2, status: 'deleted' });
+
+      await expect(
+        organizationService.updateMember(
+          adminUserContext,
+          1,
+          2,
+          { status: 'enabled' }
+        )
+      ).rejects.toThrow(ForbiddenError);
+    });
+
+    it('should only allow enabling a disabled user', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValue({ id: 2, status: 'enabled' });
+
+      await expect(
+        organizationService.updateMember(
+          adminUserContext,
+          1,
+          2,
+          { status: 'enabled' }
+        )
+      ).rejects.toThrow(ForbiddenError);
+    });
+
+    it('should only allow disabling an enabled user', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValue({ id: 2, status: 'disabled' });
+
+      await expect(
+        organizationService.updateMember(
+          adminUserContext,
+          1,
+          2,
+          { status: 'disabled' }
+        )
+      ).rejects.toThrow(ForbiddenError);
     });
   });
 });

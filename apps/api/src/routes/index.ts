@@ -1,7 +1,8 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { authenticate } from '../middleware/authentication';
 import { Services } from '@src/services';
-import { LoginData, UserContext, AddUserToOrganizationData } from '@src/services/user-service';
+import { LoginData, UserContext, AddUserToOrganizationData, UserStatus } from '@src/services/user-service';
+import { ListQuery } from '@src/common/list-query';
 import jwt from 'jsonwebtoken';
 import config from '@src/common/config';
 import logger from '@src/common/logger';
@@ -78,9 +79,7 @@ router.post('/directory/users/login', context(async (req) => {
 
 // User profile
 router.get('/directory/users/me', authenticate, context(async (req) => {
-  const user = await req.services.user.getMyProfile(
-    req.context.email, 
-    req.context.organizationId);
+  const user = await req.services.user.getMyProfile(req.context.email);
   return user;
 }));
 
@@ -108,7 +107,7 @@ router.get('/directory/users/verify-reset-token/:token', context(async (req) => 
 
 // Organization list and search, only show organizations the user is allowed to see.
 router.get('/directory/organizations', authenticate, context(async (req) => {
-  return req.services.organization.list(req.context, { query: req.query.query as string });
+  return req.services.organization.list(req.context, ListQuery.parse(req.query));
 }));
 
 // Organization list and search, only show organizations the user is allowed to see.
@@ -116,38 +115,47 @@ router.get('/directory/organizations/:id', authenticate, context(async (req) => 
   return req.services.organization.get(req.context, parseInt(req.params.id));
 }));
 
+// Update organization details
+router.post('/directory/organizations/:id', authenticate, context(async (req) => {
+  return req.services.organization.update(
+    req.context,
+    parseInt(req.params.id),
+    req.body
+  );
+}));
+
 // List all users in an organization.
 router.get('/directory/organizations/:id/users', authenticate, context(async (req) => {
   return req.services.organization.listMembers(
     req.context,
-    parseInt(req.params.id)
+    parseInt(req.params.id),
+    ListQuery.parse(req.query)
   );
 }));
 
 // Add a user to an organization
 router.post('/directory/organizations/:id/users', authenticate, context(async (req) => {
-  const organizationId = parseInt(req.params.id);
   return req.services.user.addUserToOrganization(
     req.context,
-    organizationId,
+     parseInt(req.params.id),
     req.body as AddUserToOrganizationData
   );
 }));
 
 // Retrieve users from the organization
 router.get('/directory/organizations/:id/users', authenticate, context(async (req) => {
-  const organizationId = parseInt(req.params.id);
-  return req.services.organization.listMembers(req.context, organizationId);
+  return req.services.organization.listMembers(
+    req.context,
+    parseInt(req.params.id),
+    ListQuery.parse(req.query)
+  );
 }));
 
 router.get('/directory/organizations/:oid/users/:uid', authenticate, context(async (req) => {
-  const organizationId = parseInt(req.params.oid);
-  const userId = parseInt(req.params.uid);
-
   return req.services.organization.getMember(
     req.context,
-    organizationId,
-    userId
+    parseInt(req.params.oid),
+    parseInt(req.params.uid)
   );
 }));
 
@@ -159,15 +167,25 @@ router.post('/directory/organizations/:oid/users/:uid', authenticate, context(as
     req.context,
     organizationId,
     userId,
-    req.body as { fullName?: string; role?: Role }
+    req.body as { fullName?: string; role?: Role, status?: UserStatus }
   );
 }));
 
 // Connections between organizations
-router.post('/directory/organizations/:id/connections', authenticate, context(async (req) => {
+router.get('/directory/organizations/:id/connections', authenticate, context(async (req) => {
   return req.services.connection.listConnections(
-    req.context,
-    parseInt(req.params.id)
+    req.context, 
+    parseInt(req.params.id), 
+    ListQuery.parse(req.query)
+  );
+}));
+
+// Connections between organizations
+router.get('/directory/organizations/:id/connection-requests', authenticate, context(async (req) => {
+  return req.services.connection.listConnectionRequests(
+    req.context, 
+    parseInt(req.params.id), 
+    ListQuery.parse(req.query)
   );
 }));
 
@@ -193,7 +211,7 @@ router.post('/proxy/test', authenticate, context(async (req) => {
 }));
 
 router.get('/proxy/test-runs', authenticate, context(async (req) => {
-  return req.services.testRun.listTestRuns(req.context, req.query);
+  return req.services.testRun.listTestRuns(req.context, ListQuery.parse(req.query));
 }));
 
 router.get('/proxy/test-results', authenticate, context(async (req) => {

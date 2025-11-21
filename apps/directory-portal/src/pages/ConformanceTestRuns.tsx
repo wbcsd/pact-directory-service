@@ -57,7 +57,7 @@ const ConformanceTestRuns: React.FC = () => {
 
     try {
       let url = `/test-runs?page=${page}${
-        query ? `&query=${encodeURIComponent(query)}` : ""
+        query ? `&search=${encodeURIComponent(query)}` : ""
       }`;
 
       url += `&pageSize=${MAX_PAGE_SIZE}`;
@@ -72,7 +72,7 @@ const ConformanceTestRuns: React.FC = () => {
         return;
       }
 
-      setTestRuns(data.testRuns || []);
+      setTestRuns(data.data || []);
     } catch (err) {
       console.error("Error fetching test runs:", err);
       setError(

@@ -1,0 +1,184 @@
+.data-table-with-search {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Header Section */
+div.table-header-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.table-header-text h2 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #0A0552;
+}
+
+.headerSubtext {
+  color: #888;
+  font-size: 0.875rem;
+}
+
+.table-header-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Search and Controls */
+.table-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.searchWrapper {
+  position: relative;
+  flex-grow: 1;
+  padding: 0 2rem;
+  width: 100%;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 1rem 2.5rem 1rem 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 1rem;
+}
+
+.clearButton {
+  position: absolute;
+  right: 3rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.25rem;
+  color: #888;
+  line-height: 1;
+  padding: 0;
+}
+
+.clearButton:hover {
+  color: #000;
+}
+
+.refresh-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+/* Results Info */
+.results-info {
+  padding: 0.5rem 0;
+}
+
+/* Loading State */
+.loadingBox {
+  padding: 20px;
+  vertical-align: middle;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Error State */
+.errorBox {
+  padding: 20px;
+  max-width: 800px;
+  width: 800px;
+}
+
+/* Empty State */
+.emptyState {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.emptyHint {
+  color: #9d9db8;
+  font-size: 0.875rem;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+/* Pagination Controls */
+.paging-wrapper {
+  margin-top: 20px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid #EBF0F5;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pagination-info {
+  display: flex;
+  align-items: center;
+}
+
+.pagination-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .searchWrapper {
+    padding: 0;
+  }
+
+  .table-header {
+    flex-direction: column;
+  }
+
+  .table-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pagination-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pagination-buttons {
+    justify-content: center;
+  }
+
+  .table-container {
+    overflow-x: scroll;
+  }
+}

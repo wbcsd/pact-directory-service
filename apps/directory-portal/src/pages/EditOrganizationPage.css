@@ -1,0 +1,130 @@
+/* Loading State */
+.loading-container {
+  padding: 40px;
+  text-align: center;
+}
+
+.loading-text {
+  display: block;
+  margin-top: 20px;
+}
+
+/* Form Container */
+.form-container {
+  margin: 0 auto;
+}
+
+/* Form Fields */
+.form-field {
+  margin-bottom: 20px;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.required-asterisk {
+  color: red;
+}
+
+/* Input Fields */
+.readonly-field {
+  width: 100%;
+  background-color: #f5f5f5;
+  opacity: 0.7;
+}
+
+.editable-field {
+  width: 100%;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+/* Info Icon */
+.info-icon {
+  cursor: pointer;
+}
+
+/* Validation Message */
+.validation-message {
+  color: var(--base-color-brand--light-blue);
+  font-size: 0.85em;
+}
+
+/* Switch Container */
+.switch-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.switch-label-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.switch-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Switch Styles */
+.switch-root {
+  width: 52px;
+  height: 28px;
+  background-color: #ccc;
+  border-radius: 9999px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.switch-root[data-state="checked"] {
+  background-color: #22c55e;
+}
+
+.switch-thumb {
+  display: block;
+  width: 22px;
+  height: 22px;
+  background-color: white;
+  border-radius: 9999px;
+  transition: transform 0.2s;
+  transform: translateX(3px);
+  will-change: transform;
+}
+
+.switch-root[data-state="checked"] .switch-thumb {
+  transform: translateX(27px);
+}
+
+.switch-text {
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.status-active {
+  color: #22c55e;
+}
+
+.status-disabled {
+  color: #ef4444;
+}
+
+/* Button Group */
+.button-group {
+  display: flex !important;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 40px;
+}
+
+.cancel-button,
+.submit-button {
+  flex: 1 !important;
+}

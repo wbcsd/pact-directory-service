@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Box, Callout } from "@radix-ui/themes";
 import { CheckIcon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import HeroImage from "../assets/providers-header.webp";
+import { LandingPageLayout } from "../layouts";
 
 const EmailVerificationPage: React.FC = () => {
   const { token } = useParams<{ token: string }>();
@@ -56,53 +56,8 @@ const EmailVerificationPage: React.FC = () => {
   }, [token]);
 
   return (
-    <>
-      <Box style={{ display: "flex", width: "100%" }}>
-        <Box
-          style={{
-            width: "589px",
-            minWidth: "589px",
-            minHeight: "800px",
-            background: "#0A0552",
-            height: "100%",
-            backgroundImage: `url(${HeroImage})`,
-            backgroundPosition: "bottom",
-            backgroundSize: "180% auto",
-            backgroundRepeat: "no-repeat",
-            textAlign: "center",
-          }}
-        >
-          <h2
-            style={{
-              color: "#FFFFFF",
-              width: "360px",
-              margin: "0 auto",
-              marginTop: "16%",
-              fontSize: "1.8em",
-            }}
-          >
-            Helping you adopt PACT standards with ease
-          </h2>
-        </Box>
-        <Box
-          style={{
-            padding: "20px",
-            margin: "0 auto",
-            flex: "1 1 100%",
-            background: "#FCFDFF",
-            height: "100%",
-          }}
-        >
-          <Box
-            style={{
-              maxWidth: "400px",
-              margin: "0 auto",
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-            }}
-          >
+    <LandingPageLayout>
+
             {status === "verifying" && (
               <Box style={{ textAlign: "center" }}>
                 <h2 style={{ marginBottom: "20px" }}>Verifying Email...</h2>
@@ -182,7 +137,6 @@ const EmailVerificationPage: React.FC = () => {
                 </Box>
               </Box>
             )}
-
             <p style={{ fontSize: "0.9em", marginTop: "40px", textAlign: "center" }}>
               Need help? Contact us at:{" "}
               <a
@@ -192,10 +146,8 @@ const EmailVerificationPage: React.FC = () => {
                 pact-support@wbcsd.org
               </a>
             </p>
-          </Box>
-        </Box>
-      </Box>
-    </>
+
+    </LandingPageLayout>
   );
 };
 

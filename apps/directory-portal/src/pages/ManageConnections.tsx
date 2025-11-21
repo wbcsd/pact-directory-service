@@ -3,6 +3,7 @@ import { Box, Button, AlertDialog, Flex } from "@radix-ui/themes";
 import { Link } from "react-router-dom";
 import SideNav from "../components/SideNav";
 import { fetchWithAuth } from "../utils/auth-fetch";
+import { useAuth } from "../contexts/AuthContext";
 
 interface ConnectionRequest {
   id: number;
@@ -27,6 +28,7 @@ const formatDate = (date: Date): string => {
 };
 
 const ManageConnections: React.FC = () => {
+  const { profileData } = useAuth();
   const [connectionsData, setConnectionsData] = useState<{
     sent: ConnectionRequest[];
     received: ConnectionRequest[];
@@ -37,29 +39,47 @@ const ManageConnections: React.FC = () => {
     connectedOrganizations: [],
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchConnectionsData = async () => {
-    try {
-      const response = await fetchWithAuth(`/users/me`);
+    if (!profileData?.organizationId) {
+      return; // Don't fetch if profileData is not yet loaded
+    }
 
-      if (!response || !response.ok) {
+    try {
+      setIsLoading(true);
+
+      // Fetch connections and connection requests in parallel
+      const [connectionsResponse, connectionRequestsResponse] = await Promise.all([
+        fetchWithAuth(`/organizations/${profileData.organizationId}/connections`),
+        fetchWithAuth(`/organizations/${profileData.organizationId}/connection-requests`)
+      ]);
+
+      if (!connectionsResponse?.ok || !connectionRequestsResponse?.ok) {
         throw new Error("Failed to fetch connections data");
       }
 
-      const data = await response.json();
+      const [connectionsData, connectionRequestsData] = await Promise.all([
+        connectionsResponse.json(),
+        connectionRequestsResponse.json()
+      ]);
 
       setConnectionsData({
-        ...data.connectionRequests,
-        connectedOrganizations: data.connectedOrganizations,
+        sent: connectionRequestsData.data || [],
+
+        received: connectionRequestsData.data || [],
+        connectedOrganizations: connectionsData.data || [],
       });
     } catch (error) {
       console.error("Error fetching connections data:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     fetchConnectionsData();
-  }, []);
+  }, [profileData]); // Add profileData as dependency so it refetches when profile loads
 
   const handleAccept = async (requestId: number) => {
     try {
@@ -121,6 +141,10 @@ const ManageConnections: React.FC = () => {
           <h2>Manage Connections</h2>
         </div>
 
+        {isLoading ? (
+          <p>Loading connections...</p>
+        ) : (
+          <>
         <Box>
           <h2>Connected organizations</h2>
           {connectionsData.connectedOrganizations.length > 0 ? (
@@ -205,6 +229,8 @@ const ManageConnections: React.FC = () => {
             </p>
           )}
         </Box>
+          </>
+        )}
       </main>
     </>
   );

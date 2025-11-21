@@ -1,18 +1,20 @@
 import { Kysely } from 'kysely';
 import { Database } from '@src/database/types';
 import { NotFoundError, ForbiddenError } from '@src/common/errors';
-import { registerPolicy, checkAccess, Role } from '@src/common/policies';
-import { UserContext, UserData } from './user-service';
+import { registerPolicy, checkAccess, Role, hasAccess } from '@src/common/policies';
+import { UserContext, UserData, UserStatus } from './user-service';
 import { EmailService } from './email-service';
-import config from '@src/common/config';
+import { ListQuery, ListResult } from '@src/common/list-query';
 
 // Register all policies used in this service
-registerPolicy([Role.Administrator, Role.Root], 'view-connections-own-organization');
-registerPolicy([Role.Administrator, Role.Root], 'view-connections-all-organizations');
-registerPolicy([Role.Administrator, Role.Root], 'view-own-organizations');
-registerPolicy([Role.Administrator, Role.Root], 'edit-own-organizations');
-registerPolicy([Role.Administrator, Role.Root], 'view-all-organizations');
-registerPolicy([Role.Administrator, Role.Root], 'edit-all-organizations');
+registerPolicy([Role.Administrator], 'view-connections-own-organization');
+registerPolicy([Role.Administrator], 'edit-connections-own-organization');
+registerPolicy([Role.Administrator], 'view-own-organizations');
+registerPolicy([Role.Administrator], 'edit-own-organizations');
+registerPolicy([Role.Root], 'view-connections-all-organizations');
+registerPolicy([Role.Root], 'edit-connections-all-organizations');
+registerPolicy([Role.Root], 'view-all-organizations');
+registerPolicy([Role.Root], 'edit-all-organizations');
 
 export interface OrganizationData {
   id: number;
@@ -22,13 +24,11 @@ export interface OrganizationData {
   organizationDescription: string | null;
   networkKey: string | null;
   solutionApiUrl: string | null;
+  clientId?: string | null;
+  clientSecret?: string | null;
+  status: 'active' | 'disabled';
 }
 
-interface PagingParams {
-  query?: string;
-  page?: number;
-  pageSize?: number;
-}
 
 export class OrganizationService {
   constructor(
@@ -47,20 +47,29 @@ export class OrganizationService {
       throw new ForbiddenError('You are not allowed to view this organization');
     }
 
-    const organization = await this.db
-      .selectFrom('organizations')
-      .select([
-        'id',
-        'name as organizationName',
-        'uri as organizationIdentifier',
-        'description as organizationDescription',
-        'networkKey',
-        'solutionApiUrl',
-        'parentId',
-      ])
-      .where('id', '=', id)
-      .executeTakeFirst();
+    let qb = this.db
+        .selectFrom('organizations')
+        .select([
+          'id',
+          'name as organizationName',
+          'uri as organizationIdentifier',
+          'description as organizationDescription',
+          'networkKey',
+          'solutionApiUrl',
+          'parentId',
+          'status',
+        ]);
 
+        // Include credentials for own organization
+    if (context.organizationId === id) {
+      qb = qb.select([
+        'clientId',
+        'clientSecret'
+      ]);
+    }
+    qb = qb.where('id', '=', id);
+
+    const organization = await qb.executeTakeFirst();
     if (!organization) {
       throw new NotFoundError('Organization not found');
     }
@@ -69,34 +78,119 @@ export class OrganizationService {
   }
 
   /**
-   * List all organizations, optionally filter by a search query
+   * Update an organization
+   */
+  async update(
+    context: UserContext,
+    id: number,
+    update: {
+      organizationName?: string;
+      organizationDescription?: string;
+      solutionApiUrl?: string;
+      status?: 'active' | 'disabled';
+    }
+  ): Promise<{ message: string }> {
+    checkAccess(context, ['edit-own-organizations', 'edit-all-organizations']);
+
+    // Only root can edit other organizations
+    if (context.organizationId !== id && !hasAccess(context, 'edit-all-organizations')) {
+      throw new ForbiddenError('You are not allowed to edit this organization');
+    }
+
+    const organization = await this.db
+      .selectFrom('organizations')
+      .select(['id'])
+      .where('id', '=', id)
+      .executeTakeFirst();
+
+    if (!organization) {
+      throw new NotFoundError('Organization not found');
+    }
+
+    await this.db
+      .updateTable('organizations')
+      .set({
+        ...(update.organizationName && { name: update.organizationName }),
+        ...(update.organizationDescription && { description: update.organizationDescription }),
+        ...(update.solutionApiUrl && { solutionApiUrl: update.solutionApiUrl }),
+        ...(update.status && { status: update.status }),
+      })
+      .where('id', '=', id)
+      .execute();
+
+    return {
+      message: 'Organization updated successfully',
+    };
+  }
+
+  /**
+   * List all organizations with pagination, filtering, and sorting
    */
   async list(
     context: UserContext,
-    paging?: PagingParams
-  ): Promise<OrganizationData[]> {
+    query: ListQuery
+  ): Promise<ListResult<OrganizationData & { userCount: string | number | bigint, lastActivity: Date | null }>> {
     checkAccess(context, ['view-own-organizations', 'view-all-organizations']);
 
-    let qb = this.db
-      .selectFrom('organizations')
-      .select([
-        'id',
-        'name as organizationName',
-        'uri as organizationIdentifier',
-        'description as organizationDescription',
-        'networkKey',
-        'solutionApiUrl',
-        'parentId',
-      ]);
-    if (paging?.query) {
-      qb = qb.where('name', 'ilike', `%${paging.query}%`);
+  let qb = this.db
+    .selectFrom('organizations')
+    .leftJoin('users', 'users.organizationId', 'organizations.id')
+    .select([
+      'organizations.id',
+      'organizations.name as organizationName',
+      'organizations.uri as organizationIdentifier',
+      'organizations.description as organizationDescription',
+      'organizations.solutionApiUrl',
+      'organizations.networkKey',
+      'organizations.parentId',
+      'organizations.status',
+      (eb) => eb.fn.count('users.id').as('userCount'),
+      (eb) => eb.fn.max('users.lastLogin').as('lastActivity')
+    ])
+    .groupBy([
+      'organizations.id',
+      'organizations.name',
+      'organizations.uri',
+      'organizations.description',
+      'organizations.solutionApiUrl',
+      'organizations.networkKey',
+      'organizations.parentId',
+      'organizations.status',
+    ]);
+
+    // If user doesn't have view-all-organizations, restrict to their own organization
+    if (!context.policies.includes('view-all-organizations')) {
+      qb = qb.where('organizations.id', '=', context.organizationId);
     }
-    if (paging?.page) {
-      qb = qb
-        .offset((paging.page - 1) * (paging.pageSize ?? 50))
-        .limit(paging.pageSize ?? config.DEFAULT_PAGE_SIZE);
+    
+    // Apply search filter
+    if (query.search) {
+      qb = qb.where('name', 'ilike', `%${query.search}%`);
     }
-    return qb.execute();
+
+    // Get total count for pagination
+    const total = (
+      await qb.clearSelect()
+        .select((eb) => eb.fn.countAll().as('total'))
+        .executeTakeFirstOrThrow()
+    ).total as number;
+
+    // Apply sorting
+    if (query.sortBy && query.sortBy in ['name','uri']) {
+      qb = qb.orderBy(query.sortBy as any, query.sortOrder ?? 'asc');
+    } else {
+      // Default sorting by name
+      qb = qb.orderBy('organizations.name', 'asc');
+    }
+
+    // Apply pagination
+    const data = await qb.offset(query.offset).limit(query.limit).execute();
+
+    // Return data with pagination information
+    return {
+      data,
+      pagination: query.pagination(total)
+    };
   }
 
   /**
@@ -111,7 +205,14 @@ export class OrganizationService {
    * @param parentId - The ID of the parent organization whose sub-organizations are to be listed.
    * @returns A promise that resolves to an array of `CompanyData` objects representing the sub-organizations.
    */
-  async listSubOrganizations(parentId: number): Promise<OrganizationData[]> {
+  async listSubOrganizations(context: UserContext, parentId: number): Promise<OrganizationData[]> {
+    // Check access rights, user must have view-all-organizations policy or
+    // view-own-organizations policy and belong to the parent organization
+    const allowed = context.policies.includes('view-all-organizations') ||
+                    (context.policies.includes('view-own-organizations') && context.organizationId === parentId);
+    if (!allowed) {
+      throw new ForbiddenError('You are not allowed to view sub-organizations of this organization');
+    }
     const qb = this.db
       .withRecursive('children', (db) =>
         db
@@ -134,6 +235,7 @@ export class OrganizationService {
         'networkKey',
         'solutionApiUrl',
         'parentId',
+        'status',
       ]);
 
     const companies = await qb.execute();
@@ -144,28 +246,25 @@ export class OrganizationService {
    * Retrieves a list of user profiles who are members of the specified organization.
    *
    * @param organizationId - The unique identifier of the organization.
-   * @returns A promise that resolves to an array of `UserContext` objects representing the organization's members.
+   * @param query - Query parameters for filtering, sorting, and pagination
+   * @returns A promise that resolves to paginated list of organization members.
    */
   async listMembers(
     context: UserContext,
-    organizationId: number
-  ): Promise<UserData[]> {
-    checkAccess(
-      context,
-      'view-own-organizations',
-      context.organizationId === organizationId
-    );
-    const allowed =
-      context.role === Role.Administrator &&
-      context.organizationId === organizationId;
+    organizationId: number,
+    query: ListQuery
+  ): Promise<ListResult<UserData>> {
+    // Check that user has view-all-organizations policy or 
+    // view-own-organizations for members in their own organization
+    const allowed = 
+      context.policies.includes('view-all-organizations') ||
+      context.policies.includes('view-own-organizations') && context.organizationId === organizationId;
 
     if (!allowed) {
-      throw new ForbiddenError(
-        'You are not allowed to view members of this organization'
-      );
+      throw new ForbiddenError('You are not allowed to view members of this organization');
     }
     // join with organizations to get organization name
-    const users = await this.db
+    let qb = this.db
       .selectFrom('users')
       .innerJoin('organizations', 'users.organizationId', 'organizations.id')
       .select([
@@ -174,14 +273,49 @@ export class OrganizationService {
         'users.email as email',
         'users.role as role',
         'users.status as status',
+        'users.lastLogin as lastLogin',
         'organizations.name as organizationName',
         'organizations.id as organizationId',
         'organizations.uri as organizationIdentifier',
-      ])
-      .where('users.organizationId', '=', organizationId)
-      .execute();
+      ]);
 
-    return users;
+    // Apply search filter
+    if (query?.search) {
+      qb = qb.where((eb) =>
+        eb.or([
+          eb('users.fullName', 'ilike', `%${query.search}%`),
+          eb('users.email', 'ilike', `%${query.search}%`)
+        ])
+      );
+    }
+
+    // Restrict to the specified organization if role < root
+    if (!hasAccess(context, 'view-all-organizations')) {
+      qb = qb.where('users.organizationId', '=', context.organizationId);
+    } 
+
+    // Get total count for pagination
+    const total = (
+      await qb.clearSelect()
+        .select((eb) => eb.fn.count('users.id').as('total'))
+        .executeTakeFirstOrThrow()
+    ).total as number;
+
+    // Apply sorting
+    if (query?.sortBy && query.sortBy in ['email','fullName','role','status']) {
+      qb = qb.orderBy(`users.${query.sortBy}` as any, query.sortOrder ?? 'asc');
+    } else {
+      // Default sorting by full name
+      qb = qb.orderBy('users.fullName', 'asc');
+    }
+
+    // Apply pagination and get data
+    const data = await qb.offset(query.offset).limit(query.limit).execute();
+
+    return {
+      data,
+      pagination: query.pagination(total)
+    };
   }
 
   /**
@@ -195,19 +329,16 @@ export class OrganizationService {
     organizationId: number,
     userId: number
   ): Promise<UserData> {
-    checkAccess(
-      context,
-      'view-own-organizations',
-      context.organizationId === organizationId
-    );
-    const allowed =
-      context.role === Role.Administrator &&
-      context.organizationId === organizationId;
-
+    // Check that user has view-all-organizations policy or 
+    // view-own-organizations for members in their own organization
+    const allowed = 
+      context.policies.includes('view-all-organizations') ||
+      context.policies.includes('view-own-organizations') && context.organizationId === organizationId;
     if (!allowed) {
-      throw new ForbiddenError(
-        'You are not allowed to view members of this organization'
-      );
+      throw new ForbiddenError('You are not allowed to view members of this organization');
+    }
+    if (!allowed) {
+      throw new ForbiddenError('You are not allowed to view members of this organization');
     }
     // join with organizations to get organization name
     const user = await this.db
@@ -239,32 +370,58 @@ export class OrganizationService {
     context: UserContext,
     organizationId: number,
     userId: number,
-    update: { fullName?: string; role?: Role }
+    update: { fullName?: string; role?: Role, status?: UserStatus }
   ): Promise<{ message: string }> {
-    checkAccess(
-      context,
-      'edit-own-organizations',
-      context.organizationId === organizationId
-    );
-    const allowed =
-      context.role === Role.Administrator &&
-      context.organizationId === organizationId;
-
+    // Check that user has edit-all-organizations policy or 
+    // view-own-organizations for members in their own organization
+    const allowed = 
+      context.policies.includes('edit-all-organizations') ||
+      context.policies.includes('edit-own-organizations') && context.organizationId === organizationId;
     if (!allowed) {
-      throw new ForbiddenError(
-        'You are not allowed to edit members of this organization'
-      );
+      throw new ForbiddenError('You are not allowed to edit members of this organization');
+    }
+    if (!allowed) {
+      throw new ForbiddenError('You are not allowed to edit members of this organization');
     }
 
     const user = await this.db
       .selectFrom('users')
-      .select(['id'])
+      .select(['id', 'status'])
       .where('id', '=', userId)
       .where('organizationId', '=', organizationId)
       .executeTakeFirst();
 
     if (!user) {
       throw new NotFoundError('User not found');
+    }
+
+    // Can only enable a user that is currently disabled
+    if (update.status === 'enabled' && user?.status !== 'disabled') {
+      throw new ForbiddenError('Can only enable a disabled user');
+    }
+
+    if (update.status === 'disabled') {
+      // Only allow disabling if the user was enabled before
+      if (user?.status !== 'enabled') {
+        throw new ForbiddenError('Can only disable an enabled user');
+      }
+
+      // If this user is the last one that's enabled, prevent disabling
+      const enabledCount = await this.db
+        .selectFrom('users')
+        .where('organizationId', '=', organizationId)
+        .where('status', '=', 'enabled')
+        .select(['id'])
+        .execute();
+
+      if (enabledCount.length <= 1) {
+        const isLastEnabled = enabledCount.some((u) => u.id === userId);
+        if (isLastEnabled) {
+          throw new ForbiddenError(
+            'Cannot disable the last enabled user in the organization'
+          );
+        }
+      }
     }
 
     // If this user is the last administrator, prevent role change
@@ -292,6 +449,7 @@ export class OrganizationService {
       .set({
         ...(update.fullName && { fullName: update.fullName }),
         ...(update.role && { role: update.role }),
+        ...(update.status && { status: update.status }),
       })
       .where('id', '=', userId)
       .execute();
