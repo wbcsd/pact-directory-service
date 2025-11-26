@@ -168,12 +168,21 @@ export class OrganizationService {
       qb = qb.where('name', 'ilike', `%${query.search}%`);
     }
 
+
     // Get total count for pagination
-    const total = (
-      await qb.clearSelect()
+    const total = Number(
+      (await this.db
+        .selectFrom('organizations')
         .select((eb) => eb.fn.countAll().as('total'))
+        .$if(!context.policies.includes('view-all-organizations'), (qb) =>
+          qb.where('organizations.id', '=', context.organizationId)
+        )
+        .$if(!!query.search, (qb) =>
+          qb.where('name', 'ilike', `%${query.search}%`)
+        )
         .executeTakeFirstOrThrow()
-    ).total as number;
+      ).total
+    );
 
     // Apply sorting
     if (query.sortBy && query.sortBy in ['name','uri']) {
