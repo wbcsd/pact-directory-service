@@ -215,6 +215,9 @@ const SignupPage: React.FC = () => {
                   style={{
                     color: "var(--base-color-brand--light-blue)",
                     fontSize: "0.85em",
+                    display: "inline-block",
+                    paddingTop: "5px",
+                    paddingLeft: "2px",
                   }}>
                   <p>An organization with this name already exists.
                   Please choose a different name or contact its administrator to join.</p>
