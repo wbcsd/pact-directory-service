@@ -21,6 +21,7 @@ import SideNav from "../components/SideNav";
 import { User } from "./OrganizationUsers";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import "./EditUserPage.css";
+import PolicyGuard from "../components/PolicyGuard";
 
 const EditUserPage: React.FC = () => {
   const navigate = useNavigate();
@@ -223,6 +224,14 @@ const EditUserPage: React.FC = () => {
                         <Select.Item value="user" className="select-item">
                           <Select.ItemText>User</Select.ItemText>
                         </Select.Item>
+                        <PolicyGuard policies={["assign-root-role"]}>
+                          <Select.Item
+                            value="root"
+                            className="select-item"
+                          >
+                            <Select.ItemText>Root</Select.ItemText>
+                          </Select.Item>
+                        </PolicyGuard>
                       </Select.Viewport>
                     </Select.Content>
                   </Select.Portal>
