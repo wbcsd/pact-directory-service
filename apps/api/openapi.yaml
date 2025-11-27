@@ -431,6 +431,28 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "401": { $ref: "#/components/responses/Unauthorized" }
       x-notes: Controller uses req.params.id. Either change route to /directory/companies/profile/{id} or adapt controller to query.
+  /directory/organizations/check-name/{name}:
+    get:
+      summary: Check if an organization name is already in use
+      tags: [Organizations]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: name
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Organization name existence check
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  organizationName: { type: string }
+                  exists: { type: boolean }
+                required: [organizationName, exists]
+        "401": { $ref: "#/components/responses/Unauthorized" }
   /directory/organizations:
     get:
       summary: List and search organizations

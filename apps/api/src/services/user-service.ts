@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import config from '@src/common/config';
-import { Kysely } from 'kysely';
+import { Kysely, sql } from 'kysely';
 import { Database } from '@src/database/types';
 import {
   BadRequestError,
@@ -59,8 +59,6 @@ export interface UserData {
   solutionApiUrl?: string | null;
   policies?: string[];
 }
-
-
 
 export interface ForgotPasswordData {
   email: string;
@@ -338,6 +336,17 @@ export class UserService {
 
     if (emailExists) {
       throw new BadRequestError('Email already in use.');
+    }
+
+    // Check if the organization name is already taken
+    const orgExists = await this.db
+      .selectFrom('organizations')
+      .select('id')
+      .where(sql`lower(name)`, '=', data.organizationName.toLowerCase())
+      .executeTakeFirst();
+    
+    if (orgExists) {
+      throw new BadRequestError('Organization name is already in use.');
     }
 
     // TODO: create a random salt and store it next to the hashed password.
