@@ -183,6 +183,7 @@ const SignupPage: React.FC = () => {
                     style={{
                       width: "100%",
                       border: "1px solid #ccc",
+                      borderColor: organizationNameExists ? "var(--base-color-brand--light-blue)" : "#ccc",
                       padding: "12px",
                       fontSize: "16px",
                     }}
