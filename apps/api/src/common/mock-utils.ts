@@ -46,6 +46,10 @@ export const createMockQueryChain = (executors = createMockExecutors()) => ({
 
   // grouping methods
   groupBy: jest.fn().mockReturnThis(),
+
+  // $if
+  $if: jest.fn().mockReturnThis(),
+  $call: jest.fn().mockReturnThis(),
   
   // Execution methods
   ...executors,
