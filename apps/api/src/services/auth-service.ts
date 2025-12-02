@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Kysely } from 'kysely';
+import jwt from 'jsonwebtoken'; // Used in commented code that will be re-enabled after node migration
 import { Database } from '../database/types';
 import { UnauthorizedError } from '@src/common/errors';
 

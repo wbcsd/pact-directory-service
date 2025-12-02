@@ -1,8 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Kysely } from 'kysely';
 import { Database } from '@src/database/types';
-import {
-  BadRequestError,
-} from '@src/common/errors';
+import { BadRequestError } from '@src/common/errors';
 import { OrganizationService } from './organization-service';
 import { EmailService } from './email-service';
 import { UserContext } from './user-service';
@@ -43,7 +42,7 @@ export class ConnectionService {
       private organizationService: OrganizationService,
       private emailService: EmailService
   ) {} 
-
+ 
   async listConnections(
     _context: UserContext,
     _organizationId: number,
@@ -53,7 +52,7 @@ export class ConnectionService {
     // Temporarily returning empty results to prevent build errors
     throw new BadRequestError('Connection API is being migrated to node-based system. Please use the new nodes API.');
   }
-
+   
   async listConnectionRequests(
     _context: UserContext,
     _organizationId: number,
