@@ -46,29 +46,13 @@ export class AuthService {
     }
 
     // 3. Check if a connection exists between them
-    const connection = await this.db
-      .selectFrom('connections')
-      .selectAll()
-      .where((qb) =>
-        qb('connectedCompanyOneId', '=', clientOrganization.id).or(
-          'connectedCompanyTwoId',
-          '=',
-          clientOrganization.id
-        )
-      )
-      .where((qb) =>
-        qb('connectedCompanyOneId', '=', networkOrganization.id).or(
-          'connectedCompanyTwoId',
-          '=',
-          networkOrganization.id
-        )
-      )
-      .executeTakeFirst();
+    // TODO: This needs to be updated to work with the new node-based connection system
+    // as part of T#141. For now, returning unauthorized to maintain security.
+    // The new system will check connections between nodes rather than organizations.
+    throw new UnauthorizedError('Connection verification not yet migrated to node-based system');
 
-    if (!connection) {
-      throw new UnauthorizedError('No connection between the organizations');
-    }
-
+    // The following code will be re-enabled once node-based connections are implemented:
+    /*
     // 4. If they do, generate a JWT signed with the secret being the one from the organization which network_id = body param network_id and return it
     const token = jwt.sign(
       {
@@ -86,5 +70,6 @@ export class AuthService {
       access_token: token,
       token_type: 'Bearer',
     };
+    */
   }
 }
