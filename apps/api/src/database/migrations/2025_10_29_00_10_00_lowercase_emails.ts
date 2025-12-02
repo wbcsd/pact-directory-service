@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Kysely, sql } from 'kysely';
 
 export async function up(db: Kysely<any>): Promise<void> {
@@ -5,7 +6,6 @@ export async function up(db: Kysely<any>): Promise<void> {
   await sql`UPDATE users SET email = LOWER(email)`.execute(db);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function down(db: Kysely<any>): Promise<void> {
   // No down migration - we cannot restore original casing
   // This is acceptable as email addresses should be case-insensitive
