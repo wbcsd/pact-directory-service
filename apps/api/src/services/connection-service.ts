@@ -45,9 +45,9 @@ export class ConnectionService {
   ) {} 
 
   async listConnections(
-    context: UserContext,
-    organizationId: number,
-    query: ListQuery = ListQuery.default()
+    _context: UserContext,
+    _organizationId: number,
+    _query: ListQuery = ListQuery.default()
   ): Promise<ListResult<Connection>> {
     // STUB: This method is deprecated and will be replaced by NodeConnectionService
     // Temporarily returning empty results to prevent build errors
@@ -55,9 +55,9 @@ export class ConnectionService {
   }
 
   async listConnectionRequests(
-    context: UserContext,
-    organizationId: number,
-    query: ListQuery
+    _context: UserContext,
+    _organizationId: number,
+    _query: ListQuery
   ): Promise<ListResult<ConnectionRequest>> {
     // STUB: This method is deprecated and will be replaced by NodeConnectionService
     throw new BadRequestError('Connection API is being migrated to node-based system. Please use the new nodes API.');
@@ -67,20 +67,20 @@ export class ConnectionService {
    * Create a connection request
    */
   async createConnectionRequest(
-    context: UserContext, 
-    requestingOrganizationId: number,
-    requestedOrganizationId: number,
+    _context: UserContext, 
+    _requestingOrganizationId: number,
+    _requestedOrganizationId: number,
   ): Promise<ConnectionRequest> {
     // STUB: This method is deprecated and will be replaced by NodeConnectionService
     throw new BadRequestError('Connection API is being migrated to node-based system. Please use the new nodes API.');
   }
 
-  async acceptConnectionRequest(requestId: number, currentOrganizationId: number): Promise<void> {
+  async acceptConnectionRequest(_requestId: number, _currentOrganizationId: number): Promise<void> {
     // STUB: This method is deprecated and will be replaced by NodeConnectionService
     throw new BadRequestError('Connection API is being migrated to node-based system. Please use the new nodes API.');
   }
 
-  async rejectConnectionRequest(requestId: number, currentCompanyId: number): Promise<void> {
+  async rejectConnectionRequest(_requestId: number, _currentCompanyId: number): Promise<void> {
     // STUB: This method is deprecated and will be replaced by NodeConnectionService
     throw new BadRequestError('Connection API is being migrated to node-based system. Please use the new nodes API.');
   }

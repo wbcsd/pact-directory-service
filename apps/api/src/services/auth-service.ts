@@ -1,5 +1,4 @@
 import { Kysely } from 'kysely';
-import jwt from 'jsonwebtoken';
 import { Database } from '../database/types';
 import { UnauthorizedError } from '@src/common/errors';
 
