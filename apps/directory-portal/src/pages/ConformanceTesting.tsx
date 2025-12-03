@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button, TextField } from "@radix-ui/themes";
 import * as Form from "@radix-ui/react-form";
 import SideNav from "../components/SideNav";
@@ -57,6 +57,22 @@ const ConformanceTesting: React.FC = () => {
 
     navigate("/conformance-test-result");
   };
+
+  useEffect(() => {
+    const isMobile = window.matchMedia(
+      "(max-width: 767px), (pointer: coarse)"
+    ).matches;
+    
+    if (!isMobile) {
+      document.querySelectorAll('[class*="rt-TextFieldInput"]')
+        .forEach(input => input.addEventListener('focus', (e) => {
+            const scrollTargetElement = document.getElementById((e.target as HTMLInputElement).name);
+            if (scrollTargetElement) {
+              scrollTargetElement.scrollIntoView({behavior: 'smooth'});
+            }
+        }));
+    }
+  }, []);
 
   return (
     <>
@@ -210,7 +226,7 @@ const ConformanceTesting: React.FC = () => {
         <Box className="test-box">
           <h2 className="heading">Tech guidance</h2>
 
-          <h3 className="subheading">Solution API Base URL</h3>
+          <h3 className="subheading" id="solutionApiUrl">Solution API Base URL</h3>
           <p className="paragraph-text">
             Enter the base URL of your PACT Conformant API implementation. This
             URL will be used as the root endpoint for all API requests during
@@ -224,7 +240,7 @@ const ConformanceTesting: React.FC = () => {
             from the internet and has valid SSL certification.
           </p>
 
-          <h3 className="subheading">Auth Base URL (optional)</h3>
+          <h3 className="subheading" id="authBaseUrl">Auth Base URL (optional)</h3>
           <p className="paragraph-text">
             If your implementation uses a separate authentication service,
             provide its base URL here. This field is optional if your
@@ -239,7 +255,7 @@ const ConformanceTesting: React.FC = () => {
             </a>
           </p>
 
-          <h3 className="subheading">Client ID</h3>
+          <h3 className="subheading" id="clientId">Client ID</h3>
           <p className="paragraph-text">
             Provide the Client ID that will be used to authenticate API requests
             during conformance testing. This ID should have sufficient
@@ -247,21 +263,21 @@ const ConformanceTesting: React.FC = () => {
             specification.
           </p>
 
-          <h3 className="subheading">Client Secret</h3>
+          <h3 className="subheading" id="clientSecret">Client Secret</h3>
           <p className="paragraph-text">
             Enter the Client Secret associated with your Client ID. This will be
             used along with the Client ID to obtain access tokens for
             authenticated API requests during testing.
           </p>
 
-          <h3 className="subheading">Other Authentication Options</h3>
+          <h3 className="subheading" id="authOptionsScope">Other Authentication Options</h3>
           <p className="paragraph-text">
             Common OAuth options like <code>Scope</code>, <code>Resource</code>{" "}
             and <code>Audience</code> are also available for configuration. Make
             sure to set these according to your API's requirements.
           </p>
 
-          <h3 className="subheading">Tech Specs Version</h3>
+          <h3 className="subheading" id="techSpecsVersion">Tech Specs Version</h3>
           <p className="paragraph-text">
             The{" "}
             <a href="https://docs.carbon-transparency.org/">
