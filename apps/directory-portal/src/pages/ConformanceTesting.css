@@ -56,6 +56,14 @@
 
 .test-details-container {
   width: 50%;
+  height: calc(100vh - 81px);
+}
+
+@media screen and (max-width: 768px) {
+  div.test-details-container {
+    width: 100%;
+    height: auto;
+  }
 }
 
 .test-box {
