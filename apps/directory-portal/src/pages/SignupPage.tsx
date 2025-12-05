@@ -30,13 +30,43 @@ const SignupPage: React.FC = () => {
   const [status, setStatus] = useState<null | "success" | "error">(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [organizationNameExists, setOrganizationNameExists] = useState(false);
 
   const [creatingAccount, setCreatingAccount] = useState(false);
 
   useBodyOverflow(false);
 
+  const checkOrganizationNameExists = async (name: string): Promise<boolean> => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_DIRECTORY_API}/directory/organizations/check-name/${encodeURIComponent(name)}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.exists;
+      } else {
+        console.error("Failed to check organization name.");
+        return false;
+      }
+    } catch (error) {
+      console.error("An error occurred while checking organization name:", error);
+      return false;
+    }
+  };
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    
+    if (organizationNameExists) {
+      return;
+    }
 
     const cleanedFormData = {
       ...formData,
@@ -78,6 +108,17 @@ const SignupPage: React.FC = () => {
       console.error("An error occurred:", error);
     }
   };
+
+  const handleOrganizationNameBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+    const name = e.target.value;
+
+    setOrganizationNameExists(false);
+
+    if (!name) return;
+
+    const organizationExists = await checkOrganizationNameExists(name);
+    setOrganizationNameExists(organizationExists);
+  }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -137,10 +178,12 @@ const SignupPage: React.FC = () => {
                     value={formData.organizationName}
                     required
                     placeholder="Enter organization name"
+                    onBlur={handleOrganizationNameBlur}
                     onChange={handleChange}
                     style={{
                       width: "100%",
                       border: "1px solid #ccc",
+                      borderColor: organizationNameExists ? "var(--base-color-brand--light-blue)" : "#ccc",
                       padding: "12px",
                       fontSize: "16px",
                     }}
@@ -169,6 +212,17 @@ const SignupPage: React.FC = () => {
                     </TextField.Slot>
                   </TextField.Root>
                 </Form.Control>
+                {organizationNameExists && <Form.Message 
+                  style={{
+                    color: "var(--base-color-brand--light-blue)",
+                    fontSize: "0.85em",
+                    display: "inline-block",
+                    paddingTop: "5px",
+                    paddingLeft: "2px",
+                  }}>
+                  <p>An organization with this name already exists.
+                  Please choose a different name or contact its administrator to join.</p>
+                </Form.Message>}
                 <Form.Message
                   match="valueMissing"
                   style={{
@@ -470,7 +524,7 @@ const SignupPage: React.FC = () => {
               <Box>
                 <Form.Submit asChild>
                   <Button
-                    disabled={creatingAccount}
+                    disabled={creatingAccount || organizationNameExists}
                     style={{ width: "100%", marginTop: "40px" }}
                   >
                     {creatingAccount && <Spinner loading />}

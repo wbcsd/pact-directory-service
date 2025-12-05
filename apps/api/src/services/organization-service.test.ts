@@ -515,4 +515,22 @@ describe('OrganizationService', () => {
       ).rejects.toThrow(ForbiddenError);
     });
   });
+
+  describe('checkOrganizationExistsByName', () => {
+    it('should return true if organization exists', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValue({ id: 1 });
+
+      const result = await organizationService.checkOrganizationExistsByName('Existing Org');
+
+      expect(result.exists).toBe(true);
+    });
+
+    it('should return false if organization does not exist', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValue(undefined);
+
+      const result = await organizationService.checkOrganizationExistsByName('Nonexistent Org');
+
+      expect(result.exists).toBe(false);
+    });
+  });
 });

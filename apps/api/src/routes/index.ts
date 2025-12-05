@@ -159,6 +159,12 @@ router.get('/directory/organizations/:oid/users/:uid', authenticate, context(asy
   );
 }));
 
+router.get('/directory/organizations/check-name/:name', context(async (req) => {
+  const organizationName = req.params.name;
+  const response = await req.services.organization.checkOrganizationExistsByName(organizationName);
+  return response;
+}));
+
 router.post('/directory/organizations/:oid/users/:uid', authenticate, context(async (req) => {
   const organizationId = parseInt(req.params.oid);
   const userId = parseInt(req.params.uid);

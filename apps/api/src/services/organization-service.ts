@@ -1,4 +1,4 @@
-import { Kysely } from 'kysely';
+import { Kysely, sql } from 'kysely';
 import { Database } from '@src/database/types';
 import { NotFoundError, ForbiddenError } from '@src/common/errors';
 import { registerPolicy, checkAccess, Role, hasAccess } from '@src/common/policies';
@@ -472,5 +472,20 @@ export class OrganizationService {
     return {
       message: 'User updated successfully',
     };
+  }
+
+    /**
+   * Check if an organization exists by its name, using a case-insensitive match
+   */
+  async checkOrganizationExistsByName(
+    organizationName: string
+  ): Promise<{ organizationName: string; exists: boolean }> {
+    const organization = await this.db
+      .selectFrom('organizations')
+      .select('id')
+      .where(sql`lower(name)`, '=', organizationName.toLowerCase())
+      .executeTakeFirst();
+
+    return { organizationName, exists: Boolean(organization) };
   }
 }
