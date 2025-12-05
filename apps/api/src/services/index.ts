@@ -6,12 +6,16 @@ import { OrganizationService } from './organization-service';
 import { TestRunService } from './test-run-service';
 import { UserService } from './user-service';
 import { ConnectionService } from './connection-service';
+import { NodeService } from './node-service';
+import { NodeConnectionService } from './node-connection-service';
 
 // Export individual service classes for direct usage if needed
 export { AuthService } from './auth-service';
 export { UserService } from './user-service';
 export { OrganizationService } from './organization-service';
 export { ConnectionService } from './connection-service';
+export { NodeService } from './node-service';
+export { NodeConnectionService } from './node-connection-service';
 
 export interface Services {
   auth: AuthService;
@@ -20,6 +24,8 @@ export interface Services {
   testRun: TestRunService;
   user: UserService;
   connection: ConnectionService;
+  node: NodeService;
+  nodeConnection: NodeConnectionService;
 }
 
 export class ServiceContainer implements Services {
@@ -29,6 +35,8 @@ export class ServiceContainer implements Services {
   user: UserService;
   connection: ConnectionService;
   testRun: TestRunService;
+  node: NodeService;
+  nodeConnection: NodeConnectionService;
 
   constructor(db: Kysely<Database>) {
     this.email = new EmailService();
@@ -37,6 +45,8 @@ export class ServiceContainer implements Services {
     this.connection = new ConnectionService(db, this.organization, this.email);
     this.user = new UserService(db, this.email);
     this.testRun = new TestRunService(db, this.user, this.organization);
+    this.node = new NodeService(db);
+    this.nodeConnection = new NodeConnectionService(db, this.node, this.email);
     // this.environment = new EnvironmentService(db);
   }
 }
