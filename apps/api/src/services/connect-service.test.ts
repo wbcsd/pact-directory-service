@@ -11,7 +11,18 @@ import { createMockDatabase } from '../common/mock-utils';
 import { UserContext } from './user-service';
 import { ListQuery } from '@src/common/list-query';
 
-describe('ConnectionService', () => {
+/**
+ * DEPRECATED: These tests are for the old organization-based connection system.
+ * They are skipped as part of T#139 migration to node-based connections.
+ * 
+ * New tests will be created for:
+ * - NodeService (T#140)
+ * - NodeConnectionService (T#141)
+ * 
+ * See: MIGRATION_PACT_NODE_002.md for migration details
+ */
+
+describe.skip('ConnectionService (DEPRECATED - being replaced by NodeConnectionService)', () => {
   let dbMocks: ReturnType<typeof createMockDatabase>;
   let organizationService: jest.Mocked<OrganizationService>;
   let emailService: jest.Mocked<EmailService>;

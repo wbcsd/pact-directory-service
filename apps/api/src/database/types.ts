@@ -7,7 +7,7 @@ export interface Database {
   roles: RolesTable;
   policies: PoliciesTable;
   roles_policies: RolesPoliciesTable;
-  connection_requests: ConnectionRequestTable;
+  nodes: NodesTable;
   connections: ConnectionTable;
   password_tokens: PasswordTokenTable;
 }
@@ -54,21 +54,27 @@ export interface RolesPoliciesTable {
   policy: string;
 }
 
-export interface ConnectionRequestTable {
+export interface NodesTable {
   id: Generated<number>;
-  requestingCompanyId: number;
-  requestedCompanyId: number;
-  status: 'pending' | 'accepted' | 'rejected';
-  createdAt: Date;
-  updatedAt: Date;
+  organizationId: number;
+  name: string;
+  type: 'internal' | 'external';
+  apiUrl: string;
+  status: 'active' | 'inactive' | 'pending';
+  createdAt: Generated<Date>;
+  updatedAt: Generated<Date>;
 }
 
 export interface ConnectionTable {
   id: Generated<number>;
-  connectedCompanyOneId: number;
-  connectedCompanyTwoId: number;
-  createdAt: Date;
-  requestedAt: Date;
+  fromNodeId: number;
+  targetNodeId: number;
+  clientId: string;
+  clientSecret: string;
+  status: 'pending' | 'accepted' | 'rejected';
+  createdAt: Generated<Date>;
+  updatedAt: Generated<Date>;
+  expiresAt: Date | null;
 }
 
 export interface PasswordTokenTable {

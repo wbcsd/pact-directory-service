@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "apps/api"
+		},
+		{
+			"path": "apps/directory-portal"
+		},
+		{
+			"path": "docs"
+		}
+	],
+	"settings": {}
+}

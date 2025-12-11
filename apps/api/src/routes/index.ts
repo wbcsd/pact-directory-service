@@ -57,11 +57,11 @@ const context =
  */
 
 // Auth token
-
+// Note: This endpoint is temporarily disabled during migration to node-based connections (T#139-141)
 router.post('/im/auth/token', context(async (req) => {
-  const user = await req.services.auth.token(req.body);
-  const token = jwt.sign(user, config.JWT_SECRET, { expiresIn: '6h' });
-  return { token };
+  const tokenResponse = await req.services.auth.token(req.body);
+  // The auth service now returns { access_token, token_type } directly
+  return tokenResponse;
 }));
 
 // Signup 
