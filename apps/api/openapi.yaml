@@ -245,6 +245,58 @@ components:
           type: string
           enum: [unverified, enabled, disabled, deleted]
       required: [userId, email, organizationId, role, policies, status]
+    NodeData:
+      type: object
+      properties:
+        id: { type: integer }
+        organizationId: { type: integer }
+        organizationName: { type: string }
+        name: { type: string }
+        type: { type: string, enum: [internal, external] }
+        apiUrl: { type: string }
+        status: { type: string, enum: [active, inactive, pending] }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+      required: [id, organizationId, name, type, apiUrl, status, createdAt, updatedAt]
+    CreateNodeRequest:
+      type: object
+      properties:
+        name: { type: string }
+        type: { type: string, enum: [internal, external] }
+        apiUrl: { type: string, description: "Optional for internal nodes, required for external" }
+      required: [name, type]
+    UpdateNodeRequest:
+      type: object
+      properties:
+        name: { type: string }
+        apiUrl: { type: string, description: "Only editable for external nodes" }
+        status: { type: string, enum: [active, inactive, pending] }
+    NodeConnectionData:
+      type: object
+      properties:
+        id: { type: integer }
+        fromNodeId: { type: integer }
+        targetNodeId: { type: integer }
+        clientId: { type: string }
+        clientSecret: { type: string, description: "Encrypted" }
+        status: { type: string, enum: [pending, accepted, rejected] }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        expiresAt: { type: string, format: date-time, nullable: true }
+      required: [id, fromNodeId, targetNodeId, clientId, clientSecret, status, createdAt, updatedAt]
+    CreateInvitationRequest:
+      type: object
+      properties:
+        targetNodeId: { type: integer }
+        message: { type: string }
+      required: [targetNodeId]
+    ConnectionCredentials:
+      type: object
+      properties:
+        connectionId: { type: integer }
+        clientId: { type: string }
+        clientSecret: { type: string }
+      required: [connectionId, clientId, clientSecret]
   responses:
     Unauthorized:
       description: Unauthorized
@@ -412,6 +464,62 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/MyProfileResponse" }
         "401": { $ref: "#/components/responses/Unauthorized" }
+  /directory/users/verify-email:
+    post:
+      tags:
+        - Users
+      summary: Verify email address
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
+                  description: Email verification token
+      responses:
+        "200":
+          description: Email verified successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /directory/users/resend-verification:
+    post:
+      tags:
+        - Users
+      summary: Resend email verification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        "200":
+          description: Verification email sent (if email exists)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
   /directory/organizations/{id}:
     get:
       summary: Get organization profile by ID
@@ -805,6 +913,386 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /directory/organizations/{id}/nodes:
+    post:
+      summary: Create a node for an organization
+      tags: [Nodes]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          description: Organization ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateNodeRequest" }
+      responses:
+        "201":
+          description: Node created successfully
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/NodeData" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    get:
+      summary: List nodes for an organization
+      tags: [Nodes]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          description: Organization ID
+        - in: query
+          name: page
+          required: false
+          schema: { type: integer, minimum: 1, default: 1 }
+          description: Page number for pagination
+        - in: query
+          name: pageSize
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+          description: Number of items per page
+        - in: query
+          name: search
+          required: false
+          schema: { type: string }
+          description: Search nodes by name
+        - in: query
+          name: sortBy
+          required: false
+          schema: { type: string, enum: [name, type, status, createdAt, updatedAt] }
+          description: Field to sort by
+        - in: query
+          name: sortOrder
+          required: false
+          schema: { type: string, enum: [asc, desc], default: desc }
+          description: Sort order
+      responses:
+        "200":
+          description: List of nodes for the organization with pagination
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/NodeData"
+                  pagination:
+                    $ref: "#/components/schemas/PaginationInfo"
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /directory/nodes:
+    get:
+      summary: List all nodes
+      tags: [Nodes]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema: { type: integer, minimum: 1, default: 1 }
+          description: Page number for pagination
+        - in: query
+          name: pageSize
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+          description: Number of items per page
+        - in: query
+          name: search
+          required: false
+          schema: { type: string }
+          description: Search nodes by name or organization name
+        - in: query
+          name: sortBy
+          required: false
+          schema: { type: string, enum: [name, type, status, createdAt, updatedAt, organizationId] }
+          description: Field to sort by
+        - in: query
+          name: sortOrder
+          required: false
+          schema: { type: string, enum: [asc, desc], default: desc }
+          description: Sort order
+      responses:
+        "200":
+          description: List of all nodes with pagination
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/NodeData"
+                  pagination:
+                    $ref: "#/components/schemas/PaginationInfo"
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /directory/nodes/{id}:
+    get:
+      summary: Get a node by ID
+      tags: [Nodes]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          description: Node ID
+      responses:
+        "200":
+          description: Node details
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/NodeData" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    put:
+      summary: Update a node by ID
+      tags: [Nodes]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          description: Node ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateNodeRequest" }
+      responses:
+        "200":
+          description: Node updated successfully
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/NodeData" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      summary: Delete a node by ID
+      tags: [Nodes]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          description: Node ID
+      responses:
+        "204":
+          description: Node deleted successfully
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /directory/nodes/{id}/connections:
+    get:
+      summary: List node connections
+      tags: [Nodes]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          description: Node ID
+        - in: query
+          name: page
+          required: false
+          schema: { type: integer, minimum: 1, default: 1 }
+          description: Page number for pagination
+        - in: query
+          name: pageSize
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+          description: Number of items per page
+        - in: query
+          name: sortBy
+          required: false
+          schema: { type: string, enum: [createdAt] }
+          description: Field to sort by
+        - in: query
+          name: sortOrder
+          required: false
+          schema: { type: string, enum: [asc, desc], default: desc }
+          description: Sort order
+      responses:
+        "200":
+          description: List of node connections with pagination
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/NodeConnectionData"
+                  pagination:
+                    $ref: "#/components/schemas/PaginationInfo"
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /directory/nodes/{id}/invitations:
+    post:
+      summary: Create invitation
+      tags: [Nodes]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          description: Node ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateInvitationRequest" }
+      responses:
+        "201":
+          description: Invitation created successfully
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/NodeConnectionData" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    get:
+      summary: List invitations per node
+      tags: [Nodes]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          description: Node ID
+        - in: query
+          name: page
+          required: false
+          schema: { type: integer, minimum: 1, default: 1 }
+          description: Page number for pagination
+        - in: query
+          name: pageSize
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+          description: Number of items per page
+        - in: query
+          name: sortBy
+          required: false
+          schema: { type: string, enum: [createdAt] }
+          description: Field to sort by
+        - in: query
+          name: sortOrder
+          required: false
+          schema: { type: string, enum: [asc, desc], default: desc }
+          description: Sort order
+      responses:
+        "200":
+          description: List of invitations for the node with pagination
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/NodeConnectionData"
+                  pagination:
+                    $ref: "#/components/schemas/PaginationInfo"
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /directory/node-invitations/{id}/accept:
+    post:
+      summary: Accept invitation request for node connection
+      tags: [Nodes]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          description: Invitation ID
+      responses:
+        "200":
+          description: Invitation accepted, credentials returned
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ConnectionCredentials" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /directory/node-invitations/{id}/reject:
+    post:
+      summary: Reject invitation request for node connection
+      tags: [Nodes]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          description: Invitation ID
+      responses:
+        "204":
+          description: Invitation rejected successfully
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      summary: Remove node connection
+      tags: [Nodes]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          description: Connection ID
+      responses:
+        "204":
+          description: Connection removed successfully
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /directory/node-connections/{id}/credentials/rotate:
+    post:
+      summary: Rotate credentials
+      tags: [Nodes]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          description: Connection ID
+      responses:
+        "200":
+          description: Credentials rotated successfully
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ConnectionCredentials" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /proxy/test:
     post:
       summary: Run test cases via proxy
@@ -882,64 +1370,9 @@ paths:
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '500': { $ref: '#/components/responses/InternalError' }
-  /directory/users/verify-email:
-    post:
-      tags:
-        - Users
-      summary: Verify email address
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - token
-              properties:
-                token:
-                  type: string
-                  description: Email verification token
-      responses:
-        "200":
-          description: Email verified successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-        "400":
-          $ref: "#/components/responses/BadRequest"
-  /directory/users/resend-verification:
-    post:
-      tags:
-        - Users
-      summary: Resend email verification
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - email
-              properties:
-                email:
-                  type: string
-                  format: email
-      responses:
-        "200":
-          description: Verification email sent (if email exists)
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
 tags:
   - name: Authentication
   - name: Users
   - name: Organizations
+  - name: Nodes
   - name: Proxy
