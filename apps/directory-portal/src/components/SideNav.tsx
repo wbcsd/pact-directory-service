@@ -63,6 +63,14 @@ const SideNav: React.FC = () => {
         </nav>
       </div>
 
+      <FeatureFlag flag="enableNodeManagement">
+        <PolicyGuard policies={["view-nodes-own-organization", "view-nodes-all-organizations"]}>
+          <div className="nav-group">
+            <div className="nav-title">Nodes</div>
+          </div>      
+        </PolicyGuard>
+      </FeatureFlag>          
+
       <div className="nav-group">
         <div style={{ fontSize: "0.8em" }}>
           <div className="nav-title">Support</div>

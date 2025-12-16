@@ -29,7 +29,6 @@ export interface NodeConnectionData {
 }
 
 export interface ConnectionInvitationData {
-  fromNodeId: number;
   targetNodeId: number;
   message?: string;
 }
