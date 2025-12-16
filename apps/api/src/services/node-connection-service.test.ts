@@ -58,8 +58,7 @@ describe('NodeConnectionService', () => {
   describe('createInvitation', () => {
     it('should throw BadRequestError if nodes are the same', async () => {
       await expect(
-        connectionService.createInvitation(adminUserContext, {
-          fromNodeId: 1,
+        connectionService.createInvitation(adminUserContext, 1, {
           targetNodeId: 1,
         })
       ).rejects.toThrow(BadRequestError);
@@ -89,8 +88,7 @@ describe('NodeConnectionService', () => {
         } as any);
 
       await expect(
-        connectionService.createInvitation(adminUserContext, {
-          fromNodeId: 1,
+        connectionService.createInvitation(adminUserContext, 1, {
           targetNodeId: 2,
         })
       ).rejects.toThrow(ForbiddenError);
@@ -127,8 +125,7 @@ describe('NodeConnectionService', () => {
       });
 
       await expect(
-        connectionService.createInvitation(adminUserContext, {
-          fromNodeId: 1,
+        connectionService.createInvitation(adminUserContext, 1, {
           targetNodeId: 2,
         })
       ).rejects.toThrow(BadRequestError);
@@ -174,8 +171,7 @@ describe('NodeConnectionService', () => {
 
       dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce(mockConnection);
 
-      const result = await connectionService.createInvitation(adminUserContext, {
-        fromNodeId: 1,
+      const result = await connectionService.createInvitation(adminUserContext, 1, {
         targetNodeId: 2,
       });
 
