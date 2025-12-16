@@ -3,6 +3,7 @@ import { Text } from "@radix-ui/themes";
 import { NavLink } from "react-router-dom";
 import FeatureFlag from "./FeatureFlag";
 import PolicyGuard from "./PolicyGuard";
+import { SideNavNodesList } from "./SideNavNodesList";
 
 const SideNav: React.FC = () => {
   return (
@@ -67,6 +68,7 @@ const SideNav: React.FC = () => {
         <PolicyGuard policies={["view-nodes-own-organization", "view-nodes-all-organizations"]}>
           <div className="nav-group">
             <div className="nav-title">Nodes</div>
+            <SideNavNodesList />
           </div>      
         </PolicyGuard>
       </FeatureFlag>          
