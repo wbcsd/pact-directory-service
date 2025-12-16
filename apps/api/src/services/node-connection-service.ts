@@ -79,19 +79,20 @@ export class NodeConnectionService {
    */
   async createInvitation(
     context: UserContext,
+    nodeId: number,
     data: ConnectionInvitationData
   ): Promise<NodeConnectionData> {
     // Validate input
-    if (!data.fromNodeId || !data.targetNodeId) {
-      throw new BadRequestError('Both fromNodeId and targetNodeId are required');
+    if (!data.targetNodeId) {
+      throw new BadRequestError('Target node ID is required');
     }
 
-    if (data.fromNodeId === data.targetNodeId) {
+    if (nodeId === data.targetNodeId) {
       throw new BadRequestError('Cannot create connection to the same node');
     }
 
     // Get both nodes and check access
-    const fromNode = await this.nodeService.get(context, data.fromNodeId);
+    const fromNode = await this.nodeService.get(context, nodeId);
     const targetNode = await this.nodeService.get(context, data.targetNodeId);
 
     // Check if user has permission to create connections from this node
@@ -111,12 +112,12 @@ export class NodeConnectionService {
       .where((eb) =>
         eb.or([
           eb.and([
-            eb('fromNodeId', '=', data.fromNodeId),
+            eb('fromNodeId', '=', nodeId),
             eb('targetNodeId', '=', data.targetNodeId),
           ]),
           eb.and([
             eb('fromNodeId', '=', data.targetNodeId),
-            eb('targetNodeId', '=', data.fromNodeId),
+            eb('targetNodeId', '=', nodeId),
           ]),
         ])
       )
@@ -133,7 +134,7 @@ export class NodeConnectionService {
     const connection = await this.db
       .insertInto('connections')
       .values({
-        fromNodeId: data.fromNodeId,
+        fromNodeId: nodeId,
         targetNodeId: data.targetNodeId,
         clientId: credentials.clientId,
         clientSecret: this.encryptSecret(credentials.clientSecret),

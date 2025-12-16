@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken';
 import config from '@src/common/config';
 import logger from '@src/common/logger';
 import { Role } from '@src/common/policies';
+import { UpdateNodeData } from '@src/services/node-service';
 
 const router = Router();
 
@@ -204,6 +205,121 @@ router.post('/directory/organizations/create-connection-request', authenticate, 
   );
 }));
 
+/////////////////// Nodes
+// Create a node for an organization
+router.post('/directory/organizations/:id/nodes', authenticate, context(async (req) => {
+  return req.services.node.create(
+    req.context,
+    parseInt(req.params.id),
+    req.body
+  );
+}));
+
+// Update a node by ID
+router.put('/directory/nodes/:id', authenticate, context(async (req) => {
+  return req.services.node.update(
+    req.context,
+    parseInt(req.params.id),
+    req.body as UpdateNodeData
+  );
+}));
+
+// Delete a node by ID
+router.delete('/directory/nodes/:id', authenticate, context(async (req) => {
+  return req.services.node.delete(
+    req.context,
+    parseInt(req.params.id)
+  );
+}));
+
+// List nodes for an organization
+router.get('/directory/organizations/:id/nodes', authenticate, context(async (req) => {
+  return req.services.node.list(
+    req.context,
+    parseInt(req.params.id),
+    ListQuery.parse(req.query)
+  );
+}));
+
+// List all nodes
+router.get('/directory/nodes', authenticate, context(async (req) => {
+  return req.services.node.listAll(
+    req.context,
+    ListQuery.parse(req.query)
+  );
+}));
+
+// Get a node by ID
+router.get('/directory/nodes/:id', authenticate, context(async (req) => {
+  return req.services.node.get(
+    req.context,
+    parseInt(req.params.id)
+  );
+}));
+
+// List node connections
+router.get('/directory/nodes/:id/connections', authenticate, context(async (req) => {
+  return req.services.nodeConnection.listConnections(
+    req.context,
+    parseInt(req.params.id)
+  );
+}));
+
+
+// Create invitation
+router.post('/directory/nodes/:id/invitations', authenticate, context(async (req) => {
+  return req.services.nodeConnection.createInvitation(
+    req.context,
+    parseInt(req.params.id),
+    req.body
+  );
+}));
+
+// List invitations per node
+router.get('/directory/nodes/:id/invitations', authenticate, context(async (req) => {
+  return req.services.nodeConnection.listInvitations(
+    req.context,
+    parseInt(req.params.id),
+    ListQuery.parse(req.query)
+  );
+}));
+
+// Accept invitation request for node connection
+router.post('/directory/node-invitations/:id/accept', authenticate, context(async (req) => {
+  return req.services.nodeConnection.acceptInvitation(
+    req.context,
+    parseInt(req.params.id),
+  );
+}));
+
+// Reject invitation request for node connection
+router.post('/directory/node-invitations/:id/reject', authenticate, context(async (req) => {
+  return req.services.nodeConnection.rejectInvitation(
+    req.context,
+    parseInt(req.params.id),
+  );
+}));
+
+// Remove node connection
+router.delete('/directory/node-invitations/:id', authenticate, context(async (req) => {
+  return req.services.nodeConnection.removeConnection(
+    req.context,
+    parseInt(req.params.id),
+  );
+}));
+
+// Rotate credentials
+router.post('/directory/node-connections/:id/credentials/rotate', authenticate, context(async (req) => {
+  return req.services.nodeConnection.rotateCredentials(
+    req.context,
+    parseInt(req.params.id),
+  );
+}));
+
+
+//////////////// Organization connections
+
+// Accept connection request
 router.post('/directory/organizations/connection-request-action', authenticate, context(async (req) => {
   return req.services.connection.acceptConnectionRequest(
     req.body.requestId,
