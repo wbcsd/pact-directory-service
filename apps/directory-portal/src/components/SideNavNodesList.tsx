@@ -6,18 +6,38 @@ import { useAuth } from "../contexts/AuthContext";
 
 export const SideNavNodesList: React.FC = () => {
   const [nodes, setNodes] = React.useState([]);
+  const [error, setError] = React.useState<Error | null>(null);
+  const [loading, setLoading] = React.useState<boolean>(false);
   const { profileData } = useAuth();
 
   React.useEffect(() => {
-    if (!profileData) return;
     // Fetch nodes from API or context
     const fetchNodes = async () => {
-      const response = await fetchWithAuth(`/organizations/${profileData.organizationId}/nodes`);
-      const { data } = await response!.json();
-      setNodes(data);
+      if (!profileData) return;
+
+      try {
+        setLoading(true);
+        const response = await fetchWithAuth(`/organizations/${profileData!.organizationId}/nodes`);
+        const { data } = await response!.json();
+        setNodes(data);
+      } catch (error) {
+        setError(error as Error);
+        console.error("Error fetching nodes:", error);
+      } finally {
+        setLoading(false);
+      }
     };
+
     fetchNodes();
   }, [profileData]);
+
+  if (loading) {
+    return <nav><Text size="2" style={{ paddingLeft: '1em' }}>Loading nodes...</Text></nav>;
+  }
+
+  if (error) {
+    return <nav><Text size="2" style={{ paddingLeft: '1em', color: 'darkred' }}>Couldn't load nodes</Text></nav>;
+  }
 
   return (
     <nav>
