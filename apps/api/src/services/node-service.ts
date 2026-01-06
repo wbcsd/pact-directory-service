@@ -17,12 +17,15 @@ export interface NodeData {
   organizationId: number;
   organizationName?: string;
   name: string;
-  type: 'internal' | 'external';
-  apiUrl: string;
-  status: 'active' | 'inactive' | 'pending';
+  type: NodeType;
+  apiUrl?: string;
+  status: NodeStatus;
   createdAt: Date;
   updatedAt: Date;
 }
+
+export type NodeStatus = 'active' | 'inactive' | 'pending';
+export type NodeType = 'internal' | 'external';
 
 export interface CreateNodeData {
   name: string;
