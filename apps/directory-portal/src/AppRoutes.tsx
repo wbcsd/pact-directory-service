@@ -21,6 +21,7 @@ import PolicyGuard from "./components/PolicyGuard";
 import SetPasswordPage from "./pages/SetPasswordPage";
 import OrganizationsList from "./pages/OrganizationsList";
 import EditOrganizationPage from "./pages/EditOrganizationPage";
+import NodeDashboardPage from "./pages/NodeDashboardPage";
 
 const AppRoutes: React.FC = () => {
   return (
@@ -38,6 +39,11 @@ const AppRoutes: React.FC = () => {
           <Route path="/search" element={<SearchPage />} />
           <Route path="/organization/:id" element={<OrganizationProfile />} />
           <Route path="/manage-connections" element={<ManageConnections />} />
+        </>
+      )}
+      {featureFlags.enableNodeManagement === true && (
+        <>
+          <Route path="/nodes/:id" element={<NodeDashboardPage />} />
         </>
       )}
       {featureFlags.enableOrganizationManagement === true && (

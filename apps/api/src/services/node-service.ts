@@ -29,7 +29,7 @@ export type NodeType = 'internal' | 'external';
 
 export interface CreateNodeData {
   name: string;
-  type: 'internal' | 'external';
+  type: NodeType;
   apiUrl?: string; // Optional for internal nodes, required for external
 }
 
