@@ -22,6 +22,8 @@ import SetPasswordPage from "./pages/SetPasswordPage";
 import OrganizationsList from "./pages/OrganizationsList";
 import EditOrganizationPage from "./pages/EditOrganizationPage";
 import NodeDashboardPage from "./pages/NodeDashboardPage";
+import AddNodePage from "./pages/AddNodePage";
+import EditNodePage from "./pages/EditNodePage";
 
 const AppRoutes: React.FC = () => {
   return (
@@ -44,6 +46,8 @@ const AppRoutes: React.FC = () => {
       {featureFlags.enableNodeManagement === true && (
         <>
           <Route path="/nodes/:id" element={<NodeDashboardPage />} />
+          <Route path="/edit-node/:id" element={<EditNodePage />} />
+          <Route path="/add-node" element={<AddNodePage />} />
         </>
       )}
       {featureFlags.enableOrganizationManagement === true && (

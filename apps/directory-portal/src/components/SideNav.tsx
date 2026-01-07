@@ -4,7 +4,6 @@ import { NavLink, useNavigate } from "react-router-dom";
 import FeatureFlag from "./FeatureFlag";
 import PolicyGuard from "./PolicyGuard";
 import { SideNavNodesList } from "./SideNavNodesList";
-import { Icon } from "@radix-ui/react-select";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 
 const SideNav: React.FC = () => {
@@ -75,8 +74,8 @@ const SideNav: React.FC = () => {
             }}>
               <div className="nav-title">Nodes</div>
               <IconButton
-                onClick={() => navigate("/nodes/new")}
-                style={{ padding: "1px 5px", margin: 0 }}
+                onClick={() => navigate("/add-node")}
+                style={{ padding: "1px 5px", margin: 0, cursor: "pointer" }}
                 aria-label="Refresh Nodes"
                 variant="ghost" size="1">
                 <PlusCircledIcon />

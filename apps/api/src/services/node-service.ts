@@ -218,7 +218,7 @@ export class NodeService {
   /**
    * Delete a node (soft delete by setting status to inactive)
    */
-  async delete(context: UserContext, nodeId: number): Promise<void> {
+  async delete(context: UserContext, nodeId: number): Promise<{ success: boolean, nodeId: number }> {
     // Get the existing node
     const existingNode = await this.get(context, nodeId);
 
@@ -233,6 +233,7 @@ export class NodeService {
     }
 
     // Soft delete by setting status to inactive
+  try {
     await this.db
       .updateTable('nodes')
       .set({ 
@@ -241,7 +242,13 @@ export class NodeService {
       })
       .where('id', '=', nodeId)
       .execute();
+
+    return { success: true, nodeId };
+  } catch (error) {
+    console.error('Error deleting node:', error);
+    throw new Error('Failed to delete node');
   }
+}
 
   /**
    * List nodes for a specific organization
@@ -251,6 +258,8 @@ export class NodeService {
     organizationId: number,
     query: ListQuery = ListQuery.default()
   ): Promise<ListResult<NodeData>> {
+
+    console.log('query', query);
     // Check access
     const allowed =
       context.policies.includes('view-nodes-all-organizations') ||
