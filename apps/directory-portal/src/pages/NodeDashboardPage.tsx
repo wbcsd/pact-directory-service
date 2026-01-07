@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   Box,
-  // Button,
+  Button,
   // TextField,
   Text,
   Spinner,
@@ -95,7 +95,9 @@ const NodeDashboardPage: React.FC = () => {
         <div className="header">
           <h2>Node {nodeData?.name}</h2>
         </div>
-
+        <Button>Edit Node</Button>
+        <span>&nbsp;</span>
+        <Button>Delete Node</Button>
 
       </main>
     </>
