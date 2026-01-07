@@ -14,7 +14,6 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
   const token = header.substring(7);
   try {
     const user = jwt.verify(token, config.JWT_SECRET) as UserContext;
-
     if (user.status === 'unverified') {
       throw new UnauthorizedError('Email not verified');
     }
@@ -30,7 +29,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
     res.locals.user = user;
     next();
   } catch (error) {
-    logger.error(error);
+    logger.error(`Authentication error: ${(error as Error).message}`);
     throw new UnauthorizedError('Invalid token');
   }
 };

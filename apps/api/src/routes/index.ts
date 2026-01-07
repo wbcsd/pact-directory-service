@@ -234,6 +234,7 @@ router.delete('/directory/nodes/:id', authenticate, context(async (req) => {
 
 // List nodes for an organization
 router.get('/directory/organizations/:id/nodes', authenticate, context(async (req) => {
+  console.log('List nodes query params:', req.query);
   return req.services.node.list(
     req.context,
     parseInt(req.params.id),

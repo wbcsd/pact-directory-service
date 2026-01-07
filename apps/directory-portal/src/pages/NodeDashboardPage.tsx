@@ -8,11 +8,12 @@ import {
 } from "@radix-ui/themes";
 import SideNav from "../components/SideNav";
 import { fetchWithAuth } from "../utils/auth-fetch";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 
 const NodeDashboardPage: React.FC = () => {
   const { id: nodeId } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [nodeData, setNodeData] = useState<Record<string, string> | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,6 +35,30 @@ const NodeDashboardPage: React.FC = () => {
 
     fetchNodeData();
   }, [nodeId]);
+
+  const deleteNode = async () => {
+    // Implement delete node functionality
+    try {
+      const response = await fetchWithAuth(`/nodes/${nodeId}`, {
+        method: "DELETE",
+      });
+
+      if (response!.ok) {
+        // Node deleted successfully
+        window.location.reload();
+      } else {
+        const errorResponse = await response!.json();
+        if (errorResponse.message) {
+          setErrorMessage(errorResponse.message);
+        } else {
+          setErrorMessage("Failed to delete node");
+        }
+      }
+    } catch (error) {
+      setErrorMessage("An error occurred while deleting the node");
+      console.error("Error deleting node:", error);
+    }
+  };
 
   if (loading) {
     return (
@@ -95,9 +120,9 @@ const NodeDashboardPage: React.FC = () => {
         <div className="header">
           <h2>Node {nodeData?.name}</h2>
         </div>
-        <Button>Edit Node</Button>
+        <Button onClick={() => navigate(`/edit-node/${nodeId}`)}>Edit Node</Button>
         <span>&nbsp;</span>
-        <Button>Delete Node</Button>
+        <Button onClick={() => deleteNode()}>Delete Node</Button>
 
       </main>
     </>

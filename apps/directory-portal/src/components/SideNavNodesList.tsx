@@ -17,7 +17,7 @@ export const SideNavNodesList: React.FC = () => {
 
       try {
         setLoading(true);
-        const response = await fetchWithAuth(`/organizations/${profileData!.organizationId}/nodes`);
+        const response = await fetchWithAuth(`/organizations/${profileData!.organizationId}/nodes?filters[status]=active`);
         const { data } = await response!.json();
         setNodes(data);
       } catch (error) {
