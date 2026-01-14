@@ -3,7 +3,6 @@ import { IconButton, Text } from "@radix-ui/themes";
 import { NavLink, useNavigate } from "react-router-dom";
 import FeatureFlag from "./FeatureFlag";
 import PolicyGuard from "./PolicyGuard";
-import { SideNavNodesList } from "./SideNavNodesList";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 
 const SideNav: React.FC = () => {
@@ -62,30 +61,19 @@ const SideNav: React.FC = () => {
               </NavLink>
             </PolicyGuard>
             </>
+          </FeatureFlag>
+          <FeatureFlag flag="enableNodeManagement">
+            <PolicyGuard policies={["view-nodes-own-organization", "view-nodes-all-organizations"]}>
+                  <NavLink
+                    to="/nodes"
+                    style={{ textDecoration: "none" }}
+                  >
+                    <Text>Nodes</Text>
+                  </NavLink>              
+            </PolicyGuard>
           </FeatureFlag>          
         </nav>
       </div>
-
-      <FeatureFlag flag="enableNodeManagement">
-        <PolicyGuard policies={["view-nodes-own-organization", "view-nodes-all-organizations"]}>
-          <div className="nav-group">
-            <div style={{
-              display: "flex",
-            }}>
-              <div className="nav-title">Nodes</div>
-              <IconButton
-                onClick={() => navigate("/add-node")}
-                style={{ padding: "1px 5px", margin: 0, cursor: "pointer" }}
-                aria-label="Refresh Nodes"
-                variant="ghost" size="1">
-                <PlusCircledIcon />
-              </IconButton>
-            </div>
-            <SideNavNodesList />
-          </div>      
-        </PolicyGuard>
-      </FeatureFlag>          
-
       <div className="nav-group">
         <div style={{ fontSize: "0.8em" }}>
           <div className="nav-title">Support</div>

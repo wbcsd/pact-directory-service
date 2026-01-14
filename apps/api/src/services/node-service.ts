@@ -284,7 +284,11 @@ export class NodeService {
         'nodes.updatedAt',
         'organizations.name as organizationName',
       ])
-      .where('nodes.organizationId', '=', organizationId);
+
+    // Filter by organization only for non-root users
+    if (!context.policies.includes('view-nodes-all-organizations')) {
+      qb = qb.where('nodes.organizationId', '=', organizationId);
+    }
 
     // Apply filters
     if (query.filters) {
@@ -312,80 +316,6 @@ export class NodeService {
     // Apply sorting
     const sortBy = query.sortBy || 'createdAt';
     const validSortFields = ['name', 'type', 'status', 'createdAt', 'updatedAt'];
-    
-    if (validSortFields.includes(sortBy)) {
-      qb = qb.orderBy(`nodes.${sortBy}` as any, query.sortOrder || 'desc');
-    } else {
-      qb = qb.orderBy('nodes.createdAt', 'desc');
-    }
-
-    // Apply pagination
-    const data = await qb.offset(query.offset).limit(query.limit).execute();
-
-    return {
-      data: data as NodeData[],
-      pagination: query.pagination(total),
-    };
-  }
-
-  /**
-   * List all nodes (root only)
-   */
-  async listAll(
-    context: UserContext,
-    query: ListQuery = ListQuery.default()
-  ): Promise<ListResult<NodeData>> {
-    checkAccess(context, 'view-nodes-all-organizations');
-
-    let qb = this.db
-      .selectFrom('nodes')
-      .leftJoin('organizations', 'organizations.id', 'nodes.organizationId')
-      .select([
-        'nodes.id',
-        'nodes.organizationId',
-        'nodes.name',
-        'nodes.type',
-        'nodes.apiUrl',
-        'nodes.status',
-        'nodes.createdAt',
-        'nodes.updatedAt',
-        'organizations.name as organizationName',
-      ]);
-
-    // Apply filters
-    if (query.filters) {
-      if (query.filters.type) {
-        const typeValue = query.filters.type as 'internal' | 'external';
-        qb = qb.where('nodes.type', '=', typeValue);
-      }
-      if (query.filters.status) {
-        const statusValue = query.filters.status as 'active' | 'inactive' | 'pending';
-        qb = qb.where('nodes.status', '=', statusValue);
-      }
-      if (query.filters.organizationId) {
-        qb = qb.where('nodes.organizationId', '=', parseInt(query.filters.organizationId as string));
-      }
-    }
-    if (query.search) {
-      qb = qb.where((eb) =>
-        eb.or([
-          eb('nodes.name', 'ilike', `%${query.search}%`),
-          eb('organizations.name', 'ilike', `%${query.search}%`),
-        ])
-      );
-    }
-
-    // Get total count
-    const total = (
-      await qb
-        .clearSelect()
-        .select((eb) => eb.fn.count('nodes.id').as('total'))
-        .executeTakeFirstOrThrow()
-    ).total as number;
-
-    // Apply sorting
-    const sortBy = query.sortBy || 'createdAt';
-    const validSortFields = ['name', 'type', 'status', 'createdAt', 'updatedAt', 'organizationId'];
     
     if (validSortFields.includes(sortBy)) {
       qb = qb.orderBy(`nodes.${sortBy}` as any, query.sortOrder || 'desc');

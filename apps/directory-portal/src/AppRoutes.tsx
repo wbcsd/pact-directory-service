@@ -24,6 +24,7 @@ import EditOrganizationPage from "./pages/EditOrganizationPage";
 import NodeDashboardPage from "./pages/NodeDashboardPage";
 import AddNodePage from "./pages/AddNodePage";
 import EditNodePage from "./pages/EditNodePage";
+import NodesList from "./pages/NodesList";
 
 const AppRoutes: React.FC = () => {
   return (
@@ -45,6 +46,7 @@ const AppRoutes: React.FC = () => {
       )}
       {featureFlags.enableNodeManagement === true && (
         <>
+          <Route path="/nodes" element={<NodesList />} />
           <Route path="/nodes/:id" element={<NodeDashboardPage />} />
           <Route path="/edit-node/:id" element={<EditNodePage />} />
           <Route path="/add-node" element={<AddNodePage />} />

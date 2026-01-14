@@ -429,47 +429,4 @@ describe('NodeService', () => {
       expect(dbMocks.queryChain.where).toHaveBeenCalled();
     });
   });
-
-  describe('listAll', () => {
-    it('should throw ForbiddenError if user is not root', async () => {
-      await expect(
-        nodeService.listAll(adminUserContext, ListQuery.default())
-      ).rejects.toThrow(ForbiddenError);
-    });
-
-    it('should return all nodes for root user', async () => {
-      const mockNodes = [
-        {
-          id: 1,
-          organizationId: 1,
-          name: 'Node 1',
-          type: 'internal',
-          apiUrl: 'http://example1.com',
-          status: 'active',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          organizationName: 'Org 1',
-        },
-        {
-          id: 2,
-          organizationId: 2,
-          name: 'Node 2',
-          type: 'external',
-          apiUrl: 'http://example2.com',
-          status: 'active',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          organizationName: 'Org 2',
-        },
-      ];
-
-      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 2 });
-      dbMocks.executors.execute.mockResolvedValueOnce(mockNodes);
-
-      const result = await nodeService.listAll(rootUserContext, ListQuery.default());
-
-      expect(result.data).toEqual(mockNodes);
-      expect(result.pagination.total).toBe(2);
-    });
-  });
 });

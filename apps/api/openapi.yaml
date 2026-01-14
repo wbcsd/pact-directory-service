@@ -991,53 +991,6 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
-  /directory/nodes:
-    get:
-      summary: List all nodes
-      tags: [Nodes]
-      security: [{ bearerAuth: [] }]
-      parameters:
-        - in: query
-          name: page
-          required: false
-          schema: { type: integer, minimum: 1, default: 1 }
-          description: Page number for pagination
-        - in: query
-          name: pageSize
-          required: false
-          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
-          description: Number of items per page
-        - in: query
-          name: search
-          required: false
-          schema: { type: string }
-          description: Search nodes by name or organization name
-        - in: query
-          name: sortBy
-          required: false
-          schema: { type: string, enum: [name, type, status, createdAt, updatedAt, organizationId] }
-          description: Field to sort by
-        - in: query
-          name: sortOrder
-          required: false
-          schema: { type: string, enum: [asc, desc], default: desc }
-          description: Sort order
-      responses:
-        "200":
-          description: List of all nodes with pagination
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/NodeData"
-                  pagination:
-                    $ref: "#/components/schemas/PaginationInfo"
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
   /directory/nodes/{id}:
     get:
       summary: Get a node by ID
