@@ -36,6 +36,36 @@ const SideNav: React.FC = () => {
           </FeatureFlag>
         </nav>
       </div>
+      <FeatureFlag flag="enableNodeManagement">
+        <div className="nav-group">
+          <div style={{
+            display: "flex",
+          }}>
+            <div className="nav-title">Sandbox</div>
+            <PolicyGuard policies={["edit-nodes-own-organization", "edit-nodes-all-organizations"]}>
+              <IconButton
+                onClick={() => navigate("/add-node")}
+                style={{ padding: "1px 5px", margin: 0, cursor: "pointer" }}
+                aria-label="Add Node"
+                variant="ghost" 
+                size="1"
+              >
+                <PlusCircledIcon />
+              </IconButton>
+            </PolicyGuard>
+          </div>
+          <nav>
+            <PolicyGuard policies={["view-nodes-own-organization", "view-nodes-all-organizations"]}>
+              <NavLink
+                to="/nodes"
+                style={{ textDecoration: "none" }}
+              >
+                <Text>Nodes</Text>
+              </NavLink>
+            </PolicyGuard>
+          </nav>
+        </div>
+      </FeatureFlag>
       <div className="nav-group">
         <div className="nav-title">Settings</div>
         <nav>
@@ -62,16 +92,6 @@ const SideNav: React.FC = () => {
             </PolicyGuard>
             </>
           </FeatureFlag>
-          <FeatureFlag flag="enableNodeManagement">
-            <PolicyGuard policies={["view-nodes-own-organization", "view-nodes-all-organizations"]}>
-                  <NavLink
-                    to="/nodes"
-                    style={{ textDecoration: "none" }}
-                  >
-                    <Text>Nodes</Text>
-                  </NavLink>              
-            </PolicyGuard>
-          </FeatureFlag>          
         </nav>
       </div>
       <div className="nav-group">

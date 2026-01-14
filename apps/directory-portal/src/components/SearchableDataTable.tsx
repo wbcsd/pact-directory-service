@@ -46,6 +46,9 @@ export interface SearchableDataTableProps<T> {
   
   // Search debounce delay in ms
   searchDebounceMs?: number;
+  
+  // Row click handler
+  onRowClick?: (row: T) => void;
 }
 
 function SearchableDataTable<T extends object>({
@@ -60,6 +63,7 @@ function SearchableDataTable<T extends object>({
   headerActions,
   refreshTrigger = 0,
   searchDebounceMs = 500,
+  onRowClick,
 }: SearchableDataTableProps<T>) {
   const [data, setData] = useState<T[]>([]);
   const [pagination, setPagination] = useState<PaginationInfo>({
@@ -190,6 +194,7 @@ function SearchableDataTable<T extends object>({
         isLoading={isLoading}
         error={error}
         emptyState={emptyState}
+        onRowClick={onRowClick}
       />
 
       {/* Pagination Controls */}

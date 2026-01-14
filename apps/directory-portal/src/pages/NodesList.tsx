@@ -134,6 +134,7 @@ const NodesList: React.FC = () => {
         columns={columns}
         idColumnName="id"
         defaultPageSize={50}
+        onRowClick={(node) => navigate(`/nodes/${node.id}`)}
         emptyState={{
           title: "No nodes found",
           description: "No nodes match your search criteria",
