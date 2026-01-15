@@ -41,7 +41,7 @@ const SideNav: React.FC = () => {
           <div style={{
             display: "flex",
           }}>
-            <div className="nav-title">Sandbox</div>
+            <div className="nav-title">Data exchange</div>
             <PolicyGuard policies={["edit-nodes-own-organization", "edit-nodes-all-organizations"]}>
               <IconButton
                 onClick={() => navigate("/add-node")}
