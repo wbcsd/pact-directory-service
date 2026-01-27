@@ -120,6 +120,8 @@ const NodeDashboardPage: React.FC = () => {
         <div className="header">
           <h2>Node {nodeData?.name}</h2>
         </div>
+        <Button onClick={() => navigate(`/nodes/${nodeId}/connections`)}>View Connections</Button>
+        <span>&nbsp;</span>
         <Button onClick={() => navigate(`/edit-node/${nodeId}`)}>Edit Node</Button>
         <span>&nbsp;</span>
         <Button onClick={() => deleteNode()}>Delete Node</Button>

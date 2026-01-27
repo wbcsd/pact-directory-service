@@ -3,7 +3,7 @@ import { fetchWithAuth } from "../utils/auth-fetch";
 import SearchableDataTable, { PaginationInfo } from "../components/SearchableDataTable";
 import { Column } from "../components/DataTable";
 import { useAuth } from "../contexts/AuthContext";
-import { InputIcon } from "@radix-ui/react-icons";
+import { InputIcon, Link2Icon } from "@radix-ui/react-icons";
 import { useNavigate } from "react-router-dom";
 import { GridPageLayout } from "../layouts";
 import ActionButton from "../components/ActionButton";
@@ -120,14 +120,24 @@ const NodesList: React.FC = () => {
       header: "",
       extendedStyle: { textAlign: 'right' },
       render: (row: Node) => (
-        <ActionButton
-          title="Edit Node Details"
-          variant="secondary"
-          size="small"
-          onClick={() => navigate(`/edit-node/${row.id}`)}
-        >
-          <InputIcon />
-        </ActionButton>
+        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+          <ActionButton
+            title="View Connections"
+            variant="secondary"
+            size="small"
+            onClick={() => navigate(`/nodes/${row.id}/connections`)}
+          >
+            <Link2Icon />
+          </ActionButton>
+          <ActionButton
+            title="Edit Node Details"
+            variant="secondary"
+            size="small"
+            onClick={() => navigate(`/edit-node/${row.id}`)}
+          >
+            <InputIcon />
+          </ActionButton>
+        </div>
       ),
     },
   ];
