@@ -18,6 +18,7 @@ export interface Node {
   status: 'active' | 'inactive' | 'pending';
   createdAt: string;
   updatedAt: string;
+  connectionsCount?: number;
 }
 
 const NodesList: React.FC = () => {
@@ -71,6 +72,17 @@ const NodesList: React.FC = () => {
       sortValue: (row: Node) => row.type,
       render: (row: Node) => (
         <span style={{ textTransform: 'capitalize' }}>{row.type}</span>
+      ),
+    },
+    {
+      key: "connectionsCount",
+      header: "Connections",
+      sortable: true,
+      sortValue: (row: Node) => row.connectionsCount ?? 0,
+      render: (row: Node) => (
+        <span>
+          {row.connectionsCount ?? 0}
+        </span>
       ),
     },
     {

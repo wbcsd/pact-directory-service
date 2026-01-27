@@ -22,6 +22,7 @@ export interface NodeData {
   status: NodeStatus;
   createdAt: Date;
   updatedAt: Date;
+  connectionsCount?: number;
 }
 
 export type NodeStatus = 'active' | 'inactive' | 'pending';
@@ -259,7 +260,6 @@ export class NodeService {
     query: ListQuery = ListQuery.default()
   ): Promise<ListResult<NodeData>> {
 
-    console.log('query', query);
     // Check access
     const allowed =
       context.policies.includes('view-nodes-all-organizations') ||
@@ -284,6 +284,20 @@ export class NodeService {
         'nodes.updatedAt',
         'organizations.name as organizationName',
       ])
+      .select((eb) =>
+        eb
+          .selectFrom('connections')
+          .select((eb2) =>
+            eb2.fn.count<number>('connections.id').distinct().as('count')
+          )
+          .where((wb) =>
+            wb.or([
+              wb('connections.fromNodeId', '=', eb.ref('nodes.id')),
+              wb('connections.targetNodeId', '=', eb.ref('nodes.id')),
+            ])
+          )
+          .as('connectionsCount')
+      )
 
     // Filter by organization only for non-root users
     if (!context.policies.includes('view-nodes-all-organizations')) {

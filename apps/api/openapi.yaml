@@ -257,6 +257,7 @@ components:
         status: { type: string, enum: [active, inactive, pending] }
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
+        connectionsCount: { type: integer, description: "Total number of incoming and outgoing connections" }
       required: [id, organizationId, name, type, apiUrl, status, createdAt, updatedAt]
     CreateNodeRequest:
       type: object
