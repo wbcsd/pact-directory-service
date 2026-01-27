@@ -396,6 +396,7 @@ describe('NodeService', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           organizationName: 'Test Org',
+          connectionsCount: 3,
         },
         {
           id: 2,
@@ -407,6 +408,7 @@ describe('NodeService', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           organizationName: 'Test Org',
+          connectionsCount: 5,
         },
       ];
 
@@ -417,6 +419,8 @@ describe('NodeService', () => {
 
       expect(result.data).toEqual(mockNodes);
       expect(result.pagination.total).toBe(2);
+      expect(result.data[0].connectionsCount).toBe(3);
+      expect(result.data[1].connectionsCount).toBe(5);
     });
 
     it('should apply filters correctly', async () => {
@@ -427,6 +431,67 @@ describe('NodeService', () => {
       await nodeService.list(adminUserContext, 1, query);
 
       expect(dbMocks.queryChain.where).toHaveBeenCalled();
+    });
+
+    it('should include connectionsCount in response', async () => {
+      const mockNodes = [
+        {
+          id: 1,
+          organizationId: 1,
+          name: 'Node with connections',
+          type: 'internal',
+          apiUrl: 'http://example1.com',
+          status: 'active',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          organizationName: 'Test Org',
+          connectionsCount: 10,
+        },
+        {
+          id: 2,
+          organizationId: 1,
+          name: 'Node without connections',
+          type: 'external',
+          apiUrl: 'http://example2.com',
+          status: 'active',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          organizationName: 'Test Org',
+          connectionsCount: 0,
+        },
+      ];
+
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 2 });
+      dbMocks.executors.execute.mockResolvedValueOnce(mockNodes);
+
+      const result = await nodeService.list(adminUserContext, 1, ListQuery.default());
+
+      expect(result.data).toHaveLength(2);
+      expect(result.data[0]).toHaveProperty('connectionsCount');
+      expect(result.data[0].connectionsCount).toBe(10);
+      expect(result.data[1].connectionsCount).toBe(0);
+    });
+
+    it('should count both incoming and outgoing connections', async () => {
+      const mockNode = {
+        id: 1,
+        organizationId: 1,
+        name: 'Node with bidirectional connections',
+        type: 'internal',
+        apiUrl: 'http://example.com',
+        status: 'active',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        organizationName: 'Test Org',
+        connectionsCount: 7, // Total of incoming + outgoing
+      };
+
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 1 });
+      dbMocks.executors.execute.mockResolvedValueOnce([mockNode]);
+
+      const result = await nodeService.list(adminUserContext, 1, ListQuery.default());
+
+      expect(result.data[0].connectionsCount).toBe(7);
     });
   });
 });
