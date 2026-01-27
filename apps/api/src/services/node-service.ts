@@ -1,7 +1,7 @@
 import { Kysely } from 'kysely';
 import { Database } from '@src/database/types';
 import { NotFoundError, ForbiddenError, BadRequestError } from '@src/common/errors';
-import { registerPolicy, checkAccess, Role } from '@src/common/policies';
+import { registerPolicy, Role } from '@src/common/policies';
 import { UserContext } from './user-service';
 import { ListQuery, ListResult } from '@src/common/list-query';
 import config from '@src/common/config';
