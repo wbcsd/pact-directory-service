@@ -1,12 +1,10 @@
 import React from "react";
-import { IconButton, Text } from "@radix-ui/themes";
-import { NavLink, useNavigate } from "react-router-dom";
+import { Text } from "@radix-ui/themes";
+import { NavLink } from "react-router-dom";
 import FeatureFlag from "./FeatureFlag";
 import PolicyGuard from "./PolicyGuard";
-import { PlusCircledIcon } from "@radix-ui/react-icons";
 
 const SideNav: React.FC = () => {
-  const navigate = useNavigate();
   return (
     <>
       <div className="nav-group">
