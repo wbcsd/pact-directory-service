@@ -165,9 +165,9 @@ function DataTable<T extends object>({
             {emptyState.title}
           </Text>
           {emptyState.description && (
-            <Text size="2" className="emptyHint">
+            <><br /><Text size="2" className="emptyHint">
               {emptyState.description}
-            </Text>
+            </Text></>  
           )}
           {emptyState.action && <Box mt="4">{emptyState.action}</Box>}
         </Box>

@@ -79,6 +79,10 @@
   position: relative;
 }
 
+.SelectItem:hover {
+  background-color: #f0f0f0;
+}
+
 /* Button Group */
 .button-group {
   display: flex !important;

@@ -2,8 +2,10 @@ import React from "react";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import SearchableDataTable, { PaginationInfo } from "../components/SearchableDataTable";
 import { Column } from "../components/DataTable";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { GridPageLayout } from "../layouts";
+import { Button, Box } from "@radix-ui/themes";
+import { PlusIcon } from "@radix-ui/react-icons";
 
 export interface NodeConnection {
   id: number;
@@ -19,6 +21,7 @@ export interface NodeConnection {
 
 const NodeConnectionsList: React.FC = () => {
   const { id: nodeId } = useParams<{ id: string }>();
+  const navigate = useNavigate();
 
   // Fetch function for DataTableWithSearch
   const fetchConnections = async (params: {
@@ -168,9 +171,24 @@ const NodeConnectionsList: React.FC = () => {
       loading={false}
       loadingMessage="Loading connections..."
     >
+      <Box mb="4" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <h2 style={{ margin: 0, marginBottom: '8px' }}>Viewing all connections for Node #{nodeId}</h2>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <Button 
+            onClick={() => navigate(`/nodes/${nodeId}/invitations`)}
+          >
+            View Pending Invitations
+          </Button>
+          <Button onClick={() => navigate(`/nodes/${nodeId}/create-connection`)}>
+            <PlusIcon style={{ marginRight: '6px' }} />
+            Add Connection
+          </Button>
+        </div>
+      </Box>
+      
       <SearchableDataTable<NodeConnection>
-        title="Node Connections"
-        subtitle={`Viewing all connections for Node #${nodeId}`}
+        title=""
+        subtitle=""
         searchPlaceholder="Search connections..."
         fetchData={fetchConnections}
         columns={columns}
@@ -178,7 +196,7 @@ const NodeConnectionsList: React.FC = () => {
         defaultPageSize={50}
         emptyState={{
           title: "No connections found",
-          description: "This node doesn't have any active connections yet",
+          description: "This node doesn't have any active connections yet. Create a connection to get started.",
         }}
       />
     </GridPageLayout>

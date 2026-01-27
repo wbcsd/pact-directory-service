@@ -120,11 +120,20 @@ const NodeDashboardPage: React.FC = () => {
         <div className="header">
           <h2>Node {nodeData?.name}</h2>
         </div>
-        <Button onClick={() => navigate(`/nodes/${nodeId}/connections`)}>View Connections</Button>
-        <span>&nbsp;</span>
-        <Button onClick={() => navigate(`/edit-node/${nodeId}`)}>Edit Node</Button>
-        <span>&nbsp;</span>
-        <Button onClick={() => deleteNode()}>Delete Node</Button>
+        <Box style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
+          <Button onClick={() => navigate(`/nodes/${nodeId}/connections`)}>
+            View Connections
+          </Button>
+          <Button onClick={() => navigate(`/nodes/${nodeId}/invitations`)}>
+            View Invitations
+          </Button>
+          <Button onClick={() => navigate(`/edit-node/${nodeId}`)}>
+            Edit Node
+          </Button>
+          <Button color="red" variant="soft" onClick={() => deleteNode()}>
+            Delete Node
+          </Button>
+        </Box>
 
       </main>
     </>
