@@ -1,8 +1,9 @@
 import React from "react";
-import { Text } from "@radix-ui/themes";
+import { IconButton, Text, Tooltip } from "@radix-ui/themes";
 import { NavLink } from "react-router-dom";
 import FeatureFlag from "./FeatureFlag";
 import PolicyGuard from "./PolicyGuard";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
 
 const SideNav: React.FC = () => {
   return (
@@ -62,12 +63,25 @@ const SideNav: React.FC = () => {
           </FeatureFlag>
           <FeatureFlag flag="enableNodeManagement">
             <PolicyGuard policies={["view-nodes-own-organization", "view-nodes-all-organizations"]}>
+              <>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5em" }}>
                   <NavLink
                     to="/nodes"
-                    style={{ textDecoration: "none" }}
+                    style={{ textDecoration: "none", flex: 1 }}
                   >
                     <Text>Nodes</Text>
-                  </NavLink>              
+                  </NavLink>
+                  <Tooltip content="View individual node connections from the Nodes page">
+                    <IconButton
+                      variant="ghost"
+                      size="1"
+                      style={{ padding: "2px", cursor: "help" }}
+                    >
+                      <InfoCircledIcon />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+              </>
             </PolicyGuard>
           </FeatureFlag>          
         </nav>
