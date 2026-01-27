@@ -78,7 +78,7 @@ const OrganizationProfile: React.FC = () => {
         const connectionRequestsData = await connectionRequestsResponse.json();
 
         // Check if organizations are connected
-        const isConnected = connectionsData.data.some((conn: any) => 
+        const isConnected = connectionsData.data.some((conn: { connectedCompanyOneId: number; connectedCompanyTwoId: number; }) => 
           conn.connectedCompanyOneId.toString() === id || 
           conn.connectedCompanyTwoId.toString() === id
         );
@@ -90,7 +90,7 @@ const OrganizationProfile: React.FC = () => {
         }
 
         // Check sent connection requests
-        const sentRequest = connectionRequestsData.data.find((req: any) => 
+        const sentRequest = connectionRequestsData.data.find((req: { requestedCompanyId: number; status: string; }) => 
           req.requestedCompanyId.toString() === id && req.status === 'pending'
         );
 
@@ -100,8 +100,8 @@ const OrganizationProfile: React.FC = () => {
           return;
         }
 
-        // Check received connection requests  
-        const receivedRequest = connectionRequestsData.data.find((req: any) => 
+        // Check received connection requests
+        const receivedRequest = connectionRequestsData.data.find((req: { requestingCompanyId: number; status: string; }) =>
           req.requestingCompanyId.toString() === id && req.status === 'pending'
         );
 
