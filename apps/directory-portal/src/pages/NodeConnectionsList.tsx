@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import SearchableDataTable, { PaginationInfo } from "../components/SearchableDataTable";
 import { Column } from "../components/DataTable";
 import { useParams, useNavigate } from "react-router-dom";
 import { GridPageLayout } from "../layouts";
-import { Button, Box } from "@radix-ui/themes";
-import { PlusIcon } from "@radix-ui/react-icons";
+import { Button, Box, Callout } from "@radix-ui/themes";
+import { PlusIcon, TrashIcon, ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
 
 export interface NodeConnection {
   id: number;
@@ -22,6 +22,45 @@ export interface NodeConnection {
 const NodeConnectionsList: React.FC = () => {
   const { id: nodeId } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error', message: string } | null>(null);
+
+  const handleRemoveConnection = async (connectionId: number) => {
+    if (!confirm("Are you sure you want to remove this connection? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      setActionMessage(null);
+      const response = await fetchWithAuth(
+        `/node-invitations/${connectionId}`,
+        { method: "DELETE" }
+      );
+
+      if (!response || !response.ok) {
+        const error = await response?.json();
+        setActionMessage({ 
+          type: 'error', 
+          message: error?.message || 'Failed to remove connection' 
+        });
+        return;
+      }
+
+      setActionMessage({ 
+        type: 'success', 
+        message: 'Connection removed successfully' 
+      });
+      
+      // Refresh the table
+      setRefreshKey(prev => prev + 1);
+    } catch (error) {
+      console.error("Error removing connection:", error);
+      setActionMessage({ 
+        type: 'error', 
+        message: 'An error occurred while removing the connection' 
+      });
+    }
+  };
 
   // Fetch function for DataTableWithSearch
   const fetchConnections = async (params: {
@@ -163,6 +202,20 @@ const NodeConnectionsList: React.FC = () => {
           : date.toLocaleDateString();
       },
     },
+    {
+      key: "actions",
+      header: "Actions",
+      extendedStyle: { textAlign: 'right' },
+      render: (row: NodeConnection) => (
+        <Button
+          size="1"
+          onClick={() => handleRemoveConnection(row.id)}
+        >
+          <TrashIcon style={{ marginRight: '4px' }} />
+          Remove
+        </Button>
+      ),
+    },
   ];
 
   return (
@@ -185,8 +238,22 @@ const NodeConnectionsList: React.FC = () => {
           </Button>
         </div>
       </Box>
+
+      {actionMessage && (
+        <Callout.Root 
+          color={actionMessage.type === 'success' ? 'green' : 'red'} 
+          mb="4"
+          style={{ marginBottom: '16px' }}
+        >
+          <Callout.Icon>
+            {actionMessage.type === 'success' ? <CheckIcon /> : <ExclamationTriangleIcon />}
+          </Callout.Icon>
+          <Callout.Text>{actionMessage.message}</Callout.Text>
+        </Callout.Root>
+      )}
       
       <SearchableDataTable<NodeConnection>
+        refreshTrigger={refreshKey}
         title=""
         subtitle=""
         searchPlaceholder="Search connections..."
