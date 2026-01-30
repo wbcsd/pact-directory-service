@@ -291,9 +291,12 @@ export class NodeService {
             eb2.fn.count<number>('connections.id').distinct().as('count')
           )
           .where((wb) =>
-            wb.or([
-              wb('connections.fromNodeId', '=', eb.ref('nodes.id')),
-              wb('connections.targetNodeId', '=', eb.ref('nodes.id')),
+            wb.and([
+              wb('connections.status', '=', 'accepted'),
+              wb.or([
+                wb('connections.fromNodeId', '=', eb.ref('nodes.id')),
+                wb('connections.targetNodeId', '=', eb.ref('nodes.id')),
+              ])
             ])
           )
           .as('connectionsCount')
