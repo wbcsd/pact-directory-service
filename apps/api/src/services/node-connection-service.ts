@@ -376,11 +376,7 @@ export class NodeConnectionService {
 
     // Delete the connection
     await this.db
-      .updateTable('connections')
-      .set({
-        status: 'rejected',
-        updatedAt: new Date(),
-      })
+      .deleteFrom('connections')
       .where('id', '=', connectionId)
       .execute();
   }
