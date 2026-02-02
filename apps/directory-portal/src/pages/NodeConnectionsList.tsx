@@ -51,7 +51,6 @@ const NodeConnectionsList: React.FC = () => {
         message: 'Connection removed successfully' 
       });
       
-      // Refresh the table
       setRefreshKey(prev => prev + 1);
     } catch (error) {
       console.error("Error removing connection:", error);

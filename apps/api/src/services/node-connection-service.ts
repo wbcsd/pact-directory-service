@@ -343,7 +343,7 @@ export class NodeConnectionService {
   /**
    * Remove a connection
    */
-  async removeConnection(context: UserContext, connectionId: number): Promise<void> {
+  async removeConnection(context: UserContext, connectionId: number): Promise<{ success: boolean; removedId: number }> {
     // Get the connection
     const connection = await this.db
       .selectFrom('connections')
@@ -379,6 +379,11 @@ export class NodeConnectionService {
       .deleteFrom('connections')
       .where('id', '=', connectionId)
       .execute();
+
+    return {
+      success: true,
+      removedId: connectionId,
+    }
   }
 
   /**
