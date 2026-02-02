@@ -467,7 +467,7 @@ describe('NodeConnectionService', () => {
 
       await connectionService.removeConnection(adminUserContext, 1);
 
-      expect(dbMocks.db.updateTable).toHaveBeenCalledWith('connections');
+      expect(dbMocks.db.deleteFrom).toHaveBeenCalledWith('connections');
     });
   });
 

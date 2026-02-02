@@ -50,6 +50,9 @@ export const createMockQueryChain = (executors = createMockExecutors()) => ({
   // $if
   $if: jest.fn().mockReturnThis(),
   $call: jest.fn().mockReturnThis(),
+
+  // Delete methods
+  deleteFrom: jest.fn().mockReturnThis(),
   
   // Execution methods
   ...executors,
@@ -68,6 +71,7 @@ export const createMockDatabase = () => {
     // Main query methods
     selectFrom: jest.fn().mockReturnValue(queryChain),
     insertInto: jest.fn().mockReturnValue(queryChain),
+    deleteFrom: jest.fn().mockReturnValue(queryChain),
     updateTable: jest.fn().mockReturnValue(queryChain),
     withRecursive: jest.fn().mockReturnValue(queryChain),
     
