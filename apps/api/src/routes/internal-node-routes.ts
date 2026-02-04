@@ -105,11 +105,11 @@ export function createInternalNodeRoutes(): Router {
   });
 
   /**
-   * GET /api/internal/:nodeId/footprints
+   * GET /api/internal/:nodeId/3/footprints
    * List product footprints (PACT v3)
    */
   router.get(
-    "/:nodeId/footprints",
+    "/:nodeId/3/footprints",
     authenticateInternalNode,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -120,12 +120,16 @@ export function createInternalNodeRoutes(): Router {
         const offset = req.query.offset ? parseInt(req.query.offset as string, 10) : 0;
         const productId = req.query.productId as string | undefined;
         const companyId = req.query.companyId as string | undefined;
-        const geographyCountry = req.query.geographyCountry as string | undefined;
+        const geography = req.query.geography as string | undefined;
+        const classification = req.query.classification as string | undefined;
         const status = req.query.status as string | undefined;
+        const validOn = req.query.validOn as string | undefined;
+        const validAfter = req.query.validAfter as string | undefined;
+        const validBefore = req.query.validBefore as string | undefined;
 
         // Get footprints
         const result = services.internalNodePact.getFootprints(
-          { productId, companyId, geographyCountry, status },
+          { productId, companyId, geography, classification, status, validOn, validAfter, validBefore },
           { limit, offset }
         );
 
@@ -145,11 +149,11 @@ export function createInternalNodeRoutes(): Router {
   );
 
   /**
-   * GET /api/internal/:nodeId/footprints/:id
+   * GET /api/internal/:nodeId/3/footprints/:id
    * Get single product footprint by ID (PACT v3)
    */
   router.get(
-    "/:nodeId/footprints/:id",
+    "/:nodeId/3/footprints/:id",
     authenticateInternalNode,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -163,6 +167,39 @@ export function createInternalNodeRoutes(): Router {
         }
 
         res.json({ data: footprint });
+      } catch (error) {
+        next(error);
+      }
+    }
+  );
+
+  /**
+   * POST /api/internal/:nodeId/3/events
+   * Handle PACT v3 events (Published, RequestCreated, RequestFulfilled, RequestRejected)
+   */
+  router.post(
+    "/:nodeId/3/events",
+    authenticateInternalNode,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const nodeId = parseInt(req.params.nodeId, 10);
+        
+        // Validate CloudEvents format
+        if (!req.body.type || !req.body.specversion || !req.body.id || !req.body.source) {
+          throw new BadRequestError("Invalid CloudEvents format. Missing required fields: type, specversion, id, or source");
+        }
+
+        // Log the event (in production, process it)
+        logger.info({
+          nodeId,
+          eventType: req.body.type,
+          eventId: req.body.id,
+          eventSource: req.body.source,
+        }, "Received PACT event for internal node");
+
+        // For now, just acknowledge receipt
+        // In a full implementation, this would trigger workflows based on event type
+        res.status(200).send();
       } catch (error) {
         next(error);
       }

@@ -86,9 +86,11 @@ grant_type=client_credentials
 
 ### PACT v3 Endpoints
 
+All PACT endpoints follow the v3 URL structure with version prefix `/3/`.
+
 #### List Product Footprints
 ```http
-GET /api/internal/:nodeId/footprints?limit=10&offset=0
+GET /api/internal/:nodeId/3/footprints?limit=10&offset=0
 Authorization: Bearer <access_token>
 ```
 
@@ -97,7 +99,12 @@ Authorization: Bearer <access_token>
 - `offset`: Pagination offset (default: 0)
 - `productId`: Filter by product ID (partial match)
 - `companyId`: Filter by company ID (partial match)
-- `geographyCountry`: Filter by country code (exact match)
+- `geography`: Filter by country, region, or subdivision (matches any geography field)
+- `classification`: Filter by product classification ID (matches productClassifications array)
+- `status`: Filter by status (exact match: "Active" or "Deprecated")
+- `validOn`: Filter by validity date (footprint valid on this date)
+- `validAfter`: Filter by validity start (footprint validity starts on or after this date)
+- `validBefore`: Filter by validity end (footprint validity ends on or before this date)
 - `status`: Filter by footprint status (Active/Deprecated)
 
 **Response:**
@@ -144,9 +151,24 @@ Authorization: Bearer <access_token>
 **Headers:**
 - `Link`: Pagination links (first, prev, next, last) when applicable
 
+**Example Request:**
+```bash
+# Filter by geography and status
+curl -X GET "http://localhost:3010/api/internal/5/3/footprints?geography=US&status=Active" \
+  -H "Authorization: Bearer <token>"
+
+# Filter by validity date
+curl -X GET "http://localhost:3010/api/internal/5/3/footprints?validOn=2023-06-01" \
+  -H "Authorization: Bearer <token>"
+
+# Filter by classification
+curl -X GET "http://localhost:3010/api/internal/5/3/footprints?classification=urn:gtin:4712345060507" \
+  -H "Authorization: Bearer <token>"
+```
+
 #### Get Single Footprint
 ```http
-GET /api/internal/:nodeId/footprints/:id
+GET /api/internal/:nodeId/3/footprints/:id
 Authorization: Bearer <access_token>
 ```
 
@@ -156,6 +178,36 @@ Authorization: Bearer <access_token>
   "data": { /* ProductFootprintV3 object */ }
 }
 ```
+
+#### Handle Events
+```http
+POST /api/internal/:nodeId/3/events
+Authorization: Bearer <access_token>
+Content-Type: application/cloudevents+json
+```
+
+**Request Body (CloudEvents 1.0 format):**
+```json
+{
+  "type": "org.wbcsd.pact.ProductFootprint.PublishedEvent.3",
+  "specversion": "1.0",
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "source": "https://example.com/footprints",
+  "time": "2023-05-19T12:30:00Z",
+  "data": {
+    "pfIds": ["urn:gtin:4712345060507"]
+  }
+}
+```
+
+**Event Types:**
+- `org.wbcsd.pact.ProductFootprint.RequestCreatedEvent.3` - New data request created
+- `org.wbcsd.pact.ProductFootprint.RequestFulfilledEvent.3` - Request fulfilled with data
+- `org.wbcsd.pact.ProductFootprint.RequestRejectedEvent.3` - Request rejected
+- `org.wbcsd.pact.ProductFootprint.PublishedEvent.3` - Footprint published/updated
+
+**Response:**
+- `200 OK` with empty body on success
 
 ## Authentication Flow
 
