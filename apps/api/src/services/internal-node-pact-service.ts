@@ -10,13 +10,17 @@ export interface PaginationParams {
 }
 
 /**
- * Filter parameters for footprints
+ * Filter parameters for footprints (PACT v3 spec)
  */
 export interface FootprintFilters {
   productId?: string;
   companyId?: string;
-  geographyCountry?: string;
-  status?: string;
+  geography?: string; // Can match geographyCountry, geographyRegionOrSubregion, or geographyCountrySubdivision
+  classification?: string; // Match against productClassifications array
+  status?: string; // Active or Deprecated
+  validOn?: string; // ISO 8601 date - footprint valid on this date
+  validAfter?: string; // ISO 8601 date - footprint valid after this date
+  validBefore?: string; // ISO 8601 date - footprint valid before this date
 }
 
 /**
@@ -65,11 +69,21 @@ export class InternalNodePactService {
       );
     }
 
-    if (filters.geographyCountry) {
+    if (filters.geography) {
       filtered = filtered.filter(
         (fp) =>
           fp.pcf.geography?.country?.toLowerCase() ===
-          filters.geographyCountry!.toLowerCase()
+            filters.geography!.toLowerCase() ||
+          fp.pcf.geography?.regionOrSubregion?.toLowerCase() ===
+            filters.geography!.toLowerCase() ||
+          fp.pcf.geography?.countrySubdivision?.toLowerCase() ===
+            filters.geography!.toLowerCase()
+      );
+    }
+
+    if (filters.classification) {
+      filtered = filtered.filter((fp) =>
+        fp.productClassifications?.some((pc) => pc.classId === filters.classification)
       );
     }
 
@@ -77,6 +91,47 @@ export class InternalNodePactService {
       filtered = filtered.filter(
         (fp) => fp.status.toLowerCase() === filters.status!.toLowerCase()
       );
+    }
+
+    // validOn: Footprint must be valid on the specified date
+    if (filters.validOn) {
+      const validOnDate = new Date(filters.validOn);
+      filtered = filtered.filter((fp) => {
+        if (fp.validityPeriod?.start && fp.validityPeriod?.end) {
+          const start = new Date(fp.validityPeriod.start);
+          const end = new Date(fp.validityPeriod.end);
+          return validOnDate >= start && validOnDate <= end;
+        }
+        // Fallback to reference period if validityPeriod not available
+        if (fp.pcf.referencePeriod) {
+          const start = new Date(fp.pcf.referencePeriod.start);
+          const end = new Date(fp.pcf.referencePeriod.end);
+          return validOnDate >= start && validOnDate <= end;
+        }
+        return false;
+      });
+    }
+
+    // validAfter: Footprint validity start or reference period start must be after this date
+    if (filters.validAfter) {
+      const validAfterDate = new Date(filters.validAfter);
+      filtered = filtered.filter((fp) => {
+        const validityStart = fp.validityPeriod?.start
+          ? new Date(fp.validityPeriod.start)
+          : new Date(fp.pcf.referencePeriod.start);
+        return validityStart >= validAfterDate;
+      });
+    }
+
+    // validBefore: Footprint validity end or reference period end must be before this date
+    if (filters.validBefore) {
+      const validBeforeDate = new Date(filters.validBefore);
+      filtered = filtered.filter((fp) => {
+        const validityEnd = fp.validityPeriod?.end
+          ? new Date(fp.validityPeriod.end)
+          : new Date(fp.pcf.referencePeriod.end);
+        return validityEnd <= validBeforeDate;
+      });
     }
 
     // Apply pagination
