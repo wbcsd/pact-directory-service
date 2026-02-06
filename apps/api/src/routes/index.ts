@@ -345,7 +345,8 @@ router.post('/directory/users/resend-verification', context(async (req) => {
 }));
 
 // Internal Node PACT API Routes
-// Mount virtualized PACT-compliant endpoints for internal nodes
-router.use('/internal', createInternalNodeRoutes());
+// Mount PACT-compliant endpoints for internal nodes
+// URL structure: /api/nodes/:nodeId/auth/token and /api/nodes/:nodeId/3/footprints
+router.use('/nodes', createInternalNodeRoutes());
 
 export default router;

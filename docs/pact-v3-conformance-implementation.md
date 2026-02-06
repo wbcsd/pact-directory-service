@@ -9,18 +9,18 @@ This document describes the complete PACT v3 conformance implementation for inte
 ### ✅ Completed Features
 
 1. **Authentication Endpoint**
-   - `POST /api/internal/:nodeId/auth/token`
+   - `POST /api/nodes/:nodeId/auth/token`
    - OAuth2 Client Credentials flow
    - JWT token generation (1 hour expiry)
    - Connection credential validation
 
 2. **PACT v3 Footprint Endpoints**
-   - `GET /api/internal/:nodeId/3/footprints` - List with filtering
-   - `GET /api/internal/:nodeId/3/footprints/:id` - Get single footprint
+   - `GET /api/nodes/:nodeId/3/footprints` - List with filtering
+   - `GET /api/nodes/:nodeId/3/footprints/:id` - Get single footprint
    - Version-prefixed URLs matching PACT spec
 
 3. **Events Endpoint**
-   - `POST /api/internal/:nodeId/3/events` - CloudEvents handler
+   - `POST /api/nodes/:nodeId/3/events` - CloudEvents handler
    - CloudEvents 1.0 format validation
    - Support for all PACT event types
 
@@ -217,7 +217,7 @@ router.post(
 
 ```bash
 # Get access token
-curl -X POST "http://localhost:3010/api/internal/5/auth/token" \
+curl -X POST "http://localhost:3010/api/nodes/5/auth/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=client_credentials&client_id=abc123&client_secret=secret456"
 ```
@@ -235,27 +235,27 @@ curl -X POST "http://localhost:3010/api/internal/5/auth/token" \
 
 ```bash
 # Basic listing
-curl -X GET "http://localhost:3010/api/internal/5/3/footprints?limit=10&offset=0" \
+curl -X GET "http://localhost:3010/api/nodes/5/3/footprints?limit=10&offset=0" \
   -H "Authorization: Bearer <token>"
 
 # Filter by geography
-curl -X GET "http://localhost:3010/api/internal/5/3/footprints?geography=US" \
+curl -X GET "http://localhost:3010/api/nodes/5/3/footprints?geography=US" \
   -H "Authorization: Bearer <token>"
 
 # Filter by status
-curl -X GET "http://localhost:3010/api/internal/5/3/footprints?status=Active" \
+curl -X GET "http://localhost:3010/api/nodes/5/3/footprints?status=Active" \
   -H "Authorization: Bearer <token>"
 
 # Filter by validity date
-curl -X GET "http://localhost:3010/api/internal/5/3/footprints?validOn=2023-06-01" \
+curl -X GET "http://localhost:3010/api/nodes/5/3/footprints?validOn=2023-06-01" \
   -H "Authorization: Bearer <token>"
 
 # Filter by classification
-curl -X GET "http://localhost:3010/api/internal/5/3/footprints?classification=urn:gtin:4712345060507" \
+curl -X GET "http://localhost:3010/api/nodes/5/3/footprints?classification=urn:gtin:4712345060507" \
   -H "Authorization: Bearer <token>"
 
 # Multiple filters (AND logic)
-curl -X GET "http://localhost:3010/api/internal/5/3/footprints?geography=US&status=Active&validOn=2023-06-01" \
+curl -X GET "http://localhost:3010/api/nodes/5/3/footprints?geography=US&status=Active&validOn=2023-06-01" \
   -H "Authorization: Bearer <token>"
 ```
 
@@ -295,15 +295,15 @@ curl -X GET "http://localhost:3010/api/internal/5/3/footprints?geography=US&stat
 
 **Link Header:**
 ```
-Link: <http://localhost:3010/api/internal/5/3/footprints?limit=10&offset=0>; rel="first",
-      <http://localhost:3010/api/internal/5/3/footprints?limit=10&offset=10>; rel="next",
-      <http://localhost:3010/api/internal/5/3/footprints?limit=10&offset=20>; rel="last"
+Link: <http://localhost:3010/api/nodes/5/3/footprints?limit=10&offset=0>; rel="first",
+      <http://localhost:3010/api/nodes/5/3/footprints?limit=10&offset=10>; rel="next",
+      <http://localhost:3010/api/nodes/5/3/footprints?limit=10&offset=20>; rel="last"
 ```
 
 ### Get Single Footprint
 
 ```bash
-curl -X GET "http://localhost:3010/api/internal/5/3/footprints/urn:gtin:4712345060507" \
+curl -X GET "http://localhost:3010/api/nodes/5/3/footprints/urn:gtin:4712345060507" \
   -H "Authorization: Bearer <token>"
 ```
 
@@ -320,7 +320,7 @@ curl -X GET "http://localhost:3010/api/internal/5/3/footprints/urn:gtin:47123450
 ### Send Event
 
 ```bash
-curl -X POST "http://localhost:3010/api/internal/5/3/events" \
+curl -X POST "http://localhost:3010/api/nodes/5/3/events" \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/cloudevents+json" \
   -d '{
@@ -369,7 +369,7 @@ curl -X POST "http://localhost:3010/api/internal/5/3/events" \
 
 3. **Test authentication:**
    ```bash
-   curl -X POST "http://localhost:3010/api/internal/5/auth/token" \
+   curl -X POST "http://localhost:3010/api/nodes/5/auth/token" \
      -H "Content-Type: application/x-www-form-urlencoded" \
      -d "grant_type=client_credentials&client_id=abc123&client_secret=secret456"
    ```
@@ -377,27 +377,27 @@ curl -X POST "http://localhost:3010/api/internal/5/3/events" \
 4. **Test footprint listing:**
    ```bash
    # All footprints
-   curl -X GET "http://localhost:3010/api/internal/5/3/footprints" \
+   curl -X GET "http://localhost:3010/api/nodes/5/3/footprints" \
      -H "Authorization: Bearer <token>"
    
    # Filter by geography
-   curl -X GET "http://localhost:3010/api/internal/5/3/footprints?geography=US" \
+   curl -X GET "http://localhost:3010/api/nodes/5/3/footprints?geography=US" \
      -H "Authorization: Bearer <token>"
    
    # Filter by date
-   curl -X GET "http://localhost:3010/api/internal/5/3/footprints?validOn=2023-06-01" \
+   curl -X GET "http://localhost:3010/api/nodes/5/3/footprints?validOn=2023-06-01" \
      -H "Authorization: Bearer <token>"
    ```
 
 5. **Test single footprint:**
    ```bash
-   curl -X GET "http://localhost:3010/api/internal/5/3/footprints/urn:gtin:4712345060507" \
+   curl -X GET "http://localhost:3010/api/nodes/5/3/footprints/urn:gtin:4712345060507" \
      -H "Authorization: Bearer <token>"
    ```
 
 6. **Test events:**
    ```bash
-   curl -X POST "http://localhost:3010/api/internal/5/3/events" \
+   curl -X POST "http://localhost:3010/api/nodes/5/3/events" \
      -H "Authorization: Bearer <token>" \
      -H "Content-Type: application/cloudevents+json" \
      -d '{
