@@ -42,7 +42,9 @@ export const authenticateInternalNode = async (
 
 /**
  * Create router for internal node PACT API endpoints
- * Routes: /api/internal/:nodeId/*
+ * Routes: /:nodeId/*
+ * 
+ * Note: These routes are namespaced under /api/nodes in the main router
  */
 export function createInternalNodeRoutes(): Router {
   const router = Router({ mergeParams: true });

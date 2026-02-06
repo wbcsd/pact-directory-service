@@ -16,12 +16,14 @@ The Internal Node Virtual PACT API provides a **virtualized PACT v3-compliant** 
 All virtual PACT endpoints follow this pattern:
 
 ```
-/api/internal/{nodeId}/[auth|footprints]
+/api/nodes/{nodeId}/[auth|3]
 ```
 
 - **`{nodeId}`**: The ID of the internal node
 - **`auth`**: OAuth2 authentication endpoints
-- **`footprints`**: PACT v3 product footprint endpoints
+- **`3`**: PACT v3 footprints and events endpoints
+
+This URL structure mirrors external node APIs, making internal and external nodes interchangeable from a client perspective.
 
 ### Components
 
@@ -62,7 +64,7 @@ TypeScript interfaces defining PACT v3-compliant data structures:
 
 #### Generate Access Token
 ```http
-POST /api/internal/:nodeId/auth/token
+POST /api/nodes/:nodeId/auth/token
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=client_credentials
@@ -90,7 +92,7 @@ All PACT endpoints follow the v3 URL structure with version prefix `/3/`.
 
 #### List Product Footprints
 ```http
-GET /api/internal/:nodeId/3/footprints?limit=10&offset=0
+GET /api/nodes/:nodeId/3/footprints?limit=10&offset=0
 Authorization: Bearer <access_token>
 ```
 
@@ -154,21 +156,21 @@ Authorization: Bearer <access_token>
 **Example Request:**
 ```bash
 # Filter by geography and status
-curl -X GET "http://localhost:3010/api/internal/5/3/footprints?geography=US&status=Active" \
+curl -X GET "http://localhost:3010/api/nodes/5/3/footprints?geography=US&status=Active" \
   -H "Authorization: Bearer <token>"
 
 # Filter by validity date
-curl -X GET "http://localhost:3010/api/internal/5/3/footprints?validOn=2023-06-01" \
+curl -X GET "http://localhost:3010/api/nodes/5/3/footprints?validOn=2023-06-01" \
   -H "Authorization: Bearer <token>"
 
 # Filter by classification
-curl -X GET "http://localhost:3010/api/internal/5/3/footprints?classification=urn:gtin:4712345060507" \
+curl -X GET "http://localhost:3010/api/nodes/5/3/footprints?classification=urn:gtin:4712345060507" \
   -H "Authorization: Bearer <token>"
 ```
 
 #### Get Single Footprint
 ```http
-GET /api/internal/:nodeId/3/footprints/:id
+GET /api/nodes/:nodeId/3/footprints/:id
 Authorization: Bearer <access_token>
 ```
 
@@ -181,7 +183,7 @@ Authorization: Bearer <access_token>
 
 #### Handle Events
 ```http
-POST /api/internal/:nodeId/3/events
+POST /api/nodes/:nodeId/3/events
 Authorization: Bearer <access_token>
 Content-Type: application/cloudevents+json
 ```
@@ -219,14 +221,14 @@ Content-Type: application/cloudevents+json
 
 ### Step 2: Request Access Token
 ```bash
-curl -X POST "http://localhost:3010/api/internal/5/auth/token" \
+curl -X POST "http://localhost:3010/api/nodes/5/auth/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=client_credentials&client_id=abc123&client_secret=secret456"
 ```
 
 ### Step 3: Access Protected Endpoints
 ```bash
-curl -X GET "http://localhost:3010/api/internal/5/footprints" \
+curl -X GET "http://localhost:3010/api/nodes/5/footprints" \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
@@ -319,12 +321,12 @@ curl -X POST "http://localhost:3010/api/directory/node-invitations/1/accept" \
 # Response: {"clientId": "...", "clientSecret": "..."}
 
 # 4. Generate access token
-curl -X POST "http://localhost:3010/api/internal/2/auth/token" \
+curl -X POST "http://localhost:3010/api/nodes/2/auth/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=client_credentials&client_id=<clientId>&client_secret=<clientSecret>"
 
 # 5. Access footprints
-curl -X GET "http://localhost:3010/api/internal/2/footprints?limit=5" \
+curl -X GET "http://localhost:3010/api/nodes/2/footprints?limit=5" \
   -H "Authorization: Bearer <access_token>"
 ```
 
