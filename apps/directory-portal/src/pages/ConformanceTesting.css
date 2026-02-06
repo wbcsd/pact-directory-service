@@ -68,7 +68,7 @@
 
 .test-box {
   padding: 2rem 3rem;
-  height: 100%;
+  height: calc(100vh - 81px);
   overflow-y: auto;
 }
 

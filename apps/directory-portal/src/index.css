@@ -249,6 +249,7 @@ h2 {
 }
 .container {
   display: flex;
+  height: calc(100vh - 81px);
 }
 .sidebar {
   width: 250px;
@@ -367,6 +368,8 @@ tbody tr {
   border-left: 1px solid #ececf0;
   background: #f6f9ff;
   width: 30%;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .marker-divider {
   width: 8px;
