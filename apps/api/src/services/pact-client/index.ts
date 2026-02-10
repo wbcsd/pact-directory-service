@@ -1,11 +1,9 @@
 /**
  * PACT API Client Module
  * 
- * Unified client abstraction for communicating with PACT nodes.
- * Export everything needed for using the client system.
+ * Unified HTTP-based client for communicating with PACT nodes.
+ * Export everything needed for using the client.
  */
 
 export * from "./pact-api-client.interface";
-export * from "./internal-node-client";
-export * from "./external-node-client";
-export * from "./pact-client-factory";
+export * from "./pact-api-client";

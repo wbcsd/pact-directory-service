@@ -51,7 +51,8 @@ describe('NodeConnectionService', () => {
     connectionService = new NodeConnectionService(
       dbMocks.db as any,
       nodeService,
-      emailService
+      emailService,
+      'http://localhost:3010'  // internalApiBaseUrl for testing
     );
   });
 

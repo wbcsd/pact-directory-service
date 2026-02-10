@@ -43,4 +43,5 @@ export default {
   SENDGRID_API_KEY: process.env.SENDGRID_API_KEY ?? '',
   SENDGRID_FROM_EMAIL: process.env.SENDGRID_FROM_EMAIL ?? '',
   ENABLE_OPENAPI_VALIDATION: bool('ENABLE_OPENAPI_VALIDATION'),
+  INTERNAL_API_BASE_URL: process.env.INTERNAL_API_BASE_URL ?? 'http://localhost:3010',
 };

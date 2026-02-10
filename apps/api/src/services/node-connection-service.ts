@@ -10,9 +10,7 @@ import { UserContext } from './user-service';
 import { NodeService } from './node-service';
 import { EmailService } from './email-service';
 import { ListQuery, ListResult } from '@src/common/list-query';
-import { PactApiClientFactory, FootprintFilters } from './pact-client';
-import { InternalNodeAuthService } from './internal-node-auth-service';
-import { InternalNodePactService } from './internal-node-pact-service';
+import { PactApiClientImpl, FootprintFilters } from './pact-client';
 import crypto from 'crypto';
 
 // Register policies
@@ -47,8 +45,7 @@ export class NodeConnectionService {
     private db: Kysely<Database>,
     private nodeService: NodeService,
     private emailService: EmailService,
-    private internalNodeAuth: InternalNodeAuthService,
-    private internalNodePact: InternalNodePactService
+    private internalApiBaseUrl: string
   ) {}
 
   /**
@@ -523,25 +520,19 @@ export class NodeConnectionService {
       throw new ForbiddenError('You are not allowed to use this connection');
     }
 
-    // Get target node - this is the key part!
+    // Get target node
     const targetNode = await this.db
       .selectFrom('nodes')
       .select(['id', 'type', 'apiUrl'])
       .where('id', '=', connection.targetNodeId)
       .executeTakeFirstOrThrow();
 
-    // Create the appropriate client using the factory
-    // Works for BOTH internal and external nodes!
-    const client = PactApiClientFactory.create(
-      {
-        id: targetNode.id,
-        type: targetNode.type as 'internal' | 'external',
-        apiUrl: targetNode.apiUrl || undefined,
-      },
-      {
-        internalNodeAuth: this.internalNodeAuth,
-        internalNodePact: this.internalNodePact,
-      }
+    // Create client - always pass both nodeId and apiUrl
+    // Client decides internally which to use based on apiUrl presence
+    const client = new PactApiClientImpl(
+      targetNode.id,
+      targetNode.apiUrl,
+      this.internalApiBaseUrl
     );
 
     // Authenticate - same code for internal and external!
