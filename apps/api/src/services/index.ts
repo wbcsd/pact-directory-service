@@ -10,6 +10,7 @@ import { NodeService } from './node-service';
 import { NodeConnectionService } from './node-connection-service';
 import { InternalNodePactService } from './internal-node-pact-service';
 import { InternalNodeAuthService } from './internal-node-auth-service';
+import config from '../common/config';
 
 // Export individual service classes for direct usage if needed
 export { AuthService } from './auth-service';
@@ -60,8 +61,7 @@ export class ServiceContainer implements Services {
       db,
       this.node,
       this.email,
-      this.internalNodeAuth,
-      this.internalNodePact
+      config.INTERNAL_API_BASE_URL
     );
     // this.environment = new EnvironmentService(db);
   }
