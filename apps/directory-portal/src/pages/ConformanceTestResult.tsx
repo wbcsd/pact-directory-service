@@ -422,7 +422,7 @@ const ConformanceTestResult: React.FC = () => {
                   </Text>
                   <Heading
                     as="h3"
-                    color={testRunStatus == "PASS" ? "green" : testRunStatus == "PENDING" ? "yellow" : "red"}
+                    color={testRunStatus === "PASS" ? "green" : testRunStatus === "PENDING" ? "yellow" : "red"}
                   >
                     {testRunStatus}
                   </Heading>
