@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Box, Button, Text } from "@radix-ui/themes";
 import { ReloadIcon, Cross2Icon } from "@radix-ui/react-icons";
 import DataTable, { Column } from "./DataTable";
@@ -40,6 +40,16 @@ export interface SearchableDataTableProps<T> {
   
   // Header actions (e.g., "Add New" button)
   headerActions?: React.ReactNode;
+
+  // Optional selection support
+  selectable?: boolean;
+  selectedIds?: (string | number)[];
+  onSelectionChange?: (selectedIds: (string | number)[]) => void;
+  selectAllText?: string;
+  disabledRowIds?: (string | number)[];
+
+  // Notify parent when data loads
+  onDataLoaded?: (data: T[]) => void;
   
   // Refresh trigger - increment this to force a refresh
   refreshTrigger?: number;
@@ -58,6 +68,12 @@ function SearchableDataTable<T extends object>({
   defaultPageSize = 50,
   emptyState,
   headerActions,
+  selectable = false,
+  selectedIds,
+  onSelectionChange,
+  selectAllText,
+  disabledRowIds,
+  onDataLoaded,
   refreshTrigger = 0,
   searchDebounceMs = 500,
 }: SearchableDataTableProps<T>) {
@@ -74,6 +90,12 @@ function SearchableDataTable<T extends object>({
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Keep stable refs for callback props to avoid re-triggering effects
+  const fetchDataRef = useRef(fetchData);
+  fetchDataRef.current = fetchData;
+  const onDataLoadedRef = useRef(onDataLoaded);
+  onDataLoadedRef.current = onDataLoaded;
 
   // Debounce search term
   useEffect(() => {
@@ -93,14 +115,15 @@ function SearchableDataTable<T extends object>({
       setError(null);
       
       try {
-        const result = await fetchData({
+        const result = await fetchDataRef.current({
           page,
-          pageSize: pagination.pageSize,
+          pageSize: defaultPageSize,
           search: search || undefined,
         });
         
         setData(result.data);
         setPagination(result.pagination);
+        onDataLoadedRef.current?.(result.data);
       } catch (err) {
         console.error("Error fetching data:", err);
         setError(
@@ -109,14 +132,15 @@ function SearchableDataTable<T extends object>({
             : "An unexpected error occurred while fetching data."
         );
         setData([]);
+        onDataLoadedRef.current?.([]);
       } finally {
         setIsLoading(false);
       }
     },
-    [fetchData, pagination.pageSize]
+    [defaultPageSize]
   );
 
-  // Load data when page or search changes
+  // Load data when search or refreshTrigger changes
   useEffect(() => {
     loadData(1, debouncedSearchTerm);
   }, [debouncedSearchTerm, refreshTrigger, loadData]);
@@ -190,6 +214,11 @@ function SearchableDataTable<T extends object>({
         isLoading={isLoading}
         error={error}
         emptyState={emptyState}
+        selectable={selectable}
+        selectedIds={selectedIds}
+        onSelectionChange={onSelectionChange}
+        selectAllText={selectAllText}
+        disabledRowIds={disabledRowIds}
       />
 
       {/* Pagination Controls */}

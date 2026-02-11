@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { fetchWithAuth } from "../utils/auth-fetch";
-import DataTable, { Column } from "../components/DataTable";
+import SearchableDataTable from "../components/SearchableDataTable";
+import { Column } from "../components/DataTable";
 import { useAuth } from "../contexts/AuthContext";
 import { InputIcon, PlusIcon } from "@radix-ui/react-icons";
 import { useNavigate } from "react-router-dom";
@@ -25,9 +26,9 @@ export interface User {
 
 const OrganizationUsers: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedUserIds, setSelectedUserIds] = useState<(string | number)[]>([]);
   const [bulkActionLoading, setBulkActionLoading] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [notification, setNotification] = useState<{
     type: 'success' | 'error';
     message: string;
@@ -36,30 +37,36 @@ const OrganizationUsers: React.FC = () => {
   const navigate = useNavigate();
   const { profileData } = useAuth();
 
-  useEffect(() => {
-    fetchUsers();
-  }, [profileData]);
-
-  const fetchUsers = async () => {
-    if (!profileData) return;
-    
-    try {
-      setLoading(true);
-      const response = await fetchWithAuth(
-        // TODO: Update to use orgId from params if implementing multi-org admin
-        `/organizations/${profileData?.organizationId}/users`
-      );
-      if (response!.ok) {
-        const members = await response!.json();
-        setUsers(members.data);
-      } else {
-        console.error("Failed to fetch users");
-      }
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    } finally {
-      setLoading(false);
+  const fetchUsers = async (params: {
+    page: number;
+    pageSize: number;
+    search?: string;
+  }): Promise<{ data: User[]; pagination: { page: number; pageSize: number; total: number; totalPages: number; hasNext: boolean; hasPrevious: boolean } }> => {
+    if (!profileData) {
+      throw new Error("Profile data not available");
     }
+
+    const queryParams = new URLSearchParams({
+      page: params.page.toString(),
+      pageSize: params.pageSize.toString(),
+    });
+
+    if (params.search) {
+      queryParams.append("search", params.search);
+    }
+
+    const response = await fetchWithAuth(
+      // TODO: Update to use orgId from params if implementing multi-org admin
+      `/organizations/${profileData?.organizationId}/users?${queryParams.toString()}`
+    );
+
+    if (!response || !response.ok) {
+      throw new Error("Failed to fetch users");
+    }
+
+    const result = await response.json();
+    setSelectedUserIds([]);
+    return result;
   };
 
   // Get selected users
@@ -100,7 +107,7 @@ const OrganizationUsers: React.FC = () => {
           'success',
           `Successfully ${action}d ${successCount} user${successCount > 1 ? 's' : ''}${failCount > 0 ? `, ${failCount} failed` : ''}`
         );
-        await fetchUsers();
+        setRefreshTrigger((current) => current + 1);
         setSelectedUserIds([]);
       } else {
         showNotification('error', `Failed to ${action} users`);
@@ -213,8 +220,6 @@ const OrganizationUsers: React.FC = () => {
           </Button>
         </PolicyGuard>
       }
-      loading={loading}
-      loadingMessage="Loading users..."
     >
       {/* Notification Toast */}
       {notification && (
@@ -268,15 +273,35 @@ const OrganizationUsers: React.FC = () => {
         </Box>
       )}
 
-      <DataTable
-        idColumnName="id"
+      <SearchableDataTable<User>
+        title="Users"
+        subtitle="Manage and view users in your organization"
+        searchPlaceholder="Search by name or email..."
+        fetchData={fetchUsers}
         columns={columns}
-        data={users}
+        idColumnName="id"
+        defaultPageSize={25}
+        refreshTrigger={refreshTrigger}
+        headerActions={
+          <PolicyGuard policies={["edit-users"]}>
+            <Button
+              onClick={() => navigate(`/organization/${profileData?.organizationId}/${profileData?.organizationName}/add-user`)}
+            >
+              <PlusIcon />
+              <span style={{ marginLeft: '4px' }}>Add User</span>
+            </Button>
+          </PolicyGuard>
+        }
         selectable={true}
         selectedIds={selectedUserIds}
         onSelectionChange={setSelectedUserIds}
         disabledRowIds={disabledRowIds}
         selectAllText="Select all users"
+        onDataLoaded={setUsers}
+        emptyState={{
+          title: "No users found",
+          description: "No users match your search criteria",
+        }}
       />
     </GridPageLayout>
   );
