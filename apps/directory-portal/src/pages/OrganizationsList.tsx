@@ -124,18 +124,16 @@ const Organizations: React.FC = () => {
 
   return (
     <GridPageLayout
-      title=""
+      title="Organizations"
+      subtitle="Manage and view all organizations in the system"
       loading={false}
       loadingMessage="Loading organizations..."
     >
       <SearchableDataTable<Organization>
-        title="Organizations"
-        subtitle="Manage and view all organizations in the system"
         searchPlaceholder="Search by organization name..."
         fetchData={fetchOrganizations}
         columns={columns}
         idColumnName="id"
-        defaultPageSize={50}
         emptyState={{
           title: "No organizations found",
           description: "No organizations match your search criteria",

@@ -146,7 +146,7 @@ export class TestRunService {
         url.searchParams.append('page', query.page.toString());
 
       if (query.pageSize)
-        url.searchParams.append('size', query.pageSize.toString());
+        url.searchParams.append('pageSize', query.pageSize.toString());
 
       // Non-administrator users should only see their own test runs
       if (user.role !== Role.Administrator && user.role !== Role.Root)
@@ -160,9 +160,17 @@ export class TestRunService {
       });
 
       const { testRuns, count } = await response.json();
+      // The API returns one no totals, so we need to determine hasNext without needing total count
       return { 
         data: testRuns, 
-        pagination: query.pagination(count ?? 0)
+        pagination: { 
+          page: query.page ?? 1,
+          pageSize: query.pageSize,
+          hasNext: count >= query.pageSize,
+          hasPrevious: query.page ? query.page > 1 : false,
+          total: -1,
+          totalPages: -1,
+        }
       }
     } catch (error) {
       logger.error('listTestRuns error', error);
