@@ -125,33 +125,44 @@ div.table-header-wrapper {
   margin-bottom: 20px;
 }
 
-/* Pagination Controls */
-.paging-wrapper {
-  margin-top: 20px;
+/* Paging Strip */
+.paging-strip {
   display: flex;
-  gap: 8px;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
+  gap: 6px;
+  padding: 2px 0;
 }
 
-.pagination-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 1rem;
-  border-top: 1px solid #EBF0F5;
-  flex-wrap: wrap;
-  gap: 1rem;
+.paging-link {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 3px;
+  transition: color 0.15s, background 0.15s;
 }
 
-.pagination-info {
-  display: flex;
-  align-items: center;
+.paging-link:hover:not(:disabled) {
+  color: #0A0552;
+  background: #f0f2f5;
 }
 
-.pagination-buttons {
-  display: flex;
-  gap: 0.5rem;
+.paging-link:disabled {
+  color: #ccc;
+  cursor: default;
+}
+
+.paging-info {
+  font-size: 0.8rem;
+  color: #888;
+  user-select: none;
+}
+
+.paging-total {
+  color: #aaa;
 }
 
 /* Responsive adjustments */

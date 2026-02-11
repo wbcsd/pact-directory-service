@@ -206,6 +206,30 @@ function SearchableDataTable<T extends object>({
         </Box>
       )}
 
+      {/* Paging strip (above) */}
+      {!error && pagination.totalPages > 1 && (
+        <div className="paging-strip">
+          <button
+            className="paging-link"
+            onClick={() => handlePageChange(pagination.page - 1)}
+            disabled={!pagination.hasPrevious || isLoading}
+          >
+            ‹ Prev
+          </button>
+          <span className="paging-info">
+            {pagination.page} / {pagination.totalPages}
+            <span className="paging-total"> ({pagination.total})</span>
+          </span>
+          <button
+            className="paging-link"
+            onClick={() => handlePageChange(pagination.page + 1)}
+            disabled={!pagination.hasNext || isLoading}
+          >
+            Next ›
+          </button>
+        </div>
+      )}
+
       {/* Data Table */}
       <DataTable<T>
         idColumnName={idColumnName}
@@ -221,26 +245,27 @@ function SearchableDataTable<T extends object>({
         disabledRowIds={disabledRowIds}
       />
 
-      {/* Pagination Controls */}
-      {!error && data.length > 0 && (
-        <div className="paging-wrapper">
-          <Button
-            variant="soft"
+      {/* Paging strip (below) */}
+      {!error && pagination.totalPages > 1 && (
+        <div className="paging-strip">
+          <button
+            className="paging-link"
             onClick={() => handlePageChange(pagination.page - 1)}
             disabled={!pagination.hasPrevious || isLoading}
           >
-            Previous
-          </Button>
-          <Text size="2" style={{ color: "#888" }}>
-            Page {pagination.page} of {pagination.totalPages}
-          </Text>
-          <Button
-            variant="soft"
+            ‹ Prev
+          </button>
+          <span className="paging-info">
+            {pagination.page} / {pagination.totalPages}
+            <span className="paging-total"> ({pagination.total})</span>
+          </span>
+          <button
+            className="paging-link"
             onClick={() => handlePageChange(pagination.page + 1)}
             disabled={!pagination.hasNext || isLoading}
           >
-            Next
-          </Button>
+            Next ›
+          </button>
         </div>
       )}
     </Box>
