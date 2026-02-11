@@ -46,6 +46,32 @@
   background-color: #fff;
 }
 
+.mandatory-bar {
+  width: 30%;
+  height: 10px;
+  display: flex;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #ebf0f5;
+  margin: 8px 0 6px;
+}
+
+.mandatory-bar-segment {
+  height: 100%;
+}
+
+.mandatory-bar-segment.success {
+  background: #2d8a34;
+}
+
+.mandatory-bar-segment.pending {
+  background: #9aa3ad;
+}
+
+.mandatory-bar-segment.failure {
+  background: #d64545;
+}
+
 .table-container {
   overflow-x: auto;
 }
