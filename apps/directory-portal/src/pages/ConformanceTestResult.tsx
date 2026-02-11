@@ -427,8 +427,6 @@ const ConformanceTestResult: React.FC = () => {
                     {testRunStatus}
                   </Heading>
                 </Box>
-                <Box>
-                </Box>
               </Box>
             </div>
 
