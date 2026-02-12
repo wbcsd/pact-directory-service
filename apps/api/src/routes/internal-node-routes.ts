@@ -62,22 +62,6 @@ export function createInternalNodeRoutes(): Router {
         throw new BadRequestError("Invalid node ID");
       }
 
-      // Verify node exists and is internal type
-      // We query directly to avoid needing UserContext for this public endpoint
-      const node = await services.internalNodeAuth["db"]
-        .selectFrom("nodes")
-        .select(["id", "type"])
-        .where("id", "=", nodeId)
-        .executeTakeFirst();
-
-      if (!node) {
-        throw new NotFoundError("Node not found");
-      }
-
-      if (node.type !== "internal") {
-        throw new BadRequestError("Authentication only available for internal nodes");
-      }
-
       // Extract client credentials from request body (application/x-www-form-urlencoded or JSON)
       const grantType = req.body.grant_type;
       const clientId = req.body.client_id;
@@ -91,7 +75,7 @@ export function createInternalNodeRoutes(): Router {
         throw new BadRequestError("client_id and client_secret are required");
       }
 
-      // Generate token
+      // Generate token (service validates node and credentials)
       const tokenResponse = await services.internalNodeAuth.generateToken(
         nodeId,
         clientId,

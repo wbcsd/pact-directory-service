@@ -35,6 +35,30 @@ export class InternalNodeAuthService {
   constructor(private db: Kysely<Database>) {}
 
   /**
+   * Validate that a node exists and is an internal node type
+   * @param nodeId - The node ID to validate
+   * @throws NotFoundError if node doesn't exist
+   * @throws BadRequestError if node is not internal type
+   */
+  async validateInternalNode(nodeId: number): Promise<void> {
+    const node = await this.db
+      .selectFrom("nodes")
+      .select(["id", "type"])
+      .where("id", "=", nodeId)
+      .executeTakeFirst();
+
+    if (!node) {
+      const { NotFoundError } = await import("../common/errors");
+      throw new NotFoundError("Node not found");
+    }
+
+    if (node.type !== "internal") {
+      const { BadRequestError } = await import("../common/errors");
+      throw new BadRequestError("Authentication only available for internal nodes");
+    }
+  }
+
+  /**
    * Generate access token for internal node using client credentials
    * @param nodeId - The node ID requesting access
    * @param clientId - The client ID from connection credentials
@@ -46,6 +70,9 @@ export class InternalNodeAuthService {
     clientId: string,
     clientSecret: string
   ): Promise<TokenResponse> {
+    // Validate node exists and is internal type
+    await this.validateInternalNode(nodeId);
+
     // Verify credentials and get connection
     const connection = await this.verifyCredentials(
       nodeId,
