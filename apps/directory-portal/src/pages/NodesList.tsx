@@ -144,13 +144,12 @@ const NodesList: React.FC = () => {
 
   return (
     <GridPageLayout
-      title=""
+      title="Nodes"
+      subtitle="Manage and view all nodes in your organization"
       loading={false}
       loadingMessage="Loading nodes..."
     >
       <SearchableDataTable<Node>
-        title="Nodes"
-        subtitle="Manage and view all nodes in your organization"
         searchPlaceholder="Search by node name..."
         fetchData={fetchNodes}
         columns={columns}

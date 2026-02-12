@@ -253,13 +253,10 @@ const NodeConnectionsList: React.FC = () => {
       
       <SearchableDataTable<NodeConnection>
         refreshTrigger={refreshKey}
-        title=""
-        subtitle=""
         searchPlaceholder="Search connections..."
         fetchData={fetchConnections}
         columns={columns}
         idColumnName="id"
-        defaultPageSize={50}
         emptyState={{
           title: "No connections found",
           description: "This node doesn't have any active connections yet. Create a connection to get started.",

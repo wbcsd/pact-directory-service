@@ -263,13 +263,10 @@ const NodeInvitationsList: React.FC = () => {
       
       <SearchableDataTable<NodeInvitation>
         key={refreshKey}
-        title=""
-        subtitle=""
         searchPlaceholder="Search invitations..."
         fetchData={fetchInvitations}
         columns={columns}
         idColumnName="id"
-        defaultPageSize={50}
         emptyState={{
           title: "No pending invitations",
           description: "You don't have any pending connection invitations for this node.",

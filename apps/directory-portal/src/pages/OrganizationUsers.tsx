@@ -210,6 +210,7 @@ const OrganizationUsers: React.FC = () => {
   return (
     <GridPageLayout
       title="Users"
+      subtitle="Manage and view users in your organization"
       actions={
         <PolicyGuard policies={["edit-users"]}>
           <Button
@@ -274,24 +275,11 @@ const OrganizationUsers: React.FC = () => {
       )}
 
       <SearchableDataTable<User>
-        title="Users"
-        subtitle="Manage and view users in your organization"
         searchPlaceholder="Search by name or email..."
         fetchData={fetchUsers}
         columns={columns}
         idColumnName="id"
-        defaultPageSize={25}
         refreshTrigger={refreshTrigger}
-        headerActions={
-          <PolicyGuard policies={["edit-users"]}>
-            <Button
-              onClick={() => navigate(`/organization/${profileData?.organizationId}/${profileData?.organizationName}/add-user`)}
-            >
-              <PlusIcon />
-              <span style={{ marginLeft: '4px' }}>Add User</span>
-            </Button>
-          </PolicyGuard>
-        }
         selectable={true}
         selectedIds={selectedUserIds}
         onSelectionChange={setSelectedUserIds}

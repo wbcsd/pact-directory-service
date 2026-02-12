@@ -15,8 +15,6 @@ export interface PaginationInfo {
 
 export interface SearchableDataTableProps<T> {
   // Display configuration
-  title: string;
-  subtitle?: string;
   searchPlaceholder?: string;
   
   // Data fetching
@@ -59,8 +57,6 @@ export interface SearchableDataTableProps<T> {
 }
 
 function SearchableDataTable<T extends object>({
-  title,
-  subtitle,
   searchPlaceholder = "Search...",
   fetchData,
   columns,
@@ -120,6 +116,11 @@ function SearchableDataTable<T extends object>({
           pageSize: defaultPageSize,
           search: search || undefined,
         });
+
+        if (!result || !result.data || !result.pagination) {
+          console.error("Invalid data format received from fetchData:", result);
+          throw new Error("An unknown error has occurred.");
+        }
         
         setData(result.data);
         setPagination(result.pagination);
@@ -158,15 +159,7 @@ function SearchableDataTable<T extends object>({
   return (
     <Box className="data-table-with-search">
       <div className="table-header-wrapper">
-          <div className="table-header-text">
-            <h2>{title}</h2>
-            {subtitle && (
-              <Text size="2" className="headerSubtext">
-                {subtitle}
-              </Text>
-            )}
-          </div>
-          <Box className="table-header-actions">{headerActions}</Box>
+        <Box className="table-header-actions">{headerActions}</Box>
 
         {/* Search and Controls */}
           <div className="searchWrapper">
@@ -207,7 +200,7 @@ function SearchableDataTable<T extends object>({
       )}
 
       {/* Paging strip (above) */}
-      {!error && pagination.totalPages > 1 && (
+      {!error && pagination.totalPages != 1 && (
         <div className="paging-strip">
           <button
             className="paging-link"
@@ -217,8 +210,8 @@ function SearchableDataTable<T extends object>({
             ‹ Prev
           </button>
           <span className="paging-info">
-            {pagination.page} / {pagination.totalPages}
-            <span className="paging-total"> ({pagination.total})</span>
+            { pagination.totalPages > 1 && (`${pagination.page} / ${pagination.totalPages}`) }
+            { pagination.totalPages < 0 && (`${pagination.page}`) }
           </span>
           <button
             className="paging-link"

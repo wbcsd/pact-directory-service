@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Button } from "@radix-ui/themes";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import SideNav from "../components/SideNav";
 import { proxyWithAuth } from "../utils/auth-fetch";
-import EmptyImage from "../assets/pact-logistics-center-8.png";
-import ConformanceTestRunsGrid from "./ConformanceTestRunsGrid";
+import StatusBadge from "../components/StatusBadge";
+import SearchableDataTable, { PaginationInfo } from "../components/SearchableDataTable";
+import { Column } from "../components/DataTable";
 import "./ConformanceTestRuns.css";
-
-const MAX_PAGE_SIZE = 10;
+import GridPageLayout from "../layouts/GridPageLayout";
 
 interface TestRun {
   testRunId: string;
@@ -20,181 +19,131 @@ interface TestRun {
   status: "PASS" | "FAIL" | "PENDING";
 }
 
+const formatDate = (timestamp: string): string => {
+  const date = new Date(timestamp);
+  const month = date.toLocaleString("en-US", { month: "long" });
+  const day = date.getDate();
+  const year = date.getFullYear();
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  return `${month} ${day}, ${year} ${hours}:${minutes}`;
+};
+
 const ConformanceTestRuns: React.FC = () => {
   const navigate = useNavigate();
   const { profileData } = useAuth();
 
-  // URL-driven state
-  const [searchParams, setSearchParams] = useSearchParams();
-  const initialQuery = searchParams.get("q") ?? "";
-  const initialPage = parseInt(searchParams.get("page") ?? "1", 10);
-
-  const currentPage = initialPage > 0 ? initialPage : 1;
-
-  // UI state
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [testRuns, setTestRuns] = useState<TestRun[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>(initialQuery);
-
-  const gotoNextPage = () => {
-    setSearchParams({
-      q: searchTerm || "",
-      page: String(currentPage + 1),
+  const fetchTestRuns = async (params: {
+    page: number;
+    pageSize: number;
+    search?: string;
+  }): Promise<{ data: TestRun[]; pagination: PaginationInfo }> => {
+    const queryParams = new URLSearchParams({
+      page: params.page.toString(),
+      pageSize: params.pageSize.toString(),
     });
-  };
 
-  const gotoPrevPage = () => {
-    setSearchParams({
-      q: searchTerm || "",
-      page: String(Math.max(1, currentPage - 1)),
-    });
-  };
-
-  const fetchRuns = async (query: string, page: number) => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      let url = `/test-runs?page=${page}${
-        query ? `&search=${encodeURIComponent(query)}` : ""
-      }`;
-
-      url += `&pageSize=${MAX_PAGE_SIZE}`;
-
-      const response = await proxyWithAuth(url);
-      if (!response || !response.ok)
-        throw new Error("Failed to fetch test runs");
-
-      const data = await response.json();
-      if (data.error) {
-        setError(data.error);
-        return;
-      }
-
-      setTestRuns(data.data || []);
-    } catch (err) {
-      console.error("Error fetching test runs:", err);
-      setError(
-        "An unexpected error occurred while fetching test runs. Please try again."
-      );
-    } finally {
-      setIsLoading(false);
+    if (params.search) {
+      queryParams.set("search", params.search);
     }
-  };
 
-  // On mount + whenever ?q changes, fetch using the URL as the source of truth.
-  useEffect(() => {
-    const q = searchParams.get("q") ?? "";
-    const page = parseInt(searchParams.get("page") ?? "1", 10);
-
-    setSearchTerm(q); // keep input in sync
-    fetchRuns(q, page > 0 ? page : 1);
-  }, [searchParams]);
-
-  // Enter-to-search: update the URL (which triggers the effect above)
-  const onKeyUpSearch: React.KeyboardEventHandler<HTMLInputElement> = (
-    event
-  ) => {
-    const val = event.currentTarget.value.trim();
-    switch (event.key) {
-      case "Enter":
-        setSearchParams(val ? { q: val, page: "1" } : {});
-        break;
-      case "Backspace":
-        if (val.length === 0 && searchParams.get("q") !== null) {
-          setSearchParams({});
-        }
-        break;
-      default:
-        break;
+    const response = await proxyWithAuth(`/test-runs?${queryParams.toString()}`);
+    if (!response || !response.ok) {
+      throw new Error("Failed to fetch test runs");
     }
+
+    const result = await response.json();
+    if (result.error) {
+      throw new Error(result.error);
+    }
+
+    return result;
   };
 
-  const gridHeader = (
-    <div className="header">
-      <div>
-        <h2>Overview</h2>
-        <p className="headerSubtext">Showing runs from all conformance tests</p>
-      </div>
-      <div className="searchWrapper">
-        <input
-          autoFocus
-          type="text"
-          placeholder="Press enter to search by organization name, email address or user name"
-          className="searchInput"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyUp={onKeyUpSearch}
-        />
-        {searchTerm && (
-          <button
-            type="button"
-            className="clearButton"
-            aria-label="Clear search"
-            onClick={() => {
-              setSearchTerm("");
-              setSearchParams({}, { replace: true });
-            }}
-          >
-            ×
-          </button>
-        )}
-      </div>
-      <Button
-        disabled={testRuns.length === 0}
-        onClick={() => navigate("/conformance-testing")}
-      >
-        Run Tests
-      </Button>
-    </div>
-  );
+  const columns: Column<TestRun>[] = [
+    {
+      key: "testRunId",
+      header: "Test Run ID",
+      sortable: true,
+      sortValue: (run) => run.testRunId,
+      render: (run) => (
+        <NavLink to={`/conformance-test-result?testRunId=${run.testRunId}`}>
+          {run.testRunId.substring(0, 8)}
+        </NavLink>
+      ),
+    },
+    ...(profileData?.role === "administrator" || profileData?.role === "root"
+      ? [
+          {
+            key: "organizationName",
+            header: "Organization",
+            sortable: true,
+            sortValue: (run: TestRun) => run.organizationName,
+            render: (run: TestRun) => run.organizationName,
+          },
+          {
+            key: "adminEmail",
+            header: "Email",
+            sortable: true,
+            sortValue: (run: TestRun) => run.adminEmail,
+            render: (run: TestRun) => run.adminEmail,
+          },
+        ]
+      : []),
+    {
+      key: "status",
+      header: "Status",
+      sortable: true,
+      sortValue: (run) => run.status,
+      render: (run) => <StatusBadge status={run.status} />,
+    },
+    {
+      key: "techSpecVersion",
+      header: "Version",
+      sortable: true,
+      sortValue: (run) => run.techSpecVersion,
+      render: (run) => run.techSpecVersion,
+    },
+    {
+      key: "timestamp",
+      header: "Run Date/Time CET",
+      sortable: true,
+      sortValue: (run) => new Date(run.timestamp).getTime(),
+      render: (run) => (
+        <span className="test-gridcell-datetime">
+          {formatDate(run.timestamp)}
+        </span>
+      ),
+    },
+  ];
 
   return (
-    <>
-      <aside className="sidebar">
-        <div className="marker-divider"></div>
-        <SideNav />
-      </aside>
-      <main className="main">
-        {Boolean(error) === false && gridHeader}
-        {testRuns.length === 0 && searchTerm.length > 0 ? (
-          <div className="emptyState">
-            <img src={EmptyImage} alt="No results" />
-            <h2>No results for “{initialQuery}”</h2>
-            <p className="emptyHint">
-              Try a different term, or clear your search to see all test runs.
-            </p>
-          </div>
-        ) : (
-          <ConformanceTestRunsGrid
-            testRuns={testRuns}
-            navigate={navigate}
-            profileData={profileData}
-            isLoading={isLoading}
-            error={error}
-          />
-        )}
-        {testRuns.length > 0 && (
-          <div className="paging-wrapper">
-            <Button
-              type="button"
-              disabled={currentPage === 1}
-              onClick={gotoPrevPage}
-            >
-              prev
-            </Button>
-            <Button
-              disabled={testRuns.length < MAX_PAGE_SIZE}
-              type="button"
-              onClick={gotoNextPage}
-            >
-              next
-            </Button>
-          </div>
-        )}
-      </main>
-    </>
+    <GridPageLayout
+      title="Conformance Tests"
+      subtitle="Showing runs from all conformance tests"
+      actions={
+        <Button onClick={() => navigate("/conformance-testing")}>
+          Run Tests
+        </Button>
+      }
+      >
+        <SearchableDataTable<TestRun>
+          searchPlaceholder="Search by organization name, email address or user name"
+          fetchData={fetchTestRuns}
+          columns={columns}
+          idColumnName="testRunId"          
+          emptyState={{
+            title: "You currently have no tests",
+            description:
+              "Start automated testing to ensure a PACT conformant solution",
+            action: (
+              <Button onClick={() => navigate("/conformance-testing")}>
+                Run Tests
+              </Button>
+            ),
+          }}
+        />
+    </GridPageLayout>
   );
 };
 
