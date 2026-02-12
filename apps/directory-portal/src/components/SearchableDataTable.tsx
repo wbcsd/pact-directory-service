@@ -116,6 +116,11 @@ function SearchableDataTable<T extends object>({
           pageSize: defaultPageSize,
           search: search || undefined,
         });
+
+        if (!result || !result.data || !result.pagination) {
+          console.error("Invalid data format received from fetchData:", result);
+          throw new Error("An unknown error has occurred.");
+        }
         
         setData(result.data);
         setPagination(result.pagination);
