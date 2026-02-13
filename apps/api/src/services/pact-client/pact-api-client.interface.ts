@@ -8,28 +8,10 @@
 
 import { ProductFootprintV3 } from "../../models/pact-v3/product-footprint";
 import { CloudEvent } from "../../models/pact-v3/events";
+import { FootprintFilters, PaginationParams, PagedResponse } from "../../models/pact-v3/types";
 
-/**
- * Filters for querying product footprints
- */
-export interface FootprintFilters {
-  productId?: string;
-  companyId?: string;
-  geography?: string;
-  classification?: string;
-  status?: string;
-  validOn?: string;
-  validAfter?: string;
-  validBefore?: string;
-}
-
-/**
- * Pagination parameters
- */
-export interface PaginationParams {
-  limit?: number;
-  offset?: number;
-}
+// Re-export for convenience
+export type { FootprintFilters, PaginationParams };
 
 /**
  * OAuth2 token response
@@ -50,15 +32,7 @@ export interface PactApiResponse<T> {
 /**
  * PACT API list response with pagination
  */
-export interface PactApiListResponse<T> {
-  data: T[];
-  links?: {
-    first?: string;
-    prev?: string;
-    next?: string;
-    last?: string;
-  };
-}
+export type PactApiListResponse<T> = PagedResponse<T>;
 
 /**
  * Abstract interface for PACT API communication

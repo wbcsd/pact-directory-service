@@ -100,14 +100,23 @@ export function createInternalNodeRoutes(): Router {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const services = req.app.locals.services as Services;
+        const nodeId = parseInt(req.params.nodeId, 10);
 
         // Parse query parameters
         const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
         const offset = req.query.offset ? parseInt(req.query.offset as string, 10) : 0;
-        const productId = req.query.productId as string | undefined;
-        const companyId = req.query.companyId as string | undefined;
-        const geography = req.query.geography as string | undefined;
-        const classification = req.query.classification as string | undefined;
+        
+        // Array parameters - can be passed multiple times or as comma-separated
+        const parseArrayParam = (param: string | string[] | undefined): string[] | undefined => {
+          if (!param) return undefined;
+          if (Array.isArray(param)) return param;
+          return param.split(',').map(s => s.trim());
+        };
+        
+        const productId = parseArrayParam(req.query.productId as string | string[] | undefined);
+        const companyId = parseArrayParam(req.query.companyId as string | string[] | undefined);
+        const geography = parseArrayParam(req.query.geography as string | string[] | undefined);
+        const classification = parseArrayParam(req.query.classification as string | string[] | undefined);
         const status = req.query.status as string | undefined;
         const validOn = req.query.validOn as string | undefined;
         const validAfter = req.query.validAfter as string | undefined;
@@ -115,6 +124,7 @@ export function createInternalNodeRoutes(): Router {
 
         // Get footprints
         const result = services.internalNodePact.getFootprints(
+          nodeId,
           { productId, companyId, geography, classification, status, validOn, validAfter, validBefore },
           { limit, offset }
         );
@@ -144,9 +154,10 @@ export function createInternalNodeRoutes(): Router {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const services = req.app.locals.services as Services;
+        const nodeId = parseInt(req.params.nodeId, 10);
         const footprintId = req.params.id;
 
-        const footprint = services.internalNodePact.getFootprintById(footprintId);
+        const footprint = services.internalNodePact.getFootprintById(nodeId, footprintId);
 
         if (!footprint) {
           throw new NotFoundError("Product footprint not found");

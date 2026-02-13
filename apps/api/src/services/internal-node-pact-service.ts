@@ -1,40 +1,6 @@
 import { ProductFootprintV3 } from "../models/pact-v3/product-footprint";
+import { FootprintFilters, PaginationParams, PagedResponse } from "../models/pact-v3/types";
 import { mockFootprintsV3 } from "../data/mock-footprints-v3";
-
-/**
- * Pagination parameters for listing footprints
- */
-export interface PaginationParams {
-  limit?: number;
-  offset?: number;
-}
-
-/**
- * Filter parameters for footprints (PACT v3 spec)
- */
-export interface FootprintFilters {
-  productId?: string;
-  companyId?: string;
-  geography?: string; // Can match geographyCountry, geographyRegionOrSubregion, or geographyCountrySubdivision
-  classification?: string; // Match against productClassifications array
-  status?: string; // Active or Deprecated
-  validOn?: string; // ISO 8601 date - footprint valid on this date
-  validAfter?: string; // ISO 8601 date - footprint valid after this date
-  validBefore?: string; // ISO 8601 date - footprint valid before this date
-}
-
-/**
- * Paginated response structure
- */
-export interface PaginatedResponse<T> {
-  data: T[];
-  links?: {
-    first?: string;
-    last?: string;
-    prev?: string;
-    next?: string;
-  };
-}
 
 /**
  * Service for handling Internal Node PACT API operations
@@ -49,41 +15,52 @@ export class InternalNodePactService {
 
   /**
    * Get list of product footprints (v3)
+   * @param nodeId - The node ID to retrieve footprints for
+   * @param filters - Filter parameters
+   * @param pagination - Pagination parameters
    */
   getFootprints(
+    nodeId: number,
     filters: FootprintFilters = {},
     pagination: PaginationParams = {}
-  ): PaginatedResponse<ProductFootprintV3> {
+  ): PagedResponse<ProductFootprintV3> {
     let filtered = this.footprints;
 
-    // Apply filters
-    if (filters.productId) {
+    // Apply filters - arrays match if any element is found
+    if (filters.productId && filters.productId.length > 0) {
       filtered = filtered.filter((fp) =>
-        fp.productIds.some((id) => id.includes(filters.productId!))
+        fp.productIds.some((id) => 
+          filters.productId!.some((filterId) => id.includes(filterId))
+        )
       );
     }
 
-    if (filters.companyId) {
+    if (filters.companyId && filters.companyId.length > 0) {
       filtered = filtered.filter((fp) =>
-        fp.companyIds.some((id) => id.includes(filters.companyId!))
+        fp.companyIds.some((id) => 
+          filters.companyId!.some((filterId) => id.includes(filterId))
+        )
       );
     }
 
-    if (filters.geography) {
-      filtered = filtered.filter(
-        (fp) =>
-          fp.pcf.geography?.country?.toLowerCase() ===
-            filters.geography!.toLowerCase() ||
-          fp.pcf.geography?.regionOrSubregion?.toLowerCase() ===
-            filters.geography!.toLowerCase() ||
-          fp.pcf.geography?.countrySubdivision?.toLowerCase() ===
-            filters.geography!.toLowerCase()
-      );
+    if (filters.geography && filters.geography.length > 0) {
+      filtered = filtered.filter((fp) => {
+        const country = fp.pcf.geography?.country?.toLowerCase();
+        const region = fp.pcf.geography?.regionOrSubregion?.toLowerCase();
+        const subdivision = fp.pcf.geography?.countrySubdivision?.toLowerCase();
+        
+        return filters.geography!.some((geo) => {
+          const lowerGeo = geo.toLowerCase();
+          return country === lowerGeo || region === lowerGeo || subdivision === lowerGeo;
+        });
+      });
     }
 
-    if (filters.classification) {
+    if (filters.classification && filters.classification.length > 0) {
       filtered = filtered.filter((fp) =>
-        fp.productClassifications?.some((pc) => pc.classId === filters.classification)
+        fp.productClassifications?.some((pc) => 
+          filters.classification!.includes(pc.classId)
+        )
       );
     }
 
@@ -147,8 +124,10 @@ export class InternalNodePactService {
 
   /**
    * Get single footprint by ID (v3)
+   * @param nodeId - The node ID to retrieve footprint for
+   * @param id - Footprint ID
    */
-  getFootprintById(id: string): ProductFootprintV3 | null {
+  getFootprintById(nodeId: number, id: string): ProductFootprintV3 | null {
     return this.footprints.find((fp) => fp.id === id) || null;
   }
 
@@ -159,12 +138,12 @@ export class InternalNodePactService {
     total: number,
     limit: number,
     offset: number
-  ): PaginatedResponse<any>["links"] {
+  ): PagedResponse<any>["links"] {
     if (total <= limit) {
       return undefined;
     }
 
-    const links: PaginatedResponse<any>["links"] = {};
+    const links: PagedResponse<any>["links"] = {};
 
     // First link
     if (offset > 0) {
@@ -196,7 +175,7 @@ export class InternalNodePactService {
    * Build Link header from links object
    */
   buildLinkHeader(
-    links: PaginatedResponse<any>["links"],
+    links: PagedResponse<any>["links"],
     baseUrl: string
   ): string | undefined {
     if (!links) return undefined;
