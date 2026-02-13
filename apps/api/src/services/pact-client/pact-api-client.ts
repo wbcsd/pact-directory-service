@@ -136,20 +136,31 @@ export class PactApiClientImpl implements PactApiClient {
       queryParams.set('offset', pagination.offset.toString());
     }
     
-    // Build $filter parameter from filters object
+    // Array parameters - add multiple times for each value
     if (filters) {
-      const filterParts: string[] = [];
-      if (filters.productId) filterParts.push(`productId eq '${filters.productId}'`);
-      if (filters.companyId) filterParts.push(`companyId eq '${filters.companyId}'`);
-      if (filters.geography) filterParts.push(`geography eq '${filters.geography}'`);
-      if (filters.classification) filterParts.push(`classification eq '${filters.classification}'`);
-      if (filters.status) filterParts.push(`status eq '${filters.status}'`);
-      if (filters.validOn) filterParts.push(`validOn eq '${filters.validOn}'`);
-      if (filters.validAfter) filterParts.push(`validAfter gt '${filters.validAfter}'`);
-      if (filters.validBefore) filterParts.push(`validBefore lt '${filters.validBefore}'`);
-      
-      if (filterParts.length > 0) {
-        queryParams.set('$filter', filterParts.join(' and '));
+      if (filters.productId) {
+        filters.productId.forEach((id: string) => queryParams.append('productId', id));
+      }
+      if (filters.companyId) {
+        filters.companyId.forEach((id: string) => queryParams.append('companyId', id));
+      }
+      if (filters.geography) {
+        filters.geography.forEach((geo: string) => queryParams.append('geography', geo));
+      }
+      if (filters.classification) {
+        filters.classification.forEach((cls: string) => queryParams.append('classification', cls));
+      }
+      if (filters.status) {
+        queryParams.set('status', filters.status);
+      }
+      if (filters.validOn) {
+        queryParams.set('validOn', filters.validOn);
+      }
+      if (filters.validAfter) {
+        queryParams.set('validAfter', filters.validAfter);
+      }
+      if (filters.validBefore) {
+        queryParams.set('validBefore', filters.validBefore);
       }
     }
     
