@@ -1,0 +1,20 @@
+.node-form-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 0;
+}
+
+.node-form-actions {
+  display: flex !important;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 32px;
+}
+
+.node-form-actions .cancel-button,
+.node-form-actions .submit-button {
+  flex: 1 !important;
+}

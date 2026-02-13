@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import SearchableDataTable, { PaginationInfo } from "../components/SearchableDataTable";
 import { Column } from "../components/DataTable";
 import { useAuth } from "../contexts/AuthContext";
-import { InputIcon, Link2Icon } from "@radix-ui/react-icons";
+import { InputIcon, Link2Icon, PlusIcon } from "@radix-ui/react-icons";
 import { useNavigate } from "react-router-dom";
 import { GridPageLayout } from "../layouts";
 import ActionButton from "../components/ActionButton";
+import SlideOverPanel from "../components/SlideOverPanel";
+import NodeForm from "../components/NodeForm";
 
 export interface Node {
   id: number;
@@ -21,12 +23,28 @@ export interface Node {
   connectionsCount?: number;
 }
 
+type PanelState =
+  | { mode: "closed" }
+  | { mode: "add" }
+  | { mode: "edit"; nodeId: number; nodeName: string };
+
 const NodesList: React.FC = () => {
   const navigate = useNavigate();
   const { profileData } = useAuth();
+  const [panel, setPanel] = useState<PanelState>({ mode: "closed" });
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const closePanel = useCallback(() => setPanel({ mode: "closed" }), []);
+
+  const handleSaved = useCallback(() => {
+    // Refresh the table data to reflect changes
+    setRefreshTrigger((prev) => prev + 1);
+    // Auto-close after a short delay so the user sees the success message
+    setTimeout(() => closePanel(), 1200);
+  }, [closePanel]);
 
   // Fetch function for DataTableWithSearch
-  const fetchNodes = async (params: {
+  const fetchNodes = useCallback(async (params: {
     page: number;
     pageSize: number;
     search?: string;
@@ -35,7 +53,6 @@ const NodesList: React.FC = () => {
       throw new Error("Profile data not available");
     }
 
-    // Build query string
     const queryParams = new URLSearchParams({
       page: params.page.toString(),
       pageSize: params.pageSize.toString(),
@@ -55,7 +72,7 @@ const NodesList: React.FC = () => {
 
     const result = await response.json();
     return result;
-  };
+  }, [profileData]);
 
   const columns: Column<Node>[] = [
     {
@@ -133,7 +150,9 @@ const NodesList: React.FC = () => {
             title="Edit Node Details"
             variant="secondary"
             size="small"
-            onClick={() => navigate(`/edit-node/${row.id}`)}
+            onClick={() =>
+              setPanel({ mode: "edit", nodeId: row.id, nodeName: row.name })
+            }
           >
             <InputIcon />
           </ActionButton>
@@ -142,10 +161,31 @@ const NodesList: React.FC = () => {
     },
   ];
 
+  const panelTitle =
+    panel.mode === "add"
+      ? "Create Node"
+      : panel.mode === "edit"
+        ? "Edit Node"
+        : "";
+
+  const panelSubtitle =
+    panel.mode === "add"
+      ? profileData?.organizationName
+        ? `For ${profileData.organizationName}`
+        : undefined
+      : panel.mode === "edit"
+        ? panel.nodeName
+        : undefined;
+
   return (
     <GridPageLayout
       title="Nodes"
       subtitle="Manage and view all nodes in your organization"
+      actions={
+        <ActionButton variant="primary" onClick={() => setPanel({ mode: "add" })}>
+          <PlusIcon /> Add Node
+        </ActionButton>
+      }
       loading={false}
       loadingMessage="Loading nodes..."
     >
@@ -155,11 +195,32 @@ const NodesList: React.FC = () => {
         columns={columns}
         idColumnName="id"
         defaultPageSize={50}
+        refreshTrigger={refreshTrigger}
         emptyState={{
           title: "No nodes found",
           description: "No nodes match your search criteria",
         }}
       />
+
+      {/* Slide-over panel for Add / Edit */}
+      <SlideOverPanel
+        open={panel.mode !== "closed"}
+        onClose={closePanel}
+        title={panelTitle}
+        subtitle={panelSubtitle}
+      >
+        {panel.mode === "add" && (
+          <NodeForm onCancel={closePanel} onSaved={handleSaved} />
+        )}
+        {panel.mode === "edit" && (
+          <NodeForm
+            key={panel.nodeId}
+            nodeId={panel.nodeId}
+            onCancel={closePanel}
+            onSaved={handleSaved}
+          />
+        )}
+      </SlideOverPanel>
     </GridPageLayout>
   );
 };
