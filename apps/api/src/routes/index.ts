@@ -9,6 +9,7 @@ import logger from '@src/common/logger';
 import { Role } from '@src/common/policies';
 import { UpdateNodeData } from '@src/services/node-service';
 import { createInternalNodeRoutes } from './internal-node-routes';
+import activityLogRoutes from './activity-log-routes';
 
 const router = Router();
 
@@ -348,5 +349,10 @@ router.post('/directory/users/resend-verification', context(async (req) => {
 // Mount PACT-compliant endpoints for internal nodes
 // URL structure: /api/nodes/:nodeId/auth/token and /api/nodes/:nodeId/3/footprints
 router.use('/nodes', createInternalNodeRoutes());
+
+// Activity Log Routes
+// Mount activity log endpoints for log viewing and management
+// URL structure: /api/activity-logs, /api/activity-logs/path, /api/activity-logs/nodes/:nodeId
+router.use('/activity-logs', activityLogRoutes);
 
 export default router;

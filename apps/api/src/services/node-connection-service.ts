@@ -12,6 +12,7 @@ import { EmailService } from './email-service';
 import { ListQuery, ListResult } from '@src/common/list-query';
 import { PactApiClientImpl, FootprintFilters } from './pact-client';
 import crypto from 'crypto';
+import { logNodeConnection } from '@src/common/activity-logger';
 
 // Register policies
 registerPolicy([Role.Administrator], 'manage-connections-own-nodes');
@@ -155,6 +156,21 @@ export class NodeConnectionService {
       organizationName: fromNode.organizationName || 'Unknown Organization',
     });
 
+    // Log the connection invitation
+    logNodeConnection(
+      nodeId,
+      data.targetNodeId,
+      'invitation_sent',
+      {
+        connectionId: connection.id,
+        fromNodeName: fromNode.name,
+        targetNodeName: targetNode.name,
+        organizationId: fromNode.organizationId,
+        userId: context.userId,
+        message: data.message,
+      }
+    );
+
     return connection as NodeConnectionData;
   }
 
@@ -247,6 +263,24 @@ export class NodeConnectionService {
       .where('id', '=', invitationId)
       .execute();
 
+    // Get the from node for logging
+    const fromNode = await this.nodeService.get(context, invitation.fromNodeId);
+
+    // Log the accepted invitation
+    logNodeConnection(
+      invitation.targetNodeId,
+      invitation.fromNodeId,
+      'invitation_accepted',
+      {
+        connectionId: invitation.id,
+        fromNodeName: fromNode.name,
+        targetNodeName: targetNode.name,
+        organizationId: targetNode.organizationId,
+        userId: context.userId,
+        expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+      }
+    );
+
     // Return the decrypted credentials
     return {
       connectionId: invitation.id,
@@ -292,6 +326,23 @@ export class NodeConnectionService {
       })
       .where('id', '=', invitationId)
       .execute();
+
+    // Get the from node for logging
+    const fromNode = await this.nodeService.get(context, invitation.fromNodeId);
+
+    // Log the rejected invitation
+    logNodeConnection(
+      invitation.targetNodeId,
+      invitation.fromNodeId,
+      'invitation_rejected',
+      {
+        connectionId: invitation.id,
+        fromNodeName: fromNode.name,
+        targetNodeName: targetNode.name,
+        organizationId: targetNode.organizationId,
+        userId: context.userId,
+      }
+    );
   }
 
   /**
@@ -381,6 +432,20 @@ export class NodeConnectionService {
       .deleteFrom('connections')
       .where('id', '=', connectionId)
       .execute();
+
+    // Log the connection removal
+    logNodeConnection(
+      connection.fromNodeId,
+      connection.targetNodeId,
+      'connection_removed',
+      {
+        connectionId,
+        fromNodeName: fromNode.name,
+        targetNodeName: targetNode.name,
+        organizationId: hasAccessToFrom ? fromNode.organizationId : targetNode.organizationId,
+        userId: context.userId,
+      }
+    );
 
     return {
       success: true,
@@ -543,6 +608,22 @@ export class NodeConnectionService {
 
     // Fetch footprints - same code for internal and external!
     const result = await client.listFootprints(filters, { limit: 10, offset: 0 });
+
+    // Log the footprint request
+    logNodeConnection(
+      connection.fromNodeId,
+      connection.targetNodeId,
+      'footprints_requested',
+      {
+        connectionId,
+        fromNodeName: fromNode.name,
+        targetNodeType: targetNode.type,
+        resultCount: result.data.length,
+        filters,
+        organizationId: fromNode.organizationId,
+        userId: context.userId,
+      }
+    );
 
     return result.data;
   }

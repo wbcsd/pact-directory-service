@@ -10,6 +10,7 @@ import { NodeService } from './node-service';
 import { NodeConnectionService } from './node-connection-service';
 import { InternalNodePactService } from './internal-node-pact-service';
 import { InternalNodeAuthService } from './internal-node-auth-service';
+import { ActivityLogService } from './activity-log-service';
 import config from '../common/config';
 
 // Export individual service classes for direct usage if needed
@@ -21,6 +22,7 @@ export { NodeService } from './node-service';
 export { NodeConnectionService } from './node-connection-service';
 export { InternalNodePactService } from './internal-node-pact-service';
 export { InternalNodeAuthService } from './internal-node-auth-service';
+export { ActivityLogService } from './activity-log-service';
 
 export interface Services {
   auth: AuthService;
@@ -33,6 +35,7 @@ export interface Services {
   nodeConnection: NodeConnectionService;
   internalNodePact: InternalNodePactService;
   internalNodeAuth: InternalNodeAuthService;
+  activityLog: ActivityLogService;
 }
 
 export class ServiceContainer implements Services {
@@ -46,6 +49,7 @@ export class ServiceContainer implements Services {
   nodeConnection: NodeConnectionService;
   internalNodePact: InternalNodePactService;
   internalNodeAuth: InternalNodeAuthService;
+  activityLog: ActivityLogService;
 
   constructor(db: Kysely<Database>) {
     this.email = new EmailService();
@@ -63,6 +67,7 @@ export class ServiceContainer implements Services {
       this.email,
       config.INTERNAL_API_BASE_URL
     );
+    this.activityLog = new ActivityLogService(db);
     // this.environment = new EnvironmentService(db);
   }
 }

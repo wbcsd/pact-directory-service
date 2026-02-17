@@ -28,6 +28,8 @@ import NodesList from "./pages/NodesList";
 import NodeConnectionsList from "./pages/NodeConnectionsList";
 import CreateNodeConnectionPage from "./pages/CreateNodeConnectionPage";
 import NodeInvitationsList from "./pages/NodeInvitationsList";
+import ActivityLogsPage from "./pages/ActivityLogsPage";
+import ActivityLogDetailPage from "./pages/ActivityLogDetailPage";
 
 const AppRoutes: React.FC = () => {
   return (
@@ -89,6 +91,8 @@ const AppRoutes: React.FC = () => {
         element={<ConformanceTestResult />}
       />
       <Route path="/conformance-test-runs" element={<ConformanceTestRuns />} />
+      <Route path="/activity-logs" element={<ActivityLogsPage />} />
+      <Route path="/activity-logs/path" element={<ActivityLogDetailPage />} />
       <Route path="/" element={<Navigate to="/signup" />} />
     </Routes>
   );
