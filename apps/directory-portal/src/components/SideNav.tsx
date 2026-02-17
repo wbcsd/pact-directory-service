@@ -14,9 +14,6 @@ const SideNav: React.FC = () => {
           <NavLink to="/conformance-test-runs">
             <Text>Conformance Testing</Text>
           </NavLink>
-          <NavLink to="/activity-logs">
-            <Text>Activity Logs</Text>
-          </NavLink>
           <FeatureFlag flag="enableIdentityManagement">
             <PolicyGuard policies={["view-connections-own-organization", "view-connections-all-organizations"]}>
               <>
@@ -87,6 +84,9 @@ const SideNav: React.FC = () => {
               </>
             </PolicyGuard>
           </FeatureFlag>          
+          <NavLink to="/activity-logs">
+            <Text>Activity Logs</Text>
+          </NavLink>
         </nav>
       </div>
       <div className="nav-group">
