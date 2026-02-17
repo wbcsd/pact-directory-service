@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, AlertDialog, Flex } from "@radix-ui/themes";
 import { Link } from "react-router-dom";
-import SideNav from "../components/SideNav";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import { useAuth } from "../contexts/AuthContext";
+import { GridPageLayout } from "../layouts";
 
 interface ConnectionRequest {
   id: number;
@@ -132,19 +132,7 @@ const ManageConnections: React.FC = () => {
         </AlertDialog.Content>
       </AlertDialog.Root>
 
-      <aside className="sidebar">
-        <div className="marker-divider"></div>
-        <SideNav />
-      </aside>
-      <main className="main">
-        <div className="header">
-          <h2>Manage Connections</h2>
-        </div>
-
-        {isLoading ? (
-          <p>Loading connections...</p>
-        ) : (
-          <>
+      <GridPageLayout title="Manage Connections" loading={isLoading} loadingMessage="Loading connections...">
         <Box>
           <h2>Connected organizations</h2>
           {connectionsData.connectedOrganizations.length > 0 ? (
@@ -229,9 +217,7 @@ const ManageConnections: React.FC = () => {
             </p>
           )}
         </Box>
-          </>
-        )}
-      </main>
+      </GridPageLayout>
     </>
   );
 };

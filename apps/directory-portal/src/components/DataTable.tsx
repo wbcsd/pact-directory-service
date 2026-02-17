@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Box, Spinner, Text, Checkbox } from "@radix-ui/themes";
+import { CaretSortIcon, CaretUpIcon, CaretDownIcon } from "@radix-ui/react-icons";
 import "./DataTable.css";
 
 export interface Column<T> {
@@ -206,9 +207,15 @@ function DataTable<T extends object>({
               >
                 <div className="header-content">
                   <span>{column.header}</span>
-                  {column.sortable && sortConfig.key === column.key && (
-                    <span className="sort-indicator">
-                      {sortConfig.direction === "asc" ? "↑" : "↓"}
+                  {column.sortable && (
+                    <span className={`sort-indicator ${sortConfig.key === column.key ? "active" : ""}`}>
+                      {sortConfig.key === column.key && sortConfig.direction === "asc" ? (
+                        <CaretUpIcon />
+                      ) : sortConfig.key === column.key && sortConfig.direction === "desc" ? (
+                        <CaretDownIcon />
+                      ) : (
+                        <CaretSortIcon />
+                      )}
                     </span>
                   )}
                 </div>

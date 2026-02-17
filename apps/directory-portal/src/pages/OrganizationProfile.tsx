@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Box, Button, Flex } from "@radix-ui/themes";
-import SideNav from "../components/SideNav";
 import { fetchWithAuth } from "../utils/auth-fetch";
-import Spinner from "../components/LoadingSpinner";
 import { useAuth } from "../contexts/AuthContext";
+import { FunctionalPageLayout } from "../layouts";
 
 const RequestStatus = {
   PENDING: "pending",
@@ -180,28 +179,10 @@ const OrganizationProfile: React.FC = () => {
   };
 
   return (
-    <>
-      <aside className="sidebar">
-        <div className="marker-divider"></div>
-        <SideNav />
-      </aside>
-      {loadingData || loadingConnections ? (
-        <Box
-          style={{
-            padding: "20px",
-            verticalAlign: "middle",
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          <Spinner />
-        </Box>
-      ) : (
-        <main className="main">
-          <div className="header">
-            <h2>{profileData.organizationName}</h2>
-          </div>
+    <FunctionalPageLayout loading={loadingData || loadingConnections} loadingMessage="Loading organization profile...">
+      <div className="header">
+        <h2>{profileData.organizationName}</h2>
+      </div>
 
           {requestStatus === RequestStatus.RECEIVED ? (
             <Box
@@ -326,9 +307,7 @@ const OrganizationProfile: React.FC = () => {
               </>
             )}
           </Box>
-        </main>
-      )}
-    </>
+    </FunctionalPageLayout>
   );
 };
 

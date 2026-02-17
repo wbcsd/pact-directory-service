@@ -45,8 +45,16 @@
 }
 
 .data-table .sort-indicator {
-  font-size: 0.875rem;
-  color: #6366F1;
+  display: inline-flex;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+  color: rgba(255, 255, 255, 0.4);
+  transition: color 0.15s;
+}
+
+.data-table .sort-indicator.active {
+  color: white;
 }
 
 .data-table td {

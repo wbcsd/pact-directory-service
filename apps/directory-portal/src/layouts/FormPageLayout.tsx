@@ -6,6 +6,7 @@ import PageHeader from "../components/PageHeader";
 interface FormPageLayoutProps {
   title: string;
   subtitle?: string;
+  actions?: React.ReactNode;
   children: React.ReactNode;
   loading?: boolean;
   loadingMessage?: string;
@@ -15,6 +16,7 @@ interface FormPageLayoutProps {
 const FormPageLayout: React.FC<FormPageLayoutProps> = ({
   title,
   subtitle,
+  actions,
   children,
   loading,
   loadingMessage,
@@ -22,7 +24,7 @@ const FormPageLayout: React.FC<FormPageLayoutProps> = ({
 }) => {
   return (
     <FunctionalPageLayout loading={loading} loadingMessage={loadingMessage}>
-      <PageHeader title={title} subtitle={subtitle} />
+      <PageHeader title={title} subtitle={subtitle} actions={actions} />
       <div>
         <Box 
           className="form-container" 

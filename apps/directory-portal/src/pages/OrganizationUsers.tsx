@@ -35,15 +35,25 @@ const OrganizationUsers: React.FC = () => {
   } | null>(null);
   
   const navigate = useNavigate();
-  const { profileData } = useAuth();
+  const { profileData, isAuthenticated } = useAuth();
 
   const fetchUsers = async (params: {
     page: number;
     pageSize: number;
     search?: string;
   }): Promise<{ data: User[]; pagination: { page: number; pageSize: number; total: number; totalPages: number; hasNext: boolean; hasPrevious: boolean } }> => {
-    if (!profileData) {
-      throw new Error("Profile data not available");
+    if (!profileData?.organizationId) {
+      return {
+        data: [],
+        pagination: {
+          page: params.page,
+          pageSize: params.pageSize,
+          total: 0,
+          totalPages: 1,
+          hasNext: false,
+          hasPrevious: false,
+        },
+      };
     }
 
     const queryParams = new URLSearchParams({
@@ -57,7 +67,7 @@ const OrganizationUsers: React.FC = () => {
 
     const response = await fetchWithAuth(
       // TODO: Update to use orgId from params if implementing multi-org admin
-      `/organizations/${profileData?.organizationId}/users?${queryParams.toString()}`
+      `/organizations/${profileData.organizationId}/users?${queryParams.toString()}`
     );
 
     if (!response || !response.ok) {
@@ -72,6 +82,11 @@ const OrganizationUsers: React.FC = () => {
   // Get selected users
   const selectedUsers = users.filter(user => 
     selectedUserIds.includes(user.id)
+  );
+
+  const usersToEnable = selectedUsers.filter((user) => user.status === "disabled");
+  const usersToDisable = selectedUsers.filter(
+    (user) => user.status !== "disabled" && user.status !== "deleted"
   );
 
   // runUsers Bulk action (enable/disable)
@@ -123,15 +138,11 @@ const OrganizationUsers: React.FC = () => {
   // Bulk operations
   const handleBulkDisable = async () => {
     setBulkActionLoading(true);
-    const usersToDisable = selectedUsers.filter(u => 
-      u.status !== 'disabled' && u.status !== 'deleted'
-    );
     await runBulkAction('disable', usersToDisable);
   };
 
   const handleBulkEnable = async () => {
     setBulkActionLoading(true);
-    const usersToEnable = selectedUsers.filter(u => u.status === 'disabled');
     await runBulkAction('enable', usersToEnable);
   };
 
@@ -211,6 +222,8 @@ const OrganizationUsers: React.FC = () => {
     <GridPageLayout
       title="Users"
       subtitle="Manage and view users in your organization"
+      loading={isAuthenticated && !profileData}
+      loadingMessage="Loading profile data..."
       actions={
         <PolicyGuard policies={["edit-users"]}>
           <Button
@@ -236,27 +249,28 @@ const OrganizationUsers: React.FC = () => {
         </Box>
       )}
 
-      {/* Bulk Action Bar */}
-      {selectedUserIds.length > 0 && (
-        <Box className="bulk-action-bar">
-          <div className="bulk-action-content">
-            <Text size="3" weight="medium">
-              {selectedUserIds.length} user{selectedUserIds.length > 1 ? 's' : ''} selected
-            </Text>
-            <div className="bulk-action-buttons">
+      {profileData?.organizationId && (
+        <SearchableDataTable<User>
+          searchPlaceholder="Search by name or email..."
+          fetchData={fetchUsers}
+          columns={columns}
+          idColumnName="id"
+          refreshTrigger={refreshTrigger}
+          headerActions={
+            <>
               <PolicyGuard policies={["edit-users", "edit-all-users"]}>
                 <>
                   <Button
                     color="green"
                     onClick={handleBulkEnable}
-                    disabled={bulkActionLoading}
+                    disabled={bulkActionLoading || usersToEnable.length === 0}
                   >
                     {bulkActionLoading ? 'Processing...' : 'Enable Selected'}
                   </Button>
                   <Button
                     color="orange"
                     onClick={handleBulkDisable}
-                    disabled={bulkActionLoading}
+                    disabled={bulkActionLoading || usersToDisable.length === 0}
                   >
                     {bulkActionLoading ? 'Processing...' : 'Disable Selected'}
                   </Button>
@@ -265,32 +279,24 @@ const OrganizationUsers: React.FC = () => {
               <Button
                 color="gray"
                 onClick={() => setSelectedUserIds([])}
-                disabled={bulkActionLoading}
+                disabled={bulkActionLoading || selectedUserIds.length === 0}
               >
-                Clear Selection
+                Clear
               </Button>
-            </div>
-          </div>
-        </Box>
+            </>
+          }
+          selectable={true}
+          selectedIds={selectedUserIds}
+          onSelectionChange={setSelectedUserIds}
+          disabledRowIds={disabledRowIds}
+          selectAllText="Select all users"
+          onDataLoaded={setUsers}
+          emptyState={{
+            title: "No users found",
+            description: "No users match your search criteria",
+          }}
+        />
       )}
-
-      <SearchableDataTable<User>
-        searchPlaceholder="Search by name or email..."
-        fetchData={fetchUsers}
-        columns={columns}
-        idColumnName="id"
-        refreshTrigger={refreshTrigger}
-        selectable={true}
-        selectedIds={selectedUserIds}
-        onSelectionChange={setSelectedUserIds}
-        disabledRowIds={disabledRowIds}
-        selectAllText="Select all users"
-        onDataLoaded={setUsers}
-        emptyState={{
-          title: "No users found",
-          description: "No users match your search criteria",
-        }}
-      />
     </GridPageLayout>
   );
 };

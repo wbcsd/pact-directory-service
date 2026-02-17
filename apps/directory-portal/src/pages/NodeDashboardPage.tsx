@@ -2,13 +2,11 @@ import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
-  // TextField,
   Text,
-  Spinner,
 } from "@radix-ui/themes";
-import SideNav from "../components/SideNav";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import { useNavigate, useParams } from "react-router-dom";
+import { GridPageLayout } from "../layouts";
 
 
 const NodeDashboardPage: React.FC = () => {
@@ -37,14 +35,12 @@ const NodeDashboardPage: React.FC = () => {
   }, [nodeId]);
 
   const deleteNode = async () => {
-    // Implement delete node functionality
     try {
       const response = await fetchWithAuth(`/nodes/${nodeId}`, {
         method: "DELETE",
       });
 
       if (response!.ok) {
-        // Node deleted successfully
         window.location.reload();
       } else {
         const errorResponse = await response!.json();
@@ -60,66 +56,19 @@ const NodeDashboardPage: React.FC = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <>
-        <aside className="sidebar">
-          <div className="marker-divider"></div>
-          <SideNav />
-        </aside>
-        <main className="main">
-          <div className="header">
-            <h2>Node</h2>
-          </div>
-          <Box
-            style={{
-              marginTop: "2em",
-              display: "flex",
-              justifyContent: "center",
-            }}
-          >
-            <Spinner />
-          </Box>
-        </main>
-      </>
-    );
-  }
-
-  if (errorMessage) {
-    return (
-      <>
-        <aside className="sidebar">
-          <div className="marker-divider"></div>
-          <SideNav />
-        </aside>
-        <main className="main">
-          <div className="header">
-            <h2>Node</h2>
-          </div>
-          <Box
-            style={{
-              marginTop: "2em",
-            }}
-          >
-            <div style={{ color: "darkred" }}>
-              <Text>{errorMessage}</Text>
-            </div>
-          </Box>
-        </main>
-      </>
-    );
-  }
-
   return (
-    <>
-      <aside className="sidebar">
-        <div className="marker-divider"></div>
-        <SideNav />
-      </aside>
-      <main className="main">
-        <div className="header">
-          <h2>Node {nodeData?.name}</h2>
-        </div>
+    <GridPageLayout
+      title={loading ? "Node" : `Node ${nodeData?.name ?? ""}`}
+      loading={loading}
+      loadingMessage="Loading node..."
+    >
+      {errorMessage ? (
+        <Box style={{ marginTop: "2em" }}>
+          <div style={{ color: "darkred" }}>
+            <Text>{errorMessage}</Text>
+          </div>
+        </Box>
+      ) : (
         <Box style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
           <Button onClick={() => navigate(`/nodes/${nodeId}/connections`)}>
             View Connections
@@ -134,9 +83,8 @@ const NodeDashboardPage: React.FC = () => {
             Delete Node
           </Button>
         </Box>
-
-      </main>
-    </>
+      )}
+    </GridPageLayout>
   );
 };
 

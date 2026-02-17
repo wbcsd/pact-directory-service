@@ -14,10 +14,10 @@ import {
   InfoCircledIcon,
   CheckIcon,
 } from "@radix-ui/react-icons";
-import SideNav from "../components/SideNav";
 import { useAuth } from "../contexts/AuthContext";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import "./MyProfilePage.css";
+import { FormPageLayout } from "../layouts";
 
 const MyProfilePage: React.FC = () => {
   const { profileData } = useAuth();
@@ -119,33 +119,18 @@ const MyProfilePage: React.FC = () => {
     }
   };
 
-  if (!profileData) {
-    return (
-      <Box className="loading-container">
-        <Spinner loading />
-        <Text className="loading-text">Loading profile data...</Text>
-      </Box>
-    );
-  }
-
   return (
-    <>
-      <aside className="sidebar">
-        <div className="marker-divider"></div>
-        <SideNav />
-      </aside>
-      <main className="main">
-        <div className="header">
-          <h2>My Profile</h2>
-        </div>
-
-        <Box className="form-container">
+    <FormPageLayout
+      title="My Profile"
+      loading={!profileData}
+      loadingMessage="Loading profile data..."
+    >
           <Form.Root onSubmit={handleSubmit}>
             {/* Read-only Email */}
             <Box className="form-field">
               <Text className="field-label">Email Address</Text>
               <TextField.Root
-                value={profileData.email}
+                value={profileData?.email}
                 readOnly
                 disabled
                 className="readonly-field"
@@ -341,9 +326,7 @@ const MyProfilePage: React.FC = () => {
               </Callout.Text>
             </Callout.Root>
           )}
-        </Box>
-      </main>
-    </>
+    </FormPageLayout>
   );
 };
 
