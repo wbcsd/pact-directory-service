@@ -10,6 +10,7 @@ export interface Database {
   nodes: NodesTable;
   connections: ConnectionTable;
   password_tokens: PasswordTokenTable;
+  activity_logs: ActivityLogsTable;
 }
 
 export interface OrganizationsTable {
@@ -85,4 +86,16 @@ export interface PasswordTokenTable {
   createdAt: Date;
   type: 'reset' | 'setup';
   usedAt: Date | null;
+}
+
+export interface ActivityLogsTable {
+  id: Generated<number>;
+  path: string;
+  level: 'info' | 'warn' | 'error' | 'debug';
+  message: string;
+  content: Record<string, any>; // JSONB
+  nodeId: number | null;
+  organizationId: number | null;
+  userId: number | null;
+  createdAt: Generated<Date>;
 }

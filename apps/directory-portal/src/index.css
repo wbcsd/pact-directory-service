@@ -466,3 +466,8 @@ a {
 .inline-url {
   font-family: "Geist Mono", monospace;
 }
+
+.rt-variant-soft.rt-Button {
+  /* background-color: #08A17F; */
+  color: white;
+}
