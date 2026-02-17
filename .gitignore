@@ -5,3 +5,4 @@ apps/api/.env
 .vscode/launch.json
 .idea/
 .github
+.DS_Store

@@ -10,6 +10,7 @@ import { UserContext } from './user-service';
 import { NodeService } from './node-service';
 import { EmailService } from './email-service';
 import { ListQuery, ListResult } from '@src/common/list-query';
+import { PactApiClientImpl, FootprintFilters } from './pact-client';
 import crypto from 'crypto';
 
 // Register policies
@@ -43,7 +44,8 @@ export class NodeConnectionService {
   constructor(
     private db: Kysely<Database>,
     private nodeService: NodeService,
-    private emailService: EmailService
+    private emailService: EmailService,
+    private internalApiBaseUrl: string
   ) {}
 
   /**
@@ -476,5 +478,72 @@ export class NodeConnectionService {
       clientId: connection.clientId,
       clientSecret: this.decryptSecret(connection.clientSecret),
     };
+  }
+
+  /**
+   * Request footprints from a connected node
+   * 
+   * This is an example integration showing how to use the unified PACT client
+   * to communicate with both internal and external nodes using the same code.
+   * 
+   * @param context - User context for authorization
+   * @param connectionId - ID of the connection to use
+   * @param filters - Optional filters for footprint query
+   * @returns Array of product footprints from the target node
+   */
+  async requestFootprints(
+    context: UserContext,
+    connectionId: number,
+    filters?: FootprintFilters
+  ) {
+    // Get the connection
+    const connection = await this.db
+      .selectFrom('connections')
+      .selectAll()
+      .where('id', '=', connectionId)
+      .where('status', '=', 'accepted')
+      .executeTakeFirst();
+
+    if (!connection) {
+      throw new NotFoundError('Connection not found or not active');
+    }
+
+    // Get from node and check access
+    const fromNode = await this.nodeService.get(context, connection.fromNodeId);
+
+    const allowed =
+      context.policies.includes('manage-connections-all-nodes') ||
+      (context.policies.includes('manage-connections-own-nodes') &&
+        context.organizationId === fromNode.organizationId);
+
+    if (!allowed) {
+      throw new ForbiddenError('You are not allowed to use this connection');
+    }
+
+    // Get target node
+    const targetNode = await this.db
+      .selectFrom('nodes')
+      .select(['id', 'type', 'apiUrl'])
+      .where('id', '=', connection.targetNodeId)
+      .executeTakeFirstOrThrow();
+
+    // Create client - always pass both nodeId and apiUrl
+    // Client decides internally which to use based on apiUrl presence
+    const client = new PactApiClientImpl(
+      targetNode.id,
+      targetNode.apiUrl,
+      this.internalApiBaseUrl
+    );
+
+    // Authenticate - same code for internal and external!
+    await client.authenticate(
+      connection.clientId,
+      this.decryptSecret(connection.clientSecret)
+    );
+
+    // Fetch footprints - same code for internal and external!
+    const result = await client.listFootprints(filters, { limit: 10, offset: 0 });
+
+    return result.data;
   }
 }

@@ -8,6 +8,7 @@ import config from '@src/common/config';
 import logger from '@src/common/logger';
 import { Role } from '@src/common/policies';
 import { UpdateNodeData } from '@src/services/node-service';
+import { createInternalNodeRoutes } from './internal-node-routes';
 
 const router = Router();
 
@@ -342,5 +343,10 @@ router.post('/directory/users/verify-email', context(async (req) => {
 router.post('/directory/users/resend-verification', context(async (req) => {
   return await req.services.user.resendEmailVerification(req.body);
 }));
+
+// Internal Node PACT API Routes
+// Mount PACT-compliant endpoints for internal nodes
+// URL structure: /api/nodes/:nodeId/auth/token and /api/nodes/:nodeId/3/footprints
+router.use('/nodes', createInternalNodeRoutes());
 
 export default router;

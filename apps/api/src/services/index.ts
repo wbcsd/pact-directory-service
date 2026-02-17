@@ -8,6 +8,9 @@ import { UserService } from './user-service';
 import { ConnectionService } from './connection-service';
 import { NodeService } from './node-service';
 import { NodeConnectionService } from './node-connection-service';
+import { InternalNodePactService } from './internal-node-pact-service';
+import { InternalNodeAuthService } from './internal-node-auth-service';
+import config from '../common/config';
 
 // Export individual service classes for direct usage if needed
 export { AuthService } from './auth-service';
@@ -16,6 +19,8 @@ export { OrganizationService } from './organization-service';
 export { ConnectionService } from './connection-service';
 export { NodeService } from './node-service';
 export { NodeConnectionService } from './node-connection-service';
+export { InternalNodePactService } from './internal-node-pact-service';
+export { InternalNodeAuthService } from './internal-node-auth-service';
 
 export interface Services {
   auth: AuthService;
@@ -26,6 +31,8 @@ export interface Services {
   connection: ConnectionService;
   node: NodeService;
   nodeConnection: NodeConnectionService;
+  internalNodePact: InternalNodePactService;
+  internalNodeAuth: InternalNodeAuthService;
 }
 
 export class ServiceContainer implements Services {
@@ -37,6 +44,8 @@ export class ServiceContainer implements Services {
   testRun: TestRunService;
   node: NodeService;
   nodeConnection: NodeConnectionService;
+  internalNodePact: InternalNodePactService;
+  internalNodeAuth: InternalNodeAuthService;
 
   constructor(db: Kysely<Database>) {
     this.email = new EmailService();
@@ -46,7 +55,14 @@ export class ServiceContainer implements Services {
     this.user = new UserService(db, this.email);
     this.testRun = new TestRunService(db, this.user, this.organization);
     this.node = new NodeService(db);
-    this.nodeConnection = new NodeConnectionService(db, this.node, this.email);
+    this.internalNodePact = new InternalNodePactService();
+    this.internalNodeAuth = new InternalNodeAuthService(db);
+    this.nodeConnection = new NodeConnectionService(
+      db,
+      this.node,
+      this.email,
+      config.INTERNAL_API_BASE_URL
+    );
     // this.environment = new EnvironmentService(db);
   }
 }
