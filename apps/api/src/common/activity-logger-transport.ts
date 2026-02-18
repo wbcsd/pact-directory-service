@@ -18,17 +18,6 @@ export default async function () {
   return build(async function (source) {
     for await (const obj of source) {
       try {
-        // Extract metadata from Pino log object
-        const {
-          level: pinoLevel,
-          msg,
-          path,
-          nodeId,
-          organizationId,
-          userId,
-          ...content
-        } = obj;
-
         // Map Pino log levels to our levels
         const levelMap: Record<number, string> = {
           10: 'debug', // trace
@@ -39,12 +28,24 @@ export default async function () {
           60: 'error', // fatal
         };
 
-        const level = levelMap[pinoLevel] || 'info';
+        const level = levelMap[obj.level] || 'info';
 
         // Only log if path is present (activity logs)
-        if (!path) {
+        if (!obj.path) {
           continue;
         }
+
+        // Extract fields we want to store separately
+        const { path, nodeId, organizationId, userId, content, msg } = obj;
+        
+        // Get other metadata (excluding Pino internals)
+        const pinoInternals = ['level', 'time', 'pid', 'hostname', 'msg', 'path', 'nodeId', 'organizationId', 'userId', 'content'];
+        const otherMeta = Object.keys(obj)
+          .filter(key => !pinoInternals.includes(key))
+          .reduce((acc, key) => ({ ...acc, [key]: obj[key] }), {});
+
+        // Merge content with other metadata
+        const finalContent = content || otherMeta;
 
         // Insert into database
         await pool.query(
@@ -54,7 +55,7 @@ export default async function () {
             path,
             level,
             msg || '',
-            JSON.stringify(content),
+            JSON.stringify(finalContent),
             nodeId || null,
             organizationId || null,
             userId || null,
