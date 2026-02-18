@@ -31,10 +31,6 @@ const NodesList: React.FC = () => {
     pageSize: number;
     search?: string;
   }): Promise<{ data: Node[]; pagination: PaginationInfo }> => {
-    if (!profileData) {
-      throw new Error("Profile data not available");
-    }
-
     // Build query string
     const queryParams = new URLSearchParams({
       page: params.page.toString(),
@@ -46,7 +42,7 @@ const NodesList: React.FC = () => {
     }
 
     const response = await fetchWithAuth(
-      `/organizations/${profileData.organizationId}/nodes?${queryParams.toString()}`
+      `/organizations/${profileData?.organizationId}/nodes?${queryParams.toString()}`
     );
     
     if (!response || !response.ok) {
@@ -152,6 +148,7 @@ const NodesList: React.FC = () => {
       <SearchableDataTable<Node>
         searchPlaceholder="Search by node name..."
         fetchData={fetchNodes}
+        onRowClick={(row) => navigate(`/nodes/${row.id}/connections`)}
         columns={columns}
         idColumnName="id"
         defaultPageSize={50}

@@ -42,10 +42,6 @@ const OrganizationUsers: React.FC = () => {
     pageSize: number;
     search?: string;
   }): Promise<{ data: User[]; pagination: { page: number; pageSize: number; total: number; totalPages: number; hasNext: boolean; hasPrevious: boolean } }> => {
-    if (!profileData) {
-      throw new Error("Profile data not available");
-    }
-
     const queryParams = new URLSearchParams({
       page: params.page.toString(),
       pageSize: params.pageSize.toString(),
@@ -283,6 +279,7 @@ const OrganizationUsers: React.FC = () => {
         selectable={true}
         selectedIds={selectedUserIds}
         onSelectionChange={setSelectedUserIds}
+        onRowClick={(row) => navigate(`/organization/${row.organizationId}/users/${row.id}`)}
         disabledRowIds={disabledRowIds}
         selectAllText="Select all users"
         onDataLoaded={setUsers}

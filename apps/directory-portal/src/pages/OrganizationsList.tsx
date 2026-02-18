@@ -31,10 +31,6 @@ const Organizations: React.FC = () => {
     pageSize: number;
     search?: string;
   }): Promise<{ data: Organization[]; pagination: PaginationInfo }> => {
-    if (!profileData) {
-      throw new Error("Profile data not available");
-    }
-
     // Build query string
     const queryParams = new URLSearchParams({
       page: params.page.toString(),
@@ -131,6 +127,7 @@ const Organizations: React.FC = () => {
     >
       <SearchableDataTable<Organization>
         searchPlaceholder="Search by organization name..."
+        onRowClick={(row) => navigate(`/organizations/${row.id}`)}
         fetchData={fetchOrganizations}
         columns={columns}
         idColumnName="id"

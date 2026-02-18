@@ -54,6 +54,9 @@ export interface SearchableDataTableProps<T> {
   
   // Search debounce delay in ms
   searchDebounceMs?: number;
+
+  // Row click handler
+  onRowClick?: (rowData: T) => void;
 }
 
 function SearchableDataTable<T extends object>({
@@ -67,6 +70,7 @@ function SearchableDataTable<T extends object>({
   selectable = false,
   selectedIds,
   onSelectionChange,
+  onRowClick,
   selectAllText,
   disabledRowIds,
   onDataLoaded,
@@ -236,6 +240,7 @@ function SearchableDataTable<T extends object>({
         onSelectionChange={onSelectionChange}
         selectAllText={selectAllText}
         disabledRowIds={disabledRowIds}
+        onRowClick={onRowClick}
       />
 
       {/* Paging strip (below) */}

@@ -48,7 +48,6 @@ const EditOrganizationPage: React.FC = () => {
 
   useEffect(() => {
     const fetchOrganization = async () => {
-      if (!profileData) return;
 
       try {
         const response = await fetchWithAuth(

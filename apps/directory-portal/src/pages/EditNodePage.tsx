@@ -61,10 +61,6 @@ const EditNodePage: React.FC = () => {
 
   useEffect(() => {
     const fetchNode = async () => {
-      if (!profileData) {
-        return;
-      }
-
       try {
         const response = await fetchWithAuth(
           `/nodes/${nodeId}`
