@@ -13,6 +13,11 @@ jest.mock('@src/common/activity-logger', () => ({
   logNodeConnection: jest.fn(),
 }));
 
+// Mock activity logger with synchronous mock
+jest.mock('@src/common/activity-logger', () => ({
+  logNodeConnection: jest.fn(),
+}));
+
 describe('NodeConnectionService', () => {
   let dbMocks: ReturnType<typeof createMockDatabase>;
   let nodeService: jest.Mocked<NodeService>;
@@ -60,6 +65,10 @@ describe('NodeConnectionService', () => {
       emailService,
       'http://localhost:3010'  // internalApiBaseUrl for testing
     );
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('createInvitation', () => {
