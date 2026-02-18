@@ -2,7 +2,7 @@
  * Activity Logger
  * 
  * Specialized logger for tracking node operations, API calls, and connections.
- * Writes structured logs to PostgreSQL for unified activity tracking.
+ * Uses Pino for logging interface, writes to both stdout and PostgreSQL database.
  * 
  * CloudWatch-style paths:
  * - /pact/nodes/{nodeId}/connections - Connection operations
@@ -12,7 +12,9 @@
  * - /pact/organizations/{orgId} - Organization operations
  */
 
+import pino from 'pino';
 import { db } from '@src/database/db';
+import config from './config';
 
 /**
  * Activity log metadata
@@ -27,10 +29,22 @@ export interface ActivityLogMeta {
 }
 
 /**
- * Write activity log to database
+ * Create Pino logger for activity logs
  */
-async function writeLog(
-  level: 'debug' | 'info' | 'warn' | 'error',
+const activityLogger = pino({
+  level: 'debug',
+  formatters: {
+    level: (label) => {
+      return { level: label };
+    },
+  },
+});
+
+/**
+ * Write log to database asynchronously
+ */
+async function writeToDatabase(
+  level: string,
   message: string,
   meta: ActivityLogMeta
 ) {
@@ -41,7 +55,7 @@ async function writeLog(
       .insertInto('activity_logs')
       .values({
         path,
-        level,
+        level: level as 'debug' | 'info' | 'warn' | 'error',
         message,
         content: content || otherMeta,
         nodeId: nodeId || null,
@@ -52,7 +66,7 @@ async function writeLog(
       .execute();
   } catch (error) {
     // Log to stderr but don't crash the app
-    console.error('Failed to write activity log:', error);
+    console.error('Failed to write activity log to database:', error);
   }
 }
 
@@ -64,10 +78,15 @@ export function logActivity(
   message: string,
   meta: ActivityLogMeta
 ) {
+  // Log to Pino (stdout)
+  activityLogger[level](meta, message);
+  
   // Write to database asynchronously (fire and forget)
-  writeLog(level, message, meta).catch((err) => {
-    console.error('Activity log write failed:', err);
-  });
+  if (config.NODE_ENV !== 'test') {
+    writeToDatabase(level, message, meta).catch((err) => {
+      console.error('Activity log database write failed:', err);
+    });
+  }
 }
 
 /**
