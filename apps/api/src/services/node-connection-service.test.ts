@@ -7,6 +7,11 @@ import { createMockDatabase } from '../common/mock-utils';
 import { UserContext } from './user-service';
 import { ListQuery } from '@src/common/list-query';
 
+// Mock activity logger with synchronous mock
+jest.mock('@src/common/activity-logger', () => ({
+  logNodeConnection: jest.fn(),
+}));
+
 describe('NodeConnectionService', () => {
   let dbMocks: ReturnType<typeof createMockDatabase>;
   let nodeService: jest.Mocked<NodeService>;
@@ -54,6 +59,10 @@ describe('NodeConnectionService', () => {
       emailService,
       'http://localhost:3010'  // internalApiBaseUrl for testing
     );
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('createInvitation', () => {
@@ -288,16 +297,27 @@ describe('NodeConnectionService', () => {
 
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockInvitation);
 
-      nodeService.get.mockResolvedValueOnce({
-        id: 3,
-        organizationId: 1,
-        name: 'Node 3',
-        type: 'internal',
-        apiUrl: 'http://example.com',
-        status: 'active',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      } as any);
+      nodeService.get
+        .mockResolvedValueOnce({
+          id: 3,
+          organizationId: 1,
+          name: 'Node 3',
+          type: 'internal',
+          apiUrl: 'http://example.com',
+          status: 'active',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        } as any)
+        .mockResolvedValueOnce({
+          id: 2,
+          organizationId: 2,
+          name: 'Node 2',
+          type: 'internal',
+          apiUrl: 'http://example2.com',
+          status: 'active',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        } as any);
 
       dbMocks.executors.execute.mockResolvedValueOnce(undefined);
 
@@ -329,16 +349,27 @@ describe('NodeConnectionService', () => {
         status: 'pending',
       });
 
-      nodeService.get.mockResolvedValueOnce({
-        id: 3,
-        organizationId: 1,
-        name: 'Node 3',
-        type: 'internal',
-        apiUrl: 'http://example.com',
-        status: 'active',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      } as any);
+      nodeService.get
+        .mockResolvedValueOnce({
+          id: 3,
+          organizationId: 1,
+          name: 'Node 3',
+          type: 'internal',
+          apiUrl: 'http://example.com',
+          status: 'active',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        } as any)
+        .mockResolvedValueOnce({
+          id: 2,
+          organizationId: 2,
+          name: 'Node 2',
+          type: 'internal',
+          apiUrl: 'http://example2.com',
+          status: 'active',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        } as any);
 
       dbMocks.executors.execute.mockResolvedValueOnce(undefined);
 
