@@ -6,6 +6,12 @@ import { Role } from '@src/common/policies';
 import { createMockDatabase } from '../common/mock-utils';
 import { UserContext } from './user-service';
 import { ListQuery } from '@src/common/list-query';
+import * as activityLogger from '@src/common/activity-logger';
+
+// Mock activity logger
+jest.mock('@src/common/activity-logger', () => ({
+  logNodeConnection: jest.fn(),
+}));
 
 describe('NodeConnectionService', () => {
   let dbMocks: ReturnType<typeof createMockDatabase>;
@@ -180,6 +186,20 @@ describe('NodeConnectionService', () => {
       expect(result.fromNodeId).toBe(1);
       expect(result.targetNodeId).toBe(2);
       expect(emailService.sendConnectionRequestEmail).toHaveBeenCalled();
+      
+      // Verify activity logging
+      expect(activityLogger.logNodeConnection).toHaveBeenCalledWith(
+        1,
+        2,
+        'invitation_sent',
+        expect.objectContaining({
+          connectionId: 1,
+          fromNodeName: 'Node 1',
+          targetNodeName: 'Node 2',
+          organizationId: 1,
+          userId: 1,
+        })
+      );
     });
   });
 
@@ -288,16 +308,27 @@ describe('NodeConnectionService', () => {
 
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockInvitation);
 
-      nodeService.get.mockResolvedValueOnce({
-        id: 3,
-        organizationId: 1,
-        name: 'Node 3',
-        type: 'internal',
-        apiUrl: 'http://example.com',
-        status: 'active',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      } as any);
+      nodeService.get
+        .mockResolvedValueOnce({
+          id: 3,
+          organizationId: 1,
+          name: 'Node 3',
+          type: 'internal',
+          apiUrl: 'http://example.com',
+          status: 'active',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        } as any)
+        .mockResolvedValueOnce({
+          id: 2,
+          organizationId: 2,
+          name: 'Node 2',
+          type: 'internal',
+          apiUrl: 'http://example2.com',
+          status: 'active',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        } as any);
 
       dbMocks.executors.execute.mockResolvedValueOnce(undefined);
 
@@ -307,6 +338,20 @@ describe('NodeConnectionService', () => {
       expect(result.clientId).toBe('client-1');
       expect(result.clientSecret).toBe('secret-1');
       expect(dbMocks.db.updateTable).toHaveBeenCalledWith('connections');
+      
+      // Verify activity logging
+      expect(activityLogger.logNodeConnection).toHaveBeenCalledWith(
+        3,
+        2,
+        'invitation_accepted',
+        expect.objectContaining({
+          connectionId: 1,
+          fromNodeName: 'Node 2',
+          targetNodeName: 'Node 3',
+          organizationId: 1,
+          userId: 1,
+        })
+      );
     });
   });
 
@@ -329,16 +374,27 @@ describe('NodeConnectionService', () => {
         status: 'pending',
       });
 
-      nodeService.get.mockResolvedValueOnce({
-        id: 3,
-        organizationId: 1,
-        name: 'Node 3',
-        type: 'internal',
-        apiUrl: 'http://example.com',
-        status: 'active',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      } as any);
+      nodeService.get
+        .mockResolvedValueOnce({
+          id: 3,
+          organizationId: 1,
+          name: 'Node 3',
+          type: 'internal',
+          apiUrl: 'http://example.com',
+          status: 'active',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        } as any)
+        .mockResolvedValueOnce({
+          id: 2,
+          organizationId: 2,
+          name: 'Node 2',
+          type: 'internal',
+          apiUrl: 'http://example2.com',
+          status: 'active',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        } as any);
 
       dbMocks.executors.execute.mockResolvedValueOnce(undefined);
 
@@ -347,6 +403,20 @@ describe('NodeConnectionService', () => {
       expect(dbMocks.db.updateTable).toHaveBeenCalledWith('connections');
       expect(dbMocks.queryChain.set).toHaveBeenCalledWith(
         expect.objectContaining({ status: 'rejected' })
+      );
+      
+      // Verify activity logging
+      expect(activityLogger.logNodeConnection).toHaveBeenCalledWith(
+        3,
+        2,
+        'invitation_rejected',
+        expect.objectContaining({
+          connectionId: 1,
+          fromNodeName: 'Node 2',
+          targetNodeName: 'Node 3',
+          organizationId: 1,
+          userId: 1,
+        })
       );
     });
   });
@@ -469,6 +539,20 @@ describe('NodeConnectionService', () => {
       await connectionService.removeConnection(adminUserContext, 1);
 
       expect(dbMocks.db.deleteFrom).toHaveBeenCalledWith('connections');
+      
+      // Verify activity logging
+      expect(activityLogger.logNodeConnection).toHaveBeenCalledWith(
+        2,
+        3,
+        'connection_removed',
+        expect.objectContaining({
+          connectionId: 1,
+          fromNodeName: 'Node 2',
+          targetNodeName: 'Node 3',
+          organizationId: 1,
+          userId: 1,
+        })
+      );
     });
   });
 
