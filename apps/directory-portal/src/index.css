@@ -176,8 +176,9 @@ button.rt-Button:disabled {
 button.rt-Button {
   background-color: var(--base-color-brand--blue);
   padding: 8px 12px;
-  min-height: 40px;
+  min-height: 36px;
   cursor: pointer;
+  border-radius: 4px;
 }
 
 .side-nav a {

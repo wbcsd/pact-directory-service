@@ -5,14 +5,13 @@ import {
   ReaderIcon,
   DoubleArrowRightIcon,
 } from "@radix-ui/react-icons";
-import SideNav from "../components/SideNav";
 import DataTable, { Column } from "../components/DataTable";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useConformanceTesting } from "../components/ConformanceTesting";
 import { useAuth } from "../contexts/AuthContext";
 import { proxyWithAuth } from "../utils/auth-fetch";
-import Spinner from "../components/LoadingSpinner";
 import CodeIcon from "../components/CodeIcon";
+import { FunctionalPageLayout } from "../layouts";
 import "./ConformanceTestResult.css";
 
 export interface TestCase {
@@ -332,24 +331,13 @@ const ConformanceTestResult: React.FC = () => {
   const testRunStatus = mandatoryStats.total === 0 ? "N/A" : mandatoryStats.failure === 0 && mandatoryStats.pending === 0 ? "PASS" : mandatoryStats.failure > 0 ? "FAIL" : "PENDING";
 
   return (
-    <>
-      <aside className="sidebar">
-        <div className="marker-divider"></div>
-        <SideNav />
-      </aside>
-
-      {isLoading ? (
-        <Box className="spinner-container">
-          <Spinner
-            loadingText={
-              isNewTestRun
-                ? "Tests in progress ..."
-                : "Loading test results ..."
-            }
-          />
-        </Box>
-      ) : error ? (
-        <Box className="error-container">
+    <FunctionalPageLayout
+      wrapInMain={false}
+      loading={isLoading}
+      loadingMessage={isNewTestRun ? "Tests in progress ..." : "Loading test results ..."}
+    >
+      {error ? (
+        <main className="main">
           <h2>Conformance Test Result</h2>
           <Callout.Root color="red" size="2">
             <Callout.Icon>
@@ -362,7 +350,7 @@ const ConformanceTestResult: React.FC = () => {
               Back to Testing Form
             </Button>
           </Box>
-        </Box>
+        </main>
       ) : (
         <>
           <main className={`main ${selectedTest ? "split" : "full-width"}`}>
@@ -538,7 +526,7 @@ const ConformanceTestResult: React.FC = () => {
           )}
         </>
       )}
-    </>
+    </FunctionalPageLayout>
   );
 };
 

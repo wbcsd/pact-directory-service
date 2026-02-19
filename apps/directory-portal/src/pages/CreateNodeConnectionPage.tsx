@@ -19,6 +19,7 @@ import SideNav from "../components/SideNav";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import { useAuth } from "../contexts/AuthContext";
 import "./EditUserPage.css";
+import { FormPageLayout } from "../layouts";
 
 interface Node {
   id: number;
@@ -164,37 +165,16 @@ const CreateNodeConnectionPage: React.FC = () => {
     }));
   };
 
-  if (loading) {
-    return (
-      <>
-        <aside className="sidebar">
-          <div className="marker-divider"></div>
-          <SideNav />
-        </aside>
-        <main className="main">
-          <div className="header">
-            <h2>Create Node Connection</h2>
-          </div>
-          <Box style={{ display: "flex", justifyContent: "center", padding: "40px" }}>
-            <Spinner size="3" />
-          </Box>
-        </main>
-      </>
-    );
-  }
+  const pageTitle = fromNode
+    ? `Create Connection from ${fromNode.name}`
+    : "Create Node Connection";
 
   return (
-    <>
-      <aside className="sidebar">
-        <div className="marker-divider"></div>
-        <SideNav />
-      </aside>
-      <main className="main">
-        <div className="header">
-          <h2>Create Connection from {fromNode?.name}</h2>
-        </div>
-        <div>
-          <Box className="form-container">
+    <FormPageLayout
+      title={pageTitle}
+      loading={loading}
+      loadingMessage="Loading node information..."
+    >
             <Callout.Root variant="soft" mb="4">
               <Callout.Icon>
                 <InfoCircledIcon />
@@ -424,10 +404,7 @@ const CreateNodeConnectionPage: React.FC = () => {
                 </Button>
               </Box>
             </Form.Root>
-          </Box>
-        </div>
-      </main>
-    </>
+    </FormPageLayout>
   );
 };
 

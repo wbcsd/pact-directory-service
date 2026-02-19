@@ -17,9 +17,9 @@ import {
   CheckIcon,
   ChevronDownIcon,
 } from "@radix-ui/react-icons";
-import SideNav from "../components/SideNav";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import "./EditUserPage.css";
+import { FormPageLayout } from "../layouts";
 
 const AddUserPage: React.FC = () => {
   const navigate = useNavigate();
@@ -84,17 +84,7 @@ const AddUserPage: React.FC = () => {
   };
 
   return (
-    <>
-      <aside className="sidebar">
-        <div className="marker-divider"></div>
-        <SideNav />
-      </aside>
-      <main className="main">
-        <div className="header">
-          <h2>Create user for {orgName}</h2>
-        </div>
-        <div>
-          <Box className="form-container">
+    <FormPageLayout title={`Create user for ${orgName ?? ""}`}>
             <Form.Root autoComplete="off" onSubmit={handleSubmit}>
               {/* Email Field */}
               <Form.Field name="email">
@@ -287,10 +277,7 @@ const AddUserPage: React.FC = () => {
                 </Callout.Text>
               </Callout.Root>
             )}
-          </Box>
-        </div>
-      </main>
-    </>
+    </FormPageLayout>
   );
 };
 

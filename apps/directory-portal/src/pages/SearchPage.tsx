@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import { Box, Button, TextField } from "@radix-ui/themes";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Link } from "react-router-dom";
-import SideNav from "../components/SideNav";
 import { fetchWithAuth } from "../utils/auth-fetch";
+import { GridPageLayout } from "../layouts";
 
 interface SearchResults {
   id: number;
@@ -58,15 +58,7 @@ const SearchPage: React.FC = () => {
   };
 
   return (
-    <>
-      <aside className="sidebar">
-        <div className="marker-divider"></div>
-        <SideNav />
-      </aside>
-      <main className="main">
-        <div className="header">
-          <h2>Search Organizations</h2>
-        </div>
+    <GridPageLayout title="Search Organizations">
 
         <Box
           style={{
@@ -119,8 +111,7 @@ const SearchPage: React.FC = () => {
             </table>
           </div>
         )}
-      </main>
-    </>
+    </GridPageLayout>
   );
 };
 

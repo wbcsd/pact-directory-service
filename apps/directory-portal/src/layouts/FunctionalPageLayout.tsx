@@ -7,12 +7,16 @@ interface FunctionalPageLayoutProps {
   children: React.ReactNode;
   loading?: boolean;
   loadingMessage?: string;
+  /** When false, children are rendered directly without a <main> wrapper.
+   *  Useful for pages with multi-pane layouts (e.g. main + side panel). */
+  wrapInMain?: boolean;
 }
 
 const FunctionalPageLayout: React.FC<FunctionalPageLayoutProps> = ({
   children,
   loading = false,
   loadingMessage = "Loading...",
+  wrapInMain = true,
 }) => {
   return (
     <>
@@ -36,10 +40,12 @@ const FunctionalPageLayout: React.FC<FunctionalPageLayoutProps> = ({
         >
           <Spinner loadingText={loadingMessage} />
         </Box>
-      ) : (
+      ) : wrapInMain ? (
         <main className="main">
           {children}
         </main>
+      ) : (
+        children
       )}
     </>
   );

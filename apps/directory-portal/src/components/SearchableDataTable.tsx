@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Box, Button, Text } from "@radix-ui/themes";
-import { ReloadIcon, Cross2Icon } from "@radix-ui/react-icons";
+import { Box } from "@radix-ui/themes";
+import { MagnifyingGlassIcon, Cross2Icon } from "@radix-ui/react-icons";
 import DataTable, { Column } from "./DataTable";
 import "./SearchableDataTable.css";
 
@@ -152,52 +152,48 @@ function SearchableDataTable<T extends object>({
   };
 
   // Handle refresh
-  const handleRefresh = () => {
-    loadData(pagination.page, debouncedSearchTerm);
+  const handleSearch = () => {
+    loadData(1, searchTerm || undefined);
+  };
+
+  const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleSearch();
+    }
   };
 
   return (
     <Box className="data-table-with-search">
-      <div className="table-header-wrapper">
-        <Box className="table-header-actions">{headerActions}</Box>
-
-        {/* Search and Controls */}
-          <div className="searchWrapper">
-            <input
-              type="text"
-              placeholder={searchPlaceholder}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="searchInput"
-            />
-            {searchTerm && (
-              <button
-                className="clearButton"
-                onClick={() => setSearchTerm("")}
-                aria-label="Clear search"
-              >
-                <Cross2Icon />
-              </button>
-            )}
-          </div>
-          <Button
-            onClick={handleRefresh}
+      <div className="table-toolbar">
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder={searchPlaceholder}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
+          />
+          {searchTerm && (
+            <button
+              className="clear-btn"
+              onClick={() => setSearchTerm("")}
+              aria-label="Clear search"
+            >
+              <Cross2Icon />
+            </button>
+          )}
+          <button
+            onClick={handleSearch}
             disabled={isLoading}
-            className="refresh-button"
+            className="search-btn"
+            aria-label="Search"
           >
-            <ReloadIcon />
-            Refresh
-          </Button>
+            <MagnifyingGlassIcon />
+          </button>
+        </div>
+        {headerActions && <div className="action-bar">{headerActions}</div>}
       </div>
-
-      {/* Results Count */}
-      {!isLoading && !error && (
-        <Box className="results-info">
-          <Text size="2" style={{ color: "#888" }}>
-            {debouncedSearchTerm && `Searching for "${debouncedSearchTerm}"`}
-          </Text>
-        </Box>
-      )}
 
       {/* Paging strip (above) */}
       {!error && pagination.totalPages != 1 && (

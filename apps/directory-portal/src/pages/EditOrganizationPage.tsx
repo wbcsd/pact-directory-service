@@ -20,6 +20,7 @@ import SideNav from "../components/SideNav";
 import { useAuth } from "../contexts/AuthContext";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import "./EditOrganizationPage.css";
+import { FormPageLayout } from "../layouts";
 
 export interface Organization {
   id: number;
@@ -131,27 +132,12 @@ const EditOrganizationPage: React.FC = () => {
     }));
   };  
 
-  if (loading) {
-    return (
-      <Box className="loading-container">
-        <Spinner loading />
-        <Text className="loading-text">Loading organization data...</Text>
-      </Box>
-    );
-  }
-
   return (
-    <>
-      <aside className="sidebar">
-        <div className="marker-divider"></div>
-        <SideNav />
-      </aside>
-      <main className="main">
-        <div className="header">
-          <h2>Edit Organization</h2>
-        </div>
-        <div>
-          <Box className="form-container">
+    <FormPageLayout
+      title="Edit Organization"
+      loading={loading}
+      loadingMessage="Loading organization data..."
+    >
             <Form.Root onSubmit={handleSubmit}>
 
               {/* Editable Organization Name */}
@@ -370,10 +356,7 @@ const EditOrganizationPage: React.FC = () => {
                 </Callout.Text>
               </Callout.Root>
             )}
-          </Box>
-        </div>
-      </main>
-    </>
+    </FormPageLayout>
   );
 };
 

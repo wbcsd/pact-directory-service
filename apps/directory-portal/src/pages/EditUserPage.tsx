@@ -17,11 +17,11 @@ import {
   CheckIcon,
   ChevronDownIcon,
 } from "@radix-ui/react-icons";
-import SideNav from "../components/SideNav";
 import { User } from "./OrganizationUsers";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import "./EditUserPage.css";
 import PolicyGuard from "../components/PolicyGuard";
+import { FormPageLayout } from "../layouts";
 
 const EditUserPage: React.FC = () => {
   const navigate = useNavigate();
@@ -119,27 +119,12 @@ const EditUserPage: React.FC = () => {
     setFormData((prevData) => ({ ...prevData, role: value }));
   };
 
-  if (loading) {
-    return (
-      <Box className="loading-container">
-        <Spinner loading />
-        <Text className="loading-text">Loading user data...</Text>
-      </Box>
-    );
-  }
-
   return (
-    <>
-      <aside className="sidebar">
-        <div className="marker-divider"></div>
-        <SideNav />
-      </aside>
-      <main className="main">
-        <div className="header">
-          <h2>Edit User</h2>
-        </div>
-        <div>
-          <Box className="form-container">
+    <FormPageLayout
+      title="Edit User"
+      loading={loading}
+      loadingMessage="Loading user data..."
+    >
             <Form.Root onSubmit={handleSubmit}>
               {/* Read-only User Email */}
               <Box className="form-field">
@@ -295,10 +280,7 @@ const EditUserPage: React.FC = () => {
                 </Callout.Text>
               </Callout.Root>
             )}
-          </Box>
-        </div>
-      </main>
-    </>
+    </FormPageLayout>
   );
 };
 

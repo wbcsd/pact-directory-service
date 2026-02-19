@@ -15,9 +15,7 @@ const App: React.FC = () => {
             <div className="logo">
               <img width={153} src={pactLogo} alt="Pact Logo" />
             </div>
-            <div className="search-bar">
-              <SignUp />
-            </div>
+            <SignUp />
           </div>
           <div className="container">
             <AppRoutes />

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, TextField } from "@radix-ui/themes";
 import * as Form from "@radix-ui/react-form";
-import SideNav from "../components/SideNav";
 import { useNavigate } from "react-router-dom";
 import { useConformanceTesting } from "../components/ConformanceTesting";
+import { FunctionalPageLayout } from "../layouts";
 import "./ConformanceTesting.css";
 
 const ConformanceTesting: React.FC = () => {
@@ -75,11 +75,7 @@ const ConformanceTesting: React.FC = () => {
   }, []);
 
   return (
-    <>
-      <aside className="sidebar">
-        <div className="marker-divider"></div>
-        <SideNav />
-      </aside>
+    <FunctionalPageLayout wrapInMain={false}>
       <main className="main">
         <div className="header">
           <div>
@@ -304,7 +300,7 @@ const ConformanceTesting: React.FC = () => {
           </p>
         </Box>
       </div>
-    </>
+    </FunctionalPageLayout>
   );
 };
 
