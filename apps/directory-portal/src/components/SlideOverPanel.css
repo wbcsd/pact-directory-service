@@ -2,7 +2,7 @@
 .slide-over-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(10, 5, 82, 0.25);
+  /*background: rgba(10, 5, 82, 0.25);*/
   z-index: 100;
   animation: fadeIn 200ms ease-out;
 }
