@@ -219,18 +219,16 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
                 <ChevronDownIcon />
               </Select.Icon>
             </Select.Trigger>
-            <Select.Portal>
-              <Select.Content className="select-content" position="popper" sideOffset={4}>
-                <Select.Viewport>
-                  <Select.Item value={NodeType.INTERNAL} className="select-item">
-                    <Select.ItemText>Internal</Select.ItemText>
-                  </Select.Item>
-                  <Select.Item value={NodeType.EXTERNAL} className="select-item">
-                    <Select.ItemText>External</Select.ItemText>
-                  </Select.Item>
-                </Select.Viewport>
-              </Select.Content>
-            </Select.Portal>
+            <Select.Content className="select-content" position="popper" sideOffset={4}>
+              <Select.Viewport>
+                <Select.Item value={NodeType.INTERNAL} className="select-item">
+                  <Select.ItemText>Internal</Select.ItemText>
+                </Select.Item>
+                <Select.Item value={NodeType.EXTERNAL} className="select-item">
+                  <Select.ItemText>External</Select.ItemText>
+                </Select.Item>
+              </Select.Viewport>
+            </Select.Content>
           </Select.Root>
         </Box>
 
