@@ -16,7 +16,6 @@ import {
   InfoCircledIcon,
   CheckIcon,
 } from "@radix-ui/react-icons";
-import SideNav from "../components/SideNav";
 import { useAuth } from "../contexts/AuthContext";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import "./EditOrganizationPage.css";

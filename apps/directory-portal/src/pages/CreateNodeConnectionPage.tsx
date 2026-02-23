@@ -15,7 +15,6 @@ import {
   CheckIcon,
   ChevronDownIcon,
 } from "@radix-ui/react-icons";
-import SideNav from "../components/SideNav";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import { useAuth } from "../contexts/AuthContext";
 import "./EditUserPage.css";
