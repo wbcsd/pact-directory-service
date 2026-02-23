@@ -5,15 +5,50 @@
 import { describe, it, expect, beforeEach } from '@jest/globals';
 import { ActivityLogService } from './activity-log-service';
 import { createMockDatabase } from '../common/mock-utils';
+import { UserContext } from './user-service';
+import { Role } from '@src/common/policies';
 
 describe('ActivityLogService', () => {
   let service: ActivityLogService;
   let dbMocks: ReturnType<typeof createMockDatabase>;
+  let rootContext: UserContext;
+  let adminContext: UserContext;
+  let userContext: UserContext;
 
   beforeEach(() => {
     jest.clearAllMocks();
     dbMocks = createMockDatabase();
     service = new ActivityLogService(dbMocks.db as any);
+
+    // Root user with view-all-logs policy
+    rootContext = {
+      userId: 1,
+      email: 'root@example.com',
+      organizationId: 1,
+      role: Role.Root,
+      policies: ['view-all-logs'],
+      status: 'active' as any,
+    };
+
+    // Admin user with view-org-logs policy
+    adminContext = {
+      userId: 2,
+      email: 'admin@example.com',
+      organizationId: 1,
+      role: Role.Administrator,
+      policies: ['view-org-logs'],
+      status: 'active' as any,
+    };
+
+    // Regular user with view-org-logs policy
+    userContext = {
+      userId: 3,
+      email: 'user@example.com',
+      organizationId: 2,
+      role: Role.User,
+      policies: ['view-org-logs'],
+      status: 'active' as any,
+    };
   });
 
   describe('getGroupedLogs', () => {
@@ -47,7 +82,7 @@ describe('ActivityLogService', () => {
       // Second call for actual data
       dbMocks.executors.execute.mockResolvedValue(mockGroupedData);
 
-      const result = await service.getGroupedLogs();
+      const result = await service.getGroupedLogs(rootContext);
 
       expect(result.total).toBe(2);
       expect(result.logs).toHaveLength(2);
@@ -69,7 +104,7 @@ describe('ActivityLogService', () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue({ total: 0n });
       dbMocks.executors.execute.mockResolvedValue([]);
 
-      await service.getGroupedLogs({ path: 'connections' });
+      await service.getGroupedLogs(rootContext, { path: 'connections' });
 
       expect(dbMocks.queryChain.where).toHaveBeenCalledWith(
         'path',
@@ -82,7 +117,7 @@ describe('ActivityLogService', () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue({ total: 0n });
       dbMocks.executors.execute.mockResolvedValue([]);
 
-      await service.getGroupedLogs({ level: 'error' });
+      await service.getGroupedLogs(rootContext, { level: 'error' });
 
       expect(dbMocks.queryChain.where).toHaveBeenCalledWith(
         'level',
@@ -95,7 +130,7 @@ describe('ActivityLogService', () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue({ total: 0n });
       dbMocks.executors.execute.mockResolvedValue([]);
 
-      await service.getGroupedLogs({ nodeId: 42 });
+      await service.getGroupedLogs(rootContext, { nodeId: 42 });
 
       expect(dbMocks.queryChain.where).toHaveBeenCalledWith(
         'nodeId',
@@ -108,7 +143,7 @@ describe('ActivityLogService', () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue({ total: 0n });
       dbMocks.executors.execute.mockResolvedValue([]);
 
-      await service.getGroupedLogs({ organizationId: 10 });
+      await service.getGroupedLogs(rootContext, { organizationId: 10 });
 
       expect(dbMocks.queryChain.where).toHaveBeenCalledWith(
         'organizationId',
@@ -121,7 +156,7 @@ describe('ActivityLogService', () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue({ total: 0n });
       dbMocks.executors.execute.mockResolvedValue([]);
 
-      await service.getGroupedLogs({ userId: 7 });
+      await service.getGroupedLogs(rootContext, { userId: 7 });
 
       expect(dbMocks.queryChain.where).toHaveBeenCalledWith(
         'userId',
@@ -134,7 +169,7 @@ describe('ActivityLogService', () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue({ total: 0n });
       dbMocks.executors.execute.mockResolvedValue([]);
 
-      await service.getGroupedLogs({
+      await service.getGroupedLogs(rootContext, {
         startDate: '2024-01-01',
         endDate: '2024-01-31',
       });
@@ -155,7 +190,7 @@ describe('ActivityLogService', () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue({ total: 0n });
       dbMocks.executors.execute.mockResolvedValue([]);
 
-      await service.getGroupedLogs({}, { limit: 10, offset: 20 });
+      await service.getGroupedLogs(rootContext, {}, { limit: 10, offset: 20 });
 
       expect(dbMocks.queryChain.limit).toHaveBeenCalledWith(10);
       expect(dbMocks.queryChain.offset).toHaveBeenCalledWith(20);
@@ -165,7 +200,7 @@ describe('ActivityLogService', () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue({ total: 0n });
       dbMocks.executors.execute.mockResolvedValue([]);
 
-      await service.getGroupedLogs();
+      await service.getGroupedLogs(rootContext);
 
       expect(dbMocks.queryChain.limit).toHaveBeenCalledWith(50);
       expect(dbMocks.queryChain.offset).toHaveBeenCalledWith(0);
@@ -202,7 +237,7 @@ describe('ActivityLogService', () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue({ total: 2n });
       dbMocks.executors.execute.mockResolvedValue(mockLogs);
 
-      const result = await service.getLogsByPath('/pact/nodes/1/connections');
+      const result = await service.getLogsByPath(rootContext, '/pact/nodes/1/connections');
 
       expect(result.total).toBe(2);
       expect(result.logs).toHaveLength(2);
@@ -221,7 +256,7 @@ describe('ActivityLogService', () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue({ total: 0n });
       dbMocks.executors.execute.mockResolvedValue([]);
 
-      await service.getLogsByPath('/pact/test', { limit: 25, offset: 50 });
+      await service.getLogsByPath(rootContext, '/pact/test', { limit: 25, offset: 50 });
 
       expect(dbMocks.queryChain.limit).toHaveBeenCalledWith(25);
       expect(dbMocks.queryChain.offset).toHaveBeenCalledWith(50);
@@ -231,7 +266,7 @@ describe('ActivityLogService', () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue({ total: 0n });
       dbMocks.executors.execute.mockResolvedValue([]);
 
-      await service.getLogsByPath('/pact/test');
+      await service.getLogsByPath(rootContext, '/pact/test');
 
       expect(dbMocks.queryChain.limit).toHaveBeenCalledWith(100);
       expect(dbMocks.queryChain.offset).toHaveBeenCalledWith(0);
@@ -268,7 +303,7 @@ describe('ActivityLogService', () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue({ total: 2n });
       dbMocks.executors.execute.mockResolvedValue(mockLogs);
 
-      const result = await service.getNodeLogs(5);
+      const result = await service.getNodeLogs(rootContext, 5);
 
       expect(result.total).toBe(2);
       expect(result.logs).toHaveLength(2);
@@ -287,7 +322,7 @@ describe('ActivityLogService', () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue({ total: 0n });
       dbMocks.executors.execute.mockResolvedValue([]);
 
-      await service.getNodeLogs(10, { limit: 15, offset: 30 });
+      await service.getNodeLogs(rootContext, 10, { limit: 15, offset: 30 });
 
       expect(dbMocks.queryChain.limit).toHaveBeenCalledWith(15);
       expect(dbMocks.queryChain.offset).toHaveBeenCalledWith(30);
@@ -302,7 +337,7 @@ describe('ActivityLogService', () => {
 
       dbMocks.executors.executeTakeFirst.mockResolvedValue(mockExecuteResult);
 
-      const result = await service.deleteOldLogs(30);
+      const result = await service.deleteOldLogs(rootContext, 30);
 
       expect(result).toBe(42);
       expect(dbMocks.db.deleteFrom).toHaveBeenCalledWith('activity_logs');
@@ -328,7 +363,7 @@ describe('ActivityLogService', () => {
         numDeletedRows: 0n,
       });
 
-      const result = await service.deleteOldLogs(90);
+      const result = await service.deleteOldLogs(rootContext, 90);
 
       expect(result).toBe(0);
     });
@@ -336,7 +371,7 @@ describe('ActivityLogService', () => {
     it('should handle undefined numDeletedRows', async () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue({});
 
-      const result = await service.deleteOldLogs(7);
+      const result = await service.deleteOldLogs(rootContext, 7);
 
       expect(result).toBe(0);
     });

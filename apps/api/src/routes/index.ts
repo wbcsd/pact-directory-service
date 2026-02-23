@@ -9,7 +9,6 @@ import logger from '@src/common/logger';
 import { Role } from '@src/common/policies';
 import { UpdateNodeData } from '@src/services/node-service';
 import { createInternalNodeRoutes } from './internal-node-routes';
-import activityLogRoutes from './activity-log-routes';
 
 const router = Router();
 
@@ -353,6 +352,80 @@ router.use('/nodes', createInternalNodeRoutes());
 // Activity Log Routes
 // Mount activity log endpoints for log viewing and management
 // URL structure: /api/activity-logs, /api/activity-logs/path, /api/activity-logs/nodes/:nodeId
-router.use('/activity-logs', activityLogRoutes);
+
+/**
+ * Get grouped activity logs (one row per path)
+ * GET /api/activity-logs?limit=50&offset=0
+ * Requires authentication
+ */
+router.get('/directory/activity-logs', authenticate, context(async (req) => {
+  const query = ListQuery.parse(req.query);
+  const result = await req.services.activityLog.getGroupedLogs(req.context, {}, query);
+  return result;
+}));
+
+/**
+ * Get detailed logs for a specific path
+ * GET /api/activity-logs/path?path=/pact/nodes/123/api&limit=100&offset=0
+ * Requires authentication
+ */
+router.get('/directory/activity-logs/path', authenticate, context(async (req, res) => {
+  const { path, limit, offset } = req.query;
+  
+  if (!path || typeof path !== 'string') {
+    res.status(400);
+    return { error: 'Path parameter is required' };
+  }
+
+  const query = {
+    limit: limit ? parseInt(limit as string, 10) : undefined,
+    offset: offset ? parseInt(offset as string, 10) : undefined,
+  };
+
+  const result = await req.services.activityLog.getLogsByPath(req.context, path, query);
+  return result;
+}));
+
+/**
+ * Get logs for a specific node
+ * GET /api/nodes/:nodeId/logs?limit=100&offset=0
+ * Requires authentication
+ */
+router.get('/directory/activity-logs/nodes/:nodeId', authenticate, context(async (req, res) => {
+  const nodeId = parseInt(req.params.nodeId, 10);
+
+  if (isNaN(nodeId)) {
+    res.status(400);
+    return { error: 'Invalid node ID' };
+  }
+
+  const query = ListQuery.parse(req.query);
+  const result = await req.services.activityLog.getNodeLogs(req.context, nodeId, query);
+  return result;
+}));
+
+/**
+ * Delete old activity logs
+ * DELETE /api/activity-logs?olderThanDays=90
+ * Requires authentication
+ */
+router.delete('/directory/activity-logs', authenticate, context(async (req, res) => {
+  const { olderThanDays } = req.query;
+
+  if (!olderThanDays) {
+    res.status(400);
+    return { error: 'olderThanDays parameter is required' };
+  }
+
+  const days = parseInt(olderThanDays as string, 10);
+  if (isNaN(days) || days < 1) {
+    res.status(400);
+    return { error: 'olderThanDays must be a positive number' };
+  }
+
+  const deletedCount = await req.services.activityLog.deleteOldLogs(req.context, days);
+  return { deletedCount };
+}));
+
 
 export default router;

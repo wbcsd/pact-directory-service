@@ -1,6 +1,12 @@
 import { Kysely } from 'kysely';
 import { Database } from '@src/database/types';
 import { ListQuery } from '@src/common/list-query';
+import { UserContext } from './user-service';
+import { hasAccess, Role, registerPolicy } from '@src/common/policies';
+
+// Register activity log policies
+registerPolicy([Role.Root], 'view-all-logs');
+registerPolicy([Role.Administrator, Role.User], 'view-org-logs');
 
 export interface ActivityLogFilters {
   path?: string;
@@ -30,6 +36,7 @@ export class ActivityLogService {
    * Get grouped activity logs by path
    */
   async getGroupedLogs(
+    context: UserContext,
     filters: ActivityLogFilters = {},
     query: Partial<ListQuery> = {}
   ): Promise<{ logs: ActivityLogGrouped[]; total: number }> {
@@ -44,6 +51,13 @@ export class ActivityLogService {
         fn('array_agg', ['message']).as('messageArray'),
       ])
       .groupBy('path');
+
+    // Apply organization filter based on user's policy
+    // Root users with 'view-all-logs' can see all logs
+    // Other users with 'view-org-logs' can only see their organization's logs
+    if (!hasAccess(context, 'view-all-logs')) {
+      baseQuery = baseQuery.where('organizationId', '=', context.organizationId);
+    }
 
     // Apply filters
     if (filters.path) {
@@ -112,23 +126,34 @@ export class ActivityLogService {
    * Get detailed logs for a specific path
    */
   async getLogsByPath(
+    context: UserContext,
     path: string,
     query: Partial<ListQuery> = {}
   ) {
     const limit = query.limit || 100;
     const offset = query.offset || 0;
 
-    const baseQuery = this.db
+    let baseQuery = this.db
       .selectFrom('activity_logs')
       .selectAll()
       .where('path', '=', path);
 
+    // Apply organization filter based on user's policy
+    if (!hasAccess(context, 'view-all-logs')) {
+      baseQuery = baseQuery.where('organizationId', '=', context.organizationId);
+    }
+
     // Get total count
-    const countResult = await this.db
+    let countQuery = this.db
       .selectFrom('activity_logs')
       .select(({ fn }) => fn.count('id').as('total'))
-      .where('path', '=', path)
-      .executeTakeFirst();
+      .where('path', '=', path);
+
+    if (!hasAccess(context, 'view-all-logs')) {
+      countQuery = countQuery.where('organizationId', '=', context.organizationId);
+    }
+
+    const countResult = await countQuery.executeTakeFirst();
     const total = Number(countResult?.total || 0);
 
     // Apply pagination
@@ -144,21 +169,31 @@ export class ActivityLogService {
   /**
    * Get logs for a specific node
    */
-  async getNodeLogs(nodeId: number, query: Partial<ListQuery> = {}) {
+  async getNodeLogs(context: UserContext, nodeId: number, query: Partial<ListQuery> = {}) {
     const limit = query.limit || 100;
     const offset = query.offset || 0;
 
-    const baseQuery = this.db
+    let baseQuery = this.db
       .selectFrom('activity_logs')
       .selectAll()
       .where('nodeId', '=', nodeId);
 
+    // Apply organization filter based on user's policy
+    if (!hasAccess(context, 'view-all-logs')) {
+      baseQuery = baseQuery.where('organizationId', '=', context.organizationId);
+    }
+
     // Get total count
-    const countResult = await this.db
+    let countQuery = this.db
       .selectFrom('activity_logs')
       .select(({ fn }) => fn.count('id').as('total'))
-      .where('nodeId', '=', nodeId)
-      .executeTakeFirst();
+      .where('nodeId', '=', nodeId);
+
+    if (!hasAccess(context, 'view-all-logs')) {
+      countQuery = countQuery.where('organizationId', '=', context.organizationId);
+    }
+
+    const countResult = await countQuery.executeTakeFirst();
     const total = Number(countResult?.total || 0);
 
     // Apply pagination
@@ -173,8 +208,14 @@ export class ActivityLogService {
 
   /**
    * Delete old logs (for cleanup/archival)
+   * Only users with 'view-all-logs' policy (Root) can delete logs
    */
-  async deleteOldLogs(olderThanDays: number): Promise<number> {
+  async deleteOldLogs(context: UserContext, olderThanDays: number): Promise<number> {
+    // Only allow deletion if user has view-all policy
+    if (!hasAccess(context, 'view-all-logs')) {
+      return 0; // Silently fail for non-root users
+    }
+
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - olderThanDays);
 
