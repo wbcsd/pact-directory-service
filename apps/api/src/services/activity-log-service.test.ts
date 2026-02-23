@@ -7,6 +7,7 @@ import { ActivityLogService } from './activity-log-service';
 import { createMockDatabase } from '../common/mock-utils';
 import { UserContext } from './user-service';
 import { Role } from '@src/common/policies';
+import { ListQuery } from '@src/common/list-query';
 
 describe('ActivityLogService', () => {
   let service: ActivityLogService;
@@ -82,17 +83,17 @@ describe('ActivityLogService', () => {
       // Second call for actual data
       dbMocks.executors.execute.mockResolvedValue(mockGroupedData);
 
-      const result = await service.getGroupedLogs(rootContext);
+      const result = await service.getGroupedLogs(rootContext, {}, new ListQuery({ page: 1, pageSize: 50 }));
 
-      expect(result.total).toBe(2);
-      expect(result.logs).toHaveLength(2);
-      expect(result.logs[0]).toMatchObject({
+      expect(result.pagination.total).toBe(2);
+      expect(result.data).toHaveLength(2);
+      expect(result.data[0]).toMatchObject({
         path: '/pact/nodes/1/connections',
         count: 5,
         lastLevel: 'info',
         lastMessage: 'Connection accepted',
       });
-      expect(result.logs[1]).toMatchObject({
+      expect(result.data[1]).toMatchObject({
         path: '/pact/nodes/2/api',
         count: 3,
         lastLevel: 'info',
@@ -104,7 +105,7 @@ describe('ActivityLogService', () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue({ total: 0n });
       dbMocks.executors.execute.mockResolvedValue([]);
 
-      await service.getGroupedLogs(rootContext, { path: 'connections' });
+      await service.getGroupedLogs(rootContext, { path: 'connections' }, new ListQuery({ page: 1, pageSize: 50 }));
 
       expect(dbMocks.queryChain.where).toHaveBeenCalledWith(
         'path',
@@ -117,7 +118,7 @@ describe('ActivityLogService', () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue({ total: 0n });
       dbMocks.executors.execute.mockResolvedValue([]);
 
-      await service.getGroupedLogs(rootContext, { level: 'error' });
+      await service.getGroupedLogs(rootContext, { level: 'error' }, new ListQuery({ page: 1, pageSize: 50 }));
 
       expect(dbMocks.queryChain.where).toHaveBeenCalledWith(
         'level',
@@ -130,7 +131,7 @@ describe('ActivityLogService', () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue({ total: 0n });
       dbMocks.executors.execute.mockResolvedValue([]);
 
-      await service.getGroupedLogs(rootContext, { nodeId: 42 });
+      await service.getGroupedLogs(rootContext, { nodeId: 42 }, new ListQuery({ page: 1, pageSize: 50 }));
 
       expect(dbMocks.queryChain.where).toHaveBeenCalledWith(
         'nodeId',
@@ -143,7 +144,7 @@ describe('ActivityLogService', () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue({ total: 0n });
       dbMocks.executors.execute.mockResolvedValue([]);
 
-      await service.getGroupedLogs(rootContext, { organizationId: 10 });
+      await service.getGroupedLogs(rootContext, { organizationId: 10 }, new ListQuery({ page: 1, pageSize: 50 }));
 
       expect(dbMocks.queryChain.where).toHaveBeenCalledWith(
         'organizationId',
@@ -156,7 +157,7 @@ describe('ActivityLogService', () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue({ total: 0n });
       dbMocks.executors.execute.mockResolvedValue([]);
 
-      await service.getGroupedLogs(rootContext, { userId: 7 });
+      await service.getGroupedLogs(rootContext, { userId: 7 }, new ListQuery({ page: 1, pageSize: 50 }));
 
       expect(dbMocks.queryChain.where).toHaveBeenCalledWith(
         'userId',
@@ -172,7 +173,7 @@ describe('ActivityLogService', () => {
       await service.getGroupedLogs(rootContext, {
         startDate: '2024-01-01',
         endDate: '2024-01-31',
-      });
+      }, new ListQuery({ page: 1, pageSize: 50 }));
 
       expect(dbMocks.queryChain.where).toHaveBeenCalledWith(
         'createdAt',
@@ -190,7 +191,7 @@ describe('ActivityLogService', () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue({ total: 0n });
       dbMocks.executors.execute.mockResolvedValue([]);
 
-      await service.getGroupedLogs(rootContext, {}, { limit: 10, offset: 20 });
+      await service.getGroupedLogs(rootContext, {}, new ListQuery({ page: 3, pageSize: 10 }));
 
       expect(dbMocks.queryChain.limit).toHaveBeenCalledWith(10);
       expect(dbMocks.queryChain.offset).toHaveBeenCalledWith(20);
@@ -200,7 +201,7 @@ describe('ActivityLogService', () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue({ total: 0n });
       dbMocks.executors.execute.mockResolvedValue([]);
 
-      await service.getGroupedLogs(rootContext);
+      await service.getGroupedLogs(rootContext, {}, new ListQuery({ page: 1, pageSize: 50 }));
 
       expect(dbMocks.queryChain.limit).toHaveBeenCalledWith(50);
       expect(dbMocks.queryChain.offset).toHaveBeenCalledWith(0);

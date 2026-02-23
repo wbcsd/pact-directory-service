@@ -1,16 +1,11 @@
-import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Card,
-  Table,
-  Text,
-  Badge,
-  Heading,
-  Flex,
-  Button,
-} from "@radix-ui/themes";
+import React from "react";
+import { Box, Badge, Text, Heading } from "@radix-ui/themes";
 import { useNavigate } from "react-router-dom";
 import FunctionalPageLayout from "../layouts/FunctionalPageLayout";
+import SearchableDataTable, {
+  PaginationInfo,
+} from "../components/SearchableDataTable";
+import { Column } from "../components/DataTable";
 import { fetchWithAuth } from "../utils/auth-fetch";
 
 interface ActivityLogGrouped {
@@ -22,43 +17,37 @@ interface ActivityLogGrouped {
 }
 
 interface ActivityLogsResponse {
-  logs: ActivityLogGrouped[];
-  total: number;
+  data: ActivityLogGrouped[];
+  pagination: PaginationInfo;
 }
 
 const ActivityLogsPage: React.FC = () => {
-  const [logs, setLogs] = useState<ActivityLogGrouped[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchLogs();
-  }, []);
+  const fetchLogs = async (params: {
+    page: number;
+    pageSize: number;
+    search?: string;
+  }): Promise<{ data: ActivityLogGrouped[]; pagination: PaginationInfo }> => {
+    const queryParams = new URLSearchParams({
+      page: params.page.toString(),
+      pageSize: params.pageSize.toString(),
+      ...(params.search && { search: params.search }),
+    });
 
-  const fetchLogs = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+    const response = await fetchWithAuth(`/activity-logs?${queryParams}`);
 
-      const response = await fetchWithAuth(
-        `/activity-logs?limit=100&offset=0`
-      );
-
-      if (!response!.ok) {
-        throw new Error("Failed to fetch activity logs");
-      }
-
-      const data: ActivityLogsResponse = await response!.json();
-      setLogs(data.logs);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setLoading(false);
+    if (!response!.ok) {
+      throw new Error("Failed to fetch activity logs");
     }
+
+    const result: ActivityLogsResponse = await response!.json();
+    return result;
   };
 
-  const getLevelColor = (level: string): "blue" | "green" | "yellow" | "red" | "gray" => {
+  const getLevelColor = (
+    level: string
+  ): "blue" | "green" | "yellow" | "red" | "gray" => {
     switch (level.toLowerCase()) {
       case "info":
         return "blue";
@@ -80,87 +69,80 @@ const ActivityLogsPage: React.FC = () => {
     return date.toLocaleString();
   };
 
-  const handleRowClick = (path: string) => {
-    navigate(`/activity-logs/path?path=${encodeURIComponent(path)}`);
+  const handleRowClick = (log: ActivityLogGrouped) => {
+    navigate(`/activity-logs/path?path=${encodeURIComponent(log.path)}`);
   };
 
+  const columns: Column<ActivityLogGrouped>[] = [
+    {
+      key: "path",
+      header: "Path",
+      render: (log: ActivityLogGrouped) => (
+        <Text style={{ fontFamily: "monospace", fontSize: "0.9em" }}>
+          {log.path}
+        </Text>
+      ),
+    },
+    {
+      key: "count",
+      header: "Count",
+      render: (log: ActivityLogGrouped) => <Badge color="gray">{log.count}</Badge>,
+    },
+    {
+      key: "lastCreatedAt",
+      header: "Last Activity",
+      render: (log: ActivityLogGrouped) => (
+        <Text size="2">{formatDate(log.lastCreatedAt)}</Text>
+      ),
+    },
+    {
+      key: "lastLevel",
+      header: "Level",
+      render: (log: ActivityLogGrouped) => (
+        <Badge color={getLevelColor(log.lastLevel)}>
+          {log.lastLevel.toUpperCase()}
+        </Badge>
+      ),
+    },
+    {
+      key: "lastMessage",
+      header: "Last Message",
+      render: (log: ActivityLogGrouped) => (
+        <Text
+          size="2"
+          style={{
+            maxWidth: "400px",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            display: "block",
+          }}
+        >
+          {log.lastMessage}
+        </Text>
+      ),
+    },
+  ];
+
   return (
-    <FunctionalPageLayout loading={loading} loadingMessage="Loading activity logs...">
+    <FunctionalPageLayout>
       <Box style={{ padding: "2rem" }}>
-        <Flex justify="between" align="center" mb="4">
-          <Heading size="6">Activity Logs</Heading>
-          <Button onClick={fetchLogs} variant="soft">
-            Refresh
-          </Button>
-        </Flex>
+        <Heading size="6" mb="4">
+          Activity Logs
+        </Heading>
 
-        {error && (
-          <Card style={{ marginBottom: "1rem", backgroundColor: "#fee" }}>
-            <Text color="red">{error}</Text>
-          </Card>
-        )}
-
-        <Card>
-          <Table.Root variant="surface">
-            <Table.Header>
-              <Table.Row>
-                <Table.ColumnHeaderCell>Path</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Count</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Last Activity</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Level</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Last Message</Table.ColumnHeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {logs.length === 0 ? (
-                <Table.Row>
-                  <Table.Cell colSpan={5}>
-                    <Text color="gray">No activity logs found</Text>
-                  </Table.Cell>
-                </Table.Row>
-              ) : (
-                logs.map((log) => (
-                  <Table.Row
-                    key={log.path}
-                    style={{ cursor: "pointer" }}
-                    onClick={() => handleRowClick(log.path)}
-                  >
-                    <Table.Cell>
-                      <Text style={{ fontFamily: "monospace", fontSize: "0.9em" }}>
-                        {log.path}
-                      </Text>
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Badge color="gray">{log.count}</Badge>
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Text size="2">{formatDate(log.lastCreatedAt)}</Text>
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Badge color={getLevelColor(log.lastLevel)}>
-                        {log.lastLevel.toUpperCase()}
-                      </Badge>
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Text
-                        size="2"
-                        style={{
-                          maxWidth: "400px",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                          display: "block",
-                        }}
-                      >
-                        {log.lastMessage}
-                      </Text>
-                    </Table.Cell>
-                  </Table.Row>
-                ))
-              )}
-            </Table.Body>
-          </Table.Root>
-        </Card>
+        <SearchableDataTable<ActivityLogGrouped>
+          searchPlaceholder="Search log paths..."
+          fetchData={fetchLogs}
+          columns={columns}
+          idColumnName="path"
+          defaultPageSize={50}
+          emptyState={{
+            title: "No activity logs found",
+            description: "Activity logs will appear here as your system operates.",
+          }}
+          onRowClick={handleRowClick}
+        />
       </Box>
     </FunctionalPageLayout>
   );
