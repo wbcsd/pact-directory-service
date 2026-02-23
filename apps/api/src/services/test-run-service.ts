@@ -97,7 +97,28 @@ export class TestRunService {
       
       // Log test run creation
       const testRunId = responseData?.testRunId || 'unknown';
-      activityLogger.logConformanceTest(testRunId, 'initiated', {
+
+      // If the test has failed, extract the failed tests
+      if (responseData.status === 'FAIL') {
+        const failedTests = responseData.results.filter((test: any) => test.status === 'FAILURE');
+        activityLogger.logConformanceTest(testRunId, responseData.status, {
+          organizationName: user.organizationName,
+          organizationId: user.organizationId,
+          userId: user.id,
+          failedTests,
+        });
+      }
+
+      // if the test run was created successfully, log the creation with details
+      if (responseData.status === 'PASS') {
+        activityLogger.logConformanceTest(testRunId, responseData.status, {
+          organizationName: user.organizationName,
+          organizationId: user.organizationId,
+          userId: user.id,
+        });
+      }
+
+      activityLogger.logConformanceTest(testRunId, responseData.status, {
         organizationName: user.organizationName,
         organizationId: user.organizationId,
         userId: user.id,
@@ -139,21 +160,10 @@ export class TestRunService {
       });
 
       const data: unknown = await response.json();
-      
-      // Log test results retrieval
-      activityLogger.logConformanceTest(testRunId, 'results_retrieved', {
-        organizationId: context.organizationId,
-        userId: context.userId,
-      });
-      
+            
       return data;
     } catch (error) {
       logger.error('getTestResults error', error);
-      activityLogger.logConformanceTest(testRunId, 'results_fetch_failed', {
-        organizationId: context.organizationId,
-        userId: context.userId,
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
       throw new Error('Failed to fetch test results.');
     }
   }
@@ -190,16 +200,6 @@ export class TestRunService {
 
       const { testRuns, count } = await response.json();
       
-      // Log test runs listing
-      activityLogger.logConformanceTest('list', 'test_runs_retrieved', {
-        organizationId: user.organizationId,
-        userId: user.id,
-        count,
-        page: query.page,
-        pageSize: query.pageSize,
-        search: query.search,
-      });
-      
       // The API returns one no totals, so we need to determine hasNext without needing total count
       return { 
         data: testRuns, 
@@ -214,11 +214,6 @@ export class TestRunService {
       }
     } catch (error) {
       logger.error('listTestRuns error', error);
-      activityLogger.logConformanceTest('list', 'test_runs_fetch_failed', {
-        organizationId: user.organizationId,
-        userId: user.id,
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
       throw new Error('Failed to fetch recent test runs.');
     }
   }
