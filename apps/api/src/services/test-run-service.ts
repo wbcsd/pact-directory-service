@@ -99,33 +99,15 @@ export class TestRunService {
       const testRunId = responseData?.testRunId || 'unknown';
 
       // If the test has failed, extract the failed tests
-      if (responseData.status === 'FAIL') {
-        const failedTests = responseData.results.filter((test: any) => test.status === 'FAILURE');
-        activityLogger.logConformanceTest(testRunId, responseData.status, {
-          organizationName: user.organizationName,
-          organizationId: user.organizationId,
-          userId: user.id,
-          failedTests,
-        });
-      }
-
-      // if the test run was created successfully, log the creation with details
-      if (responseData.status === 'PASS') {
-        activityLogger.logConformanceTest(testRunId, responseData.status, {
-          organizationName: user.organizationName,
-          organizationId: user.organizationId,
-          userId: user.id,
-        });
-      }
+      const failedTests = responseData.results.filter((test: any) => test.status === 'FAILURE');
 
       activityLogger.logConformanceTest(testRunId, responseData.status, {
         organizationName: user.organizationName,
         organizationId: user.organizationId,
         userId: user.id,
-        version,
-        apiUrl,
+        failedTests,
       });
-      
+
       return responseData;
     } catch (error) {
       logger.error('createTestRun error', error);
