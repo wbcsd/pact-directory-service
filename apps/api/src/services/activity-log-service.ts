@@ -1,6 +1,6 @@
 import { Kysely } from 'kysely';
 import { Database } from '@src/database/types';
-import { ListQuery } from '@src/common/list-query';
+import { ListQuery, ListResult } from '@src/common/list-query';
 import { UserContext } from './user-service';
 import { hasAccess, Role, registerPolicy } from '@src/common/policies';
 
@@ -38,8 +38,8 @@ export class ActivityLogService {
   async getGroupedLogs(
     context: UserContext,
     filters: ActivityLogFilters = {},
-    query: Partial<ListQuery> = {}
-  ): Promise<{ logs: ActivityLogGrouped[]; total: number }> {
+    query: ListQuery
+  ): Promise<ListResult<ActivityLogGrouped>> {
     let baseQuery = this.db
       .selectFrom('activity_logs')
       .select(({ fn }) => [
@@ -57,6 +57,11 @@ export class ActivityLogService {
     // Other users with 'view-org-logs' can only see their organization's logs
     if (!hasAccess(context, 'view-all-logs')) {
       baseQuery = baseQuery.where('organizationId', '=', context.organizationId);
+    }
+
+    // Apply search filter (searches in path)
+    if (query.search) {
+      baseQuery = baseQuery.where('path', 'like', `%${query.search}%`);
     }
 
     // Apply filters
@@ -89,12 +94,13 @@ export class ActivityLogService {
     const total = Number(countResult?.total || 0);
 
     // Apply pagination and sorting
-    const limit = query.limit || 50;
-    const offset = query.offset || 0;
+    const pageSize = query.pageSize || 50;
+    const page = query.page || 1;
+    const offset = (page - 1) * pageSize;
 
     baseQuery = baseQuery
       .orderBy('lastCreatedAt', 'desc')
-      .limit(limit)
+      .limit(pageSize)
       .offset(offset);
 
     const results = await baseQuery.execute();
@@ -119,7 +125,17 @@ export class ActivityLogService {
       };
     });
 
-    return { logs, total };
+    return {
+      data: logs,
+      pagination: {
+        page,
+        pageSize,
+        total,
+        totalPages: Math.ceil(total / pageSize),
+        hasNext: page * pageSize < total,
+        hasPrevious: page > 1,
+      },
+    };
   }
 
   /**

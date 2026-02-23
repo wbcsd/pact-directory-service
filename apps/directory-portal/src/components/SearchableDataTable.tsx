@@ -46,6 +46,9 @@ export interface SearchableDataTableProps<T> {
   selectAllText?: string;
   disabledRowIds?: (string | number)[];
 
+  // Row click handler
+  onRowClick?: (row: T) => void;
+
   // Notify parent when data loads
   onDataLoaded?: (data: T[]) => void;
   
@@ -69,6 +72,7 @@ function SearchableDataTable<T extends object>({
   onSelectionChange,
   selectAllText,
   disabledRowIds,
+  onRowClick,
   onDataLoaded,
   refreshTrigger = 0,
   searchDebounceMs = 500,
@@ -232,6 +236,7 @@ function SearchableDataTable<T extends object>({
         onSelectionChange={onSelectionChange}
         selectAllText={selectAllText}
         disabledRowIds={disabledRowIds}
+        onRowClick={onRowClick}
       />
 
       {/* Paging strip (below) */}
