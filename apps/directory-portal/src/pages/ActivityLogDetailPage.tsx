@@ -14,6 +14,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import FunctionalPageLayout from "../layouts/FunctionalPageLayout";
 import { LazyLog } from "@melloware/react-logviewer";
+import { fetchWithAuth } from "../utils/auth-fetch";
 
 interface ActivityLog {
   id: number;
@@ -49,15 +50,15 @@ const ActivityLogDetailPage: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(
-          `${import.meta.env.VITE_DIRECTORY_API}/activity-logs/path?path=${encodeURIComponent(path)}&limit=500&offset=0`
+        const response = await fetchWithAuth(
+          `/activity-logs/path?path=${encodeURIComponent(path)}&limit=500&offset=0`
         );
 
-        if (!response.ok) {
+        if (!response!.ok) {
           throw new Error("Failed to fetch activity logs");
         }
 
-        const data: ActivityLogsResponse = await response.json();
+        const data: ActivityLogsResponse = await response!.json();
         setLogs(data.logs);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
@@ -76,15 +77,15 @@ const ActivityLogDetailPage: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(
-        `${import.meta.env.VITE_DIRECTORY_API}/activity-logs/path?path=${encodeURIComponent(path)}&limit=500&offset=0`
+      const response = await fetchWithAuth(
+        `/activity-logs/path?path=${encodeURIComponent(path)}&limit=500&offset=0`
       );
 
-      if (!response.ok) {
+      if (!response!.ok) {
         throw new Error("Failed to fetch activity logs");
       }
 
-      const data: ActivityLogsResponse = await response.json();
+      const data: ActivityLogsResponse = await response!.json();
       setLogs(data.logs);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");

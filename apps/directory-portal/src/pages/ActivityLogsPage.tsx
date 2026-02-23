@@ -11,6 +11,7 @@ import {
 } from "@radix-ui/themes";
 import { useNavigate } from "react-router-dom";
 import FunctionalPageLayout from "../layouts/FunctionalPageLayout";
+import { fetchWithAuth } from "../utils/auth-fetch";
 
 interface ActivityLogGrouped {
   path: string;
@@ -40,15 +41,15 @@ const ActivityLogsPage: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(
-        `${import.meta.env.VITE_DIRECTORY_API}/activity-logs?limit=100&offset=0`
+      const response = await fetchWithAuth(
+        `/activity-logs?limit=100&offset=0`
       );
 
-      if (!response.ok) {
+      if (!response!.ok) {
         throw new Error("Failed to fetch activity logs");
       }
 
-      const data: ActivityLogsResponse = await response.json();
+      const data: ActivityLogsResponse = await response!.json();
       setLogs(data.logs);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");

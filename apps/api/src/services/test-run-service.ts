@@ -7,6 +7,7 @@ import { UserContext, UserService } from './user-service';
 import { ListQuery, ListResult } from '@src/common/list-query';
 import { OrganizationService } from './organization-service';
 import { Role } from '@src/common/policies';
+import * as activityLogger from '@src/common/activity-logger';
 
 export interface CreateTestRunData {
   apiUrl: string;
@@ -92,10 +93,26 @@ export class TestRunService {
         }
       );
 
-      const responseData: unknown = await response.json();
+      const responseData: any = await response.json();
+      
+      // Log test run creation
+      const testRunId = responseData?.testRunId || 'unknown';
+      activityLogger.logConformanceTest(testRunId, 'initiated', {
+        organizationName: user.organizationName,
+        organizationId: user.organizationId,
+        userId: user.id,
+        version,
+        apiUrl,
+      });
+      
       return responseData;
     } catch (error) {
       logger.error('createTestRun error', error);
+      activityLogger.logConformanceTest('unknown', 'failed', {
+        organizationId: user.organizationId,
+        userId: user.id,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
       throw new Error('Failed to execute test cases.');
     }
   }
@@ -122,9 +139,21 @@ export class TestRunService {
       });
 
       const data: unknown = await response.json();
+      
+      // Log test results retrieval
+      activityLogger.logConformanceTest(testRunId, 'results_retrieved', {
+        organizationId: context.organizationId,
+        userId: context.userId,
+      });
+      
       return data;
     } catch (error) {
       logger.error('getTestResults error', error);
+      activityLogger.logConformanceTest(testRunId, 'results_fetch_failed', {
+        organizationId: context.organizationId,
+        userId: context.userId,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
       throw new Error('Failed to fetch test results.');
     }
   }
@@ -160,6 +189,17 @@ export class TestRunService {
       });
 
       const { testRuns, count } = await response.json();
+      
+      // Log test runs listing
+      activityLogger.logConformanceTest('list', 'test_runs_retrieved', {
+        organizationId: user.organizationId,
+        userId: user.id,
+        count,
+        page: query.page,
+        pageSize: query.pageSize,
+        search: query.search,
+      });
+      
       // The API returns one no totals, so we need to determine hasNext without needing total count
       return { 
         data: testRuns, 
@@ -174,6 +214,11 @@ export class TestRunService {
       }
     } catch (error) {
       logger.error('listTestRuns error', error);
+      activityLogger.logConformanceTest('list', 'test_runs_fetch_failed', {
+        organizationId: user.organizationId,
+        userId: user.id,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
       throw new Error('Failed to fetch recent test runs.');
     }
   }
