@@ -1,15 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import PaginatedDataTable from "../components/PaginatedDataTable";
 import { Column } from "../components/DataTable";
 import { useAuth } from "../contexts/AuthContext";
 import { InputIcon, PlusIcon } from "@radix-ui/react-icons";
-import { useNavigate } from "react-router-dom";
 import { Box, Button, Text } from "@radix-ui/themes";
 import StatusBadge from "../components/StatusBadge";
 import { GridPageLayout } from "../layouts";
 import ActionButton from "../components/ActionButton";
 import PolicyGuard from "../components/PolicyGuard";
+import SlideOverPanel from "../components/SlideOverPanel";
+import UserForm from "../components/UserForm";
 import "./OrganizationUsers.css";
 
 export interface User {
@@ -24,6 +25,11 @@ export interface User {
   organizationIdentifier: string;
 }
 
+type PanelState =
+  | { mode: "closed" }
+  | { mode: "add" }
+  | { mode: "edit"; userId: number; userName: string; organizationId: number };
+
 const OrganizationUsers: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUserIds, setSelectedUserIds] = useState<(string | number)[]>([]);
@@ -33,9 +39,18 @@ const OrganizationUsers: React.FC = () => {
     type: 'success' | 'error';
     message: string;
   } | null>(null);
+  const [panel, setPanel] = useState<PanelState>({ mode: "closed" });
   
-  const navigate = useNavigate();
   const { profileData, isAuthenticated } = useAuth();
+
+  const closePanel = useCallback(() => setPanel({ mode: "closed" }), []);
+
+  const handleSaved = useCallback(() => {
+    // Refresh the table data to reflect changes
+    setRefreshTrigger((prev) => prev + 1);
+    // Auto-close after a short delay so the user sees the success message
+    setTimeout(() => closePanel(), 1200);
+  }, [closePanel]);
 
   const fetchUsers = async (params: {
     page: number;
@@ -204,7 +219,14 @@ const OrganizationUsers: React.FC = () => {
             title="Edit User Details"
             variant="secondary"
             size="small"
-            onClick={() => navigate(`/organization/${row.organizationId}/users/${row.id}`)}
+            onClick={() =>
+              setPanel({
+                mode: "edit",
+                userId: row.id,
+                userName: row.fullName,
+                organizationId: row.organizationId,
+              })
+            }
           >
             <InputIcon />
           </ActionButton>
@@ -218,6 +240,20 @@ const OrganizationUsers: React.FC = () => {
     .filter(user => user.status === 'deleted')
     .map(user => user.id);
 
+  const panelTitle =
+    panel.mode === "add"
+      ? "Create User"
+      : panel.mode === "edit"
+        ? "Edit User"
+        : "";
+
+  const panelSubtitle =
+    panel.mode === "add"
+      ? profileData?.organizationName
+      : panel.mode === "edit"
+        ? panel.userName
+        : undefined;
+
   return (
     <GridPageLayout
       title="Users"
@@ -226,9 +262,7 @@ const OrganizationUsers: React.FC = () => {
       loadingMessage="Loading profile data..."
       actions={
         <PolicyGuard policies={["edit-users"]}>
-          <Button
-            onClick={() => navigate(`/organization/${profileData?.organizationId}/${profileData?.organizationName}/add-user`)}
-          >
+          <Button onClick={() => setPanel({ mode: "add" })}>
             <PlusIcon />
             <span style={{ marginLeft: '4px' }}>Add User</span>
           </Button>
@@ -298,6 +332,31 @@ const OrganizationUsers: React.FC = () => {
           }}
         />
       )}
+
+      {/* Slide-over panel for Add / Edit */}
+      <SlideOverPanel
+        open={panel.mode !== "closed"}
+        onClose={closePanel}
+        title={panelTitle}
+        subtitle={panelSubtitle}
+      >
+        {panel.mode === "add" && profileData?.organizationId && (
+          <UserForm
+            organizationId={profileData.organizationId}
+            onCancel={closePanel}
+            onSaved={handleSaved}
+          />
+        )}
+        {panel.mode === "edit" && (
+          <UserForm
+            key={panel.userId}
+            organizationId={panel.organizationId}
+            userId={panel.userId}
+            onCancel={closePanel}
+            onSaved={handleSaved}
+          />
+        )}
+      </SlideOverPanel>
     </GridPageLayout>
   );
 };
