@@ -57,7 +57,7 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
 
   // Load existing node data for edit mode
   const loadNode = useCallback(async () => {
-    if (!isEditMode || !profileData) return;
+    if (!isEditMode) return;
     try {
       const response = await fetchWithAuth(`/nodes/${nodeId}`);
       if (response!.ok) {
@@ -78,7 +78,7 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
     } finally {
       setLoading(false);
     }
-  }, [nodeId, isEditMode, profileData]);
+  }, [nodeId, isEditMode]);
 
   useEffect(() => {
     loadNode();

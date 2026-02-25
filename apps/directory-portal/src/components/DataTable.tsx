@@ -231,7 +231,16 @@ function DataTable<T extends object>({
             
             return (
               <tr
-                onClick={() => onRowClick && onRowClick(row)}
+                onClick={(e) => {
+                  // Prevent row click if the click originated from the checkbox
+                  if ((e.target as HTMLElement).closest(".checkbox-column")) {
+                    return;
+                  }
+                  
+                  if (onRowClick) {
+                    onRowClick(row);
+                  }
+                }}
                 key={String(rowId)}
                 className={`${isSelected ? "selected-row" : ""} ${isDisabled ? "disabled-row" : ""}`}
               >

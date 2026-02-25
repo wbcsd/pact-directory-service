@@ -2,7 +2,6 @@ import React from "react";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import SearchableDataTable, { PaginationInfo } from "../components/SearchableDataTable";
 import { Column } from "../components/DataTable";
-import { useAuth } from "../contexts/AuthContext";
 import { InputIcon, PlusIcon } from "@radix-ui/react-icons";
 import { useNavigate } from "react-router-dom";
 import { GridPageLayout } from "../layouts";
@@ -23,7 +22,6 @@ export interface Organization {
 
 const Organizations: React.FC = () => {
   const navigate = useNavigate();
-  const { profileData } = useAuth();
 
   // Fetch function for DataTableWithSearch
   const fetchOrganizations = async (params: {
@@ -31,10 +29,6 @@ const Organizations: React.FC = () => {
     pageSize: number;
     search?: string;
   }): Promise<{ data: Organization[]; pagination: PaginationInfo }> => {
-    if (!profileData) {
-      throw new Error("Profile data not available");
-    }
-
     // Build query string
     const queryParams = new URLSearchParams({
       page: params.page.toString(),
