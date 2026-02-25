@@ -13,11 +13,16 @@
   gap: 24px;
 }
 
-.node-form input.rt-TextFieldInput {
+/* Apply to both .node-form context and globally for consistency */
+.node-form input.rt-TextFieldInput,
+input.rt-TextFieldInput {
   padding: 0 15px !important;
+  font-family: 'Axiforma', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: 14px !important;
 }
 
-.node-form .rt-TextFieldSlot {
+.node-form .rt-TextFieldSlot,
+.rt-TextFieldSlot {
   margin-right: 15px !important;
 }
 
