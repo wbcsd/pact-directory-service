@@ -15,12 +15,9 @@ import ConformanceTestResult from "./pages/ConformanceTestResult";
 import ConformanceTestRuns from "./pages/ConformanceTestRuns";
 import { featureFlags } from "./utils/feature-flags";
 import OrganizationUsers from "./pages/OrganizationUsers";
-import EditUserPage from "./pages/EditUserPage";
-import AddUserPage from "./pages/AddUserPage";
 import PolicyGuard from "./components/PolicyGuard";
 import SetPasswordPage from "./pages/SetPasswordPage";
 import OrganizationsList from "./pages/OrganizationsList";
-import EditOrganizationPage from "./pages/EditOrganizationPage";
 import NodeDashboardPage from "./pages/NodeDashboardPage";
 import AddNodePage from "./pages/AddNodePage";
 import EditNodePage from "./pages/EditNodePage";
@@ -63,23 +60,12 @@ const AppRoutes: React.FC = () => {
       {featureFlags.enableOrganizationManagement === true && (
         <>
           <Route path="/organizations" element={<OrganizationsList />} />
-          <Route path="/organizations/:id" element={<EditOrganizationPage />} />
           <Route path="/organization/users" element={<OrganizationUsers />} />
-          <Route path="/organization/:orgId/:orgName/add-user" element={<AddUserPage />} />
-          <Route path="/organization/:orgId/users/:userId" element={<EditUserPage />} />
           <Route
             path="/organization/users"
             element={
               <PolicyGuard policies={["view-own-organizations", "view-all-organizations"]}>
                 <OrganizationUsers />
-              </PolicyGuard>
-            }
-          />
-          <Route
-            path="/organization/:orgId/users/:userId"
-            element={
-              <PolicyGuard policies={["edit-own-organizations", "edit-all-organizations"]}>
-                <EditUserPage />
               </PolicyGuard>
             }
           />
