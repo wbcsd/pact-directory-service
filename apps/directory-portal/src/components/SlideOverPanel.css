@@ -21,6 +21,7 @@
   flex-direction: column;
   animation: slideIn 250ms cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
+  min-width: 70vw;
 }
 
 .slide-over-content[data-state="closed"] {
