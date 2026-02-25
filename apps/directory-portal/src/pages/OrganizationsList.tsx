@@ -1,12 +1,12 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import PaginatedDataTable, { PaginationInfo } from "../components/PaginatedDataTable";
 import { Column } from "../components/DataTable";
-import { InputIcon, PlusIcon } from "@radix-ui/react-icons";
-import { useNavigate } from "react-router-dom";
+import { InputIcon } from "@radix-ui/react-icons";
 import { GridPageLayout } from "../layouts";
 import ActionButton from "../components/ActionButton";
-import PolicyGuard from "../components/PolicyGuard";
+import SlideOverPanel from "../components/SlideOverPanel";
+import OrganizationForm from "../components/OrganizationForm";
 
 export interface Organization {
   id: number;
@@ -20,8 +20,22 @@ export interface Organization {
   status: 'active' | 'disabled';
 }
 
+type PanelState =
+  | { mode: "closed" }
+  | { mode: "edit"; organizationId: number; organizationName: string };
+
 const Organizations: React.FC = () => {
-  const navigate = useNavigate();
+  const [panel, setPanel] = useState<PanelState>({ mode: "closed" });
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const closePanel = useCallback(() => setPanel({ mode: "closed" }), []);
+
+  const handleSaved = useCallback(() => {
+    // Refresh the table data to reflect changes
+    setRefreshTrigger((prev) => prev + 1);
+    // Auto-close after a short delay so the user sees the success message
+    setTimeout(() => closePanel(), 1200);
+  }, [closePanel]);
 
   // Fetch function for DataTableWithSearch
   const fetchOrganizations = async (params: {
@@ -91,30 +105,29 @@ const Organizations: React.FC = () => {
       header: "",
       extendedStyle: { textAlign: 'right' },
       render: (row: Organization) => (
-        <>
         <ActionButton
           title="Edit Organization Details"
           variant="secondary"
           size="small"
-          onClick={() => navigate(`/organizations/${row.id}`)}
+          onClick={() =>
+            setPanel({
+              mode: "edit",
+              organizationId: row.id,
+              organizationName: row.organizationName,
+            })
+          }
         >
           <InputIcon />
         </ActionButton>
-          <span>&nbsp;</span>
-          <PolicyGuard policies={["edit-all-users"]}>
-            <ActionButton
-              title="Add New User"
-              variant="secondary"
-              size="small"
-              onClick={() => navigate(`/organization/${row.id}/${row.organizationName}/add-user`)}
-            >
-              <PlusIcon /><span>Add User</span>
-            </ActionButton>
-          </PolicyGuard>
-        </>     
       ),
     },
   ];
+
+  const panelTitle =
+    panel.mode === "edit" ? "Edit Organization" : "";
+
+  const panelSubtitle =
+    panel.mode === "edit" ? panel.organizationName : undefined;
 
   return (
     <GridPageLayout
@@ -129,11 +142,29 @@ const Organizations: React.FC = () => {
         fetchData={fetchOrganizations}
         columns={columns}
         idColumnName="id"
+        refreshTrigger={refreshTrigger}
         emptyState={{
           title: "No organizations found",
           description: "No organizations match your search criteria",
         }}
       />
+
+      {/* Slide-over panel for Edit */}
+      <SlideOverPanel
+        open={panel.mode !== "closed"}
+        onClose={closePanel}
+        title={panelTitle}
+        subtitle={panelSubtitle}
+      >
+        {panel.mode === "edit" && (
+          <OrganizationForm
+            key={panel.organizationId}
+            organizationId={panel.organizationId}
+            onCancel={closePanel}
+            onSaved={handleSaved}
+          />
+        )}
+      </SlideOverPanel>
     </GridPageLayout>
   );
 };
