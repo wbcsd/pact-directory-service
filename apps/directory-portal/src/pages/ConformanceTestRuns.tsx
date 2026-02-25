@@ -131,6 +131,7 @@ const ConformanceTestRuns: React.FC = () => {
           searchPlaceholder="Search by organization name, email address or user name"
           fetchData={fetchTestRuns}
           columns={columns}
+          onRowClick={(row) => navigate(`/conformance-test-result?testRunId=${row.testRunId}`)}
           idColumnName="testRunId"          
           emptyState={{
             title: "You currently have no tests",

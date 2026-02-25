@@ -49,8 +49,8 @@ const NodesList: React.FC = () => {
     pageSize: number;
     search?: string;
   }): Promise<{ data: Node[]; pagination: PaginationInfo }> => {
-    if (!profileData) {
-      throw new Error("Profile data not available");
+    if (!profileData?.organizationId) {
+      throw new Error("Organization not loaded");
     }
 
     const queryParams = new URLSearchParams({
@@ -186,21 +186,23 @@ const NodesList: React.FC = () => {
           <PlusIcon /> Add Node
         </ActionButton>
       }
-      loading={false}
+      loading={!profileData}
       loadingMessage="Loading nodes..."
     >
-      <SearchableDataTable<Node>
-        searchPlaceholder="Search by node name..."
-        fetchData={fetchNodes}
-        columns={columns}
-        idColumnName="id"
-        defaultPageSize={50}
-        refreshTrigger={refreshTrigger}
-        emptyState={{
-          title: "No nodes found",
-          description: "No nodes match your search criteria",
-        }}
-      />
+      {profileData && (
+        <SearchableDataTable<Node>
+          searchPlaceholder="Search by node name..."
+          fetchData={fetchNodes}
+          columns={columns}
+          idColumnName="id"
+          defaultPageSize={50}
+          refreshTrigger={refreshTrigger}
+          emptyState={{
+            title: "No nodes found",
+            description: "No nodes match your search criteria",
+          }}
+        />
+      )}
 
       {/* Slide-over panel for Add / Edit */}
       <SlideOverPanel
