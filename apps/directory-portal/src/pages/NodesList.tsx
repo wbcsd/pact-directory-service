@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { fetchWithAuth } from "../utils/auth-fetch";
-import SearchableDataTable, { PaginationInfo } from "../components/SearchableDataTable";
+import PaginatedDataTable, { PaginationInfo } from "../components/PaginatedDataTable";
 import { Column } from "../components/DataTable";
 import { useAuth } from "../contexts/AuthContext";
 import { InputIcon, Link2Icon, PlusIcon } from "@radix-ui/react-icons";
@@ -190,7 +190,8 @@ const NodesList: React.FC = () => {
       loadingMessage="Loading nodes..."
     >
       {profileData && (
-        <SearchableDataTable<Node>
+        <PaginatedDataTable<Node>
+          isSearchable={true}
           searchPlaceholder="Search by node name..."
           fetchData={fetchNodes}
           columns={columns}

@@ -2,9 +2,9 @@ import React from "react";
 import { Box, Badge, Text, Heading } from "@radix-ui/themes";
 import { useNavigate } from "react-router-dom";
 import FunctionalPageLayout from "../layouts/FunctionalPageLayout";
-import SearchableDataTable, {
+import PaginatedDataTable, {
   PaginationInfo,
-} from "../components/SearchableDataTable";
+} from "../components/PaginatedDataTable";
 import { Column } from "../components/DataTable";
 import { fetchWithAuth } from "../utils/auth-fetch";
 
@@ -131,7 +131,8 @@ const ActivityLogsPage: React.FC = () => {
           Activity Logs
         </Heading>
 
-        <SearchableDataTable<ActivityLogGrouped>
+        <PaginatedDataTable<ActivityLogGrouped>
+          isSearchable={true}
           searchPlaceholder="Search log paths..."
           fetchData={fetchLogs}
           columns={columns}

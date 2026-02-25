@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Box } from "@radix-ui/themes";
 import { MagnifyingGlassIcon, Cross2Icon } from "@radix-ui/react-icons";
 import DataTable, { Column } from "./DataTable";
-import "./SearchableDataTable.css";
+import "./PaginatedDataTable.css";
 
 export interface PaginationInfo {
   page: number;
@@ -13,8 +13,9 @@ export interface PaginationInfo {
   hasPrevious: boolean;
 }
 
-export interface SearchableDataTableProps<T> {
-  // Display configuration
+export interface PaginatedDataTableProps<T> {
+  // Search configuration
+  isSearchable?: boolean;
   searchPlaceholder?: string;
   
   // Data fetching
@@ -59,7 +60,8 @@ export interface SearchableDataTableProps<T> {
   searchDebounceMs?: number;
 }
 
-function SearchableDataTable<T extends object>({
+function PaginatedDataTable<T extends object>({
+  isSearchable = true,
   searchPlaceholder = "Search...",
   fetchData,
   columns,
@@ -76,7 +78,7 @@ function SearchableDataTable<T extends object>({
   onDataLoaded,
   refreshTrigger = 0,
   searchDebounceMs = 500,
-}: SearchableDataTableProps<T>) {
+}: PaginatedDataTableProps<T>) {
   const [data, setData] = useState<T[]>([]);
   const [pagination, setPagination] = useState<PaginationInfo>({
     page: 1,
@@ -169,35 +171,43 @@ function SearchableDataTable<T extends object>({
 
   return (
     <Box className="data-table-with-search">
-      <div className="table-toolbar">
-        <div className="search-bar">
-          <input
-            type="text"
-            placeholder={searchPlaceholder}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyDown={handleSearchKeyDown}
-          />
-          {searchTerm && (
+      {isSearchable && (
+        <div className="table-toolbar">
+          <div className="search-bar">
+            <input
+              type="text"
+              placeholder={searchPlaceholder}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
+            />
+            {searchTerm && (
+              <button
+                className="clear-btn"
+                onClick={() => setSearchTerm("")}
+                aria-label="Clear search"
+              >
+                <Cross2Icon />
+              </button>
+            )}
             <button
-              className="clear-btn"
-              onClick={() => setSearchTerm("")}
-              aria-label="Clear search"
+              onClick={handleSearch}
+              disabled={isLoading}
+              className="search-btn"
+              aria-label="Search"
             >
-              <Cross2Icon />
+              <MagnifyingGlassIcon />
             </button>
-          )}
-          <button
-            onClick={handleSearch}
-            disabled={isLoading}
-            className="search-btn"
-            aria-label="Search"
-          >
-            <MagnifyingGlassIcon />
-          </button>
+          </div>
+          {headerActions && <div className="action-bar">{headerActions}</div>}
         </div>
-        {headerActions && <div className="action-bar">{headerActions}</div>}
-      </div>
+      )}
+
+      {!isSearchable && headerActions && (
+        <div className="table-toolbar">
+          <div className="action-bar">{headerActions}</div>
+        </div>
+      )}
 
       {/* Paging strip (above) */}
       {!error && pagination.totalPages != 1 && (
@@ -266,4 +276,4 @@ function SearchableDataTable<T extends object>({
   );
 }
 
-export default SearchableDataTable;
+export default PaginatedDataTable;

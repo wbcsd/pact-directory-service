@@ -1,6 +1,6 @@
 import React from "react";
 import { fetchWithAuth } from "../utils/auth-fetch";
-import SearchableDataTable, { PaginationInfo } from "../components/SearchableDataTable";
+import PaginatedDataTable, { PaginationInfo } from "../components/PaginatedDataTable";
 import { Column } from "../components/DataTable";
 import { InputIcon, PlusIcon } from "@radix-ui/react-icons";
 import { useNavigate } from "react-router-dom";
@@ -123,7 +123,8 @@ const Organizations: React.FC = () => {
       loading={false}
       loadingMessage="Loading organizations..."
     >
-      <SearchableDataTable<Organization>
+      <PaginatedDataTable<Organization>
+        isSearchable={true}
         searchPlaceholder="Search by organization name..."
         fetchData={fetchOrganizations}
         columns={columns}

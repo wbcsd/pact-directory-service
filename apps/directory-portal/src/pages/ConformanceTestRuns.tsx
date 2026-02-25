@@ -4,7 +4,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { proxyWithAuth } from "../utils/auth-fetch";
 import StatusBadge from "../components/StatusBadge";
-import SearchableDataTable, { PaginationInfo } from "../components/SearchableDataTable";
+import PaginatedDataTable, { PaginationInfo } from "../components/PaginatedDataTable";
 import { Column } from "../components/DataTable";
 import "./ConformanceTestRuns.css";
 import GridPageLayout from "../layouts/GridPageLayout";
@@ -127,7 +127,8 @@ const ConformanceTestRuns: React.FC = () => {
         </Button>
       }
       >
-        <SearchableDataTable<TestRun>
+        <PaginatedDataTable<TestRun>
+          isSearchable={true}
           searchPlaceholder="Search by organization name, email address or user name"
           fetchData={fetchTestRuns}
           columns={columns}

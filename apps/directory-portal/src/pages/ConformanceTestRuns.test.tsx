@@ -32,7 +32,7 @@ vi.mock("../layouts/GridPageLayout", () => ({
   ),
 }));
 
-vi.mock("../components/SearchableDataTable", () => ({
+vi.mock("../components/PaginatedDataTable", () => ({
   default: (props: any) => {
     lastTableProps = props;
     return <div data-testid="searchable-table" />;
@@ -126,10 +126,11 @@ describe("ConformanceTestRuns", () => {
     expect(mockNavigate).toHaveBeenCalledWith("/conformance-testing");
   });
 
-  it("passes expected props to SearchableDataTable", () => {
+  it("passes expected props to PaginatedDataTable", () => {
     renderWithRouter();
 
     expect(lastTableProps).toBeTruthy();
+    expect(lastTableProps.isSearchable).toBe(true);
     expect(lastTableProps.searchPlaceholder).toBe(
       "Search by organization name, email address or user name"
     );
