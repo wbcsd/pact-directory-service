@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { fetchWithAuth } from "../utils/auth-fetch";
-import SearchableDataTable from "../components/SearchableDataTable";
+import PaginatedDataTable from "../components/PaginatedDataTable";
 import { Column } from "../components/DataTable";
 import { useAuth } from "../contexts/AuthContext";
 import { InputIcon, PlusIcon } from "@radix-ui/react-icons";
@@ -250,7 +250,8 @@ const OrganizationUsers: React.FC = () => {
       )}
 
       {profileData?.organizationId && (
-        <SearchableDataTable<User>
+        <PaginatedDataTable<User>
+          isSearchable={true}
           searchPlaceholder="Search by name or email..."
           fetchData={fetchUsers}
           columns={columns}

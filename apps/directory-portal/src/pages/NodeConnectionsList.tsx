@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { fetchWithAuth } from "../utils/auth-fetch";
-import SearchableDataTable, { PaginationInfo } from "../components/SearchableDataTable";
+import PaginatedDataTable, { PaginationInfo } from "../components/PaginatedDataTable";
 import { Column } from "../components/DataTable";
 import { useParams, useNavigate } from "react-router-dom";
 import { GridPageLayout } from "../layouts";
@@ -251,8 +251,9 @@ const NodeConnectionsList: React.FC = () => {
         </Callout.Root>
       )}
       
-      <SearchableDataTable<NodeConnection>
+      <PaginatedDataTable<NodeConnection>
         refreshTrigger={refreshKey}
+        isSearchable={true}
         searchPlaceholder="Search connections..."
         fetchData={fetchConnections}
         columns={columns}
