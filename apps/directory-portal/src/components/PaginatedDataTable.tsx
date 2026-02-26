@@ -210,7 +210,7 @@ function PaginatedDataTable<T extends object>({
       )}
 
       {/* Paging strip (above) */}
-      {!error && pagination.totalPages != 1 && (
+      {!error && pagination.totalPages > 1 && (
         <div className="paging-strip">
           <button
             className="paging-link"

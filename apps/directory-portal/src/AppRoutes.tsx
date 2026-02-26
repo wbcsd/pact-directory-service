@@ -22,9 +22,7 @@ import NodeDashboardPage from "./pages/NodeDashboardPage";
 import AddNodePage from "./pages/AddNodePage";
 import EditNodePage from "./pages/EditNodePage";
 import NodesList from "./pages/NodesList";
-import NodeConnectionsList from "./pages/NodeConnectionsList";
 import CreateNodeConnectionPage from "./pages/CreateNodeConnectionPage";
-import NodeInvitationsList from "./pages/NodeInvitationsList";
 import ActivityLogsPage from "./pages/ActivityLogsPage";
 import ActivityLogDetailPage from "./pages/ActivityLogDetailPage";
 
@@ -50,8 +48,6 @@ const AppRoutes: React.FC = () => {
         <>
           <Route path="/nodes" element={<NodesList />} />
           <Route path="/nodes/:id" element={<NodeDashboardPage />} />
-          <Route path="/nodes/:id/connections" element={<NodeConnectionsList />} />
-          <Route path="/nodes/:id/invitations" element={<NodeInvitationsList />} />
           <Route path="/nodes/:id/create-connection" element={<CreateNodeConnectionPage />} />
           <Route path="/edit-node/:id" element={<EditNodePage />} />
           <Route path="/add-node" element={<AddNodePage />} />
