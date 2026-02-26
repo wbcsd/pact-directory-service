@@ -4,11 +4,11 @@ import PaginatedDataTable, { PaginationInfo } from "../components/PaginatedDataT
 import { Column } from "../components/DataTable";
 import { useAuth } from "../contexts/AuthContext";
 import { InputIcon, Link2Icon, PlusIcon } from "@radix-ui/react-icons";
-import { useNavigate } from "react-router-dom";
 import { GridPageLayout } from "../layouts";
 import ActionButton from "../components/ActionButton";
 import SlideOverPanel from "../components/SlideOverPanel";
 import NodeForm from "../components/NodeForm";
+import NodeConnectionsManager from "../components/NodeConnectionsManager";
 
 export interface Node {
   id: number;
@@ -26,10 +26,10 @@ export interface Node {
 type PanelState =
   | { mode: "closed" }
   | { mode: "add" }
-  | { mode: "edit"; nodeId: number; nodeName: string };
+  | { mode: "edit"; nodeId: number; nodeName: string }
+  | { mode: "connections"; nodeId: number; nodeName: string };
 
 const NodesList: React.FC = () => {
-  const navigate = useNavigate();
   const { profileData } = useAuth();
   const [panel, setPanel] = useState<PanelState>({ mode: "closed" });
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -142,7 +142,9 @@ const NodesList: React.FC = () => {
             title="View Connections"
             variant="secondary"
             size="small"
-            onClick={() => navigate(`/nodes/${row.id}/connections`)}
+            onClick={() =>
+              setPanel({ mode: "connections", nodeId: row.id, nodeName: row.name })
+            }
           >
             <Link2Icon />
           </ActionButton>
@@ -166,7 +168,9 @@ const NodesList: React.FC = () => {
       ? "Create Node"
       : panel.mode === "edit"
         ? "Edit Node"
-        : "";
+        : panel.mode === "connections"
+          ? "Node Connections"
+          : "";
 
   const panelSubtitle =
     panel.mode === "add"
@@ -175,7 +179,9 @@ const NodesList: React.FC = () => {
         : undefined
       : panel.mode === "edit"
         ? panel.nodeName
-        : undefined;
+        : panel.mode === "connections"
+          ? panel.nodeName
+          : undefined;
 
   return (
     <GridPageLayout
@@ -205,7 +211,7 @@ const NodesList: React.FC = () => {
         />
       )}
 
-      {/* Slide-over panel for Add / Edit */}
+      {/* Slide-over panel for Add / Edit / Connections */}
       <SlideOverPanel
         open={panel.mode !== "closed"}
         onClose={closePanel}
@@ -221,6 +227,13 @@ const NodesList: React.FC = () => {
             nodeId={panel.nodeId}
             onCancel={closePanel}
             onSaved={handleSaved}
+          />
+        )}
+        {panel.mode === "connections" && (
+          <NodeConnectionsManager
+            key={panel.nodeId}
+            nodeId={panel.nodeId}
+            onClose={closePanel}
           />
         )}
       </SlideOverPanel>
