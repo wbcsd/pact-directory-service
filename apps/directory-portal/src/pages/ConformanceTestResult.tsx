@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Heading, Text, Button, Box, Badge, Callout } from "@radix-ui/themes";
 import {
   ExclamationTriangleIcon,
@@ -6,7 +6,7 @@ import {
   DoubleArrowRightIcon,
 } from "@radix-ui/react-icons";
 import DataTable, { Column } from "../components/DataTable";
-import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { proxyWithAuth } from "../utils/auth-fetch";
 import CodeIcon from "../components/CodeIcon";
@@ -158,16 +158,26 @@ const ConformanceTestResult: React.FC = () => {
 
   const navigate = useNavigate();
   const { profileData } = useAuth();
-  const location = useLocation();
-  const conformanceState = location.state as {
-    apiUrl: string;
-    authBaseUrl: string;
-    clientId: string;
-    clientSecret: string;
-    version: string;
-    authOptions: { scope: string; audience: string; resource: string };
-  } | null;
   const testRunId = searchParams.get("testRunId");
+
+  // Extract test config from query params (present when coming from the form)
+  const getTestConfig = useCallback(() => {
+    const apiUrl = searchParams.get("apiUrl");
+    const clientId = searchParams.get("clientId");
+    const clientSecret = searchParams.get("clientSecret");
+    const version = searchParams.get("version");
+    if (!apiUrl || !clientId || !clientSecret || !version) return null;
+    return {
+      apiUrl,
+      authBaseUrl: searchParams.get("authBaseUrl") || "",
+      clientId,
+      clientSecret,
+      version,
+      scope: searchParams.get("scope") || "",
+      audience: searchParams.get("audience") || "",
+      resource: searchParams.get("resource") || "",
+    };
+  }, [searchParams]);
 
   useEffect(() => {
     let cancelled = false;
@@ -201,18 +211,11 @@ const ConformanceTestResult: React.FC = () => {
     };
 
     const runNewTest = async () => {
-      if (
-        !conformanceState?.apiUrl ||
-        !conformanceState?.clientId ||
-        !conformanceState?.clientSecret ||
-        !conformanceState?.version
-      ) {
+      const config = getTestConfig();
+      if (!config) {
         navigate("/conformance-testing");
         return;
       }
-
-      const { apiUrl, authBaseUrl, clientId, clientSecret, version, authOptions } =
-        conformanceState;
 
       setIsNewTestRun(true);
 
@@ -220,14 +223,14 @@ const ConformanceTestResult: React.FC = () => {
         const response = await proxyWithAuth(`/test`, {
           method: "POST",
           body: JSON.stringify({
-            clientId,
-            clientSecret,
-            apiUrl,
-            authBaseUrl,
-            version,
-            scope: authOptions?.scope,
-            audience: authOptions?.audience,
-            resource: authOptions?.resource,
+            clientId: config.clientId,
+            clientSecret: config.clientSecret,
+            apiUrl: config.apiUrl,
+            authBaseUrl: config.authBaseUrl,
+            version: config.version,
+            scope: config.scope,
+            audience: config.audience,
+            resource: config.resource,
           }),
         });
 
@@ -274,7 +277,7 @@ const ConformanceTestResult: React.FC = () => {
     };
   }, [
     testRunId,
-    conformanceState,
+    getTestConfig,
     navigate,
   ]);
 
