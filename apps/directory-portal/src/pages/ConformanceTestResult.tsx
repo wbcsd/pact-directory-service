@@ -6,8 +6,7 @@ import {
   DoubleArrowRightIcon,
 } from "@radix-ui/react-icons";
 import DataTable, { Column } from "../components/DataTable";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { useConformanceTesting } from "../components/ConformanceTesting";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { proxyWithAuth } from "../utils/auth-fetch";
 import CodeIcon from "../components/CodeIcon";
@@ -159,8 +158,15 @@ const ConformanceTestResult: React.FC = () => {
 
   const navigate = useNavigate();
   const { profileData } = useAuth();
-  const { apiUrl, authBaseUrl, clientId, clientSecret, version, authOptions } =
-    useConformanceTesting();
+  const location = useLocation();
+  const conformanceState = location.state as {
+    apiUrl: string;
+    authBaseUrl: string;
+    clientId: string;
+    clientSecret: string;
+    version: string;
+    authOptions: { scope: string; audience: string; resource: string };
+  } | null;
   const testRunId = searchParams.get("testRunId");
 
   useEffect(() => {
@@ -195,10 +201,18 @@ const ConformanceTestResult: React.FC = () => {
     };
 
     const runNewTest = async () => {
-      if (!apiUrl || !clientId || !clientSecret || !version) {
+      if (
+        !conformanceState?.apiUrl ||
+        !conformanceState?.clientId ||
+        !conformanceState?.clientSecret ||
+        !conformanceState?.version
+      ) {
         navigate("/conformance-testing");
         return;
       }
+
+      const { apiUrl, authBaseUrl, clientId, clientSecret, version, authOptions } =
+        conformanceState;
 
       setIsNewTestRun(true);
 
@@ -260,11 +274,7 @@ const ConformanceTestResult: React.FC = () => {
     };
   }, [
     testRunId,
-    clientId,
-    clientSecret,
-    apiUrl,
-    authBaseUrl,
-    version,
+    conformanceState,
     navigate,
   ]);
 

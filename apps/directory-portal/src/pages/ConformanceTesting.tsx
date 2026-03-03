@@ -2,36 +2,20 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, TextField } from "@radix-ui/themes";
 import * as Form from "@radix-ui/react-form";
 import { useNavigate } from "react-router-dom";
-import { useConformanceTesting } from "../components/ConformanceTesting";
 import { FunctionalPageLayout } from "../layouts";
 import "./ConformanceTesting.css";
 
 const ConformanceTesting: React.FC = () => {
-  const {
-    setApiUrl,
-    setAuthBaseUrl,
-    setClientId,
-    setClientSecret,
-    setVersion,
-    setAuthOptions,
-    apiUrl,
-    authBaseUrl,
-    clientId,
-    clientSecret,
-    version,
-    authOptions,
-  } = useConformanceTesting();
-
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    solutionApiUrl: apiUrl,
-    authBaseUrl: authBaseUrl,
-    clientId: clientId,
-    clientSecret: clientSecret,
-    techSpecsVersion: version,
-    authOptionsScope: authOptions.scope,
-    authOptionsAudience: authOptions.audience,
-    authOptionsResource: authOptions.resource,
+    solutionApiUrl: "",
+    authBaseUrl: "",
+    clientId: "",
+    clientSecret: "",
+    techSpecsVersion: "V3.0",
+    authOptionsScope: "",
+    authOptionsAudience: "",
+    authOptionsResource: "",
   });
 
   const handleChange = (
@@ -44,18 +28,20 @@ const ConformanceTesting: React.FC = () => {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    setApiUrl(formData.solutionApiUrl);
-    setAuthBaseUrl(formData.authBaseUrl);
-    setClientId(formData.clientId);
-    setClientSecret(formData.clientSecret);
-    setVersion(formData.techSpecsVersion);
-    setAuthOptions({
-      scope: formData.authOptionsScope,
-      audience: formData.authOptionsAudience,
-      resource: formData.authOptionsResource,
+    navigate("/conformance-test-result", {
+      state: {
+        apiUrl: formData.solutionApiUrl,
+        authBaseUrl: formData.authBaseUrl,
+        clientId: formData.clientId,
+        clientSecret: formData.clientSecret,
+        version: formData.techSpecsVersion,
+        authOptions: {
+          scope: formData.authOptionsScope,
+          audience: formData.authOptionsAudience,
+          resource: formData.authOptionsResource,
+        },
+      },
     });
-
-    navigate("/conformance-test-result");
   };
 
   useEffect(() => {
