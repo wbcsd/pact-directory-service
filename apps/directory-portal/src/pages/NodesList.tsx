@@ -9,6 +9,7 @@ import ActionButton from "../components/ActionButton";
 import SlideOverPanel from "../components/SlideOverPanel";
 import NodeForm from "../components/NodeForm";
 import NodeConnectionsManager from "../components/NodeConnectionsManager";
+import CreateNodeConnectionForm from "../components/CreateNodeConnectionForm";
 
 export interface Node {
   id: number;
@@ -27,7 +28,8 @@ type PanelState =
   | { mode: "closed" }
   | { mode: "add" }
   | { mode: "edit"; nodeId: number; nodeName: string }
-  | { mode: "connections"; nodeId: number; nodeName: string };
+  | { mode: "connections"; nodeId: number; nodeName: string }
+  | { mode: "createConnection" };
 
 const NodesList: React.FC = () => {
   const { profileData } = useAuth();
@@ -170,7 +172,9 @@ const NodesList: React.FC = () => {
         ? "Edit Node"
         : panel.mode === "connections"
           ? "Node Connections"
-          : "";
+          : panel.mode === "createConnection"
+            ? "Create Node Connection"
+            : "";
 
   const panelSubtitle =
     panel.mode === "add"
@@ -181,16 +185,24 @@ const NodesList: React.FC = () => {
         ? panel.nodeName
         : panel.mode === "connections"
           ? panel.nodeName
-          : undefined;
+          : panel.mode === "createConnection"
+            ? "Connect two nodes in your organization"
+            : undefined;
 
   return (
     <GridPageLayout
       title="Nodes"
       subtitle="Manage and view all nodes in your organization"
       actions={
+        <>
         <ActionButton variant="primary" onClick={() => setPanel({ mode: "add" })}>
-          <PlusIcon /> Add Node
+          <PlusIcon /> Create Node
         </ActionButton>
+        <span>&nbsp;</span>
+        <ActionButton variant="primary" onClick={() => setPanel({ mode: "createConnection" })} >
+          <Link2Icon /> Connect Nodes
+        </ActionButton>
+        </>
       }
       loading={!profileData}
       loadingMessage="Loading nodes..."
@@ -211,7 +223,7 @@ const NodesList: React.FC = () => {
         />
       )}
 
-      {/* Slide-over panel for Add / Edit / Connections */}
+      {/* Slide-over panel for Add / Edit / Connections / Create Connection */}
       <SlideOverPanel
         open={panel.mode !== "closed"}
         onClose={closePanel}
@@ -234,6 +246,12 @@ const NodesList: React.FC = () => {
             key={panel.nodeId}
             nodeId={panel.nodeId}
             onClose={closePanel}
+          />
+        )}
+        {panel.mode === "createConnection" && (
+          <CreateNodeConnectionForm
+            onCancel={closePanel}
+            onSaved={handleSaved}
           />
         )}
       </SlideOverPanel>
