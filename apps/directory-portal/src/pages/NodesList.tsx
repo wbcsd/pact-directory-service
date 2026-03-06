@@ -9,6 +9,7 @@ import ActionButton from "../components/ActionButton";
 import SlideOverPanel from "../components/SlideOverPanel";
 import NodeForm from "../components/NodeForm";
 import NodeConnectionsManager from "../components/NodeConnectionsManager";
+import { useNavigate } from "react-router-dom";
 
 export interface Node {
   id: number;
@@ -31,6 +32,7 @@ type PanelState =
 
 const NodesList: React.FC = () => {
   const { profileData } = useAuth();
+  const navigate = useNavigate();
   const [panel, setPanel] = useState<PanelState>({ mode: "closed" });
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -208,6 +210,7 @@ const NodesList: React.FC = () => {
             title: "No nodes found",
             description: "No nodes match your search criteria",
           }}
+          onRowClick={(row) => navigate(`/nodes/${row.id}`)}
         />
       )}
 
