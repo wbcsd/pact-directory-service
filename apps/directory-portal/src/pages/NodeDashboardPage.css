@@ -1,0 +1,62 @@
+/* NodeDashboardPage layout */
+
+.node-dashboard-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  min-height: 100%;
+}
+
+/* Main content area (left) */
+.node-dashboard-main {
+  flex: 1;
+  min-width: 0;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+/* Quick actions sidebar (right) */
+.node-dashboard-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  padding: 2rem 1.5rem;
+  border-left: 1px solid var(--gray-4);
+  min-height: 100%;
+  background: var(--gray-1);
+}
+
+/* Node metadata badges row */
+.node-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* Dashboard content sections */
+.node-dashboard-section {
+  margin-bottom: 1rem;
+}
+
+/* PCF placeholder */
+.node-dashboard-placeholder {
+  border: 1px dashed var(--gray-6);
+  border-radius: 8px;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  background: var(--gray-2);
+}
+
+/* Quick action buttons */
+.node-quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.node-quick-action-btn {
+  width: 100%;
+  justify-content: flex-start !important;
+  gap: 8px;
+}
