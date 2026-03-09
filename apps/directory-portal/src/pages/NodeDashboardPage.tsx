@@ -39,17 +39,12 @@ interface NodeData {
   connectionsCount?: number;
 }
 
-interface ActivityLogGrouped {
+interface ActivityLog {
+  id: number;
   path: string;
-  count: number;
-  lastCreatedAt: string;
-  lastLevel: string;
-  lastMessage: string;
-}
-
-interface ActivityLogsResponse {
-  data: ActivityLogGrouped[];
-  pagination: PaginationInfo;
+  level: string;
+  message: string;
+  createdAt: string;
 }
 
 type PanelState =
@@ -165,19 +160,29 @@ const NodeDashboardPage: React.FC = () => {
     page: number;
     pageSize: number;
     search?: string;
-  }): Promise<{ data: ActivityLogGrouped[]; pagination: PaginationInfo }> => {
+  }): Promise<{ data: ActivityLog[]; pagination: PaginationInfo }> => {
     const queryParams = new URLSearchParams({
       page: params.page.toString(),
       pageSize: params.pageSize.toString(),
       ...(params.search && { search: params.search }),
     });
-    const response = await fetchWithAuth(`/activity-logs?${queryParams}`);
+    const response = await fetchWithAuth(`/activity-logs/nodes/${nodeId}?${queryParams}`);
     if (!response?.ok) throw new Error("Failed to fetch activity logs");
-    const result: ActivityLogsResponse = await response.json();
-    return result;
-  }, []);
+    const result: { logs: ActivityLog[]; total: number } = await response.json();
+    return {
+      data: result.logs,
+      pagination: {
+        total: result.total,
+        page: params.page,
+        pageSize: params.pageSize,
+        totalPages: Math.ceil(result.total / params.pageSize),
+        hasNext: params.page < Math.ceil(result.total / params.pageSize),
+        hasPrevious: params.page > 1,
+      },
+    };
+  }, [nodeId]);
 
-  const logColumns: Column<ActivityLogGrouped>[] = [
+  const logColumns: Column<ActivityLog>[] = [
     {
       key: "path",
       header: "Path",
@@ -186,37 +191,32 @@ const NodeDashboardPage: React.FC = () => {
       ),
     },
     {
-      key: "count",
-      header: "Count",
-      render: (log) => <Badge color="gray">{log.count}</Badge>,
-    },
-    {
-      key: "lastCreatedAt",
-      header: "Last Activity",
-      render: (log) => <Text size="2">{formatDate(log.lastCreatedAt)}</Text>,
-    },
-    {
-      key: "lastLevel",
+      key: "level",
       header: "Level",
       render: (log) => (
-        <Badge color={getLevelColor(log.lastLevel)}>{log.lastLevel.toUpperCase()}</Badge>
+        <Badge color={getLevelColor(log.level)}>{log.level.toUpperCase()}</Badge>
       ),
     },
     {
-      key: "lastMessage",
-      header: "Last Message",
+      key: "createdAt",
+      header: "Time",
+      render: (log) => <Text size="2">{formatDate(log.createdAt)}</Text>,
+    },
+    {
+      key: "message",
+      header: "Message",
       render: (log) => (
         <Text
           size="2"
           style={{
-            maxWidth: "300px",
+            maxWidth: "400px",
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
             display: "block",
           }}
         >
-          {log.lastMessage}
+          {log.message}
         </Text>
       ),
     },
@@ -289,16 +289,16 @@ const NodeDashboardPage: React.FC = () => {
           {/* Activity Logs Section */}
           <section className="node-dashboard-section">
             <Heading size="4" mb="3">Activity Logs</Heading>
-            <PaginatedDataTable<ActivityLogGrouped>
+            <PaginatedDataTable<ActivityLog>
               isSearchable={true}
               searchPlaceholder="Search log paths..."
               fetchData={fetchLogs}
               columns={logColumns}
-              idColumnName="path"
+              idColumnName="id"
               defaultPageSize={10}
               emptyState={{
                 title: "No activity logs found",
-                description: "Activity logs will appear here as your system operates.",
+                description: "Activity logs will appear here as this node operates.",
               }}
               onRowClick={(log) =>
                 navigate(`/activity-logs/path?path=${encodeURIComponent(log.path)}`)
