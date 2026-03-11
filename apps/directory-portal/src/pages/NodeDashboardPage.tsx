@@ -101,6 +101,7 @@ const NodeDashboardPage: React.FC = () => {
 
   const [panel, setPanel] = useState<PanelState>({ mode: "closed" });
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [pendingInvitationsCount, setPendingInvitationsCount] = useState(0);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -115,9 +116,20 @@ const NodeDashboardPage: React.FC = () => {
     }, 1200);
   }, [closePanel]);
 
+  const fetchPendingCount = useCallback(async () => {
+    if (!nodeId) return;
+    try {
+      const res = await fetchWithAuth(`/nodes/${nodeId}/invitations?pageSize=1`);
+      if (!res?.ok) return;
+      const result = await res.json();
+      setPendingInvitationsCount(result.pagination?.total ?? 0);
+    } catch {
+      // silently ignore — badge is non-critical
+    }
+  }, [nodeId]);
+
   useEffect(() => {
-    const fetchNodeData = async () => {
-      try {
+    const fetchNodeData = async () => {      try {
         setNodeError("");
         setNodeLoading(true);
         const res = await fetchWithAuth(`/nodes/${nodeId}`);
@@ -133,6 +145,16 @@ const NodeDashboardPage: React.FC = () => {
     };
     fetchNodeData();
   }, [nodeId, refreshTrigger]);
+
+  // Fetch pending invitations count on load and whenever the panel closes
+  useEffect(() => {
+    fetchPendingCount();
+  }, [fetchPendingCount, refreshTrigger]);
+
+  const handlePanelClose = useCallback(() => {
+    closePanel();
+    fetchPendingCount();
+  }, [closePanel, fetchPendingCount]);
 
   const handleDelete = async () => {
     if (!confirmDelete) {
@@ -320,13 +342,18 @@ const NodeDashboardPage: React.FC = () => {
               <InputIcon /> Edit Node
             </Button>
 
-            <Button
-              variant="soft"
-              className="node-quick-action-btn"
-              onClick={() => setPanel({ mode: "connections" })}
-            >
-              <Link2Icon /> Manage Connections
-            </Button>
+            <div className="node-quick-action-wrapper">
+              <Button
+                variant="soft"
+                className="node-quick-action-btn"
+                onClick={() => setPanel({ mode: "connections" })}
+              >
+                <Link2Icon /> Manage Connections
+              </Button>
+              {pendingInvitationsCount > 0 && (
+                <span className="node-pending-badge">{pendingInvitationsCount}</span>
+              )}
+            </div>
 
             <Button
               variant="soft"
@@ -372,7 +399,7 @@ const NodeDashboardPage: React.FC = () => {
       {/* Slide-over panels */}
       <SlideOverPanel
         open={panel.mode !== "closed"}
-        onClose={closePanel}
+        onClose={handlePanelClose}
         title={panelTitle}
         subtitle={panelSubtitle}
       >

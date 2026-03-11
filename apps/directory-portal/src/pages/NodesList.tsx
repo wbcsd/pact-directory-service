@@ -133,57 +133,8 @@ const NodesList: React.FC = () => {
           ? "—"
           : date.toLocaleDateString() + " " + date.toLocaleTimeString();
       },
-    },
-    {
-      key: "actions",
-      header: "",
-      extendedStyle: { textAlign: 'right' },
-      render: (row: Node) => (
-        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-          <ActionButton
-            title="View Connections"
-            variant="secondary"
-            size="small"
-            onClick={() =>
-              setPanel({ mode: "connections", nodeId: row.id, nodeName: row.name })
-            }
-          >
-            <Link2Icon />
-          </ActionButton>
-          <ActionButton
-            title="Edit Node Details"
-            variant="secondary"
-            size="small"
-            onClick={() =>
-              setPanel({ mode: "edit", nodeId: row.id, nodeName: row.name })
-            }
-          >
-            <InputIcon />
-          </ActionButton>
-        </div>
-      ),
-    },
+    }
   ];
-
-  const panelTitle =
-    panel.mode === "add"
-      ? "Create Node"
-      : panel.mode === "edit"
-        ? "Edit Node"
-        : panel.mode === "connections"
-          ? "Node Connections"
-          : "";
-
-  const panelSubtitle =
-    panel.mode === "add"
-      ? profileData?.organizationName
-        ? `For ${profileData.organizationName}`
-        : undefined
-      : panel.mode === "edit"
-        ? panel.nodeName
-        : panel.mode === "connections"
-          ? panel.nodeName
-          : undefined;
 
   return (
     <GridPageLayout
@@ -213,33 +164,6 @@ const NodesList: React.FC = () => {
           onRowClick={(row) => navigate(`/nodes/${row.id}`)}
         />
       )}
-
-      {/* Slide-over panel for Add / Edit / Connections */}
-      <SlideOverPanel
-        open={panel.mode !== "closed"}
-        onClose={closePanel}
-        title={panelTitle}
-        subtitle={panelSubtitle}
-      >
-        {panel.mode === "add" && (
-          <NodeForm onCancel={closePanel} onSaved={handleSaved} />
-        )}
-        {panel.mode === "edit" && (
-          <NodeForm
-            key={panel.nodeId}
-            nodeId={panel.nodeId}
-            onCancel={closePanel}
-            onSaved={handleSaved}
-          />
-        )}
-        {panel.mode === "connections" && (
-          <NodeConnectionsManager
-            key={panel.nodeId}
-            nodeId={panel.nodeId}
-            onClose={closePanel}
-          />
-        )}
-      </SlideOverPanel>
     </GridPageLayout>
   );
 };
