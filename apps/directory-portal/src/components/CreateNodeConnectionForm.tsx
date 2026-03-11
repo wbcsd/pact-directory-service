@@ -34,6 +34,8 @@ interface CreateInvitationData {
 }
 
 interface CreateNodeConnectionFormProps {
+  /** When provided, locks the "From Node" to this node ID. */
+  fromNodeId?: number;
   /** Called after a successful invitation creation. */
   onSaved?: (data: unknown) => void;
   /** Called when the user clicks Cancel. */
@@ -41,6 +43,7 @@ interface CreateNodeConnectionFormProps {
 }
 
 const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
+  fromNodeId: lockedFromNodeId,
   onSaved,
   onCancel,
 }) => {
@@ -48,7 +51,7 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
   const [availableNodes, setAvailableNodes] = useState<Node[]>([]);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState<CreateInvitationData>({
-    fromNodeId: 0,
+    fromNodeId: lockedFromNodeId ?? 0,
     targetNodeId: 0,
     message: "",
   });
@@ -223,43 +226,49 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
               </Tooltip.Root>
             </Tooltip.Provider>
           </Box>
-          <Select.Root
-            value={formData.fromNodeId > 0 ? formData.fromNodeId.toString() : ""}
-            onValueChange={handleFromNodeChange}
-          >
-            <Select.Trigger className="select-trigger">
-              <Select.Value placeholder="Select source node" />
-              <Select.Icon>
-                <ChevronDownIcon />
-              </Select.Icon>
-            </Select.Trigger>
-            <Select.Portal>
-              <Select.Content className="select-content" position="popper">
-                <Select.Viewport>
-                  {availableNodes.length === 0 ? (
-                    <Select.Item value="none" disabled className="select-item">
-                      <Select.ItemText>No available nodes</Select.ItemText>
-                    </Select.Item>
-                  ) : (
-                    availableNodes.map((node) => (
-                      <Select.Item
-                        key={node.id}
-                        value={node.id.toString()}
-                        className="select-item"
-                      >
-                        <Select.ItemText>
-                          {node.name} - <span style={{ textTransform: 'capitalize', color: '#666' }}>{node.type}</span>
-                        </Select.ItemText>
-                        <Select.ItemIndicator style={{ marginLeft: "auto" }}>
-                          <CheckIcon />
-                        </Select.ItemIndicator>
+          {lockedFromNodeId ? (
+            <div className="readonly-field">
+              {availableNodes.find((n) => n.id === lockedFromNodeId)?.name ?? `Node #${lockedFromNodeId}`}
+            </div>
+          ) : (
+            <Select.Root
+              value={formData.fromNodeId > 0 ? formData.fromNodeId.toString() : ""}
+              onValueChange={handleFromNodeChange}
+            >
+              <Select.Trigger className="select-trigger">
+                <Select.Value placeholder="Select source node" />
+                <Select.Icon>
+                  <ChevronDownIcon />
+                </Select.Icon>
+              </Select.Trigger>
+              <Select.Portal>
+                <Select.Content className="select-content" position="popper">
+                  <Select.Viewport>
+                    {availableNodes.length === 0 ? (
+                      <Select.Item value="none" disabled className="select-item">
+                        <Select.ItemText>No available nodes</Select.ItemText>
                       </Select.Item>
-                    ))
-                  )}
-                </Select.Viewport>
-              </Select.Content>
-            </Select.Portal>
-          </Select.Root>
+                    ) : (
+                      availableNodes.map((node) => (
+                        <Select.Item
+                          key={node.id}
+                          value={node.id.toString()}
+                          className="select-item"
+                        >
+                          <Select.ItemText>
+                            {node.name} - <span style={{ textTransform: 'capitalize', color: '#666' }}>{node.type}</span>
+                          </Select.ItemText>
+                          <Select.ItemIndicator style={{ marginLeft: "auto" }}>
+                            <CheckIcon />
+                          </Select.ItemIndicator>
+                        </Select.Item>
+                      ))
+                    )}
+                  </Select.Viewport>
+                </Select.Content>
+              </Select.Portal>
+            </Select.Root>
+          )}
         </Form.Field>
 
         {/* Target Node Selection */}
