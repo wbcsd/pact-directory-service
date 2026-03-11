@@ -3,7 +3,7 @@ import { fetchWithAuth } from "../utils/auth-fetch";
 import PaginatedDataTable, { PaginationInfo } from "../components/PaginatedDataTable";
 import { Column } from "../components/DataTable";
 import { useAuth } from "../contexts/AuthContext";
-import { InputIcon, Link2Icon, PlusIcon } from "@radix-ui/react-icons";
+import { PlusIcon } from "@radix-ui/react-icons";
 import { GridPageLayout } from "../layouts";
 import ActionButton from "../components/ActionButton";
 import SlideOverPanel from "../components/SlideOverPanel";
@@ -76,8 +76,7 @@ const NodesList: React.FC = () => {
     return result;
   }, [profileData]);
 
-  const columns: Column<Node>[] = [
-    {
+  const columns: Column<Node>[] = [    {
       key: "name",
       header: "Node Name",
       sortable: true,
@@ -164,6 +163,42 @@ const NodesList: React.FC = () => {
           onRowClick={(row) => navigate(`/nodes/${row.id}`)}
         />
       )}
+
+      <SlideOverPanel
+        open={panel.mode !== "closed"}
+        onClose={closePanel}
+        title={
+          panel.mode === "add" ? "Create Node" :
+          panel.mode === "edit" ? "Edit Node" :
+          panel.mode === "connections" ? "Node Connections" : ""
+        }
+        subtitle={
+          panel.mode === "add"
+            ? (profileData?.organizationName ? `For ${profileData.organizationName}` : undefined)
+            : panel.mode === "edit" || panel.mode === "connections"
+              ? panel.nodeName
+              : undefined
+        }
+      >
+        {panel.mode === "add" && (
+          <NodeForm onCancel={closePanel} onSaved={handleSaved} />
+        )}
+        {panel.mode === "edit" && (
+          <NodeForm
+            key={panel.nodeId}
+            nodeId={panel.nodeId}
+            onCancel={closePanel}
+            onSaved={handleSaved}
+          />
+        )}
+        {panel.mode === "connections" && (
+          <NodeConnectionsManager
+            key={panel.nodeId}
+            nodeId={panel.nodeId}
+            onClose={closePanel}
+          />
+        )}
+      </SlideOverPanel>
     </GridPageLayout>
   );
 };
