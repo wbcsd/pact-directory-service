@@ -14,25 +14,6 @@ const SideNav: React.FC = () => {
           <NavLink to="/conformance-test-runs">
             <Text>Conformance Testing</Text>
           </NavLink>
-          <FeatureFlag flag="enableIdentityManagement">
-            <PolicyGuard policies={["view-connections-own-organization", "view-connections-all-organizations"]}>
-              <>
-                <a href="#">Identity Management</a>
-                <NavLink
-                  to="/search"
-                  style={{ textDecoration: "none", paddingLeft: "2em" }}
-                >
-                  <Text>Search</Text>
-                </NavLink>
-                <NavLink
-                  to="/manage-connections"
-                  style={{ textDecoration: "none", paddingLeft: "2em" }}
-                >
-                  <Text>Manage Connections</Text>
-                </NavLink>
-              </>
-            </PolicyGuard>
-          </FeatureFlag>
         </nav>
       </div>
       <div className="nav-group">

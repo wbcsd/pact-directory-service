@@ -288,11 +288,12 @@ router.post('/directory/node-invitations/:id/accept', authenticate, context(asyn
 }));
 
 // Reject invitation request for node connection
-router.post('/directory/node-invitations/:id/reject', authenticate, context(async (req) => {
-  return req.services.nodeConnection.rejectInvitation(
+router.post('/directory/node-invitations/:id/reject', authenticate, context(async (req, res) => {
+  await req.services.nodeConnection.rejectInvitation(
     req.context,
     parseInt(req.params.id),
   );
+  res.status(204).send();
 }));
 
 // Remove node connection

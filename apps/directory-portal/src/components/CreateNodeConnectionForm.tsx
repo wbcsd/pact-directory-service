@@ -142,7 +142,7 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
       if (response!.ok) {
         const savedData = await response!.json();
         setStatus("success");
-        onSaved?.(savedData);
+        setTimeout(() => onSaved?.(savedData), 1500);
       } else {
         const errorResponse = await response!.json();
         setErrorMessage(
@@ -241,32 +241,30 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
                   <ChevronDownIcon />
                 </Select.Icon>
               </Select.Trigger>
-              <Select.Portal>
-                <Select.Content className="select-content" position="popper">
-                  <Select.Viewport>
-                    {availableNodes.length === 0 ? (
-                      <Select.Item value="none" disabled className="select-item">
-                        <Select.ItemText>No available nodes</Select.ItemText>
+              <Select.Content className="select-content" position="popper">
+                <Select.Viewport>
+                  {availableNodes.length === 0 ? (
+                    <Select.Item value="none" disabled className="select-item">
+                      <Select.ItemText>No available nodes</Select.ItemText>
+                    </Select.Item>
+                  ) : (
+                    availableNodes.map((node) => (
+                      <Select.Item
+                        key={node.id}
+                        value={node.id.toString()}
+                        className="select-item"
+                      >
+                        <Select.ItemText>
+                          {node.name} - <span style={{ textTransform: 'capitalize', color: '#666' }}>{node.type}</span>
+                        </Select.ItemText>
+                        <Select.ItemIndicator style={{ marginLeft: "auto" }}>
+                          <CheckIcon />
+                        </Select.ItemIndicator>
                       </Select.Item>
-                    ) : (
-                      availableNodes.map((node) => (
-                        <Select.Item
-                          key={node.id}
-                          value={node.id.toString()}
-                          className="select-item"
-                        >
-                          <Select.ItemText>
-                            {node.name} - <span style={{ textTransform: 'capitalize', color: '#666' }}>{node.type}</span>
-                          </Select.ItemText>
-                          <Select.ItemIndicator style={{ marginLeft: "auto" }}>
-                            <CheckIcon />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                      ))
-                    )}
-                  </Select.Viewport>
-                </Select.Content>
-              </Select.Portal>
+                    ))
+                  )}
+                </Select.Viewport>
+              </Select.Content>
             </Select.Root>
           )}
         </Form.Field>
@@ -305,34 +303,32 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
                 <ChevronDownIcon />
               </Select.Icon>
             </Select.Trigger>
-            <Select.Portal>
-              <Select.Content className="select-content" position="popper">
-                <Select.Viewport>
-                  {availableTargetNodes.length === 0 ? (
-                    <Select.Item value="none" disabled className="select-item">
+            <Select.Content className="select-content" position="popper">
+              <Select.Viewport>
+                {availableTargetNodes.length === 0 ? (
+                  <Select.Item value="none" disabled className="select-item">
+                    <Select.ItemText>
+                      {formData.fromNodeId ? "No other nodes available" : "Select source node first"}
+                    </Select.ItemText>
+                  </Select.Item>
+                ) : (
+                  availableTargetNodes.map((node) => (
+                    <Select.Item
+                      key={node.id}
+                      value={node.id.toString()}
+                      className="select-item"
+                    >
                       <Select.ItemText>
-                        {formData.fromNodeId ? "No other nodes available" : "Select source node first"}
+                        {node.name} - <span style={{ textTransform: 'capitalize', color: '#666' }}>{node.type}</span>
                       </Select.ItemText>
+                      <Select.ItemIndicator style={{ marginLeft: "auto" }}>
+                        <CheckIcon />
+                      </Select.ItemIndicator>
                     </Select.Item>
-                  ) : (
-                    availableTargetNodes.map((node) => (
-                      <Select.Item
-                        key={node.id}
-                        value={node.id.toString()}
-                        className="select-item"
-                      >
-                        <Select.ItemText>
-                          {node.name} - <span style={{ textTransform: 'capitalize', color: '#666' }}>{node.type}</span>
-                        </Select.ItemText>
-                        <Select.ItemIndicator style={{ marginLeft: "auto" }}>
-                          <CheckIcon />
-                        </Select.ItemIndicator>
-                      </Select.Item>
-                    ))
-                  )}
-                </Select.Viewport>
-              </Select.Content>
-            </Select.Portal>
+                  ))
+                )}
+              </Select.Viewport>
+            </Select.Content>
           </Select.Root>
         </Form.Field>
 
