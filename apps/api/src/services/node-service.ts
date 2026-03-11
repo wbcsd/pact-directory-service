@@ -233,23 +233,19 @@ export class NodeService {
       throw new ForbiddenError('You are not allowed to delete this node');
     }
 
-    // Soft delete by setting status to inactive
-  try {
-    await this.db
-      .updateTable('nodes')
-      .set({ 
-        status: 'inactive',
-        updatedAt: new Date(),
-      })
-      .where('id', '=', nodeId)
-      .execute();
+    // Hard delete the node
+    try {
+      await this.db
+        .deleteFrom('nodes')
+        .where('id', '=', nodeId)
+        .execute();
 
-    return { success: true, nodeId };
-  } catch (error) {
-    console.error('Error deleting node:', error);
-    throw new Error('Failed to delete node');
+      return { success: true, nodeId };
+    } catch (error) {
+      console.error('Error deleting node:', error);
+      throw new Error('Failed to delete node');
+    }
   }
-}
 
   /**
    * List nodes for a specific organization

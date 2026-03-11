@@ -384,7 +384,6 @@ const NodeDashboardPage: React.FC = () => {
             </Button>
             {confirmDelete && (
               <Button
-                variant="ghost"
                 size="1"
                 onClick={() => setConfirmDelete(false)}
                 style={{ alignSelf: "center" }}
