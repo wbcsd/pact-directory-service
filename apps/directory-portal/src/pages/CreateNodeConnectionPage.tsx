@@ -39,6 +39,7 @@ const CreateNodeConnectionPage: React.FC = () => {
   const { profileData } = useAuth();
   const [fromNode, setFromNode] = useState<Node | null>(null);
   const [availableNodes, setAvailableNodes] = useState<Node[]>([]);
+  const [targetNode, setTargetNode] = useState<Node | null>(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState<CreateInvitationData>({
     targetNodeId: 0,
@@ -132,10 +133,6 @@ const CreateNodeConnectionPage: React.FC = () => {
 
       if (response!.ok) {
         setStatus("success");
-        // Navigate back to connections list after successful creation
-        setTimeout(() => {
-          navigate(`/nodes/${fromNodeId}/connections`);
-        }, 2000);
       } else {
         const errorResponse = await response!.json();
         if (errorResponse.message) {
@@ -158,6 +155,8 @@ const CreateNodeConnectionPage: React.FC = () => {
   };
 
   const handleTargetNodeChange = (value: string) => {
+    const selected = availableNodes.find((n) => n.id === parseInt(value)) ?? null;
+    setTargetNode(selected);
     setFormData((prevData) => ({
       ...prevData,
       targetNodeId: parseInt(value),
@@ -365,8 +364,26 @@ const CreateNodeConnectionPage: React.FC = () => {
                     <CheckIcon />
                   </Callout.Icon>
                   <Callout.Text>
-                    Connection invitation created successfully! The target organization will be notified.
-                    Redirecting...
+                    <Box style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                      <span>
+                        Connection invitation sent to <strong>{targetNode?.name}</strong>. Go to that node's dashboard to accept it.
+                      </span>
+                      <Box style={{ display: "flex", gap: "8px" }}>
+                        <Button
+                          size="2"
+                          onClick={() => navigate(`/nodes/${targetNode?.id}`)}
+                        >
+                          Go to {targetNode?.name}
+                        </Button>
+                        <Button
+                          size="2"
+                          variant="soft"
+                          onClick={() => navigate(`/nodes/${fromNodeId}`)}
+                        >
+                          Back to {fromNode?.name}
+                        </Button>
+                      </Box>
+                    </Box>
                   </Callout.Text>
                 </Callout.Root>
               )}
