@@ -24,6 +24,7 @@ import { Column } from "../components/DataTable";
 import SlideOverPanel from "../components/SlideOverPanel";
 import NodeForm from "../components/NodeForm";
 import NodeConnectionsManager from "../components/NodeConnectionsManager";
+import CreateNodeConnectionForm from "../components/CreateNodeConnectionForm";
 import "./NodeDashboardPage.css";
 
 interface NodeData {
@@ -50,7 +51,8 @@ interface ActivityLog {
 type PanelState =
   | { mode: "closed" }
   | { mode: "edit" }
-  | { mode: "connections" };
+  | { mode: "connections" }
+  | { mode: "createConnection" };
 
 const getLevelColor = (
   level: string
@@ -104,7 +106,6 @@ const NodeDashboardPage: React.FC = () => {
   const [pendingInvitationsCount, setPendingInvitationsCount] = useState(0);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
-  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const closePanel = useCallback(() => setPanel({ mode: "closed" }), []);
   const handleSaved = useCallback(() => {
@@ -157,10 +158,7 @@ const NodeDashboardPage: React.FC = () => {
   }, [closePanel, fetchPendingCount]);
 
   const handleDelete = async () => {
-    if (!confirmDelete) {
-      setConfirmDelete(true);
-      return;
-    }
+    if (!window.confirm(`Are you sure you want to delete "${nodeData?.name}"? This action cannot be undone.`)) return;
     try {
       setDeleting(true);
       const response = await fetchWithAuth(`/nodes/${nodeId}`, { method: "DELETE" });
@@ -174,7 +172,6 @@ const NodeDashboardPage: React.FC = () => {
       setDeleteError("An error occurred while deleting the node");
     } finally {
       setDeleting(false);
-      setConfirmDelete(false);
     }
   };
 
@@ -247,6 +244,7 @@ const NodeDashboardPage: React.FC = () => {
   const panelTitle =
     panel.mode === "edit" ? "Edit Node" :
     panel.mode === "connections" ? "Connections & Invitations" :
+    panel.mode === "createConnection" ? "Create Connection" :
     "";
 
   const panelSubtitle = nodeData?.name;
@@ -358,7 +356,7 @@ const NodeDashboardPage: React.FC = () => {
             <Button
               variant="soft"
               className="node-quick-action-btn"
-              onClick={() => navigate(`/nodes/${nodeId}/create-connection`)}
+              onClick={() => setPanel({ mode: "createConnection" })}
             >
               <PlusIcon /> Create Connection
             </Button>
@@ -376,21 +374,12 @@ const NodeDashboardPage: React.FC = () => {
               variant="soft"
               color="red"
               className="node-quick-action-btn"
-              onClick={handleDelete}
               disabled={deleting}
+              onClick={handleDelete}
             >
               <TrashIcon />
-              {confirmDelete ? "Confirm Delete" : "Delete Node"}
+              Delete Node
             </Button>
-            {confirmDelete && (
-              <Button
-                size="1"
-                onClick={() => setConfirmDelete(false)}
-                style={{ alignSelf: "center" }}
-              >
-                Cancel
-              </Button>
-            )}
           </div>
         </aside>
       </main>
@@ -415,6 +404,14 @@ const NodeDashboardPage: React.FC = () => {
             key={nodeId}
             nodeId={nodeId}
             onClose={closePanel}
+          />
+        )}
+        {panel.mode === "createConnection" && nodeId && (
+          <CreateNodeConnectionForm
+            key={nodeId}
+            fromNodeId={Number(nodeId)}
+            onCancel={handlePanelClose}
+            onSaved={handlePanelClose}
           />
         )}
       </SlideOverPanel>
