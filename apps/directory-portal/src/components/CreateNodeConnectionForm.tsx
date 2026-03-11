@@ -17,6 +17,7 @@ import {
 } from "@radix-ui/react-icons";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import "./NodeForm.css";
 
 interface Node {
@@ -36,20 +37,19 @@ interface CreateInvitationData {
 interface CreateNodeConnectionFormProps {
   /** When provided, locks the "From Node" to this node ID. */
   fromNodeId?: number;
-  /** Called after a successful invitation creation. */
-  onSaved?: (data: unknown) => void;
-  /** Called when the user clicks Cancel. */
+  /** Called when the user clicks Cancel or Close. */
   onCancel?: () => void;
 }
 
 const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
   fromNodeId: lockedFromNodeId,
-  onSaved,
   onCancel,
 }) => {
   const { profileData } = useAuth();
+  const navigate = useNavigate();
   const [availableNodes, setAvailableNodes] = useState<Node[]>([]);
   const [loading, setLoading] = useState(true);
+  const [targetNode, setTargetNode] = useState<Node | null>(null);
   const [formData, setFormData] = useState<CreateInvitationData>({
     fromNodeId: lockedFromNodeId ?? 0,
     targetNodeId: 0,
@@ -140,9 +140,8 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
       setCreating(false);
 
       if (response!.ok) {
-        const savedData = await response!.json();
+        await response!.json();
         setStatus("success");
-        setTimeout(() => onSaved?.(savedData), 1500);
       } else {
         const errorResponse = await response!.json();
         setErrorMessage(
@@ -170,6 +169,8 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
   };
 
   const handleTargetNodeChange = (value: string) => {
+    const selected = availableNodes.find((n) => n.id === parseInt(value)) ?? null;
+    setTargetNode(selected);
     setFormData((prevData) => ({
       ...prevData,
       targetNodeId: parseInt(value),
@@ -400,7 +401,19 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
             <CheckIcon />
           </Callout.Icon>
           <Callout.Text>
-            Connection invitation created successfully! The target node will be notified.
+            <Box style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <span>
+                Connection invitation sent to <strong>{targetNode?.name}</strong>. Go to that node's dashboard to accept it.
+              </span>
+              <Box style={{ display: "flex", gap: "8px" }}>
+                <Button size="2" variant="soft" color="green" onClick={() => { onCancel?.(); navigate(`/nodes/${targetNode?.id}`); }}>
+                  Go to {targetNode?.name}
+                </Button>
+                <Button size="2" variant="soft" color="gray" onClick={onCancel}>
+                  Close
+                </Button>
+              </Box>
+            </Box>
           </Callout.Text>
         </Callout.Root>
       )}

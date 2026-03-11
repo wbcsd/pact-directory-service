@@ -411,7 +411,6 @@ const NodeDashboardPage: React.FC = () => {
             key={nodeId}
             fromNodeId={Number(nodeId)}
             onCancel={handlePanelClose}
-            onSaved={handlePanelClose}
           />
         )}
       </SlideOverPanel>
