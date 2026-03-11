@@ -112,15 +112,18 @@ export class NodeConnectionService {
       .selectFrom('connections')
       .selectAll()
       .where((eb) =>
-        eb.or([
-          eb.and([
-            eb('fromNodeId', '=', nodeId),
-            eb('targetNodeId', '=', data.targetNodeId),
+        eb.and([
+          eb.or([
+            eb.and([
+              eb('fromNodeId', '=', nodeId),
+              eb('targetNodeId', '=', data.targetNodeId),
+            ]),
+            eb.and([
+              eb('fromNodeId', '=', data.targetNodeId),
+              eb('targetNodeId', '=', nodeId),
+            ]),
           ]),
-          eb.and([
-            eb('fromNodeId', '=', data.targetNodeId),
-            eb('targetNodeId', '=', nodeId),
-          ]),
+          eb('status', 'in', ['pending', 'accepted']),
         ])
       )
       .executeTakeFirst();
@@ -128,6 +131,26 @@ export class NodeConnectionService {
     if (existingConnection) {
       throw new BadRequestError('A connection between these nodes already exists');
     }
+
+    // Remove any previously rejected connections for this pair so the unique constraint allows re-invitation
+    await this.db
+      .deleteFrom('connections')
+      .where((eb) =>
+        eb.and([
+          eb.or([
+            eb.and([
+              eb('fromNodeId', '=', nodeId),
+              eb('targetNodeId', '=', data.targetNodeId),
+            ]),
+            eb.and([
+              eb('fromNodeId', '=', data.targetNodeId),
+              eb('targetNodeId', '=', nodeId),
+            ]),
+          ]),
+          eb('status', '=', 'rejected'),
+        ])
+      )
+      .execute();
 
     // Generate credentials
     const credentials = this.generateCredentials();
