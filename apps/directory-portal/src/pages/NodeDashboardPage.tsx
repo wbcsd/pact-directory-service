@@ -109,12 +109,8 @@ const NodeDashboardPage: React.FC = () => {
 
   const closePanel = useCallback(() => setPanel({ mode: "closed" }), []);
   const handleSaved = useCallback(() => {
+    closePanel();
     setRefreshTrigger((prev) => prev + 1);
-    setTimeout(() => {
-      closePanel();
-      // Re-fetch node to get updated info
-      setNodeLoading(true);
-    }, 1200);
   }, [closePanel]);
 
   const fetchPendingCount = useCallback(async () => {
