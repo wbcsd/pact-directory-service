@@ -109,12 +109,8 @@ const NodeDashboardPage: React.FC = () => {
 
   const closePanel = useCallback(() => setPanel({ mode: "closed" }), []);
   const handleSaved = useCallback(() => {
+    closePanel();
     setRefreshTrigger((prev) => prev + 1);
-    setTimeout(() => {
-      closePanel();
-      // Re-fetch node to get updated info
-      setNodeLoading(true);
-    }, 1200);
   }, [closePanel]);
 
   const fetchPendingCount = useCallback(async () => {
@@ -250,10 +246,16 @@ const NodeDashboardPage: React.FC = () => {
   const panelSubtitle = nodeData?.name;
 
   return (
-    <FunctionalPageLayout loading={nodeLoading} loadingMessage="Loading node..." wrapInMain={false}>
+    <FunctionalPageLayout wrapInMain={false}>
       <main className="main node-dashboard-layout">
         {/* ── Left / Main Content ── */}
         <div className="node-dashboard-main">
+          {nodeLoading ? (
+            <div style={{ padding: "2rem", display: "flex", alignItems: "center", gap: "12px", color: "var(--gray-11)" }}>
+              <Text color="gray">Loading node...</Text>
+            </div>
+          ) : (
+            <>
           <PageHeader
             title={nodeData?.name ?? "Node"}
             subtitle={nodeData?.organizationName}
@@ -325,6 +327,8 @@ const NodeDashboardPage: React.FC = () => {
               }
             />
           </section>
+            </>
+          )}
         </div>
 
         {/* ── Right / Quick Actions Sidebar ── */}
