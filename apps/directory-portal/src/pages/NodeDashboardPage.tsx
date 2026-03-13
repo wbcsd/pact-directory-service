@@ -246,10 +246,16 @@ const NodeDashboardPage: React.FC = () => {
   const panelSubtitle = nodeData?.name;
 
   return (
-    <FunctionalPageLayout loading={nodeLoading} loadingMessage="Loading node..." wrapInMain={false}>
+    <FunctionalPageLayout wrapInMain={false}>
       <main className="main node-dashboard-layout">
         {/* ── Left / Main Content ── */}
         <div className="node-dashboard-main">
+          {nodeLoading ? (
+            <div style={{ padding: "2rem", display: "flex", alignItems: "center", gap: "12px", color: "var(--gray-11)" }}>
+              <Text color="gray">Loading node...</Text>
+            </div>
+          ) : (
+            <>
           <PageHeader
             title={nodeData?.name ?? "Node"}
             subtitle={nodeData?.organizationName}
@@ -321,6 +327,8 @@ const NodeDashboardPage: React.FC = () => {
               }
             />
           </section>
+            </>
+          )}
         </div>
 
         {/* ── Right / Quick Actions Sidebar ── */}
