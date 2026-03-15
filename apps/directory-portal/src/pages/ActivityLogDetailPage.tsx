@@ -145,7 +145,7 @@ const ActivityLogDetailPage: React.FC = () => {
             <Flex align="center" gap="3">
               <Button
                 variant="soft"
-                onClick={() => navigate("/activity-logs")}
+                onClick={() => navigate(-1)}
               >
                 <ArrowLeftIcon /> Back
               </Button>

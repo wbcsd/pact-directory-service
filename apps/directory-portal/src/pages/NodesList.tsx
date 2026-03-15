@@ -3,12 +3,13 @@ import { fetchWithAuth } from "../utils/auth-fetch";
 import PaginatedDataTable, { PaginationInfo } from "../components/PaginatedDataTable";
 import { Column } from "../components/DataTable";
 import { useAuth } from "../contexts/AuthContext";
-import { InputIcon, Link2Icon, PlusIcon } from "@radix-ui/react-icons";
+import { PlusIcon } from "@radix-ui/react-icons";
 import { GridPageLayout } from "../layouts";
 import ActionButton from "../components/ActionButton";
 import SlideOverPanel from "../components/SlideOverPanel";
 import NodeForm from "../components/NodeForm";
 import NodeConnectionsManager from "../components/NodeConnectionsManager";
+import { useNavigate } from "react-router-dom";
 
 export interface Node {
   id: number;
@@ -31,6 +32,7 @@ type PanelState =
 
 const NodesList: React.FC = () => {
   const { profileData } = useAuth();
+  const navigate = useNavigate();
   const [panel, setPanel] = useState<PanelState>({ mode: "closed" });
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -74,8 +76,7 @@ const NodesList: React.FC = () => {
     return result;
   }, [profileData]);
 
-  const columns: Column<Node>[] = [
-    {
+  const columns: Column<Node>[] = [    {
       key: "name",
       header: "Node Name",
       sortable: true,
@@ -131,57 +132,8 @@ const NodesList: React.FC = () => {
           ? "—"
           : date.toLocaleDateString() + " " + date.toLocaleTimeString();
       },
-    },
-    {
-      key: "actions",
-      header: "",
-      extendedStyle: { textAlign: 'right' },
-      render: (row: Node) => (
-        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-          <ActionButton
-            title="View Connections"
-            variant="secondary"
-            size="small"
-            onClick={() =>
-              setPanel({ mode: "connections", nodeId: row.id, nodeName: row.name })
-            }
-          >
-            <Link2Icon />
-          </ActionButton>
-          <ActionButton
-            title="Edit Node Details"
-            variant="secondary"
-            size="small"
-            onClick={() =>
-              setPanel({ mode: "edit", nodeId: row.id, nodeName: row.name })
-            }
-          >
-            <InputIcon />
-          </ActionButton>
-        </div>
-      ),
-    },
+    }
   ];
-
-  const panelTitle =
-    panel.mode === "add"
-      ? "Create Node"
-      : panel.mode === "edit"
-        ? "Edit Node"
-        : panel.mode === "connections"
-          ? "Node Connections"
-          : "";
-
-  const panelSubtitle =
-    panel.mode === "add"
-      ? profileData?.organizationName
-        ? `For ${profileData.organizationName}`
-        : undefined
-      : panel.mode === "edit"
-        ? panel.nodeName
-        : panel.mode === "connections"
-          ? panel.nodeName
-          : undefined;
 
   return (
     <GridPageLayout
@@ -208,15 +160,25 @@ const NodesList: React.FC = () => {
             title: "No nodes found",
             description: "No nodes match your search criteria",
           }}
+          onRowClick={(row) => navigate(`/nodes/${row.id}`)}
         />
       )}
 
-      {/* Slide-over panel for Add / Edit / Connections */}
       <SlideOverPanel
         open={panel.mode !== "closed"}
         onClose={closePanel}
-        title={panelTitle}
-        subtitle={panelSubtitle}
+        title={
+          panel.mode === "add" ? "Create Node" :
+          panel.mode === "edit" ? "Edit Node" :
+          panel.mode === "connections" ? "Node Connections" : ""
+        }
+        subtitle={
+          panel.mode === "add"
+            ? (profileData?.organizationName ? `For ${profileData.organizationName}` : undefined)
+            : panel.mode === "edit" || panel.mode === "connections"
+              ? panel.nodeName
+              : undefined
+        }
       >
         {panel.mode === "add" && (
           <NodeForm onCancel={closePanel} onSaved={handleSaved} />

@@ -7,9 +7,6 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import EmailVerificationPage from "./pages/EmailVerificationPage";
 import ResendVerificationPage from "./pages/ResendVerificationPage";
 import MyProfilePage from "./pages/MyProfilePage";
-import SearchPage from "./pages/SearchPage";
-import OrganizationProfile from "./pages/OrganizationProfile";
-import ManageConnections from "./pages/ManageConnections";
 import ConformanceTestListPage from "./pages/ConformanceTestListPage";
 import ConformanceTestDetailPage from "./pages/ConformanceTestDetailPage";
 import { featureFlags } from "./utils/feature-flags";
@@ -36,13 +33,6 @@ const AppRoutes: React.FC = () => {
       <Route path="/verify-email/:token" element={<EmailVerificationPage />} />
       <Route path="/resend-verification" element={<ResendVerificationPage />} />
       <Route path="/my-profile" element={<MyProfilePage />} />
-      {featureFlags.enableIdentityManagement === true && (
-        <>
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/organization/:id" element={<OrganizationProfile />} />
-          <Route path="/manage-connections" element={<ManageConnections />} />
-        </>
-      )}
       {featureFlags.enableNodeManagement === true && (
         <>
           <Route path="/nodes" element={<NodesList />} />
