@@ -1,12 +1,13 @@
 // src/pages/LoginPage.tsx
 import React, { useState } from "react";
 import * as Form from "@radix-ui/react-form";
-import { Box, Button, TextField, Callout } from "@radix-ui/themes";
+import { Box, Button, Callout } from "@radix-ui/themes";
 import { useNavigate, Link } from "react-router-dom";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { useAuth } from "../contexts/AuthContext";
 import useBodyOverflow from "../utils/use-body-overflow";
 import { LandingPageLayout } from "../layouts";
+import { TextField } from "../components/ui";
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -70,76 +71,25 @@ const LoginPage: React.FC = () => {
         Log in to PACT Network Services
       </h2>
       <Form.Root onSubmit={handleSubmit}>
-        <Form.Field name="email">
-          <Form.Label
-            style={{
-              display: "block",
-              marginBottom: "8px",
-              fontWeight: "500",
-            }}
-          >
-            Email Address<span style={{ color: "red" }}>*</span>
-          </Form.Label>
-          <Form.Control asChild>
-            <TextField.Root
-              type="email"
-              value={formData.email}
-              required
-              placeholder="Enter your email"
-              onChange={handleChange}
-              style={{
-                width: "100%",
-                border: "1px solid #ccc",
-                padding: "12px",
-                fontSize: "16px",
-              }}
-            />
-          </Form.Control>
-          <Form.Message
-            match="valueMissing"
-            style={{
-              color: "var(--base-color-brand--light-blue)",
-              fontSize: "0.85em",
-            }}
-          >
-                  Email is required.
-          </Form.Message>
-        </Form.Field>
-        <Form.Field name="password" style={{ marginTop: "16px" }}>
-          <Form.Label
-            style={{
-              display: "block",
-              marginBottom: "8px",
-              fontWeight: "500",
-            }}
-          >
-            Password<span style={{ color: "red" }}>*</span>
-          </Form.Label>
-          <Form.Control asChild>
-            <TextField.Root
-              type="password"
-              value={formData.password}
-              required
-              placeholder="Enter your password"
-              onChange={handleChange}
-              style={{
-                width: "100%",
-                border: "1px solid #ccc",
-                padding: "12px",
-                fontSize: "16px",
-              }}
-            />
-          </Form.Control>
-          <Form.Message
-            match="valueMissing"
-            style={{
-              color: "var(--base-color-brand--light-blue)",
-              fontSize: "0.85em",
-            }}
-          >
-            Password is required.
-          </Form.Message>
-        </Form.Field>
+        <TextField
+          name="email"
+          label="Email Address"
+          type="email"
+          required
+          value={formData.email}
+          placeholder="Enter your email"
+          onChange={handleChange}
+        />
+
+        <TextField
+          name="password"
+          label="Password"
+          type="password"
+          required
+          value={formData.password}
+          placeholder="Enter your password"
+          onChange={handleChange}
+        />
 
         <Box>
           <Form.Submit asChild>
