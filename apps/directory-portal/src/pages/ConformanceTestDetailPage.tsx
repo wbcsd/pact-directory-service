@@ -14,7 +14,6 @@ import ConformanceTestForm, {
   ConformanceTestFormData,
 } from "../components/ConformanceTestForm";
 import { FunctionalPageLayout } from "../layouts";
-import "./NewConformanceTestPage.css";
 import "./ConformanceTestDetailPage.css";
 
 export interface TestCase {
