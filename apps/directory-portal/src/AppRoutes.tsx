@@ -10,9 +10,8 @@ import MyProfilePage from "./pages/MyProfilePage";
 import SearchPage from "./pages/SearchPage";
 import OrganizationProfile from "./pages/OrganizationProfile";
 import ManageConnections from "./pages/ManageConnections";
-import ConformanceTesting from "./pages/ConformanceTesting";
-import ConformanceTestResult from "./pages/ConformanceTestResult";
-import ConformanceTestRuns from "./pages/ConformanceTestRuns";
+import ConformanceTestListPage from "./pages/ConformanceTestListPage";
+import ConformanceTestDetailPage from "./pages/ConformanceTestDetailPage";
 import { featureFlags } from "./utils/feature-flags";
 import OrganizationUsers from "./pages/OrganizationUsers";
 import PolicyGuard from "./components/PolicyGuard";
@@ -66,13 +65,9 @@ const AppRoutes: React.FC = () => {
             }
           />
         </>
-      )}
-      <Route path="/conformance-testing" element={<ConformanceTesting />} />
-      <Route
-        path="/conformance-test-result"
-        element={<ConformanceTestResult />}
-      />
-      <Route path="/conformance-test-runs" element={<ConformanceTestRuns />} />
+      )}§
+      <Route path="/conformance-test-runs" element={<ConformanceTestListPage />} />
+      <Route path="/conformance-test-runs/:id" element={<ConformanceTestDetailPage />} />
       <Route path="/activity-logs" element={<ActivityLogsPage />} />
       <Route path="/activity-logs/path" element={<ActivityLogDetailPage />} />
       <Route path="/" element={<Navigate to="/signup" />} />

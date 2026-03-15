@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Button, TextField } from "@radix-ui/themes";
+import React, { useState } from "react";
+import { Button } from "@radix-ui/themes";
 import * as Form from "@radix-ui/react-form";
+import { TextField, SelectField } from "./ui";
 
 export interface ConformanceTestFormData {
   apiUrl: string;
@@ -20,11 +21,19 @@ interface ConformanceTestFormProps {
   isSubmitting?: boolean;
 }
 
+const VERSION_OPTIONS = [
+  { value: "V2.0", label: "2.0 (beta)" },
+  { value: "V2.1", label: "2.1 (beta)" },
+  { value: "V2.2", label: "2.2 (beta)" },
+  { value: "V2.3", label: "2.3 (beta)" },
+  { value: "V3.0", label: "3.0 (beta)" },
+];
+
 const ConformanceTestForm: React.FC<ConformanceTestFormProps> = ({
   onSubmit,
   isSubmitting = false,
 }) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Record<string, string>>({
     solutionApiUrl: "",
     authBaseUrl: "",
     clientId: "",
@@ -58,162 +67,121 @@ const ConformanceTestForm: React.FC<ConformanceTestFormProps> = ({
     });
   };
 
-  useEffect(() => {
-    const isMobile = window.matchMedia(
-      "(max-width: 767px), (pointer: coarse)"
-    ).matches;
-
-    if (!isMobile) {
-      document
-        .querySelectorAll('[class*="rt-TextFieldInput"]')
-        .forEach((input) =>
-          input.addEventListener("focus", (e) => {
-            const scrollTargetElement = document.getElementById(
-              (e.target as HTMLInputElement).name
-            );
-            if (scrollTargetElement) {
-              scrollTargetElement.scrollIntoView({ behavior: "smooth" });
-            }
-          })
-        );
-    }
-  }, []);
-
   return (
-    <Form.Root onSubmit={handleSubmit} className="form-root">
-      <Form.Field name="solutionApiUrl" className="form-field">
-        <Form.Label className="form-label">
-          Solution API Base URL<span className="required">*</span>
-        </Form.Label>
-        <Form.Control asChild>
-          <TextField.Root
-            value={formData.solutionApiUrl}
-            name="solutionApiUrl"
-            required
-            placeholder="https://api.example.com"
-            onChange={handleChange}
-            className="input"
-          />
-        </Form.Control>
-      </Form.Field>
+    <div>
+      <Form.Root onSubmit={handleSubmit} className="form-root">
+        <TextField
+          name="solutionApiUrl"
+          label="Solution API Base URL"
+          required
+          value={formData.solutionApiUrl}
+          placeholder="https://api.example.com"
+          tooltip="
+            This is the base URL of your PACT Conformant API implementation. 
+            It will be used as the root endpoint for all API requests during the 
+            conformance testing process. Make sure your endpoint is accessible 
+            from the internet and has a valid SSL certificate."
+          onChange={handleChange}
+        />
 
-      <Form.Field name="authBaseUrl" className="form-field">
-        <Form.Label className="form-label">Auth Base URL</Form.Label>
-        <Form.Control asChild>
-          <TextField.Root
-            value={formData.authBaseUrl}
-            name="authBaseUrl"
-            placeholder="https://auth.example.com"
-            onChange={handleChange}
-            className="input"
-          />
-        </Form.Control>
-      </Form.Field>
+        <TextField
+          name="authBaseUrl"
+          label="Auth Base URL"
+          value={formData.authBaseUrl}
+          placeholder="https://auth.example.com"
+          tooltip="
+            If your implementation uses a separate authentication service, provide 
+            its base URL here. This field is optional if your authentication 
+            endpoints are part of the main API URL. The authentication service
+            should support the OAuth 2.0 protocol with client credentials flow 
+            as specified in the PACT Technical Specifications."
+          onChange={handleChange}
+        />
 
-      <Form.Field name="clientId" className="form-field">
-        <Form.Label className="form-label">
-          Client ID<span className="required">*</span>
-        </Form.Label>
-        <Form.Control asChild>
-          <TextField.Root
-            value={formData.clientId}
-            name="clientId"
-            required
-            placeholder="Client ID used for authentication by ACT"
-            onChange={handleChange}
-            className="input"
-          />
-        </Form.Control>
-      </Form.Field>
+        <TextField
+          name="clientId"
+          label="Client ID"
+          required
+          value={formData.clientId}
+          placeholder="Client ID used for authentication by ACT"
+          description="
+            Provide the Client ID that will be used to authenticate API requests 
+            during conformance testing. This ID should have sufficient permissions
+            to access all endpoints required by the PACT specification."
+          onChange={handleChange}
+        />
 
-      <Form.Field name="clientSecret" className="form-field">
-        <Form.Label className="form-label">
-          Client Secret<span className="required">*</span>
-        </Form.Label>
-        <Form.Control asChild>
-          <TextField.Root
-            value={formData.clientSecret}
-            name="clientSecret"
-            required
-            placeholder="Secret used for authentication by ACT"
-            onChange={handleChange}
-            className="input"
-          />
-        </Form.Control>
-      </Form.Field>
+        <TextField
+          name="clientSecret"
+          label="Client Secret"
+          required
+          value={formData.clientSecret}
+          placeholder="Secret used for authentication by ACT"
+          description="
+            Enter the Client Secret associated with your Client ID. 
+            This will be used along with the Client ID to obtain access tokens 
+            for authenticated API requests during testing."
+          onChange={handleChange}
+        />
 
-      <Form.Field name="scope" className="form-field">
-        <Form.Label className="form-label">Scope</Form.Label>
-        <Form.Control asChild>
-          <TextField.Root
-            value={formData.authOptionsScope}
-            name="authOptionsScope"
-            placeholder="Scope used for authentication"
-            onChange={handleChange}
-            className="input"
-          />
-        </Form.Control>
-      </Form.Field>
+        <TextField
+          name="authOptionsScope"
+          label="Scope"
+          value={formData.authOptionsScope}
+          placeholder="Scope used for authentication"
+          description="
+            Common OAuth options like Scope, Resource and Audience are also 
+            available for configuration. Make sure to set these according to 
+            your API's requirements."
+          onChange={handleChange}
+        />
 
-      <Form.Field name="audience" className="form-field">
-        <Form.Label className="form-label">Audience</Form.Label>
-        <Form.Control asChild>
-          <TextField.Root
-            value={formData.authOptionsAudience}
-            name="authOptionsAudience"
-            placeholder="Audience used for authentication"
-            onChange={handleChange}
-            className="input"
-          />
-        </Form.Control>
-      </Form.Field>
+        <TextField
+          name="authOptionsAudience"
+          label="Audience"
+          value={formData.authOptionsAudience}
+          placeholder="Audience used for authentication"
+          onChange={handleChange}
+        />
 
-      <Form.Field name="resource" className="form-field">
-        <Form.Label className="form-label">Resource</Form.Label>
-        <Form.Control asChild>
-          <TextField.Root
-            value={formData.authOptionsResource}
-            name="authOptionsResource"
-            placeholder="Resource used for authentication"
-            onChange={handleChange}
-            className="input"
-          />
-        </Form.Control>
-      </Form.Field>
+        <TextField
+          name="authOptionsResource"
+          label="Resource"
+          value={formData.authOptionsResource}
+          placeholder="Resource used for authentication"
+          onChange={handleChange}
+        />
 
-      <Form.Field name="techSpecsVersion" className="form-field">
-        <Form.Label className="form-label">
-          Tech Specs Version<span className="required">*</span>
-        </Form.Label>
-        <Form.Control asChild>
-          <select
-            name="techSpecsVersion"
-            onChange={handleChange}
-            required
-            className="select"
-            defaultValue={formData.techSpecsVersion}
-          >
-            <option value="V2.0">2.0 (beta)</option>
-            <option value="V2.1">2.1 (beta)</option>
-            <option value="V2.2">2.2 (beta)</option>
-            <option value="V2.3">2.3 (beta)</option>
-            <option value="V3.0">3.0 (beta)</option>
-          </select>
-        </Form.Control>
-      </Form.Field>
+        <SelectField
+          name="techSpecsVersion"
+          label="Tech Specs Version"
+          required
+          defaultValue={formData.techSpecsVersion}
+          options={VERSION_OPTIONS}
+          description={
+            <>
+              The PACT Technical Specifications describe the PCF data model and
+              API requirements that your implementation must conform to. Select
+              the version that your solution implements. A given version is in
+              beta if the testing suite has not yet been tested by a sufficient
+              number of organizations for that version; the tool can
+              nevertheless still be used to grant PACT Conformance status, but
+              organizations may be subject to mandatory retesting, as per our{" "}
+              <a href="https://docs.carbon-transparency.org/">documentation</a>.
+            </>
+          }
+          onChange={handleChange}
+        />
 
-      <div className="form-actions">
-        <Form.Submit asChild>
-          <Button
-            type="submit"
-            className="submit-button"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Running tests..." : "Run tests"}
-          </Button>
-        </Form.Submit>
-      </div>
-    </Form.Root>
+        <div className="form-actions">
+          <Form.Submit asChild>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Running..." : "Run tests"}
+            </Button>
+          </Form.Submit>
+        </div>
+      </Form.Root>
+    </div>
   );
 };
 

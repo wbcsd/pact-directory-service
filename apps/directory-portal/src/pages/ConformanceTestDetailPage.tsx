@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { Heading, Text, Button, Box, Badge, Callout } from "@radix-ui/themes";
 import {
   ExclamationTriangleIcon,
@@ -6,12 +6,16 @@ import {
   DoubleArrowRightIcon,
 } from "@radix-ui/react-icons";
 import DataTable, { Column } from "../components/DataTable";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { proxyWithAuth } from "../utils/auth-fetch";
 import CodeIcon from "../components/CodeIcon";
+import ConformanceTestForm, {
+  ConformanceTestFormData,
+} from "../components/ConformanceTestForm";
 import { FunctionalPageLayout } from "../layouts";
-import "./ConformanceTestResult.css";
+import "./NewConformanceTestPage.css";
+import "./ConformanceTestDetailPage.css";
 
 export interface TestCase {
   name: string;
@@ -144,40 +148,63 @@ const pollTestResults = (
   }, 2000);
 };
 
-const ConformanceTestResult: React.FC = () => {
-  const [searchParams] = useSearchParams();
+const ConformanceTestDetailPage: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const isNewTest = id === "new";
+  const testRunId = isNewTest ? undefined : id;
+
   const [selectedTest, setSelectedTest] = useState<TestCase | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!isNewTest);
   const [error, setError] = useState<string | null>(null);
   const [testCases, setTestCases] = useState<TestCase[]>([]);
   const [techSpecVersion, setTechSpecVersion] = useState("");
-  const [isNewTestRun, setIsNewTestRun] = useState(false);
   const [organizationName, setOrganizationName] = useState("");
   const [adminName, setAdminName] = useState("");
   const [adminEmail, setAdminEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
   const { profileData } = useAuth();
-  const testRunId = searchParams.get("testRunId");
 
-  // Extract test config from query params (present when coming from the form)
-  const getTestConfig = useCallback(() => {
-    const apiUrl = searchParams.get("apiUrl");
-    const clientId = searchParams.get("clientId");
-    const clientSecret = searchParams.get("clientSecret");
-    const version = searchParams.get("version");
-    if (!apiUrl || !clientId || !clientSecret || !version) return null;
-    return {
-      apiUrl,
-      authBaseUrl: searchParams.get("authBaseUrl") || "",
-      clientId,
-      clientSecret,
-      version,
-      scope: searchParams.get("scope") || "",
-      audience: searchParams.get("audience") || "",
-      resource: searchParams.get("resource") || "",
-    };
-  }, [searchParams]);
+  const handleSubmit = async (data: ConformanceTestFormData) => {
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const response = await proxyWithAuth(`/test`, {
+        method: "POST",
+        body: JSON.stringify({
+          clientId: data.clientId,
+          clientSecret: data.clientSecret,
+          apiUrl: data.apiUrl,
+          authBaseUrl: data.authBaseUrl,
+          version: data.version,
+          scope: data.authOptions.scope,
+          audience: data.authOptions.audience,
+          resource: data.authOptions.resource,
+        }),
+      });
+
+      if (!response || !response.ok) {
+        throw new Error("Failed to create test run");
+      }
+
+      const result = await response.json();
+      setIsSubmitting(false);
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+
+      navigate(`/conformance-test-runs/${result.testRunId}`);
+    } catch (err) {
+      console.error("Error creating test run:", err);
+      setError(
+        "An unexpected error occurred while running tests. Please try again."
+      );
+      setIsSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -201,6 +228,14 @@ const ConformanceTestResult: React.FC = () => {
         setAdminName(data.adminName);
         setAdminEmail(data.adminEmail);
         setIsLoading(false);
+
+        // Poll for updates if there are pending test cases
+        const hasPending = data.results.some(
+          (r: { status: string }) => r.status === "PENDING"
+        );
+        if (hasPending) {
+          pollTestResults(1, setTestCases, id, isCancelled);
+        }
       } catch (error) {
         console.error("Error fetching test results:", error);
         setError(
@@ -210,76 +245,16 @@ const ConformanceTestResult: React.FC = () => {
       }
     };
 
-    const runNewTest = async () => {
-      const config = getTestConfig();
-      if (!config) {
-        navigate("/conformance-testing");
-        return;
-      }
-
-      setIsNewTestRun(true);
-
-      try {
-        const response = await proxyWithAuth(`/test`, {
-          method: "POST",
-          body: JSON.stringify({
-            clientId: config.clientId,
-            clientSecret: config.clientSecret,
-            apiUrl: config.apiUrl,
-            authBaseUrl: config.authBaseUrl,
-            version: config.version,
-            scope: config.scope,
-            audience: config.audience,
-            resource: config.resource,
-          }),
-        });
-
-        if (!response || !response.ok) {
-          throw new Error("Failed to fetch test response");
-        }
-
-        const data = await response.json();
-        if (data.error) {
-          setError(data.error);
-          setIsLoading(false);
-          return;
-        }
-
-        setTestCases(data.results.map(mapTestCases));
-        setTechSpecVersion(data.techSpecVersion);
-        setOrganizationName(data.organizationName);
-        setAdminName(data.adminName);
-        setAdminEmail(data.adminEmail);
-        setIsLoading(false);
-
-        navigate(`/conformance-test-result?testRunId=${data.testRunId}`, {
-          replace: true,
-        });
-
-        pollTestResults(1, setTestCases, data.testRunId, isCancelled);
-      } catch (error) {
-        console.error("Error fetching test response:", error);
-        setError(
-          "An unexpected error occurred while running tests. Please try again."
-        );
-        setIsLoading(false);
-      }
-    };
-
     if (testRunId) {
       fetchTestResults(testRunId);
-    } else {
-      runNewTest();
+    } else if (!isNewTest) {
+      navigate("/conformance-test-runs");
     }
 
     return () => {
       cancelled = true;
     };
-  }, [
-    testRunId,
-    getTestConfig,
-    navigate,
-  ]);
+  }, [testRunId, isNewTest, navigate]);
 
   const selectTestAndScroll = (test: TestCase) => {
     setSelectedTest(test);
@@ -343,11 +318,40 @@ const ConformanceTestResult: React.FC = () => {
   const mandatoryStats = calculateMandatoryStats(testCases);
   const testRunStatus = mandatoryStats.total === 0 ? "N/A" : mandatoryStats.failure === 0 && mandatoryStats.pending === 0 ? "PASS" : mandatoryStats.failure > 0 ? "FAIL" : "PENDING";
 
+  if (isNewTest) {
+    return (
+      <FunctionalPageLayout 
+        wrapInMain={false}
+        loading={isSubmitting} 
+        loadingMessage="Running conformance tests against your API..."
+        >
+        <main className="main">
+          <div className="header">
+            <h2>Run conformance tests</h2>
+            <p>
+              Enter the required information to run the conformance tests
+              against your API implementation.
+            </p>
+          </div>
+          {error && (
+            <Callout.Root color="red" size="2">
+              <Callout.Icon>
+                <ExclamationTriangleIcon />
+              </Callout.Icon>
+              <Callout.Text>{error}</Callout.Text>
+            </Callout.Root>
+          )}
+          <ConformanceTestForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
+        </main>
+      </FunctionalPageLayout>
+    );
+  }
+
   return (
     <FunctionalPageLayout
       wrapInMain={false}
       loading={isLoading}
-      loadingMessage={isNewTestRun ? "Tests in progress ..." : "Loading test results ..."}
+      loadingMessage="Loading test results ..."
     >
       {error ? (
         <main className="main">
@@ -359,7 +363,7 @@ const ConformanceTestResult: React.FC = () => {
             <Callout.Text>{error}</Callout.Text>
           </Callout.Root>
           <Box mt="4">
-            <Button onClick={() => navigate("/conformance-testing")}>
+            <Button onClick={() => navigate("/conformance-test-runs/new")}>
               Back to Testing Form
             </Button>
           </Box>
@@ -394,8 +398,8 @@ const ConformanceTestResult: React.FC = () => {
               )}
               {(profileData?.role !== "administrator" ||
                 profileData?.email === adminEmail) && (
-                <Button onClick={() => navigate("/conformance-testing")}>
-                  Re-test Conformance
+                <Button onClick={() => navigate("/conformance-test-runs/new")}>
+                  Run new test
                 </Button>
               )}
             </div>
@@ -543,4 +547,4 @@ const ConformanceTestResult: React.FC = () => {
   );
 };
 
-export default ConformanceTestResult;
+export default ConformanceTestDetailPage;
