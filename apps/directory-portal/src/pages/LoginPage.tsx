@@ -1,7 +1,7 @@
 // src/pages/LoginPage.tsx
 import React, { useState } from "react";
 import * as Form from "@radix-ui/react-form";
-import { Box, Button, Callout } from "@radix-ui/themes";
+import { Box, Button, Callout, Text } from "@radix-ui/themes";
 import { useNavigate, Link } from "react-router-dom";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { useAuth } from "../contexts/AuthContext";
@@ -67,9 +67,9 @@ const LoginPage: React.FC = () => {
   return (
     <LandingPageLayout>
 
-      <h2 style={{ marginBottom: "30px" }}>
-        Log in to PACT Network Services
-      </h2>
+      <Box mb="6">
+        <h2>Log in to PACT Network Services</h2>
+      </Box>
       <Form.Root onSubmit={handleSubmit}>
         <TextField
           name="email"
@@ -93,36 +93,23 @@ const LoginPage: React.FC = () => {
 
         <Box>
           <Form.Submit asChild>
-            <Button
-              style={{ width: "100%", marginTop: "40px" }}
-              type="submit"
-            >
+            <Button type="submit">
               Login
             </Button>
           </Form.Submit>
 
-          <Box style={{ textAlign: "center", marginTop: "20px" }}>
-            <Link
-              to="/forgot-password"
-              style={{
-                color: "#0A0552",
-                textDecoration: "underline",
-                fontSize: "0.9em",
-              }}
-            >
+          <Box mt="6">
+            <Link to="/forgot-password">
               Forgot your password?
             </Link>
           </Box>
 
-          <p style={{ fontSize: "0.9em", marginTop: "20px" }}>
-            Need help? Contact us at:{" "}
-            <a
-              style={{ fontWeight: "bold" }}
-              href="mailto:pact-support@wbcsd.org"
-            >
+          <Box mt="6">
+            <Text>Need help? Contact us at </Text>
+            <a href="mailto:pact-support@wbcsd.org">
               pact-support@wbcsd.org
             </a>
-          </p>
+          </Box>
         </Box>
       </Form.Root>
       {errorMessage && (

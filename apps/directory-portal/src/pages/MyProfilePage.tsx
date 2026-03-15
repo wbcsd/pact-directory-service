@@ -16,7 +16,6 @@ import {
 } from "@radix-ui/react-icons";
 import { useAuth } from "../contexts/AuthContext";
 import { fetchWithAuth } from "../utils/auth-fetch";
-import "./MyProfilePage.css";
 import "../components/NodeForm.css"; // Import shared form styles
 import { FormPageLayout } from "../layouts";
 
