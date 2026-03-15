@@ -5,11 +5,17 @@ import { FormField } from "./FormField";
 import { TooltipIcon } from "./TooltipIcon";
 import styles from "./TextField.module.css";
 
+type InputType =
+  | "text" | "email" | "password" | "number" | "search"
+  | "tel" | "url" | "date" | "datetime-local" | "month"
+  | "time" | "week" | "hidden";
+
 interface TextFieldProps {
   name: string;
   label: string;
   required?: boolean;
   value: string;
+  type?: InputType;
   placeholder?: string;
   description?: React.ReactNode;
   tooltip?: string;
@@ -21,6 +27,7 @@ const TextField: React.FC<TextFieldProps> = ({
   label,
   required = false,
   value,
+  type,
   placeholder,
   description,
   tooltip,
@@ -31,6 +38,7 @@ const TextField: React.FC<TextFieldProps> = ({
       <RadixTextField.Root
         name={name}
         value={value}
+        type={type}
         required={required}
         placeholder={placeholder}
         onChange={onChange}
