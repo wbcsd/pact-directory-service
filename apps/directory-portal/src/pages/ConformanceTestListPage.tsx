@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@radix-ui/themes";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { proxyWithAuth } from "../utils/auth-fetch";
 import StatusBadge from "../components/StatusBadge";
@@ -66,11 +66,7 @@ const ConformanceTestListPage: React.FC = () => {
       header: "Test Run ID",
       sortable: true,
       sortValue: (run) => run.testRunId,
-      render: (run) => (
-        <NavLink to={`/conformance-test-runs/${run.testRunId}`}>
-          {run.testRunId.substring(0, 8)}
-        </NavLink>
-      ),
+      render: (run) => run.testRunId.substring(0, 8),
     },
     ...(profileData?.role === "administrator" || profileData?.role === "root"
       ? [
