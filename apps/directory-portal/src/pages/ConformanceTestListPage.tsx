@@ -1,12 +1,13 @@
 import React from "react";
 import { Button } from "@radix-ui/themes";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { proxyWithAuth } from "../utils/auth-fetch";
+import ActionButton from "../components/ActionButton";
 import StatusBadge from "../components/StatusBadge";
 import PaginatedDataTable, { PaginationInfo } from "../components/PaginatedDataTable";
 import { Column } from "../components/DataTable";
-import "./ConformanceTestRuns.css";
+import "./ConformanceTestListPage.css";
 import GridPageLayout from "../layouts/GridPageLayout";
 
 interface TestRun {
@@ -29,7 +30,7 @@ const formatDate = (timestamp: string): string => {
   return `${month} ${day}, ${year} ${hours}:${minutes}`;
 };
 
-const ConformanceTestRuns: React.FC = () => {
+const ConformanceTestListPage: React.FC = () => {
   const navigate = useNavigate();
   const { profileData } = useAuth();
 
@@ -66,11 +67,7 @@ const ConformanceTestRuns: React.FC = () => {
       header: "Test Run ID",
       sortable: true,
       sortValue: (run) => run.testRunId,
-      render: (run) => (
-        <NavLink to={`/conformance-test-result?testRunId=${run.testRunId}`}>
-          {run.testRunId.substring(0, 8)}
-        </NavLink>
-      ),
+      render: (run) => run.testRunId.substring(0, 8),
     },
     ...(profileData?.role === "administrator" || profileData?.role === "root"
       ? [
@@ -122,9 +119,9 @@ const ConformanceTestRuns: React.FC = () => {
       title="Conformance Tests"
       subtitle="Showing runs from all conformance tests"
       actions={
-        <Button onClick={() => navigate("/conformance-testing")}>
+        <ActionButton onClick={() => navigate("/conformance-test-runs/new")}>
           Run Tests
-        </Button>
+        </ActionButton>
       }
       >
         <PaginatedDataTable<TestRun>
@@ -132,14 +129,14 @@ const ConformanceTestRuns: React.FC = () => {
           searchPlaceholder="Search by organization name, email address or user name"
           fetchData={fetchTestRuns}
           columns={columns}
-          onRowClick={(row) => navigate(`/conformance-test-result?testRunId=${row.testRunId}`)}
+          onRowClick={(row) => navigate(`/conformance-test-runs/${row.testRunId}`)}
           idColumnName="testRunId"          
           emptyState={{
             title: "You currently have no tests",
             description:
               "Start automated testing to ensure a PACT conformant solution",
             action: (
-              <Button onClick={() => navigate("/conformance-testing")}>
+              <Button onClick={() => navigate("/conformance-test-runs/new")}>
                 Run Tests
               </Button>
             ),
@@ -149,4 +146,4 @@ const ConformanceTestRuns: React.FC = () => {
   );
 };
 
-export default ConformanceTestRuns;
+export default ConformanceTestListPage;

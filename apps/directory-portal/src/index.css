@@ -157,7 +157,7 @@ div:has(> .rt-TextFieldRoot) {
 }
 
 .rt-TextFieldRoot {
-  min-height: 64px;
+  min-height: 36px;
 }
 
 input.rt-TextFieldInput {
@@ -290,11 +290,19 @@ h2 {
   flex: 1;
   padding: 2rem 3rem;
   background: #fcfdff;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: width 0.3s ease;
+}
+
+.main.full-width {
+  width: 100%;
+}
+
+.main.split {
+  width: 70%;
 }
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 2rem;
 }
 .header h2 {
@@ -392,11 +400,6 @@ tbody tr {
     width: 100%;
     border-right: none;
     border-bottom: 1px solid #ececf0;
-  }
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
   }
   th,
   td {

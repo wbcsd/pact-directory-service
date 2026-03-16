@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { MemoryRouter } from "react-router-dom";
-import ConformanceTestRuns from "./ConformanceTestRuns";
+import ConformanceTestListPage from "./ConformanceTestListPage";
 import * as AuthContext from "../contexts/AuthContext";
 import * as authFetch from "../utils/auth-fetch";
 
@@ -89,7 +89,7 @@ const mockProfileData = {
   policies: [],
 };
 
-describe("ConformanceTestRuns", () => {
+describe("ConformanceTestListPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     lastTableProps = null;
@@ -105,7 +105,7 @@ describe("ConformanceTestRuns", () => {
   const renderWithRouter = (initialEntries: string[] = ["/"]) => {
     return render(
       <MemoryRouter initialEntries={initialEntries}>
-        <ConformanceTestRuns />
+        <ConformanceTestListPage />
       </MemoryRouter>
     );
   };
@@ -123,7 +123,7 @@ describe("ConformanceTestRuns", () => {
   it("navigates to conformance testing when Run Tests clicked", () => {
     renderWithRouter();
     fireEvent.click(screen.getByText("Run Tests"));
-    expect(mockNavigate).toHaveBeenCalledWith("/conformance-testing");
+    expect(mockNavigate).toHaveBeenCalledWith("/conformance-test-runs/new");
   });
 
   it("passes expected props to PaginatedDataTable", () => {

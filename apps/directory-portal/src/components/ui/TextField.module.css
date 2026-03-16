@@ -1,0 +1,25 @@
+.input {
+  width: 100%;
+  border: 1px solid #d1d5db !important;
+  border-radius: 6px !important;
+  transition: border-color 0.15s ease-in-out;
+}
+
+.input :global(input.rt-TextFieldInput) {
+  padding: 0 15px !important;
+  font-family: 'Axiforma', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: 14px !important;
+}
+
+.input :global(.rt-TextFieldSlot) {
+  margin-right: 15px !important;
+}
+
+.input:hover {
+  border-color: #9ca3af !important;
+}
+
+.input:focus-within {
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+}

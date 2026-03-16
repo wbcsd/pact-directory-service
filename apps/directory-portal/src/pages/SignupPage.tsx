@@ -4,20 +4,18 @@ import * as Form from "@radix-ui/react-form";
 import {
   Box,
   Button,
-  TextField,
   Text,
   Callout,
   Spinner,
 } from "@radix-ui/themes";
-import * as Tooltip from "@radix-ui/react-tooltip";
 import { Link } from "react-router-dom";
 import {
   ExclamationTriangleIcon,
-  InfoCircledIcon,
   CheckIcon,
 } from "@radix-ui/react-icons";
 import useBodyOverflow from "../utils/use-body-overflow";
 import { LandingPageLayout } from "../layouts";
+import { TextField } from "../components/ui";
 
 const SignupPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -130,10 +128,10 @@ const SignupPage: React.FC = () => {
 
       {status === "success" ? (
         <>
-          <h2 style={{ marginBottom: "30px" }}>
-            Check Your Email
-          </h2>
-          <Callout.Root color="green" variant="surface" style={{ marginBottom: "30px" }}>
+          <Box mb="6">
+            <h2>Check Your Email</h2>
+          </Box>
+          <Callout.Root color="green" variant="surface" mb="6">
             <Callout.Icon>
               <CheckIcon />
             </Callout.Icon>
@@ -141,406 +139,129 @@ const SignupPage: React.FC = () => {
               {successMessage}
             </Callout.Text>
           </Callout.Root>
-          <p style={{ marginBottom: "20px", color: "#666" }}>
+          <Text as="p" size="2" color="gray" mb="4">
             We've sent you a verification link. Please click the link in your email to activate your account and complete the registration process.
-          </p>
+          </Text>
           <Box style={{ textAlign: "center" }}>
-            <Link
-              to="/login"
-              style={{
-                color: "#0A0552",
-                textDecoration: "underline",
-                fontSize: "0.9em",
-              }}
-            >
+            <Link to="/login">
               Back to Login
             </Link>
           </Box>
         </>
       ) : (
         <>
-          <h2 style={{ marginBottom: "30px" }}>
-            Sign up to PACT Network Services
-          </h2>
+          <Box mb="6">
+            <h2>Sign up to PACT Network Services</h2>
+          </Box>
           <Form.Root onSubmit={handleSubmit}>
-              <Form.Field name="organizationName">
-                <Form.Label
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    fontWeight: "500",
-                  }}
-                >
-                  Organization Name<span style={{ color: "red" }}>*</span>
-                </Form.Label>
-                <Form.Control asChild>
-                  <TextField.Root
-                    value={formData.organizationName}
-                    required
-                    placeholder="Enter organization name"
-                    onBlur={handleOrganizationNameBlur}
-                    onChange={handleChange}
-                    style={{
-                      width: "100%",
-                      border: "1px solid #ccc",
-                      borderColor: organizationNameExists ? "var(--base-color-brand--light-blue)" : "#ccc",
-                      padding: "12px",
-                      fontSize: "16px",
-                    }}
-                  >
-                    <TextField.Slot side="right">
-                      <Tooltip.Provider delayDuration={0}>
-                        <Tooltip.Root>
-                          <Tooltip.Trigger asChild>
-                            <InfoCircledIcon
-                              width={20}
-                              height={20}
-                              color="#0A0552"
-                              style={{ cursor: "pointer" }}
-                            />
-                          </Tooltip.Trigger>
-                          <Tooltip.Content
-                            className="TooltipContent"
-                            side="right"
-                            align="center"
-                            sideOffset={5}
-                          >
-                            The full registered/legal name of your organization.
-                          </Tooltip.Content>
-                        </Tooltip.Root>
-                      </Tooltip.Provider>
-                    </TextField.Slot>
-                  </TextField.Root>
-                </Form.Control>
-                {organizationNameExists && <Form.Message 
-                  style={{
-                    color: "var(--base-color-brand--light-blue)",
-                    fontSize: "0.85em",
-                    display: "inline-block",
-                    paddingTop: "5px",
-                    paddingLeft: "2px",
-                  }}>
-                  <p>An organization with this name already exists.
-                  Please choose a different name or contact its administrator to join.</p>
-                </Form.Message>}
-                <Form.Message
-                  match="valueMissing"
-                  style={{
-                    color: "var(--base-color-brand--light-blue)",
-                    fontSize: "0.85em",
-                  }}
-                >
-                  Organization name is required.
-                </Form.Message>
-              </Form.Field>
+              <TextField
+                name="organizationName"
+                label="Organization Name"
+                required
+                value={formData.organizationName}
+                placeholder="Enter organization name"
+                tooltip="The full registered/legal name of your organization."
+                onBlur={handleOrganizationNameBlur}
+                onChange={handleChange}
+                customErrors={
+                  organizationNameExists && (
+                    <Form.Message>
+                      An organization with this name already exists.
+                      Please choose a different name or contact its administrator to join.
+                    </Form.Message>
+                  )
+                }
+              />
 
-              <Form.Field name="fullName">
-                <Form.Label
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    fontWeight: "500",
-                  }}
-                >
-                  Account Admin Full Name<span style={{ color: "red" }}>*</span>
-                </Form.Label>
-                <Form.Control asChild>
-                  <TextField.Root
-                    value={formData.fullName}
-                    required
-                    placeholder="Enter your full name"
-                    onChange={handleChange}
-                    style={{
-                      width: "100%",
-                      border: "1px solid #ccc",
-                      padding: "12px",
-                      fontSize: "16px",
-                    }}
-                  >
-                    <TextField.Slot side="right">
-                      <Tooltip.Provider delayDuration={0}>
-                        <Tooltip.Root>
-                          <Tooltip.Trigger asChild>
-                            <InfoCircledIcon
-                              width={20}
-                              height={20}
-                              color="#0A0552"
-                              style={{ cursor: "pointer" }}
-                            />
-                          </Tooltip.Trigger>
-                          <Tooltip.Content
-                            className="TooltipContent"
-                            side="right"
-                            align="center"
-                            sideOffset={5}
-                          >
-                            Name of the person / mailbox to serve as account
-                            admin and point of contact for your account.
-                          </Tooltip.Content>
-                        </Tooltip.Root>
-                      </Tooltip.Provider>
-                    </TextField.Slot>
-                  </TextField.Root>
-                </Form.Control>
-                <Form.Message
-                  match="valueMissing"
-                  style={{
-                    color: "var(--base-color-brand--light-blue)",
-                    fontSize: "0.85em",
-                  }}
-                >
-                  Your name is required.
-                </Form.Message>
-              </Form.Field>
+              <TextField
+                name="fullName"
+                label="Account Admin Full Name"
+                required
+                value={formData.fullName}
+                placeholder="Enter your full name"
+                tooltip="Name of the person / mailbox to serve as account admin and point of contact for your account."
+                onChange={handleChange}
+              />
 
-              <Form.Field name="email">
-                <Form.Label
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    fontWeight: "500",
-                  }}
-                >
-                  Account Admin Email<span style={{ color: "red" }}>*</span>
-                </Form.Label>
-                <Form.Control asChild>
-                  <TextField.Root
-                    value={formData.email}
-                    required
-                    type="email"
-                    placeholder="Enter your email address"
-                    onChange={handleChange}
-                    style={{
-                      width: "100%",
-                      border: "1px solid #ccc",
-                      padding: "12px",
-                      fontSize: "16px",
-                    }}
-                  >
-                    <TextField.Slot side="right">
-                      <Tooltip.Provider delayDuration={0}>
-                        <Tooltip.Root>
-                          <Tooltip.Trigger asChild>
-                            <InfoCircledIcon
-                              width={20}
-                              height={20}
-                              color="#0A0552"
-                              style={{ cursor: "pointer" }}
-                            />
-                          </Tooltip.Trigger>
-                          <Tooltip.Content
-                            className="TooltipContent"
-                            side="right"
-                            align="center"
-                            sideOffset={5}
-                          >
-                            Email address of account admin, to be used to log in
-                            and receive notifications.
-                          </Tooltip.Content>
-                        </Tooltip.Root>
-                      </Tooltip.Provider>
-                    </TextField.Slot>
-                  </TextField.Root>
-                </Form.Control>
-                <Form.Message
-                  match="valueMissing"
-                  style={{
-                    color: "var(--base-color-brand--light-blue)",
-                    fontSize: "0.85em",
-                  }}
-                >
-                  Email is required.
-                </Form.Message>
-                <Form.Message
-                  match="typeMismatch"
-                  style={{
-                    color: "var(--base-color-brand--light-blue)",
-                    fontSize: "0.85em",
-                  }}
-                >
-                  Invalid email.
-                </Form.Message>
-              </Form.Field>
+              <TextField
+                name="email"
+                label="Account Admin Email"
+                type="email"
+                required
+                value={formData.email}
+                placeholder="Enter your email address"
+                tooltip="Email address of account admin, to be used to log in and receive notifications."
+                onChange={handleChange}
+                customErrors={
+                  <Form.Message match="typeMismatch">
+                    Invalid email.
+                  </Form.Message>
+                }
+              />
 
-              <Form.Field name="password">
-                <Form.Label
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    fontWeight: "500",
-                  }}
-                >
-                  Password<span style={{ color: "red" }}>*</span>
-                </Form.Label>
-                <Form.Control asChild>
-                  <TextField.Root
-                    type="password"
-                    value={formData.password}
-                    required
-                    placeholder="Enter password"
-                    onChange={handleChange}
-                    minLength={6}
-                    style={{
-                      width: "100%",
-                      border: "1px solid #ccc",
-                      padding: "12px",
-                      fontSize: "16px",
-                    }}
-                  >
-                    <TextField.Slot side="right">
-                      <Tooltip.Provider delayDuration={0}>
-                        <Tooltip.Root>
-                          <Tooltip.Trigger asChild>
-                            <InfoCircledIcon
-                              width={20}
-                              height={20}
-                              color="#0A0552"
-                              style={{ cursor: "pointer" }}
-                            />
-                          </Tooltip.Trigger>
-                          <Tooltip.Content
-                            className="TooltipContent"
-                            side="right"
-                            align="center"
-                            sideOffset={5}
-                          >
-                            Your password must be at least 6 characters long.
-                          </Tooltip.Content>
-                        </Tooltip.Root>
-                      </Tooltip.Provider>
-                    </TextField.Slot>
-                  </TextField.Root>
-                </Form.Control>
-                <Form.Message
-                  match="valueMissing"
-                  style={{
-                    color: "var(--base-color-brand--light-blue)",
-                    fontSize: "0.85em",
-                  }}
-                >
-                  Password is required.
-                </Form.Message>
-                <Form.Message
-                  match="tooShort"
-                  style={{
-                    color: "var(--base-color-brand--light-blue)",
-                    fontSize: "0.85em",
-                  }}
-                >
-                  Password needs to be at least 6 characters long.
-                </Form.Message>
-              </Form.Field>
+              <TextField
+                name="password"
+                label="Password"
+                type="password"
+                required
+                value={formData.password}
+                placeholder="Enter password"
+                tooltip="Your password must be at least 6 characters long."
+                minLength={6}
+                onChange={handleChange}
+                customErrors={
+                  <Form.Message match="tooShort">
+                    Password needs to be at least 6 characters long.
+                  </Form.Message>
+                }
+              />
 
-              <Form.Field name="confirmPassword">
-                <Form.Label
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    fontWeight: "500",
-                  }}
-                >
-                  Confirm Password<span style={{ color: "red" }}>*</span>
-                </Form.Label>
-                <Form.Control asChild>
-                  <TextField.Root
-                    type="password"
-                    value={formData.confirmPassword}
-                    required
-                    placeholder="Confirm your password"
-                    onChange={handleChange}
-                    style={{
-                      width: "100%",
-                      border: "1px solid #ccc",
-                      padding: "12px",
-                      fontSize: "16px",
-                    }}
-                  >
-                    <TextField.Slot side="right">
-                      <Tooltip.Provider delayDuration={0}>
-                        <Tooltip.Root>
-                          <Tooltip.Trigger asChild>
-                            <InfoCircledIcon
-                              width={20}
-                              height={20}
-                              color="#0A0552"
-                              style={{ cursor: "pointer" }}
-                            />
-                          </Tooltip.Trigger>
-                          <Tooltip.Content
-                            className="TooltipContent"
-                            side="right"
-                            align="center"
-                            sideOffset={5}
-                          >
-                            Please confirm your password.
-                          </Tooltip.Content>
-                        </Tooltip.Root>
-                      </Tooltip.Provider>
-                    </TextField.Slot>
-                  </TextField.Root>
-                </Form.Control>
-                <Form.Message
-                  match="valueMissing"
-                  style={{
-                    color: "var(--base-color-brand--light-blue)",
-                    fontSize: "0.85em",
-                  }}
-                >
-                  Please confirm your password.
-                </Form.Message>
-                <Form.Message
-                  match={(value) => value !== formData.password}
-                  style={{
-                    color: "var(--base-color-brand--light-blue)",
-                    fontSize: "0.85em",
-                  }}
-                >
-                  Passwords do not match.
-                </Form.Message>
-              </Form.Field>
+              <TextField
+                name="confirmPassword"
+                label="Confirm Password"
+                type="password"
+                required
+                value={formData.confirmPassword}
+                placeholder="Confirm your password"
+                tooltip="Please confirm your password."
+                onChange={handleChange}
+                customErrors={
+                  <Form.Message match={(value) => value !== formData.password}>
+
+                    Passwords do not match.
+                  </Form.Message>
+                }
+              />
+
               <Box>
-                <Text
-                  style={{
-                    color: "var(--base-color-brand--light-blue)",
-                    fontSize: "0.90em",
-                  }}
-                >
+                <Text size="2" color="gray">
                   By signing up you agree to our{" "}
-                  <a
-                    style={{ fontWeight: "bold" }}
-                    href="https://www.carbon-transparency.org/pact-network-services-terms-of-use"
-                  >
-                    Terms of Use
+                  <a href="https://www.carbon-transparency.org/pact-network-services-terms-of-use">
+                    <strong>Terms of Use</strong>
                   </a>{" "}
                   and{" "}
-                  <a
-                    style={{ fontWeight: "bold" }}
-                    href="https://www.wbcsd.org/privacy-policy/"
-                  >
-                    Privacy Policy
+                  <a href="https://www.wbcsd.org/privacy-policy/">
+                    <strong>Privacy Policy</strong>
                   </a>
                 </Text>
               </Box>
-              <Box>
+
+              <Box mt="6">
                 <Form.Submit asChild>
-                  <Button
-                    disabled={creatingAccount || organizationNameExists}
-                    style={{ width: "100%", marginTop: "40px" }}
-                  >
+                  <Button disabled={creatingAccount || organizationNameExists}>
                     {creatingAccount && <Spinner loading />}
                     {creatingAccount ? "Creating Account" : "Join"}
                   </Button>
                 </Form.Submit>
+              </Box>
 
-                <p style={{ fontSize: "0.9em", marginTop: "20px" }}>
+              <Box mt="4">
+                <Text size="2">
                   Need help? Contact us at:{" "}
-                  <a
-                    style={{ fontWeight: "bold" }}
-                    href="mailto:pact-support@wbcsd.org"
-                  >
-                    pact-support@wbcsd.org
+                  <a href="mailto:pact-support@wbcsd.org">
+                    <strong>pact-support@wbcsd.org</strong>
                   </a>
-                </p>
+                </Text>
               </Box>
             </Form.Root>
                 {status === "error" && (

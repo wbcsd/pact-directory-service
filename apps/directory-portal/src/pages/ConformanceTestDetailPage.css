@@ -1,3 +1,20 @@
+.header p {
+  color: #888;
+}
+
+.form-root {
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
 .sidebar {
 }
 
