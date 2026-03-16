@@ -19,6 +19,9 @@ interface TextFieldProps {
   placeholder?: string;
   description?: React.ReactNode;
   tooltip?: string;
+  minLength?: number;
+  customErrors?: React.ReactNode;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -31,9 +34,12 @@ const TextField: React.FC<TextFieldProps> = ({
   placeholder,
   description,
   tooltip,
+  minLength,
+  customErrors,
+  onBlur,
   onChange,
 }) => (
-  <FormField name={name} label={label} required={required} description={description}>
+  <FormField name={name} label={label} required={required} description={description} customErrors={customErrors}>
     <Form.Control asChild>
       <RadixTextField.Root
         name={name}
@@ -41,6 +47,8 @@ const TextField: React.FC<TextFieldProps> = ({
         type={type}
         required={required}
         placeholder={placeholder}
+        minLength={minLength}
+        onBlur={onBlur}
         onChange={onChange}
         className={styles.input}
       >

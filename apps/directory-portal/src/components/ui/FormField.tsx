@@ -8,6 +8,7 @@ interface FormFieldProps {
   label: string;
   required?: boolean;
   description?: React.ReactNode;
+  customErrors?: React.ReactNode;
   children: React.ReactNode;
 }
 
@@ -16,6 +17,7 @@ const FormField: React.FC<FormFieldProps> = ({
   label,
   required = false,
   description,
+  customErrors,
   children,
 }) => (
   <Form.Field name={name} className={styles.field}>
@@ -32,6 +34,7 @@ const FormField: React.FC<FormFieldProps> = ({
     <Form.Message match="valueMissing" className={styles.error}>
       {label} is required
     </Form.Message>
+    {customErrors}
   </Form.Field>
 );
 
