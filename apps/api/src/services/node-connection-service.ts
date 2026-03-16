@@ -21,7 +21,9 @@ registerPolicy([Role.Root], 'manage-connections-all-nodes');
 export interface NodeConnectionData {
   id: number;
   fromNodeId: number;
+  fromNodeName?: string;
   targetNodeId: number;
+  targetNodeName?: string;
   clientId: string;
   clientSecret: string; // Encrypted
   status: 'pending' | 'accepted' | 'rejected';
@@ -219,15 +221,31 @@ export class NodeConnectionService {
 
     let qb = this.db
       .selectFrom('connections')
-      .selectAll()
+      .leftJoin('nodes as fromNode', 'fromNode.id', 'connections.fromNodeId')
+      .leftJoin('nodes as targetNode', 'targetNode.id', 'connections.targetNodeId')
+      .select([
+        'connections.id',
+        'connections.fromNodeId',
+        'fromNode.name as fromNodeName',
+        'connections.targetNodeId',
+        'targetNode.name as targetNodeName',
+        'connections.clientId',
+        'connections.clientSecret',
+        'connections.status',
+        'connections.createdAt',
+        'connections.updatedAt',
+        'connections.expiresAt',
+      ])
       .where('targetNodeId', '=', nodeId)
-      .where('status', '=', 'pending');
+      .where('connections.status', '=', 'pending');
 
     // Get total count
     const total = (
-      await qb
-        .clearSelect()
+      await this.db
+        .selectFrom('connections')
         .select((eb) => eb.fn.count('id').as('total'))
+        .where('targetNodeId', '=', nodeId)
+        .where('status', '=', 'pending')
         .executeTakeFirstOrThrow()
     ).total as number;
 
@@ -390,17 +408,35 @@ export class NodeConnectionService {
 
     let qb = this.db
       .selectFrom('connections')
-      .selectAll()
+      .leftJoin('nodes as fromNode', 'fromNode.id', 'connections.fromNodeId')
+      .leftJoin('nodes as targetNode', 'targetNode.id', 'connections.targetNodeId')
+      .select([
+        'connections.id',
+        'connections.fromNodeId',
+        'fromNode.name as fromNodeName',
+        'connections.targetNodeId',
+        'targetNode.name as targetNodeName',
+        'connections.clientId',
+        'connections.clientSecret',
+        'connections.status',
+        'connections.createdAt',
+        'connections.updatedAt',
+        'connections.expiresAt',
+      ])
       .where((eb) =>
-        eb.or([eb('fromNodeId', '=', nodeId), eb('targetNodeId', '=', nodeId)])
+        eb.or([eb('connections.fromNodeId', '=', nodeId), eb('connections.targetNodeId', '=', nodeId)])
       )
-      .where('status', '=', 'accepted');
+      .where('connections.status', '=', 'accepted');
 
     // Get total count
     const total = (
-      await qb
-        .clearSelect()
+      await this.db
+        .selectFrom('connections')
         .select((eb) => eb.fn.count('id').as('total'))
+        .where((eb) =>
+          eb.or([eb('fromNodeId', '=', nodeId), eb('targetNodeId', '=', nodeId)])
+        )
+        .where('status', '=', 'accepted')
         .executeTakeFirstOrThrow()
     ).total as number;
 

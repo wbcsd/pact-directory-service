@@ -9,7 +9,9 @@ import "./NodeForm.css";
 export interface NodeConnection {
   id: number;
   fromNodeId: number;
+  fromNodeName?: string;
   targetNodeId: number;
+  targetNodeName?: string;
   clientId: string;
   clientSecret: string;
   status: 'pending' | 'accepted' | 'rejected';
@@ -21,7 +23,9 @@ export interface NodeConnection {
 export interface NodeInvitation {
   id: number;
   fromNodeId: number;
+  fromNodeName?: string;
   targetNodeId: number;
+  targetNodeName?: string;
   clientId: string;
   clientSecret: string;
   status: 'pending' | 'accepted' | 'rejected';
@@ -220,12 +224,13 @@ const NodeConnectionsManager: React.FC<NodeConnectionsManagerProps> = ({ nodeId 
       key: "fromNodeId",
       header: "From Node",
       sortable: true,
-      sortValue: (row: NodeConnection) => row.fromNodeId,
+      sortValue: (row: NodeConnection) => row.fromNodeName ?? row.fromNodeId,
       render: (row: NodeConnection) => {
         const isOutgoing = row.fromNodeId === Number(nodeId);
+        const label = row.fromNodeName ?? `Node #${row.fromNodeId}`;
         return (
           <span style={{ fontWeight: isOutgoing ? '600' : 'normal' }}>
-            Node #{row.fromNodeId} {isOutgoing && '(This Node)'}
+            {label} {isOutgoing && '(This Node)'}
           </span>
         );
       },
@@ -234,12 +239,13 @@ const NodeConnectionsManager: React.FC<NodeConnectionsManagerProps> = ({ nodeId 
       key: "targetNodeId",
       header: "Target Node",
       sortable: true,
-      sortValue: (row: NodeConnection) => row.targetNodeId,
+      sortValue: (row: NodeConnection) => row.targetNodeName ?? row.targetNodeId,
       render: (row: NodeConnection) => {
         const isIncoming = row.targetNodeId === Number(nodeId);
+        const label = row.targetNodeName ?? `Node #${row.targetNodeId}`;
         return (
           <span style={{ fontWeight: isIncoming ? '600' : 'normal' }}>
-            Node #{row.targetNodeId} {isIncoming && '(This Node)'}
+            {label} {isIncoming && '(This Node)'}
           </span>
         );
       },
@@ -298,17 +304,17 @@ const NodeConnectionsManager: React.FC<NodeConnectionsManagerProps> = ({ nodeId 
       key: "fromNodeId",
       header: "From Node",
       sortable: true,
-      sortValue: (row: NodeInvitation) => row.fromNodeId,
-      render: (row: NodeInvitation) => `Node #${row.fromNodeId}`,
+      sortValue: (row: NodeInvitation) => row.fromNodeName ?? row.fromNodeId,
+      render: (row: NodeInvitation) => row.fromNodeName ?? `Node #${row.fromNodeId}`,
     },
     {
       key: "targetNodeId",
       header: "Target Node",
       sortable: true,
-      sortValue: (row: NodeInvitation) => row.targetNodeId,
+      sortValue: (row: NodeInvitation) => row.targetNodeName ?? row.targetNodeId,
       render: (row: NodeInvitation) => (
         <span style={{ fontWeight: '600' }}>
-          Node #{row.targetNodeId} (This Node)
+          {row.targetNodeName ?? `Node #${row.targetNodeId}`} (This Node)
         </span>
       ),
     },
