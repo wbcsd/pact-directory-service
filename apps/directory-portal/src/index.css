@@ -290,6 +290,17 @@ h2 {
   flex: 1;
   padding: 2rem 3rem;
   background: #fcfdff;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: width 0.3s ease;
+}
+
+.main.full-width {
+  width: 100%;
+}
+
+.main.split {
+  width: 70%;
 }
 .header {
   margin-bottom: 2rem;
