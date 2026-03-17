@@ -4,20 +4,19 @@ import * as Select from "@radix-ui/react-select";
 import {
   Box,
   Button,
-  TextField,
+  TextField as RadixTextField,
   Text,
   Callout,
   Spinner,
 } from "@radix-ui/themes";
-import * as Tooltip from "@radix-ui/react-tooltip";
 import {
   ExclamationTriangleIcon,
-  InfoCircledIcon,
   CheckIcon,
   ChevronDownIcon,
 } from "@radix-ui/react-icons";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import { useAuth } from "../contexts/AuthContext";
+import { TextField } from "../components/ui";
 import "./NodeForm.css"; // Reuse the same CSS
 
 export interface UserFormData {
@@ -155,95 +154,32 @@ const UserForm: React.FC<UserFormProps> = ({
     <Box className="node-form">
       <Form.Root autoComplete="off" onSubmit={handleSubmit}>
         {/* Email Field */}
-        <Form.Field name="email">
-          <Form.Label className="field-label">
-            Email Address<span className="required-asterisk">*</span>
-          </Form.Label>
-          <Form.Control asChild>
-            <TextField.Root
-              autoComplete="off"
-              value={formData.email}
-              required
-              type="email"
-              placeholder="Enter email address"
-              onChange={handleChange}
-              className="editable-field"
-              disabled={isEditMode}
-            >
-              <TextField.Slot side="right">
-                <Tooltip.Provider delayDuration={0}>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <InfoCircledIcon
-                        width={20}
-                        height={20}
-                        color="#0A0552"
-                        className="info-icon"
-                      />
-                    </Tooltip.Trigger>
-                    <Tooltip.Content
-                      className="TooltipContent"
-                      side="right"
-                      align="center"
-                      sideOffset={5}
-                    >
-                      The email address for the user
-                    </Tooltip.Content>
-                  </Tooltip.Root>
-                </Tooltip.Provider>
-              </TextField.Slot>
-            </TextField.Root>
-          </Form.Control>
-          <Form.Message match="valueMissing" className="validation-message">
-            Email address is required.
-          </Form.Message>
-          <Form.Message match="typeMismatch" className="validation-message">
-            Please enter a valid email address.
-          </Form.Message>
-        </Form.Field>
+        <TextField
+          name="email"
+          label="Email Address"
+          required
+          type="email"
+          value={formData.email}
+          placeholder="Enter email address"
+          tooltip="The email address for the user"
+          onChange={handleChange}
+          customErrors={
+            <Form.Message match="typeMismatch" className="validation-message">
+              Please enter a valid email address.
+            </Form.Message>
+          }
+        />
 
         {/* Full Name Field */}
-        <Form.Field name="fullName">
-          <Form.Label className="field-label">
-            Full Name<span className="required-asterisk">*</span>
-          </Form.Label>
-          <Form.Control asChild>
-            <TextField.Root
-              autoComplete="off"
-              value={formData.fullName}
-              required
-              placeholder="Enter full name"
-              onChange={handleChange}
-              className="editable-field"
-            >
-              <TextField.Slot side="right">
-                <Tooltip.Provider delayDuration={0}>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <InfoCircledIcon
-                        width={20}
-                        height={20}
-                        color="#0A0552"
-                        className="info-icon"
-                      />
-                    </Tooltip.Trigger>
-                    <Tooltip.Content
-                      className="TooltipContent"
-                      side="right"
-                      align="center"
-                      sideOffset={5}
-                    >
-                      The full name of the user
-                    </Tooltip.Content>
-                  </Tooltip.Root>
-                </Tooltip.Provider>
-              </TextField.Slot>
-            </TextField.Root>
-          </Form.Control>
-          <Form.Message match="valueMissing" className="validation-message">
-            Full name is required.
-          </Form.Message>
-        </Form.Field>
+        <TextField
+          name="fullName"
+          label="Full Name"
+          required
+          value={formData.fullName}
+          placeholder="Enter full name"
+          tooltip="The full name of the user"
+          onChange={handleChange}
+        />
 
         {/* Role Field */}
         <Box className="form-field">
@@ -275,7 +211,7 @@ const UserForm: React.FC<UserFormProps> = ({
         {/* Organization Info Display */}
         <Box className="form-field">
           <Text className="field-label">Organization</Text>
-          <TextField.Root
+          <RadixTextField.Root
             value={organizationName}
             readOnly
             disabled

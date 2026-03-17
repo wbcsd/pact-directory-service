@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import * as Form from "@radix-ui/react-form";
-import { Box, Button, TextField, Callout } from "@radix-ui/themes";
+import { Box, Button, Callout } from "@radix-ui/themes";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
 import useBodyOverflow from "../utils/use-body-overflow";
 import "./SetPasswordPage.css";
 import { LandingPageLayout } from "../layouts";
+import { TextField } from "../components/ui";
 
 const SetPasswordPage: React.FC = () => {
   const params = useParams();
@@ -129,51 +130,25 @@ const SetPasswordPage: React.FC = () => {
                 </p>
 
                 <Form.Root onSubmit={handleSubmit}>
-                  <Form.Field name="password">
-                    <Form.Label className="form-label">
-                      New Password<span className="required-asterisk">*</span>
-                    </Form.Label>
-                    <Form.Control asChild>
-                      <TextField.Root
-                        type="password"
-                        value={password}
-                        required
-                        placeholder="Enter your new password"
-                        onChange={handlePasswordChange}
-                        disabled={status === "loading"}
-                        className="text-field"
-                      />
-                    </Form.Control>
-                    <Form.Message
-                      match="valueMissing"
-                      className="form-message"
-                    >
-                      Password is required.
-                    </Form.Message>
-                  </Form.Field>
+                  <TextField
+                    name="password"
+                    label="New Password"
+                    required
+                    type="password"
+                    value={password}
+                    placeholder="Enter your new password"
+                    onChange={handlePasswordChange}
+                  />
 
-                  <Form.Field name="confirmPassword" className="confirm-password-field">
-                    <Form.Label className="form-label">
-                      Confirm Password<span className="required-asterisk">*</span>
-                    </Form.Label>
-                    <Form.Control asChild>
-                      <TextField.Root
-                        type="password"
-                        value={confirmPassword}
-                        required
-                        placeholder="Confirm your new password"
-                        onChange={handleConfirmPasswordChange}
-                        disabled={status === "loading"}
-                        className="text-field"
-                      />
-                    </Form.Control>
-                    <Form.Message
-                      match="valueMissing"
-                      className="form-message"
-                    >
-                      Please confirm your password.
-                    </Form.Message>
-                  </Form.Field>
+                  <TextField
+                    name="confirmPassword"
+                    label="Confirm Password"
+                    required
+                    type="password"
+                    value={confirmPassword}
+                    placeholder="Confirm your new password"
+                    onChange={handleConfirmPasswordChange}
+                  />
 
                   <Box className="submit-button-container">
                     <Form.Submit asChild>

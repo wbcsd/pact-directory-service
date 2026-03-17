@@ -8,13 +8,13 @@ import {
   Spinner,
   Text,
 } from "@radix-ui/themes";
-import * as Tooltip from "@radix-ui/react-tooltip";
 import {
   ExclamationTriangleIcon,
   InfoCircledIcon,
   CheckIcon,
   ChevronDownIcon,
 } from "@radix-ui/react-icons";
+import { TooltipIcon } from "../components/ui";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -210,22 +210,7 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
             <Form.Label className="field-label" style={{ margin: 0 }}>
               From Node<span className="required-asterisk">*</span>
             </Form.Label>
-            <Tooltip.Provider delayDuration={0}>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <InfoCircledIcon
-                    width={20}
-                    height={20}
-                    color="#0A0552"
-                    className="info-icon"
-                    style={{ cursor: "help" }}
-                  />
-                </Tooltip.Trigger>
-                <Tooltip.Content className="TooltipContent" sideOffset={5}>
-                  Select the node that will initiate the connection.
-                </Tooltip.Content>
-              </Tooltip.Root>
-            </Tooltip.Provider>
+            <TooltipIcon text="Select the node that will initiate the connection." />
           </Box>
           {lockedFromNodeId ? (
             <div className="readonly-field">
@@ -276,22 +261,7 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
             <Form.Label className="field-label" style={{ margin: 0 }}>
               Target Node<span className="required-asterisk">*</span>
             </Form.Label>
-            <Tooltip.Provider delayDuration={0}>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <InfoCircledIcon
-                    width={20}
-                    height={20}
-                    color="#0A0552"
-                    className="info-icon"
-                    style={{ cursor: "help" }}
-                  />
-                </Tooltip.Trigger>
-                <Tooltip.Content className="TooltipContent" sideOffset={5}>
-                  Select the node that will receive the connection invitation. The target node must accept the invitation to establish the connection.
-                </Tooltip.Content>
-              </Tooltip.Root>
-            </Tooltip.Provider>
+            <TooltipIcon text="Select the node that will receive the connection invitation. The target node must accept the invitation to establish the connection." />
           </Box>
           <Select.Root
             value={formData.targetNodeId > 0 ? formData.targetNodeId.toString() : ""}
@@ -339,22 +309,7 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
             <Form.Label className="field-label" style={{ margin: 0 }}>
               Message (Optional)
             </Form.Label>
-            <Tooltip.Provider delayDuration={0}>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <InfoCircledIcon
-                    width={20}
-                    height={20}
-                    color="#0A0552"
-                    className="info-icon"
-                    style={{ cursor: "help" }}
-                  />
-                </Tooltip.Trigger>
-                <Tooltip.Content className="TooltipContent" sideOffset={5}>
-                  You can include a message to provide context about why you want to establish this connection.
-                </Tooltip.Content>
-              </Tooltip.Root>
-            </Tooltip.Provider>
+            <TooltipIcon text="You can include a message to provide context about why you want to establish this connection." />
           </Box>
           <Form.Control asChild>
             <textarea

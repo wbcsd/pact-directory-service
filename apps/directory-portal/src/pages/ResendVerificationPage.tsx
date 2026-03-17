@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import * as Form from "@radix-ui/react-form";
-import { Box, Button, TextField, Callout } from "@radix-ui/themes";
+import { Box, Button, Callout } from "@radix-ui/themes";
 import { Link } from "react-router-dom";
 import { ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
 import { LandingPageLayout } from "../layouts";
+import { TextField } from "../components/ui";
 
 const ResendVerificationPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -86,51 +87,26 @@ const ResendVerificationPage: React.FC = () => {
                 </p>
 
                 <Form.Root onSubmit={handleSubmit}>
-                  <Form.Field name="email">
-                    <Form.Label
-                      style={{
-                        display: "block",
-                        marginBottom: "8px",
-                        fontWeight: "500",
-                      }}
-                    >
-                      Email Address<span style={{ color: "red" }}>*</span>
-                    </Form.Label>
-                    <Form.Control asChild>
-                      <TextField.Root
-                        type="email"
-                        value={email}
-                        required
-                        placeholder="Enter your email address"
-                        onChange={handleChange}
-                        disabled={status === "loading"}
+                  <TextField
+                    name="email"
+                    label="Email Address"
+                    required
+                    type="email"
+                    value={email}
+                    placeholder="Enter your email address"
+                    onChange={handleChange}
+                    customErrors={
+                      <Form.Message
+                        match="typeMismatch"
                         style={{
-                          width: "100%",
-                          border: "1px solid #ccc",
-                          padding: "12px",
-                          fontSize: "16px",
+                          color: "var(--base-color-brand--light-blue)",
+                          fontSize: "0.85em",
                         }}
-                      />
-                    </Form.Control>
-                    <Form.Message
-                      match="valueMissing"
-                      style={{
-                        color: "var(--base-color-brand--light-blue)",
-                        fontSize: "0.85em",
-                      }}
-                    >
-                      Email is required.
-                    </Form.Message>
-                    <Form.Message
-                      match="typeMismatch"
-                      style={{
-                        color: "var(--base-color-brand--light-blue)",
-                        fontSize: "0.85em",
-                      }}
-                    >
-                      Please enter a valid email address.
-                    </Form.Message>
-                  </Form.Field>
+                      >
+                        Please enter a valid email address.
+                      </Form.Message>
+                    }
+                  />
 
                   <Box style={{ marginTop: "30px" }}>
                     <Form.Submit asChild>

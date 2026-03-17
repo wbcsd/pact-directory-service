@@ -3,21 +3,20 @@ import * as Form from "@radix-ui/react-form";
 import {
   Box,
   Button,
-  TextField,
+  TextField as RadixTextField,
   Text,
   Callout,
   Spinner,
 } from "@radix-ui/themes";
-import * as Tooltip from "@radix-ui/react-tooltip";
 import {
   ExclamationTriangleIcon,
-  InfoCircledIcon,
   CheckIcon,
 } from "@radix-ui/react-icons";
 import { useAuth } from "../contexts/AuthContext";
 import { fetchWithAuth } from "../utils/auth-fetch";
-import "../components/NodeForm.css"; // Import shared form styles
+import "../components/NodeForm.css";
 import { FormPageLayout } from "../layouts";
+import { TextField } from "../components/ui";
 
 const MyProfilePage: React.FC = () => {
   const { profileData } = useAuth();
@@ -129,7 +128,7 @@ const MyProfilePage: React.FC = () => {
             {/* Read-only Email */}
             <Box className="form-field">
               <Text className="field-label">Email Address</Text>
-              <TextField.Root
+              <RadixTextField.Root
                 value={profileData?.email}
                 readOnly
                 disabled
@@ -138,164 +137,46 @@ const MyProfilePage: React.FC = () => {
             </Box>
 
             {/* Editable Full Name */}
-            <Form.Field name="fullName">
-              <Form.Label className="field-label">
-                Full Name<span className="required-asterisk">*</span>
-              </Form.Label>
-              <Form.Control asChild>
-                <TextField.Root
-                  value={formData.fullName}
-                  required
-                  placeholder="Enter your full name"
-                  onChange={handleChange}
-                  className="editable-field"
-                >
-                  <TextField.Slot side="right">
-                    <Tooltip.Provider delayDuration={0}>
-                      <Tooltip.Root>
-                        <Tooltip.Trigger asChild>
-                          <InfoCircledIcon
-                            width={20}
-                            height={20}
-                            color="#0A0552"
-                            className="info-icon"
-                          />
-                        </Tooltip.Trigger>
-                        <Tooltip.Content
-                          className="TooltipContent"
-                          side="right"
-                          align="center"
-                          sideOffset={5}
-                        >
-                          Your full name as it appears in the system
-                        </Tooltip.Content>
-                      </Tooltip.Root>
-                    </Tooltip.Provider>
-                  </TextField.Slot>
-                </TextField.Root>
-              </Form.Control>
-              <Form.Message match="valueMissing" className="validation-message">
-                Full name is required.
-              </Form.Message>
-            </Form.Field>
+            <TextField
+              name="fullName"
+              label="Full Name"
+              required
+              value={formData.fullName}
+              placeholder="Enter your full name"
+              tooltip="Your full name as it appears in the system"
+              onChange={handleChange}
+            />
 
             {/* Editable Organization Name */}
-            <Form.Field name="organizationName">
-              <Form.Label className="field-label">
-                Organization Name<span className="required-asterisk">*</span>
-              </Form.Label>
-              <Form.Control asChild>
-                <TextField.Root
-                  value={formData.organizationName}
-                  required
-                  placeholder="Enter Organization name"
-                  onChange={handleChange}
-                  className="editable-field"
-                >
-                  <TextField.Slot side="right">
-                    <Tooltip.Provider delayDuration={0}>
-                      <Tooltip.Root>
-                        <Tooltip.Trigger asChild>
-                          <InfoCircledIcon
-                            width={20}
-                            height={20}
-                            color="#0A0552"
-                            className="info-icon"
-                          />
-                        </Tooltip.Trigger>
-                        <Tooltip.Content
-                          className="TooltipContent"
-                          side="right"
-                          align="center"
-                          sideOffset={5}
-                        >
-                          Your organization name
-                        </Tooltip.Content>
-                      </Tooltip.Root>
-                    </Tooltip.Provider>
-                  </TextField.Slot>
-                </TextField.Root>
-              </Form.Control>
-              <Form.Message match="valueMissing" className="validation-message">
-                Organization name is required.
-              </Form.Message>
-            </Form.Field>
+            <TextField
+              name="organizationName"
+              label="Organization Name"
+              required
+              value={formData.organizationName}
+              placeholder="Enter Organization name"
+              tooltip="Your organization name"
+              onChange={handleChange}
+            />
 
             {/* Editable Organization Description */}
-            <Form.Field name="organizationDescription">
-              <Form.Label className="field-label">
-                Organization Description
-              </Form.Label>
-              <Form.Control asChild>
-                <TextField.Root
-                  value={formData.organizationDescription}
-                  placeholder="Enter Organization Description"
-                  onChange={handleChange}
-                  className="editable-field"
-                >
-                  <TextField.Slot side="right">
-                    <Tooltip.Provider delayDuration={0}>
-                      <Tooltip.Root>
-                        <Tooltip.Trigger asChild>
-                          <InfoCircledIcon
-                            width={20}
-                            height={20}
-                            color="#0A0552"
-                            className="info-icon"
-                          />
-                        </Tooltip.Trigger>
-                        <Tooltip.Content
-                          className="TooltipContent"
-                          side="right"
-                          align="center"
-                          sideOffset={5}
-                        >
-                          The organization description
-                        </Tooltip.Content>
-                      </Tooltip.Root>
-                    </Tooltip.Provider>
-                  </TextField.Slot>
-                </TextField.Root>
-              </Form.Control>
-            </Form.Field>
+            <TextField
+              name="organizationDescription"
+              label="Organization Description"
+              value={formData.organizationDescription}
+              placeholder="Enter Organization Description"
+              tooltip="The organization description"
+              onChange={handleChange}
+            />
 
             {/* Editable Solution API URL */}
-            <Form.Field name="solutionApiUrl">
-              <Form.Label className="field-label">
-                Organization Website
-              </Form.Label>
-              <Form.Control asChild>
-                <TextField.Root
-                  value={formData.solutionApiUrl}
-                  placeholder="Enter API URL"
-                  onChange={handleChange}
-                  className="editable-field"
-                >
-                  <TextField.Slot side="right">
-                    <Tooltip.Provider delayDuration={0}>
-                      <Tooltip.Root>
-                        <Tooltip.Trigger asChild>
-                          <InfoCircledIcon
-                            width={20}
-                            height={20}
-                            color="#0A0552"
-                            className="info-icon"
-                          />
-                        </Tooltip.Trigger>
-                        <Tooltip.Content
-                          className="TooltipContent"
-                          side="right"
-                          align="center"
-                          sideOffset={5}
-                        >
-                          The address of your organization's website
-                        </Tooltip.Content>
-                      </Tooltip.Root>
-                    </Tooltip.Provider>
-                  </TextField.Slot>
-                </TextField.Root>
-              </Form.Control>
-            </Form.Field>
+            <TextField
+              name="solutionApiUrl"
+              label="Organization Website"
+              value={formData.solutionApiUrl}
+              placeholder="Enter API URL"
+              tooltip="The address of your organization's website"
+              onChange={handleChange}
+            />
 
             <Box className="button-group">
               <Form.Submit asChild>

@@ -4,18 +4,16 @@ import * as Switch from "@radix-ui/react-switch";
 import {
   Box,
   Button,
-  TextField,
   Text,
   Callout,
   Spinner,
 } from "@radix-ui/themes";
-import * as Tooltip from "@radix-ui/react-tooltip";
 import {
   ExclamationTriangleIcon,
-  InfoCircledIcon,
   CheckIcon,
 } from "@radix-ui/react-icons";
 import { fetchWithAuth } from "../utils/auth-fetch";
+import { TextField, TooltipIcon } from "../components/ui";
 import "./NodeForm.css"; // Reuse the same CSS
 
 export interface OrganizationFormData {
@@ -138,127 +136,41 @@ const OrganizationForm: React.FC<OrganizationFormProps> = ({
     <Box className="node-form">
       <Form.Root autoComplete="off" onSubmit={handleSubmit}>
         {/* Organization Name */}
-        <Form.Field name="organizationName">
-          <Form.Label className="field-label">
-            Organization Name<span className="required-asterisk">*</span>
-          </Form.Label>
-          <Form.Control asChild>
-            <TextField.Root
-              autoComplete="off"
-              value={formData.organizationName}
-              required
-              placeholder="Enter organization name"
-              onChange={handleChange}
-              className="editable-field"
-            >
-              <TextField.Slot side="right">
-                <Tooltip.Provider delayDuration={0}>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <InfoCircledIcon
-                        width={20}
-                        height={20}
-                        color="#0A0552"
-                        className="info-icon"
-                      />
-                    </Tooltip.Trigger>
-                    <Tooltip.Content
-                      className="TooltipContent"
-                      side="right"
-                      align="center"
-                      sideOffset={5}
-                    >
-                      The display name of the organization
-                    </Tooltip.Content>
-                  </Tooltip.Root>
-                </Tooltip.Provider>
-              </TextField.Slot>
-            </TextField.Root>
-          </Form.Control>
-          <Form.Message match="valueMissing" className="validation-message">
-            Organization name is required.
-          </Form.Message>
-        </Form.Field>
+        <TextField
+          name="organizationName"
+          label="Organization Name"
+          required
+          value={formData.organizationName}
+          placeholder="Enter organization name"
+          tooltip="The display name of the organization"
+          onChange={handleChange}
+        />
 
         {/* Organization Description */}
-        <Form.Field name="organizationDescription">
-          <Form.Label className="field-label">
-            Organization Description
-          </Form.Label>
-          <Form.Control asChild>
-            <TextField.Root
-              autoComplete="off"
-              value={formData.organizationDescription}
-              placeholder="Enter organization description"
-              onChange={handleChange}
-              className="editable-field"
-            >
-              <TextField.Slot side="right">
-                <Tooltip.Provider delayDuration={0}>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <InfoCircledIcon
-                        width={20}
-                        height={20}
-                        color="#0A0552"
-                        className="info-icon"
-                      />
-                    </Tooltip.Trigger>
-                    <Tooltip.Content
-                      className="TooltipContent"
-                      side="right"
-                      align="center"
-                      sideOffset={5}
-                    >
-                      A brief description of the organization
-                    </Tooltip.Content>
-                  </Tooltip.Root>
-                </Tooltip.Provider>
-              </TextField.Slot>
-            </TextField.Root>
-          </Form.Control>
-        </Form.Field>
+        <TextField
+          name="organizationDescription"
+          label="Organization Description"
+          value={formData.organizationDescription}
+          placeholder="Enter organization description"
+          tooltip="A brief description of the organization"
+          onChange={handleChange}
+        />
 
         {/* Solution API URL */}
-        <Form.Field name="solutionApiUrl">
-          <Form.Label className="field-label">Solution API URL</Form.Label>
-          <Form.Control asChild>
-            <TextField.Root
-              autoComplete="off"
-              value={formData.solutionApiUrl}
-              type="url"
-              placeholder="Enter solution API URL"
-              onChange={handleChange}
-              className="editable-field"
-            >
-              <TextField.Slot side="right">
-                <Tooltip.Provider delayDuration={0}>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <InfoCircledIcon
-                        width={20}
-                        height={20}
-                        color="#0A0552"
-                        className="info-icon"
-                      />
-                    </Tooltip.Trigger>
-                    <Tooltip.Content
-                      className="TooltipContent"
-                      side="right"
-                      align="center"
-                      sideOffset={5}
-                    >
-                      The API endpoint for the organization's solution
-                    </Tooltip.Content>
-                  </Tooltip.Root>
-                </Tooltip.Provider>
-              </TextField.Slot>
-            </TextField.Root>
-          </Form.Control>
-          <Form.Message match="typeMismatch" className="validation-message">
-            Please enter a valid URL.
-          </Form.Message>
-        </Form.Field>
+        <TextField
+          name="solutionApiUrl"
+          label="Solution API URL"
+          value={formData.solutionApiUrl}
+          type="url"
+          placeholder="Enter solution API URL"
+          tooltip="The API endpoint for the organization's solution"
+          onChange={handleChange}
+          customErrors={
+            <Form.Message match="typeMismatch" className="validation-message">
+              Please enter a valid URL.
+            </Form.Message>
+          }
+        />
 
         {/* Status Toggle */}
         <Box className="form-field">
@@ -271,27 +183,7 @@ const OrganizationForm: React.FC<OrganizationFormProps> = ({
           >
             <Text className="field-label">
               Status
-              <Tooltip.Provider delayDuration={0}>
-                <Tooltip.Root>
-                  <Tooltip.Trigger asChild>
-                    <InfoCircledIcon
-                      width={20}
-                      height={20}
-                      color="#0A0552"
-                      className="info-icon"
-                      style={{ marginLeft: "8px", cursor: "help" }}
-                    />
-                  </Tooltip.Trigger>
-                  <Tooltip.Content
-                    className="TooltipContent"
-                    side="right"
-                    align="center"
-                    sideOffset={5}
-                  >
-                    Enable or disable the organization
-                  </Tooltip.Content>
-                </Tooltip.Root>
-              </Tooltip.Provider>
+              <TooltipIcon text="Enable or disable the organization" />
             </Text>
             <Box style={{ display: "flex", alignItems: "center", gap: "12px" }}>
               <Text size="2" color={formData.status === "active" ? "green" : "gray"}>

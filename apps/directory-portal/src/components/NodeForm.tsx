@@ -4,20 +4,19 @@ import * as Select from "@radix-ui/react-select";
 import {
   Box,
   Button,
-  TextField,
+  TextField as RadixTextField,
   Text,
   Callout,
   Spinner,
 } from "@radix-ui/themes";
-import * as Tooltip from "@radix-ui/react-tooltip";
 import {
   ExclamationTriangleIcon,
-  InfoCircledIcon,
   CheckIcon,
   ChevronDownIcon,
 } from "@radix-ui/react-icons";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import { useAuth } from "../contexts/AuthContext";
+import { TextField } from "../components/ui";
 import "./NodeForm.css";
 
 enum NodeType {
@@ -162,47 +161,15 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
     <Box className="node-form">
       <Form.Root autoComplete="off" onSubmit={handleSubmit}>
         {/* Name */}
-        <Form.Field name="name">
-          <Form.Label className="field-label">
-            Node Name<span className="required-asterisk">*</span>
-          </Form.Label>
-          <Form.Control asChild>
-            <TextField.Root
-              autoComplete="off"
-              value={formData.name}
-              required
-              placeholder="Enter node name"
-              onChange={handleChange}
-              className="editable-field"
-            >
-              <TextField.Slot side="right">
-                <Tooltip.Provider delayDuration={0}>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <InfoCircledIcon
-                        width={20}
-                        height={20}
-                        color="#0A0552"
-                        className="info-icon"
-                      />
-                    </Tooltip.Trigger>
-                    <Tooltip.Content
-                      className="TooltipContent"
-                      side="right"
-                      align="center"
-                      sideOffset={5}
-                    >
-                      The name of the node
-                    </Tooltip.Content>
-                  </Tooltip.Root>
-                </Tooltip.Provider>
-              </TextField.Slot>
-            </TextField.Root>
-          </Form.Control>
-          <Form.Message match="valueMissing" className="validation-message">
-            Node name is required.
-          </Form.Message>
-        </Form.Field>
+        <TextField
+          name="name"
+          label="Node Name"
+          required
+          value={formData.name}
+          placeholder="Enter node name"
+          tooltip="The name of the node"
+          onChange={handleChange}
+        />
 
         {/* Type */}
         <Box className="form-field">
@@ -234,57 +201,27 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
 
         {/* API URL (external only) */}
         {isExternalNode && (
-          <Form.Field name="apiUrl">
-            <Form.Label className="field-label">
-              API URL<span className="required-asterisk">*</span>
-            </Form.Label>
-            <Form.Control asChild>
-              <TextField.Root
-                autoComplete="off"
-                value={formData.apiUrl}
-                required={isExternalNode}
-                type="url"
-                placeholder="Enter API URL"
-                onChange={handleChange}
-                className="editable-field"
-              >
-                <TextField.Slot side="right">
-                  <Tooltip.Provider delayDuration={0}>
-                    <Tooltip.Root>
-                      <Tooltip.Trigger asChild>
-                        <InfoCircledIcon
-                          width={20}
-                          height={20}
-                          color="#0A0552"
-                          className="info-icon"
-                        />
-                      </Tooltip.Trigger>
-                      <Tooltip.Content
-                        className="TooltipContent"
-                        side="right"
-                        align="center"
-                        sideOffset={5}
-                      >
-                        The API URL for the external node
-                      </Tooltip.Content>
-                    </Tooltip.Root>
-                  </Tooltip.Provider>
-                </TextField.Slot>
-              </TextField.Root>
-            </Form.Control>
-            <Form.Message match="valueMissing" className="validation-message">
-              API URL is required for external nodes.
-            </Form.Message>
-            <Form.Message match="typeMismatch" className="validation-message">
-              Please enter a valid URL.
-            </Form.Message>
-          </Form.Field>
+          <TextField
+            name="apiUrl"
+            label="API URL"
+            required
+            value={formData.apiUrl || ""}
+            type="url"
+            placeholder="Enter API URL"
+            tooltip="The API URL for the external node"
+            onChange={handleChange}
+            customErrors={
+              <Form.Message match="typeMismatch" className="validation-message">
+                Please enter a valid URL.
+              </Form.Message>
+            }
+          />
         )}
 
         {/* Organization (read-only) */}
         <Box className="form-field">
           <Text className="field-label">Organization</Text>
-          <TextField.Root
+          <RadixTextField.Root
             value={organizationName}
             readOnly
             disabled

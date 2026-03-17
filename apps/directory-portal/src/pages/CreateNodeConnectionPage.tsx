@@ -7,14 +7,14 @@ import {
   Callout,
   Spinner,
 } from "@radix-ui/themes";
-import * as Tooltip from "@radix-ui/react-tooltip";
-import { useNavigate, useParams } from "react-router-dom";
 import {
   ExclamationTriangleIcon,
   InfoCircledIcon,
   CheckIcon,
   ChevronDownIcon,
 } from "@radix-ui/react-icons";
+import { TooltipIcon } from "../components/ui";
+import { useNavigate, useParams } from "react-router-dom";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import { useAuth } from "../contexts/AuthContext";
 import "../components/NodeForm.css";
@@ -266,37 +266,7 @@ const CreateNodeConnectionPage: React.FC = () => {
                   </Select.Portal>
                 </Select.Root>
                 <Box mt="2">
-                  <Tooltip.Provider delayDuration={0}>
-                    <Tooltip.Root>
-                      <Tooltip.Trigger asChild>
-                        <InfoCircledIcon
-                          width={20}
-                          height={20}
-                          color="#0A0552"
-                          className="info-icon"
-                          style={{ cursor: "help" }}
-                        />
-                      </Tooltip.Trigger>
-                      <Tooltip.Portal>
-                        <Tooltip.Content
-                          className="TooltipContent"
-                          sideOffset={5}
-                          style={{
-                            backgroundColor: "#333",
-                            color: "white",
-                            padding: "8px 12px",
-                            borderRadius: "4px",
-                            fontSize: "14px",
-                            maxWidth: "300px",
-                            zIndex: 1001,
-                          }}
-                        >
-                          Select the node within your organization that you want to connect to. The target node must accept the invitation to establish the connection.
-                          <Tooltip.Arrow style={{ fill: "#333" }} />
-                        </Tooltip.Content>
-                      </Tooltip.Portal>
-                    </Tooltip.Root>
-                  </Tooltip.Provider>
+                  <TooltipIcon text="Select the node within your organization that you want to connect to. The target node must accept the invitation to establish the connection." />
                 </Box>
               </Form.Field>
 
@@ -323,37 +293,7 @@ const CreateNodeConnectionPage: React.FC = () => {
                   />
                 </Form.Control>
                 <Box mt="2">
-                  <Tooltip.Provider delayDuration={0}>
-                    <Tooltip.Root>
-                      <Tooltip.Trigger asChild>
-                        <InfoCircledIcon
-                          width={20}
-                          height={20}
-                          color="#0A0552"
-                          className="info-icon"
-                          style={{ cursor: "help" }}
-                        />
-                      </Tooltip.Trigger>
-                      <Tooltip.Portal>
-                        <Tooltip.Content
-                          className="TooltipContent"
-                          sideOffset={5}
-                          style={{
-                            backgroundColor: "#333",
-                            color: "white",
-                            padding: "8px 12px",
-                            borderRadius: "4px",
-                            fontSize: "14px",
-                            maxWidth: "300px",
-                            zIndex: 1001,
-                          }}
-                        >
-                          You can include a message to provide context about why you want to establish this connection.
-                          <Tooltip.Arrow style={{ fill: "#333" }} />
-                        </Tooltip.Content>
-                      </Tooltip.Portal>
-                    </Tooltip.Root>
-                  </Tooltip.Provider>
+                  <TooltipIcon text="You can include a message to provide context about why you want to establish this connection." />
                 </Box>
               </Form.Field>
 
