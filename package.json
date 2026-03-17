@@ -5,5 +5,13 @@
     "apps/api",
     "apps/directory-portal"
   ],
+  "overrides": {
+    "express-openapi-validator": {
+      "ajv": "8.18.0",
+      "ajv-draft-04": {
+        "ajv": "8.18.0"
+      }
+    }
+  },
   "private": true
 }
