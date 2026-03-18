@@ -52,7 +52,7 @@ const ForgotPasswordPage: React.FC = () => {
 
             {status === "success" ? (
               <Box>
-                <h2 style={{ marginBottom: "20px", color: "#0A0552" }}>
+                <h2 style={{ marginBottom: "20px", color: "var(--accent-12)" }}>
                   Check Your Email
                 </h2>
                 <Callout.Root color="green" variant="surface">
@@ -69,7 +69,7 @@ const ForgotPasswordPage: React.FC = () => {
                   <Link
                     to="/login"
                     style={{
-                      color: "#0A0552",
+                      color: "var(--accent-12)",
                       textDecoration: "underline",
                       fontSize: "0.9em",
                     }}
@@ -116,7 +116,7 @@ const ForgotPasswordPage: React.FC = () => {
                     <Form.Message
                       match="valueMissing"
                       style={{
-                        color: "var(--base-color-brand--light-blue)",
+                        color: "var(--red-9)",
                         fontSize: "0.85em",
                       }}
                     >
@@ -125,7 +125,7 @@ const ForgotPasswordPage: React.FC = () => {
                     <Form.Message
                       match="typeMismatch"
                       style={{
-                        color: "var(--base-color-brand--light-blue)",
+                        color: "var(--red-9)",
                         fontSize: "0.85em",
                       }}
                     >
@@ -152,7 +152,7 @@ const ForgotPasswordPage: React.FC = () => {
                   <Link
                     to="/login"
                     style={{
-                      color: "#0A0552",
+                      color: "var(--accent-12)",
                       textDecoration: "underline",
                       fontSize: "0.9em",
                     }}

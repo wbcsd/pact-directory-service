@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import * as Form from "@radix-ui/react-form";
-import * as Select from "@radix-ui/react-select";
 import {
   Box,
   Button,
@@ -8,13 +7,13 @@ import {
   Text,
   Callout,
   Spinner,
+  Tooltip,
+  Select,
 } from "@radix-ui/themes";
-import * as Tooltip from "@radix-ui/react-tooltip";
 import {
   ExclamationTriangleIcon,
   InfoCircledIcon,
   CheckIcon,
-  ChevronDownIcon,
 } from "@radix-ui/react-icons";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import { useAuth } from "../contexts/AuthContext";
@@ -176,26 +175,14 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
               className="editable-field"
             >
               <TextField.Slot side="right">
-                <Tooltip.Provider delayDuration={0}>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <InfoCircledIcon
-                        width={20}
-                        height={20}
-                        color="#0A0552"
-                        className="info-icon"
-                      />
-                    </Tooltip.Trigger>
-                    <Tooltip.Content
-                      className="TooltipContent"
-                      side="right"
-                      align="center"
-                      sideOffset={5}
-                    >
-                      The name of the node
-                    </Tooltip.Content>
-                  </Tooltip.Root>
-                </Tooltip.Provider>
+                <Tooltip content="The name of the node" side="right" delayDuration={0}>
+                  <InfoCircledIcon
+                    width={20}
+                    height={20}
+                    color="var(--accent-12)"
+                    className="info-icon"
+                  />
+                </Tooltip>
               </TextField.Slot>
             </TextField.Root>
           </Form.Control>
@@ -213,21 +200,10 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
             value={formData.type}
             onValueChange={handleTypeChange}
           >
-            <Select.Trigger className="select-trigger">
-              <Select.Value placeholder="Select a node type" />
-              <Select.Icon>
-                <ChevronDownIcon />
-              </Select.Icon>
-            </Select.Trigger>
-            <Select.Content className="select-content" position="popper" sideOffset={4}>
-              <Select.Viewport>
-                <Select.Item value={NodeType.INTERNAL} className="select-item">
-                  <Select.ItemText>Internal</Select.ItemText>
-                </Select.Item>
-                <Select.Item value={NodeType.EXTERNAL} className="select-item">
-                  <Select.ItemText>External</Select.ItemText>
-                </Select.Item>
-              </Select.Viewport>
+            <Select.Trigger placeholder="Select a node type" />
+            <Select.Content position="popper">
+              <Select.Item value={NodeType.INTERNAL}>Internal</Select.Item>
+              <Select.Item value={NodeType.EXTERNAL}>External</Select.Item>
             </Select.Content>
           </Select.Root>
         </Box>
@@ -249,26 +225,14 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
                 className="editable-field"
               >
                 <TextField.Slot side="right">
-                  <Tooltip.Provider delayDuration={0}>
-                    <Tooltip.Root>
-                      <Tooltip.Trigger asChild>
-                        <InfoCircledIcon
-                          width={20}
-                          height={20}
-                          color="#0A0552"
-                          className="info-icon"
-                        />
-                      </Tooltip.Trigger>
-                      <Tooltip.Content
-                        className="TooltipContent"
-                        side="right"
-                        align="center"
-                        sideOffset={5}
-                      >
-                        The API URL for the external node
-                      </Tooltip.Content>
-                    </Tooltip.Root>
-                  </Tooltip.Provider>
+                  <Tooltip content="The API URL for the external node" side="right" delayDuration={0}>
+                    <InfoCircledIcon
+                      width={20}
+                      height={20}
+                      color="var(--accent-12)"
+                      className="info-icon"
+                    />
+                  </Tooltip>
                 </TextField.Slot>
               </TextField.Root>
             </Form.Control>

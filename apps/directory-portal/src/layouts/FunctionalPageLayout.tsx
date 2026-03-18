@@ -1,7 +1,7 @@
 import React from "react";
-import { Box } from "@radix-ui/themes";
+import { Flex } from "@radix-ui/themes";
 import SideNav from "../components/SideNav";
-import Spinner from "../components/LoadingSpinner";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 interface FunctionalPageLayoutProps {
   children: React.ReactNode;
@@ -26,20 +26,9 @@ const FunctionalPageLayout: React.FC<FunctionalPageLayoutProps> = ({
       </aside>
       
       {loading ? (
-        <Box
-          style={{
-            padding: "20px",
-            verticalAlign: "middle",
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            flexDirection: "column",
-            gap: "20px",
-          }}
-        >
-          <Spinner loadingText={loadingMessage} />
-        </Box>
+        <Flex p="5" width="100%" justify="center" align="center" direction="column" gap="5">
+          <LoadingSpinner loadingText={loadingMessage} />
+        </Flex>
       ) : wrapInMain ? (
         <main className="main">
           {children}

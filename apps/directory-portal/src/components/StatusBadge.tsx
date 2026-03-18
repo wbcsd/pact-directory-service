@@ -1,4 +1,5 @@
 import React from "react";
+import { Badge } from "@radix-ui/themes";
 
 interface StatusBadgeProps {
   status: string;
@@ -6,30 +7,47 @@ interface StatusBadgeProps {
 
 const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
   let displayText = "";
-  let className = "";
+  let color: "green" | "red" | "yellow" | "gray" = "gray";
 
   switch (status) {
     case "PASS":
     case "COMPLETED":
-      displayText = "Passed";
-      className = "passed";
+    case "enabled":
+      displayText = status === "enabled" ? "Enabled" : "Passed";
+      color = "green";
       break;
     case "FAIL":
     case "FAILED":
       displayText = "Failed";
-      className = "failed";
+      color = "red";
       break;
     case "PENDING":
     case "IN_PROGRESS":
       displayText = "Pending";
-      className = "pending";
+      color = "yellow";
+      break;
+    case "disabled":
+      displayText = "Disabled";
+      color = "red";
+      break;
+    case "unverified":
+      displayText = "Unverified";
+      color = "yellow";
+      break;
+    case "deleted":
+      displayText = "Deleted";
+      color = "gray";
       break;
     default:
       displayText = status;
-      className = "default";
+      color = "gray";
   }
 
-  return <span className={`status ${className}`}>{displayText}</span>;
+  return (
+    <Badge color={color} variant="soft" radius="full">
+      {displayText}
+    </Badge>
+  );
 };
 
 export default StatusBadge;

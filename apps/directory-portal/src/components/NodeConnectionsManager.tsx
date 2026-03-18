@@ -390,7 +390,7 @@ const NodeConnectionsManager: React.FC<NodeConnectionsManagerProps> = ({ nodeId 
               <div><strong>Client ID:</strong> {showCredentials.clientId}</div>
               <div><strong>Client Secret:</strong> {showCredentials.clientSecret}</div>
             </div>
-            <div style={{ marginTop: '8px', fontSize: '13px', color: '#0A0552' }}>
+            <div style={{ marginTop: '8px', fontSize: '13px', color: 'var(--accent-12)' }}>
               ⚠️ The client secret will only be shown once. Make sure to save it securely.
             </div>
             <Button

@@ -1,5 +1,5 @@
 .header p {
-  color: #888;
+  color: var(--gray-9);
 }
 
 .form-root {
@@ -13,12 +13,6 @@
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-}
-
-.sidebar {
-}
-
-.marker-divider {
 }
 
 .main {
@@ -59,8 +53,8 @@
   justify-content: space-between;
   padding: 20px;
   border-radius: 8px;
-  border: 1px solid #ebf0f5;
-  background-color: #fff;
+  border: 1px solid var(--gray-4);
+  background-color: var(--color-panel-solid);
 }
 
 .mandatory-bar {
@@ -69,7 +63,7 @@
   display: flex;
   overflow: hidden;
   border-radius: 6px;
-  background: #ebf0f5;
+  background: var(--gray-4);
   margin: 8px 0 6px;
 }
 
@@ -78,15 +72,15 @@
 }
 
 .mandatory-bar-segment.success {
-  background: #2d8a34;
+  background: var(--green-9);
 }
 
 .mandatory-bar-segment.pending {
-  background: #9aa3ad;
+  background: var(--gray-8);
 }
 
 .mandatory-bar-segment.failure {
-  background: #d64545;
+  background: var(--red-9);
 }
 
 .table-container {
@@ -108,13 +102,13 @@
 }
 
 .test-runs-table td.selected {
-  background-color: #f6f9ff;
+  background-color: var(--accent-a3);
 }
 
 .no-tests {
   padding: 20px;
   text-align: center;
-  color: #888;
+  color: var(--gray-9);
 }
 
 .test-details-container {
@@ -135,7 +129,7 @@
 }
 
 .test-box-actions {
-  display: flex !important;
+  display: flex;
   align-items: center;
   justify-content: flex-end;
   flex-direction: row;
@@ -150,10 +144,10 @@
 }
 
 .code-block {
-  background: #fff;
+  background: var(--color-panel-solid);
   padding: 20px;
   border-radius: 8px;
-  border: 1px solid #ebf0f5;
+  border: 1px solid var(--gray-4);
   margin-top: 20px;
 }
 

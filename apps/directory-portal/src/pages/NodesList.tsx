@@ -5,7 +5,7 @@ import { Column } from "../components/DataTable";
 import { useAuth } from "../contexts/AuthContext";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { GridPageLayout } from "../layouts";
-import ActionButton from "../components/ActionButton";
+import { Button } from "@radix-ui/themes";
 import SlideOverPanel from "../components/SlideOverPanel";
 import NodeForm from "../components/NodeForm";
 import NodeConnectionsManager from "../components/NodeConnectionsManager";
@@ -140,9 +140,9 @@ const NodesList: React.FC = () => {
       title="Nodes"
       subtitle="Manage and view all nodes in your organization"
       actions={
-        <ActionButton variant="primary" onClick={() => setPanel({ mode: "add" })}>
+        <Button onClick={() => setPanel({ mode: "add" })}>
           <PlusIcon /> Add Node
-        </ActionButton>
+        </Button>
       }
       loading={!profileData}
       loadingMessage="Loading nodes..."

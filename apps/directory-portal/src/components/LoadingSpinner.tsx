@@ -1,52 +1,21 @@
 import React from "react";
+import { Flex, Spinner as RadixSpinner, Text } from "@radix-ui/themes";
 
-interface SpinnerProps {
+interface LoadingSpinnerProps {
   loadingText?: string;
 }
 
-const Spinner = ({
+const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   loadingText = "Loading data...",
-}: SpinnerProps): React.ReactElement => {
+}) => {
   return (
-    <div style={styles.container}>
-      <div style={styles.spinnerContainer}>
-        <div style={styles.spinnerBar} className="spinner-bar"></div>
-      </div>
-      <div style={styles.text}>{loadingText}</div>
-    </div>
+    <Flex direction="column" align="center" justify="center" gap="3">
+      <RadixSpinner size="3" />
+      <Text size="3" weight="bold" color="indigo">
+        {loadingText}
+      </Text>
+    </Flex>
   );
 };
 
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    verticalAlign: "middle",
-  },
-  spinnerContainer: {
-    width: "200px",
-    height: "8px",
-    backgroundColor: "#edf0f5",
-    borderRadius: "4px",
-    overflow: "hidden",
-    position: "relative",
-    marginBottom: "20px",
-  },
-  spinnerBar: {
-    width: "80px",
-    height: "100%",
-    backgroundColor: "#10024a",
-    borderRadius: "4px",
-    position: "absolute",
-    animation: "slide 1.5s infinite ease-in-out",
-  },
-  text: {
-    fontWeight: "bold",
-    color: "#10024a",
-    fontSize: "18px",
-  },
-};
-
-export default Spinner;
+export default LoadingSpinner;

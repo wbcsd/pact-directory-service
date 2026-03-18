@@ -299,8 +299,8 @@ const ConformanceTestDetailPage: React.FC = () => {
                 onClick={() => selectTestAndScroll(test)}
                 style={{
                   background: "transparent",
-                  color: "#0A0552",
-                  border: "1px solid #EBF0F5",
+                  color: "var(--accent-12)",
+                  border: "1px solid var(--gray-4)",
                   padding: "8px 12px",
                   minHeight: "0",
                 }}

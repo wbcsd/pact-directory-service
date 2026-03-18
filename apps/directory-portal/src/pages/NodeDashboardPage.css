@@ -56,8 +56,8 @@
 }
 
 .node-quick-action-btn {
-  width: 100% !important;
-  justify-content: flex-start !important;
+  width: 100%;
+  justify-content: flex-start;
   gap: 8px;
 }
 
@@ -75,8 +75,8 @@
   height: 18px;
   padding: 0 4px;
   border-radius: 999px;
-  background: #e5484d;
-  color: #fff;
+  background: var(--red-9);
+  color: var(--gray-1);
   font-size: 11px;
   font-weight: 700;
   line-height: 18px;

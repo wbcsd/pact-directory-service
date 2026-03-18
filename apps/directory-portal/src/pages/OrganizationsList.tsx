@@ -4,7 +4,7 @@ import PaginatedDataTable, { PaginationInfo } from "../components/PaginatedDataT
 import { Column } from "../components/DataTable";
 import { InputIcon } from "@radix-ui/react-icons";
 import { GridPageLayout } from "../layouts";
-import ActionButton from "../components/ActionButton";
+import { IconButton } from "@radix-ui/themes";
 import SlideOverPanel from "../components/SlideOverPanel";
 import OrganizationForm from "../components/OrganizationForm";
 
@@ -105,10 +105,11 @@ const Organizations: React.FC = () => {
       header: "",
       extendedStyle: { textAlign: 'right' },
       render: (row: Organization) => (
-        <ActionButton
+        <IconButton
           title="Edit Organization Details"
-          variant="secondary"
-          size="small"
+          variant="soft"
+          color="gray"
+          size="1"
           onClick={() =>
             setPanel({
               mode: "edit",
@@ -118,7 +119,7 @@ const Organizations: React.FC = () => {
           }
         >
           <InputIcon />
-        </ActionButton>
+        </IconButton>
       ),
     },
   ];

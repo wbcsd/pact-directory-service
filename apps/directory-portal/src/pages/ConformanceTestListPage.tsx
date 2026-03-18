@@ -3,7 +3,6 @@ import { Button } from "@radix-ui/themes";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { proxyWithAuth } from "../utils/auth-fetch";
-import ActionButton from "../components/ActionButton";
 import StatusBadge from "../components/StatusBadge";
 import PaginatedDataTable, { PaginationInfo } from "../components/PaginatedDataTable";
 import { Column } from "../components/DataTable";
@@ -119,9 +118,9 @@ const ConformanceTestListPage: React.FC = () => {
       title="Conformance Tests"
       subtitle="Showing runs from all conformance tests"
       actions={
-        <ActionButton onClick={() => navigate("/conformance-test-runs/new")}>
+        <Button onClick={() => navigate("/conformance-test-runs/new")}>
           Run Tests
-        </ActionButton>
+        </Button>
       }
       >
         <PaginatedDataTable<TestRun>

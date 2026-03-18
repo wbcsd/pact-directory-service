@@ -4,7 +4,7 @@ import { Box, Button, TextField, Callout } from "@radix-ui/themes";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
 import { LandingPageLayout } from "../layouts";
-import Spinner from "../components/LoadingSpinner";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 
 const ResetPasswordPage: React.FC = () => {
@@ -113,7 +113,7 @@ const ResetPasswordPage: React.FC = () => {
       <LandingPageLayout>
 
           <Box>
-            <Spinner loadingText="Verifying reset link..." />
+            <LoadingSpinner loadingText="Verifying reset link..." />
           </Box>
 
       </LandingPageLayout>
@@ -123,7 +123,7 @@ const ResetPasswordPage: React.FC = () => {
   if (tokenStatus === "invalid") {
     return (
       <LandingPageLayout>
-            <h2 style={{ marginBottom: "20px", color: "#0A0552" }}>
+            <h2 style={{ marginBottom: "20px", color: "var(--accent-12)" }}>
               Invalid Reset Link
             </h2>
             <Callout.Root color="bronze" variant="surface">
@@ -139,7 +139,7 @@ const ResetPasswordPage: React.FC = () => {
               <Link
                 to="/forgot-password"
                 style={{
-                  color: "#0A0552",
+                  color: "var(--accent-12)",
                   textDecoration: "underline",
                   fontWeight: "500",
                 }}
@@ -169,7 +169,7 @@ const ResetPasswordPage: React.FC = () => {
 
             {status === "success" ? (
               <Box>
-                <h2 style={{ marginBottom: "20px", color: "#0A0552" }}>
+                <h2 style={{ marginBottom: "20px", color: "var(--accent-12)" }}>
                   Password Reset Successful
                 </h2>
                 <Callout.Root color="green" variant="surface">
@@ -185,7 +185,7 @@ const ResetPasswordPage: React.FC = () => {
                   <Link
                     to="/login"
                     style={{
-                      color: "#0A0552",
+                      color: "var(--accent-12)",
                       textDecoration: "underline",
                       fontWeight: "500",
                     }}
@@ -233,7 +233,7 @@ const ResetPasswordPage: React.FC = () => {
                     <Form.Message
                       match="valueMissing"
                       style={{
-                        color: "var(--base-color-brand--light-blue)",
+                        color: "var(--red-9)",
                         fontSize: "0.85em",
                       }}
                     >
@@ -242,7 +242,7 @@ const ResetPasswordPage: React.FC = () => {
                     <Form.Message
                       match="tooShort"
                       style={{
-                        color: "var(--base-color-brand--light-blue)",
+                        color: "var(--red-9)",
                         fontSize: "0.85em",
                       }}
                     >
@@ -284,7 +284,7 @@ const ResetPasswordPage: React.FC = () => {
                     <Form.Message
                       match="valueMissing"
                       style={{
-                        color: "var(--base-color-brand--light-blue)",
+                        color: "var(--red-9)",
                         fontSize: "0.85em",
                       }}
                     >

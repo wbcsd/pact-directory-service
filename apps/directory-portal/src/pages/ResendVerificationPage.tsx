@@ -53,7 +53,7 @@ const ResendVerificationPage: React.FC = () => {
 
       {status === "success" ? (
         <Box>
-                <h2 style={{ marginBottom: "20px", color: "#0A0552" }}>
+                <h2 style={{ marginBottom: "20px", color: "var(--accent-12)" }}>
                   Verification Email Sent
                 </h2>
                 <Callout.Root color="green" variant="surface">
@@ -69,7 +69,7 @@ const ResendVerificationPage: React.FC = () => {
                   <Link
                     to="/login"
                     style={{
-                      color: "#0A0552",
+                      color: "var(--accent-12)",
                       textDecoration: "underline",
                       fontSize: "0.9em",
                     }}
@@ -115,7 +115,7 @@ const ResendVerificationPage: React.FC = () => {
                     <Form.Message
                       match="valueMissing"
                       style={{
-                        color: "var(--base-color-brand--light-blue)",
+                        color: "var(--red-9)",
                         fontSize: "0.85em",
                       }}
                     >
@@ -124,7 +124,7 @@ const ResendVerificationPage: React.FC = () => {
                     <Form.Message
                       match="typeMismatch"
                       style={{
-                        color: "var(--base-color-brand--light-blue)",
+                        color: "var(--red-9)",
                         fontSize: "0.85em",
                       }}
                     >
@@ -151,7 +151,7 @@ const ResendVerificationPage: React.FC = () => {
                   <Link
                     to="/login"
                     style={{
-                      color: "#0A0552",
+                      color: "var(--accent-12)",
                       textDecoration: "underline",
                       fontSize: "0.9em",
                     }}

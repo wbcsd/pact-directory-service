@@ -1,15 +1,12 @@
-/* Bulk Action Bar */
-
 /* Notification Toast */
 .notification {
-  display: flex !important;
+  display: flex;
   position: fixed;
   top: 20px;
   right: 20px;
   padding: 1rem 1.5rem;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
@@ -31,12 +28,12 @@
 }
 
 .notification-success {
-  background: #10B981;
+  background: var(--green-9);
   color: white;
 }
 
 .notification-error {
-  background: #EF4444;
+  background: var(--red-9);
   color: white;
 }
 

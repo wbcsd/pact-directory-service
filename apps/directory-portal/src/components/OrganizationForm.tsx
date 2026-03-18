@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import * as Form from "@radix-ui/react-form";
-import * as Switch from "@radix-ui/react-switch";
 import {
   Box,
   Button,
@@ -8,8 +7,9 @@ import {
   Text,
   Callout,
   Spinner,
+  Tooltip,
+  Switch,
 } from "@radix-ui/themes";
-import * as Tooltip from "@radix-ui/react-tooltip";
 import {
   ExclamationTriangleIcon,
   InfoCircledIcon,
@@ -152,26 +152,14 @@ const OrganizationForm: React.FC<OrganizationFormProps> = ({
               className="editable-field"
             >
               <TextField.Slot side="right">
-                <Tooltip.Provider delayDuration={0}>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <InfoCircledIcon
-                        width={20}
-                        height={20}
-                        color="#0A0552"
-                        className="info-icon"
-                      />
-                    </Tooltip.Trigger>
-                    <Tooltip.Content
-                      className="TooltipContent"
-                      side="right"
-                      align="center"
-                      sideOffset={5}
-                    >
-                      The display name of the organization
-                    </Tooltip.Content>
-                  </Tooltip.Root>
-                </Tooltip.Provider>
+                <Tooltip content="The display name of the organization" side="right" delayDuration={0}>
+                  <InfoCircledIcon
+                    width={20}
+                    height={20}
+                    color="var(--accent-12)"
+                    className="info-icon"
+                  />
+                </Tooltip>
               </TextField.Slot>
             </TextField.Root>
           </Form.Control>
@@ -194,26 +182,14 @@ const OrganizationForm: React.FC<OrganizationFormProps> = ({
               className="editable-field"
             >
               <TextField.Slot side="right">
-                <Tooltip.Provider delayDuration={0}>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <InfoCircledIcon
-                        width={20}
-                        height={20}
-                        color="#0A0552"
-                        className="info-icon"
-                      />
-                    </Tooltip.Trigger>
-                    <Tooltip.Content
-                      className="TooltipContent"
-                      side="right"
-                      align="center"
-                      sideOffset={5}
-                    >
-                      A brief description of the organization
-                    </Tooltip.Content>
-                  </Tooltip.Root>
-                </Tooltip.Provider>
+                <Tooltip content="A brief description of the organization" side="right" delayDuration={0}>
+                  <InfoCircledIcon
+                    width={20}
+                    height={20}
+                    color="var(--accent-12)"
+                    className="info-icon"
+                  />
+                </Tooltip>
               </TextField.Slot>
             </TextField.Root>
           </Form.Control>
@@ -232,26 +208,14 @@ const OrganizationForm: React.FC<OrganizationFormProps> = ({
               className="editable-field"
             >
               <TextField.Slot side="right">
-                <Tooltip.Provider delayDuration={0}>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <InfoCircledIcon
-                        width={20}
-                        height={20}
-                        color="#0A0552"
-                        className="info-icon"
-                      />
-                    </Tooltip.Trigger>
-                    <Tooltip.Content
-                      className="TooltipContent"
-                      side="right"
-                      align="center"
-                      sideOffset={5}
-                    >
-                      The API endpoint for the organization's solution
-                    </Tooltip.Content>
-                  </Tooltip.Root>
-                </Tooltip.Provider>
+                <Tooltip content="The API endpoint for the organization's solution" side="right" delayDuration={0}>
+                  <InfoCircledIcon
+                    width={20}
+                    height={20}
+                    color="var(--accent-12)"
+                    className="info-icon"
+                  />
+                </Tooltip>
               </TextField.Slot>
             </TextField.Root>
           </Form.Control>
@@ -271,39 +235,24 @@ const OrganizationForm: React.FC<OrganizationFormProps> = ({
           >
             <Text className="field-label">
               Status
-              <Tooltip.Provider delayDuration={0}>
-                <Tooltip.Root>
-                  <Tooltip.Trigger asChild>
-                    <InfoCircledIcon
-                      width={20}
-                      height={20}
-                      color="#0A0552"
-                      className="info-icon"
-                      style={{ marginLeft: "8px", cursor: "help" }}
-                    />
-                  </Tooltip.Trigger>
-                  <Tooltip.Content
-                    className="TooltipContent"
-                    side="right"
-                    align="center"
-                    sideOffset={5}
-                  >
-                    Enable or disable the organization
-                  </Tooltip.Content>
-                </Tooltip.Root>
-              </Tooltip.Provider>
+              <Tooltip content="Enable or disable the organization" side="right" delayDuration={0}>
+                <InfoCircledIcon
+                  width={20}
+                  height={20}
+                  color="var(--accent-12)"
+                  style={{ marginLeft: "8px", cursor: "help" }}
+                />
+              </Tooltip>
             </Text>
             <Box style={{ display: "flex", alignItems: "center", gap: "12px" }}>
               <Text size="2" color={formData.status === "active" ? "green" : "gray"}>
                 {formData.status === "active" ? "Active" : "Disabled"}
               </Text>
-              <Switch.Root
+              <Switch
                 checked={formData.status === "active"}
                 onCheckedChange={handleStatusChange}
-                className="switch-root"
-              >
-                <Switch.Thumb className="switch-thumb" />
-              </Switch.Root>
+                color="green"
+              />
             </Box>
           </Box>
         </Box>

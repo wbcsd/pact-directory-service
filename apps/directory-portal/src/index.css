@@ -1,3 +1,4 @@
+/* ===== Font Faces ===== */
 @font-face {
   font-family: Axiforma;
   src: url(/fonts/Axiforma-Light.woff2) format("woff2");
@@ -38,198 +39,98 @@
   font-display: swap;
 }
 
-:root {
-  --base-color-brand--light-blue: #3c3c68;
-  --base-color-brand--light-grey: #8a8a8a;
-  --base-color-brand--disabled-grey: #d4d4d4;
-  --base-color-brand--blue: #0a0552;
+/* ===== Radix Themes Token Overrides ===== */
+.radix-themes {
+  /* Typography — map Axiforma into Radix Themes tokens */
+  --default-font-family: Axiforma, sans-serif;
+  --heading-font-family: Axiforma, sans-serif;
+
+  /*
+   * Brand primary: #09094e
+   * Full 12-step scale derived from the brand navy so that buttons,
+   * badges, focus rings, and tinted backgrounds all feel cohesive.
+   */
+  --indigo-1: #fdfcfe;
+  --indigo-2: #f5f3fb;
+  --indigo-3: #ebe7f5;
+  --indigo-4: #ddd7ef;
+  --indigo-5: #cec5e7;
+  --indigo-6: #baaede;
+  --indigo-7: #9e90ce;
+  --indigo-8: #7568b0;
+  --indigo-9: #09094e;   /* Brand primary — solid accent (buttons) */
+  --indigo-10: #1a1a62;  /* Hover state */
+  --indigo-11: #2d2d72;  /* Accessible text on light backgrounds */
+  --indigo-12: #09094e;  /* High-contrast text */
+
+  /* Alpha variants for translucent surfaces */
+  --indigo-a3: rgba(9, 9, 78, 0.07);
+  --indigo-a4: rgba(9, 9, 78, 0.10);
+  --indigo-a5: rgba(9, 9, 78, 0.15);
+  --indigo-a8: rgba(9, 9, 78, 0.45);
+  --indigo-a9: #09094e;
+  --indigo-a10: #1a1a62;
+
+  /*
+   * Brand secondary: #00a47d
+   * Mapped to jade for use via color="jade" on buttons, badges, etc.
+   */
+  --jade-1: #f5fefb;
+  --jade-2: #e8fbf4;
+  --jade-3: #d3f5e7;
+  --jade-4: #bceeda;
+  --jade-5: #9ee5ca;
+  --jade-6: #73d6b3;
+  --jade-7: #41c498;
+  --jade-8: #00a47d;
+  --jade-9: #00a47d;   /* Brand secondary — solid accent */
+  --jade-10: #00b88a;  /* Hover state */
+  --jade-11: #007d5f;  /* Accessible text on light backgrounds */
+  --jade-12: #004d3a;  /* High-contrast text */
+
+  --jade-a9: #00a47d;
+  --jade-a10: #00b88a;
+}
+
+/* ===== Global Resets ===== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
   overflow: hidden;
-  color: var(--base-color-brand--blue);
+  background: var(--color-background);
+  color: var(--gray-12);
   font-family: Axiforma, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-h2 {
-  color: var(--base-color-brand--blue);
-  margin-top: 0;
-}
-
-h3 {
-  font-size: 0.85em;
-  color: var(--base-color-brand--blue);
-  margin-bottom: 0px;
-}
-
-p {
-  color: var(--base-color-brand--blue);
-  margin: 0;
+a {
+  text-decoration: none;
+  color: var(--accent-11);
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
-input {
-  height: 30px;
-  padding: 0 10px;
-}
-
-.TooltipContent {
-  border-radius: 4px;
-  padding: 10px 15px;
-  color: #ffffff;
-  background-color: var(--base-color-brand--blue);
-  user-select: none;
-  animation-duration: 400ms;
-  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-  max-width: 300px;
-  will-change: transform, opacity;
-}
-.TooltipContent[data-state="delayed-open"][data-side="top"] {
-  animation-name: slideDownAndFade;
-}
-.TooltipContent[data-state="delayed-open"][data-side="right"] {
-  animation-name: slideLeftAndFade;
-}
-.TooltipContent[data-state="delayed-open"][data-side="bottom"] {
-  animation-name: slideUpAndFade;
-}
-.TooltipContent[data-state="delayed-open"][data-side="left"] {
-  animation-name: slideRightAndFade;
-}
-
-.TooltipArrow {
-  fill: white;
-}
-
-@keyframes slideUpAndFade {
-  from {
-    opacity: 0;
-    transform: translateY(2px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideRightAndFade {
-  from {
-    opacity: 0;
-    transform: translateX(-2px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideDownAndFade {
-  from {
-    opacity: 0;
-    transform: translateY(-2px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideLeftAndFade {
-  from {
-    opacity: 0;
-    transform: translateX(2px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-div:has(> .rt-TextFieldRoot) {
-  margin-bottom: 20px;
-}
-
-.rt-TextFieldRoot {
-  min-height: 36px;
-}
-
-input.rt-TextFieldInput {
-  padding: 0 15px;
-}
-
-input.rt-TextFieldInput::placeholder {
-  color: var(--base-color-brand--light-blue);
-}
-
-button.rt-Button:disabled {
-  background-color: var(--base-color-brand--disabled-grey);
-  cursor: default;
-}
-
-button.rt-Button {
-  background-color: var(--base-color-brand--blue);
-  padding: 8px 12px;
-  min-height: 36px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.side-nav a {
-  text-decoration: none;
-  color: var(--base-color-brand--light-grey);
-}
-
-.side-nav a.active {
-  color: var(--base-color-brand--blue);
-  font-weight: 500;
-}
-
-.connection {
-  margin: 10px 0;
-}
-
-.connection a {
-  text-decoration: none;
-  font-weight: bold;
-  color: var(--base-color-brand--light-blue);
-}
-
-.connection .biline {
-  font-size: 0.85em;
-}
-
-/*  New Styling 🤘 */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Axiforma, sans-serif;
-}
-body {
-  background: #f9f9fb;
-  color: #1a1a1a;
-}
-h2 {
-  font-family: Axiforma, sans-serif;
-}
+/* ===== App Shell Layout ===== */
 .top-bar {
   width: 100%;
-  background: #fff;
+  background: var(--color-panel-solid);
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 2rem;
-  border-bottom: 1px solid #ececf0;
+  border-bottom: 1px solid var(--gray-6);
   position: relative;
   z-index: 10;
 }
+
 .logo {
   display: flex;
   align-items: center;
@@ -239,155 +140,89 @@ h2 {
 .logo span {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #100f44;
+  color: var(--accent-12);
 }
-.search-bar input {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  outline: none;
-}
+
 .container {
   display: flex;
 }
+
 .sidebar {
   width: 250px;
   min-width: 250px;
-  background: #fff;
+  background: var(--color-panel-solid);
   padding: 2rem 1.5rem;
-  border-right: 1px solid #ececf0;
+  border-right: 1px solid var(--gray-6);
   display: flex;
   flex-direction: column;
   gap: 2rem;
   position: relative;
 }
+
 .nav-group {
   display: flex;
   flex-direction: column;
 }
+
 .nav-title {
   text-transform: uppercase;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #9ca3af;
+  color: var(--gray-9);
   margin-bottom: 0.75rem;
   padding-left: 0.25rem;
   font-family: "Geist Mono", monospace;
 }
+
 .sidebar nav a {
   display: block;
   padding: 0.2rem 0.5rem;
-  color: #4b4b5c;
+  color: var(--gray-11);
   font-weight: 500;
   text-decoration: none;
 }
+
 .sidebar nav a.active {
-  color: #100f44;
+  color: var(--accent-12);
   font-weight: 600;
 }
+
 .main {
   flex: 1;
   padding: 2rem 3rem;
-  background: #fcfdff;
+  background: var(--color-background);
   overflow-y: auto;
   overflow-x: hidden;
-  transition: width 0.3s ease;
 }
 
-.main.full-width {
-  width: 100%;
-}
-
-.main.split {
-  width: 70%;
-}
-.header {
-  margin-bottom: 2rem;
-}
-.header h2 {
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-.btn {
-  padding: 0.5rem 1rem;
-  background: var(--base-color-brand--blue);
-  color: white;
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-}
-.table-container {
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid #ececf0;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-thead {
-  background: var(--base-color-brand--blue);
-  color: white;
-}
-th {
-  padding: 0.5rem 1rem;
-  text-align: left;
-  font-size: 0.875rem;
-  font-family: "Geist Mono", monospace;
-}
-td {
-  padding: 1rem;
-  text-align: left;
-  font-size: 0.875rem;
-}
-tbody tr {
-  border-top: 1px solid #ececf0;
-  background: white;
-}
-.status {
-  padding: 0 0.5rem;
-  border-radius: 4px;
-  font-weight: 600;
-  font-size: 0.75rem;
-  display: inline-block;
-}
-.passed {
-  background: #e6f6ed;
-  color: #27ae60;
-}
-.failed {
-  background: #fdecec;
-  color: #eb5757;
-}
-.time,
-.duration {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-.dot-menu {
-  text-align: right;
-  font-weight: bold;
-  cursor: pointer;
-}
-.test-details-container {
-  border-left: 1px solid #ececf0;
-  background: #f6f9ff;
-  width: 30%;
-}
 .marker-divider {
   width: 8px;
   height: 8px;
-  background-color: #ebf0f5;
+  background-color: var(--gray-4);
   transform: rotate(45deg);
   position: absolute;
   right: -4px;
   top: -4px;
-  z-index: 999999;
+  z-index: 10;
 }
 
+/* ===== Auth Pages ===== */
+.auth-link,
+.auth-link a {
+  color: var(--accent-11);
+}
+
+.auth-link a {
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* ===== Utilities ===== */
+.inline-url {
+  font-family: "Geist Mono", monospace;
+}
+
+/* ===== Responsive ===== */
 @media (max-width: 768px) {
   body {
     overflow-y: auto;
@@ -396,82 +231,10 @@ tbody tr {
   .container {
     flex-direction: column;
   }
+
   .sidebar {
     width: 100%;
     border-right: none;
-    border-bottom: 1px solid #ececf0;
+    border-bottom: 1px solid var(--gray-6);
   }
-  th,
-  td {
-    padding: 0.75rem;
-  }
-  .test-details-container {
-    width: 100%;
-  }
-}
-
-@keyframes slide {
-  0% {
-    left: 0%;
-  }
-  50% {
-    left: 100%;
-    transform: translateX(-100%);
-  }
-  100% {
-    left: 0%;
-  }
-}
-
-.spinner-bar {
-  animation: slide 1.5s infinite ease-in-out;
-}
-
-.rt-TextFieldRoot input.rt-TextFieldInput {
-  padding: 0;
-}
-
-.rt-TextFieldRoot {
-  box-shadow: none !important;
-}
-
-form {
-  @supports selector(:has(*)) {
-    .rt-TextFieldRoot:where(:has(.rt-TextFieldInput:focus)) {
-      outline: 2px solid var(--base-color-brand--blue);
-      outline-offset: -1px;
-    }
-  }
-
-  input.rt-TextFieldInput::placeholder {
-    color: #9d9db8;
-  }
-}
-
-.auth-link,
-.auth-link a {
-  color: var(--base-color-brand--blue);
-
-  a {
-    text-decoration: none;
-    font-weight: bold;
-  }
-}
-
-a {
-  text-decoration: none;
-  color: var(--base-color-brand--blue);
-}
-
-.test-details-container h2 {
-  font-size: 1.25rem;
-}
-
-.inline-url {
-  font-family: "Geist Mono", monospace;
-}
-
-.rt-variant-soft.rt-Button {
-  /* background-color: #08A17F; */
-  color: white;
 }

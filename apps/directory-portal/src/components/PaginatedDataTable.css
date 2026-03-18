@@ -26,15 +26,15 @@
   flex: 1;
   padding: 0.5rem 2rem 0.5rem 0.625rem;
   font-size: 0.875rem;
-  border: 1px solid #ccc;
-  border-radius: 4px 0 0 4px;
+  border: 1px solid var(--gray-6);
+  border-radius: var(--radius-2) 0 0 var(--radius-2);
   outline: none;
   transition: border-color 0.15s;
   min-height: 36px;
 }
 
 .search-bar input:focus {
-  border-color: #0A0552;
+  border-color: var(--accent-9);
 }
 
 .search-bar .clear-btn {
@@ -43,14 +43,14 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  color: #888;
+  color: var(--gray-9);
   line-height: 1;
   padding: 0;
   display: flex;
 }
 
 .search-bar .clear-btn:hover {
-  color: #000;
+  color: var(--gray-12);
 }
 
 .search-bar .search-btn {
@@ -58,10 +58,10 @@
   align-items: center;
   justify-content: center;
   padding: 0.5rem 0.625rem;
-  background: #0A0552;
+  background: var(--accent-9);
   color: white;
-  border: 1px solid #0A0552;
-  border-radius: 0 4px 4px 0;
+  border: 1px solid var(--accent-9);
+  border-radius: 0 var(--radius-2) var(--radius-2) 0;
   cursor: pointer;
   transition: opacity 0.15s;
   min-height: 36px;
@@ -85,39 +85,6 @@
   flex-shrink: 0;
 }
 
-/* Loading State */
-.loadingBox {
-  padding: 20px;
-  vertical-align: middle;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-/* Error State */
-.errorBox {
-  padding: 20px;
-  max-width: 800px;
-  width: 800px;
-}
-
-/* Empty State */
-.emptyState {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
-
-.emptyHint {
-  color: #9d9db8;
-  font-size: 0.875rem;
-  margin-top: 10px;
-  margin-bottom: 20px;
-}
-
 /* Paging Strip */
 .paging-strip {
   display: flex;
@@ -130,32 +97,32 @@
 .paging-link {
   background: none;
   border: none;
-  color: #666;
+  color: var(--gray-9);
   font-size: 0.8rem;
   cursor: pointer;
   padding: 2px 6px;
-  border-radius: 3px;
+  border-radius: var(--radius-1);
   transition: color 0.15s, background 0.15s;
 }
 
 .paging-link:hover:not(:disabled) {
-  color: #0A0552;
-  background: #f0f2f5;
+  color: var(--accent-12);
+  background: var(--gray-3);
 }
 
 .paging-link:disabled {
-  color: #ccc;
+  color: var(--gray-6);
   cursor: default;
 }
 
 .paging-info {
   font-size: 0.8rem;
-  color: #888;
+  color: var(--gray-9);
   user-select: none;
 }
 
 .paging-total {
-  color: #aaa;
+  color: var(--gray-8);
 }
 
 /* Responsive adjustments */
@@ -167,9 +134,5 @@
 
   .search-bar {
     width: 100%;
-  }
-
-  .table-container {
-    overflow-x: scroll;
   }
 }

@@ -7,7 +7,7 @@ interface CodeIconProps {
 }
 
 const CodeIcon: React.FC<CodeIconProps> = ({
-  color = "#0A0552",
+  color = "var(--accent-12)",
   width = 14,
   height = 12,
 }) => {

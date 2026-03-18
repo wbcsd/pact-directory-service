@@ -4,10 +4,9 @@ import PaginatedDataTable from "../components/PaginatedDataTable";
 import { Column } from "../components/DataTable";
 import { useAuth } from "../contexts/AuthContext";
 import { InputIcon, PlusIcon } from "@radix-ui/react-icons";
-import { Box, Button, Text } from "@radix-ui/themes";
+import { Box, Button, IconButton, Text } from "@radix-ui/themes";
 import StatusBadge from "../components/StatusBadge";
 import { GridPageLayout } from "../layouts";
-import ActionButton from "../components/ActionButton";
 import PolicyGuard from "../components/PolicyGuard";
 import SlideOverPanel from "../components/SlideOverPanel";
 import UserForm from "../components/UserForm";
@@ -215,10 +214,11 @@ const OrganizationUsers: React.FC = () => {
       header: "",
       render: (row: User) => (
         <PolicyGuard policies={["edit-users", "edit-all-users"]}>
-          <ActionButton
+          <IconButton
             title="Edit User Details"
-            variant="secondary"
-            size="small"
+            variant="soft"
+            color="gray"
+            size="1"
             onClick={() =>
               setPanel({
                 mode: "edit",
@@ -229,7 +229,7 @@ const OrganizationUsers: React.FC = () => {
             }
           >
             <InputIcon />
-          </ActionButton>
+          </IconButton>
         </PolicyGuard>
       ),
     },

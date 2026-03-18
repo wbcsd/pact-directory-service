@@ -7,8 +7,8 @@ import {
   Text,
   Callout,
   Spinner,
+  Tooltip,
 } from "@radix-ui/themes";
-import * as Tooltip from "@radix-ui/react-tooltip";
 import {
   ExclamationTriangleIcon,
   InfoCircledIcon,
@@ -151,26 +151,14 @@ const MyProfilePage: React.FC = () => {
                   className="editable-field"
                 >
                   <TextField.Slot side="right">
-                    <Tooltip.Provider delayDuration={0}>
-                      <Tooltip.Root>
-                        <Tooltip.Trigger asChild>
-                          <InfoCircledIcon
-                            width={20}
-                            height={20}
-                            color="#0A0552"
-                            className="info-icon"
-                          />
-                        </Tooltip.Trigger>
-                        <Tooltip.Content
-                          className="TooltipContent"
-                          side="right"
-                          align="center"
-                          sideOffset={5}
-                        >
-                          Your full name as it appears in the system
-                        </Tooltip.Content>
-                      </Tooltip.Root>
-                    </Tooltip.Provider>
+                    <Tooltip content="Your full name as it appears in the system" side="right" delayDuration={0}>
+                      <InfoCircledIcon
+                        width={20}
+                        height={20}
+                        color="var(--accent-12)"
+                        style={{ cursor: "help" }}
+                      />
+                    </Tooltip>
                   </TextField.Slot>
                 </TextField.Root>
               </Form.Control>
@@ -193,26 +181,14 @@ const MyProfilePage: React.FC = () => {
                   className="editable-field"
                 >
                   <TextField.Slot side="right">
-                    <Tooltip.Provider delayDuration={0}>
-                      <Tooltip.Root>
-                        <Tooltip.Trigger asChild>
-                          <InfoCircledIcon
-                            width={20}
-                            height={20}
-                            color="#0A0552"
-                            className="info-icon"
-                          />
-                        </Tooltip.Trigger>
-                        <Tooltip.Content
-                          className="TooltipContent"
-                          side="right"
-                          align="center"
-                          sideOffset={5}
-                        >
-                          Your organization name
-                        </Tooltip.Content>
-                      </Tooltip.Root>
-                    </Tooltip.Provider>
+                    <Tooltip content="Your organization name" side="right" delayDuration={0}>
+                      <InfoCircledIcon
+                        width={20}
+                        height={20}
+                        color="var(--accent-12)"
+                        style={{ cursor: "help" }}
+                      />
+                    </Tooltip>
                   </TextField.Slot>
                 </TextField.Root>
               </Form.Control>
@@ -234,26 +210,14 @@ const MyProfilePage: React.FC = () => {
                   className="editable-field"
                 >
                   <TextField.Slot side="right">
-                    <Tooltip.Provider delayDuration={0}>
-                      <Tooltip.Root>
-                        <Tooltip.Trigger asChild>
-                          <InfoCircledIcon
-                            width={20}
-                            height={20}
-                            color="#0A0552"
-                            className="info-icon"
-                          />
-                        </Tooltip.Trigger>
-                        <Tooltip.Content
-                          className="TooltipContent"
-                          side="right"
-                          align="center"
-                          sideOffset={5}
-                        >
-                          The organization description
-                        </Tooltip.Content>
-                      </Tooltip.Root>
-                    </Tooltip.Provider>
+                    <Tooltip content="The organization description" side="right" delayDuration={0}>
+                      <InfoCircledIcon
+                        width={20}
+                        height={20}
+                        color="var(--accent-12)"
+                        style={{ cursor: "help" }}
+                      />
+                    </Tooltip>
                   </TextField.Slot>
                 </TextField.Root>
               </Form.Control>
@@ -272,26 +236,14 @@ const MyProfilePage: React.FC = () => {
                   className="editable-field"
                 >
                   <TextField.Slot side="right">
-                    <Tooltip.Provider delayDuration={0}>
-                      <Tooltip.Root>
-                        <Tooltip.Trigger asChild>
-                          <InfoCircledIcon
-                            width={20}
-                            height={20}
-                            color="#0A0552"
-                            className="info-icon"
-                          />
-                        </Tooltip.Trigger>
-                        <Tooltip.Content
-                          className="TooltipContent"
-                          side="right"
-                          align="center"
-                          sideOffset={5}
-                        >
-                          The address of your organization's website
-                        </Tooltip.Content>
-                      </Tooltip.Root>
-                    </Tooltip.Provider>
+                    <Tooltip content="The address of your organization's website" side="right" delayDuration={0}>
+                      <InfoCircledIcon
+                        width={20}
+                        height={20}
+                        color="var(--accent-12)"
+                        style={{ cursor: "help" }}
+                      />
+                    </Tooltip>
                   </TextField.Slot>
                 </TextField.Root>
               </Form.Control>
