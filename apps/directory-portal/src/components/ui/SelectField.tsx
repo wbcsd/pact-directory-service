@@ -1,49 +1,37 @@
 import React from "react";
-import * as Form from "@radix-ui/react-form";
-import { FormField } from "./FormField";
-import styles from "./SelectField.module.css";
+import { Select as BaseSelect} from "@radix-ui/themes";
 
-interface SelectOption {
-  value: string;
-  label: string;
+interface SelectFieldProps extends BaseSelect.RootProps {
+  options: { value: string; label: string }[]
 }
 
-interface SelectFieldProps {
-  name: string;
-  label: string;
-  required?: boolean;
-  defaultValue?: string;
-  options: SelectOption[];
-  description?: React.ReactNode;
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-}
-
-const SelectField: React.FC<SelectFieldProps> = ({
+const SelectField = React.forwardRef<HTMLSelectElement, SelectFieldProps>(
+  ({
   name,
-  label,
+  value,
   required = false,
   defaultValue,
   options,
-  description,
-  onChange,
-}) => (
-  <FormField name={name} label={label} required={required} description={description}>
-    <Form.Control asChild>
-      <select
-        name={name}
-        onChange={onChange}
-        required={required}
-        defaultValue={defaultValue}
-        className={styles.select}
-      >
+  onValueChange,
+  children
+  }, _ref) => (
+    <BaseSelect.Root 
+      name={name} 
+      value={value} 
+      onValueChange={onValueChange}
+      defaultValue={defaultValue}
+      required={required}>
+      <BaseSelect.Trigger/>
+      <BaseSelect.Content>
         {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
+          <BaseSelect.Item key={opt.value} value={opt.value}>
             {opt.label}
-          </option>
-        ))}
-      </select>
-    </Form.Control>
-  </FormField>
+          </BaseSelect.Item>
+        ))} 
+        { children }
+      </BaseSelect.Content>
+    </BaseSelect.Root>
+  )
 );
 
 export { SelectField };

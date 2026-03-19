@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
 import * as Form from "@radix-ui/react-form";
-import * as Switch from "@radix-ui/react-switch";
 import {
   Box,
   Button,
-  TextField,
+  TextField as RadixTextField,
   Text,
   Callout,
   Spinner,
+  Switch,
+  Flex
 } from "@radix-ui/themes";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import {
@@ -16,7 +17,7 @@ import {
   CheckIcon,
 } from "@radix-ui/react-icons";
 import { fetchWithAuth } from "../utils/auth-fetch";
-import "./NodeForm.css"; // Reuse the same CSS
+import { FormField } from "../components/ui";
 
 export interface OrganizationFormData {
   organizationName: string;
@@ -143,7 +144,7 @@ const OrganizationForm: React.FC<OrganizationFormProps> = ({
             Organization Name<span className="required-asterisk">*</span>
           </Form.Label>
           <Form.Control asChild>
-            <TextField.Root
+            <RadixTextField.Root
               autoComplete="off"
               value={formData.organizationName}
               required
@@ -151,7 +152,7 @@ const OrganizationForm: React.FC<OrganizationFormProps> = ({
               onChange={handleChange}
               className="editable-field"
             >
-              <TextField.Slot side="right">
+              <RadixTextField.Slot side="right">
                 <Tooltip.Provider delayDuration={0}>
                   <Tooltip.Root>
                     <Tooltip.Trigger asChild>
@@ -172,8 +173,8 @@ const OrganizationForm: React.FC<OrganizationFormProps> = ({
                     </Tooltip.Content>
                   </Tooltip.Root>
                 </Tooltip.Provider>
-              </TextField.Slot>
-            </TextField.Root>
+              </RadixTextField.Slot>
+            </RadixTextField.Root>
           </Form.Control>
           <Form.Message match="valueMissing" className="validation-message">
             Organization name is required.
@@ -186,14 +187,14 @@ const OrganizationForm: React.FC<OrganizationFormProps> = ({
             Organization Description
           </Form.Label>
           <Form.Control asChild>
-            <TextField.Root
+            <RadixTextField.Root
               autoComplete="off"
               value={formData.organizationDescription}
               placeholder="Enter organization description"
               onChange={handleChange}
               className="editable-field"
             >
-              <TextField.Slot side="right">
+              <RadixTextField.Slot side="right">
                 <Tooltip.Provider delayDuration={0}>
                   <Tooltip.Root>
                     <Tooltip.Trigger asChild>
@@ -214,8 +215,8 @@ const OrganizationForm: React.FC<OrganizationFormProps> = ({
                     </Tooltip.Content>
                   </Tooltip.Root>
                 </Tooltip.Provider>
-              </TextField.Slot>
-            </TextField.Root>
+              </RadixTextField.Slot>
+            </RadixTextField.Root>
           </Form.Control>
         </Form.Field>
 
@@ -223,7 +224,7 @@ const OrganizationForm: React.FC<OrganizationFormProps> = ({
         <Form.Field name="solutionApiUrl">
           <Form.Label className="field-label">Solution API URL</Form.Label>
           <Form.Control asChild>
-            <TextField.Root
+            <RadixTextField.Root
               autoComplete="off"
               value={formData.solutionApiUrl}
               type="url"
@@ -231,7 +232,7 @@ const OrganizationForm: React.FC<OrganizationFormProps> = ({
               onChange={handleChange}
               className="editable-field"
             >
-              <TextField.Slot side="right">
+              <RadixTextField.Slot side="right">
                 <Tooltip.Provider delayDuration={0}>
                   <Tooltip.Root>
                     <Tooltip.Trigger asChild>
@@ -252,8 +253,8 @@ const OrganizationForm: React.FC<OrganizationFormProps> = ({
                     </Tooltip.Content>
                   </Tooltip.Root>
                 </Tooltip.Provider>
-              </TextField.Slot>
-            </TextField.Root>
+              </RadixTextField.Slot>
+            </RadixTextField.Root>
           </Form.Control>
           <Form.Message match="typeMismatch" className="validation-message">
             Please enter a valid URL.
@@ -261,52 +262,17 @@ const OrganizationForm: React.FC<OrganizationFormProps> = ({
         </Form.Field>
 
         {/* Status Toggle */}
-        <Box className="form-field">
-          <Box
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Text className="field-label">
-              Status
-              <Tooltip.Provider delayDuration={0}>
-                <Tooltip.Root>
-                  <Tooltip.Trigger asChild>
-                    <InfoCircledIcon
-                      width={20}
-                      height={20}
-                      color="#0A0552"
-                      className="info-icon"
-                      style={{ marginLeft: "8px", cursor: "help" }}
-                    />
-                  </Tooltip.Trigger>
-                  <Tooltip.Content
-                    className="TooltipContent"
-                    side="right"
-                    align="center"
-                    sideOffset={5}
-                  >
-                    Enable or disable the organization
-                  </Tooltip.Content>
-                </Tooltip.Root>
-              </Tooltip.Provider>
-            </Text>
-            <Box style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <Text size="2" color={formData.status === "active" ? "green" : "gray"}>
-                {formData.status === "active" ? "Active" : "Disabled"}
-              </Text>
-              <Switch.Root
-                checked={formData.status === "active"}
-                onCheckedChange={handleStatusChange}
-                className="switch-root"
-              >
-                <Switch.Thumb className="switch-thumb" />
-              </Switch.Root>
-            </Box>
-          </Box>
-        </Box>
+        <FormField name="status" label="Status">
+          <Flex gap="2">
+          <Switch radius="large"
+            checked={formData.status === "active"}
+            onCheckedChange={handleStatusChange}
+          />
+          <Text size="2" color={formData.status === "active" ? "green" : "gray"}>
+            {formData.status === "active" ? "Active" : "Disabled"}
+          </Text>
+          </Flex>
+        </FormField>
 
         <Box className="button-group">
           <Button 

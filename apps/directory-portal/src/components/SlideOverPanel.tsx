@@ -20,7 +20,7 @@ const SlideOverPanel: React.FC<SlideOverPanelProps> = ({
 }) => {
   return (
     <Dialog.Root open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <Dialog.Portal>
+      <Dialog.Portal container={document.querySelector("[data-is-root-theme]") ?? undefined}>
         <Dialog.Overlay className="slide-over-overlay" />
         <Dialog.Content
           className="slide-over-content"
