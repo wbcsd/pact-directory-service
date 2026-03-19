@@ -146,6 +146,21 @@ p {
 }
 */
 
+.form-field { 
+  margin-bottom: var(--space-4);
+}
+.form-field label { 
+  display: block;
+  margin-bottom: var(--space-1);
+}
+.form-error {
+  color: red;
+  font-size: var(--font-size-1);
+  line-height: var(--line-height-1);
+  letter-spacing: var(--letter-spacing-1);
+}
+
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }

@@ -186,8 +186,6 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
       {/* Name */}
       <FormField name="name" label="Node Name" required>
         <TextField
-          name="name"
-          label="Node Name"
           required
           value={formData.name}
           placeholder="Enter node name"
@@ -209,21 +207,19 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
 
       {/* API URL (external only) */}
       {isExternalNode && (
-        <TextField
-          name="apiUrl"
-          label="API URL"
-          required
-          value={formData.apiUrl || ""}
-          type="url"
-          placeholder="Enter API URL"
-          tooltip="The API URL for the external node"
-          onChange={handleChange}
-          customErrors={
-            <Form.Message match="typeMismatch" className="validation-message">
-              Please enter a valid URL.
-            </Form.Message>
-          }
-        />
+        <FormField name="apiUrl" label="API URL" required>
+          <TextField
+            required
+            value={formData.apiUrl || ""}
+            type="url"
+            placeholder="Enter API URL"
+            tooltip="The API URL for the external node"
+            onChange={handleChange}
+          />                  
+          <Form.Message match="typeMismatch" className="validation-message">
+            Please enter a valid URL.
+          </Form.Message>
+        </FormField>
       )}
 
       {/* Organization (read-only) */}        

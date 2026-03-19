@@ -7,7 +7,6 @@ interface FormFieldProps {
   label: string;
   required?: boolean;
   description?: React.ReactNode;
-  customErrors?: React.ReactNode;
   children: React.ReactNode;
 }
 
@@ -16,16 +15,14 @@ const FormField: React.FC<FormFieldProps> = ({
   label,
   required = false,
   description,
-  customErrors,
   children,
 }) => {
   const childArray = React.Children.toArray(children);
-  const control = childArray.find(c => (c as React.ReactElement).props.className !== 'FormMessage');;
-  const messages = childArray.filter(c => (c as React.ReactElement).props.className === 'FormMessage');
-  console.warn(childArray.filter(c => (c as React.ReactElement).props.className === 'FormMessage'));
-
+  const control = childArray.at(0);
+  const messages = childArray.slice(1);
+  
   return (
-  <Form.Field name={name}>
+  <Form.Field name={name} className="form-field">
     <Form.Label>
         {label}
         {required && <span >*</span>}
@@ -37,12 +34,13 @@ const FormField: React.FC<FormFieldProps> = ({
       {control}
     </Form.Control>
     { required ? 
-    <Form.Message match="valueMissing">
+    <Form.Message match="valueMissing" className="form-error">
       {label} is required
-    </Form.Message> 
+    </Form.Message>
     : null}
-    {messages}
-    {customErrors}
+    {messages.map((message, index) => (
+      <Form.Message asChild className="form-error" key={index}>{message}</Form.Message>
+    ))}
   </Form.Field>
   );
 }
