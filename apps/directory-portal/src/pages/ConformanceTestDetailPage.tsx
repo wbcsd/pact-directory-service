@@ -10,6 +10,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { proxyWithAuth } from "../utils/auth-fetch";
 import CodeIcon from "../components/CodeIcon";
+import CodeBlock from "../components/CodeBlock";
 import ConformanceTestForm, {
   ConformanceTestFormData,
 } from "../components/ConformanceTestForm";
@@ -511,15 +512,11 @@ const ConformanceTestDetailPage: React.FC = () => {
                 <br />
 
                 {selectedTest.curlRequest && (
-                  <Box className="code-block">
-                    <code>{selectedTest.curlRequest ?? ""}</code>
-                  </Box>
+                  <CodeBlock language="bash">{selectedTest.curlRequest}</CodeBlock>
                 )}
 
                 {selectedTest.apiResponse && (
-                  <Box className="code-block">
-                    <code>{selectedTest.apiResponse ?? ""}</code>
-                  </Box>
+                  <CodeBlock language="json">{selectedTest.apiResponse}</CodeBlock>
                 )}
               </Box>
             </div>
