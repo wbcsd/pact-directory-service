@@ -1,29 +1,32 @@
 import { EmailService } from './email-service';
 import config from '@src/common/config';
 import logger from '@src/common/logger';
-import sgMail from '@sendgrid/mail';
+import Mailjet from 'node-mailjet';
 
 // Mock dependencies
-jest.mock('@sendgrid/mail');
+jest.mock('node-mailjet');
 jest.mock('@src/common/config');
 jest.mock('@src/common/logger');
 
 describe('EmailService', () => {
   let emailService: EmailService;
-  let mockSgMailSend: jest.Mock;
+  let mockRequest: jest.Mock;
+  let mockPost: jest.Mock;
 
   beforeEach(() => {
     // Reset all mocks before each test
     jest.clearAllMocks();
 
     // Setup mock implementations
-    mockSgMailSend = jest.fn().mockResolvedValue([{}, {}]);
-    (sgMail.send as jest.Mock) = mockSgMailSend;
-    (sgMail.setApiKey as jest.Mock) = jest.fn();
+    mockRequest = jest.fn().mockResolvedValue({ body: {} });
+    mockPost = jest.fn().mockReturnValue({ request: mockRequest });
+    (Mailjet.apiConnect as jest.Mock) = jest.fn().mockReturnValue({ post: mockPost });
 
     // Mock config values
-    (config as any).SENDGRID_API_KEY = 'test-api-key';
-    (config as any).SENDGRID_FROM_EMAIL = 'noreply@test.com';
+    (config as any).MAIL_API_KEY = 'test-api-key';
+    (config as any).MAIL_API_SECRET = 'test-api-secret';
+    (config as any).MAIL_FROM_EMAIL = 'noreply@test.com';
+    (config as any).MAIL_FROM_NAME = 'PACT Network';
     (config as any).NODE_ENV = 'test';
 
     // Mock logger methods
@@ -36,11 +39,8 @@ describe('EmailService', () => {
   });
 
   describe('constructor', () => {
-    it('should mock email sending in development mode', () => {
-      (config as any).NODE_ENV = 'development';
-      const devEmailService = new EmailService();
-      
-      expect(typeof sgMail.send).toBe('function');
+    it('should create a Mailjet client', () => {
+      expect(Mailjet.apiConnect).toHaveBeenCalledWith('test-api-key', 'test-api-secret');
     });
   });
 
@@ -55,47 +55,49 @@ describe('EmailService', () => {
     it('should send password setup email with correct parameters', async () => {
       await emailService.sendPasswordSetupEmail(mockParams);
 
-      expect(mockSgMailSend).toHaveBeenCalledTimes(1);
+      expect(mockPost).toHaveBeenCalledWith('send', { version: 'v3.1' });
+      expect(mockRequest).toHaveBeenCalledTimes(1);
       
-      const sentMessage = mockSgMailSend.mock.calls[0][0];
-      expect(sentMessage.to).toBe(mockParams.to);
-      expect(sentMessage.from).toBe('noreply@test.com');
-      expect(sentMessage.subject).toBe(`Set your password for ${mockParams.organizationName}`);
+      const sentPayload = mockRequest.mock.calls[0][0];
+      const message = sentPayload.Messages[0];
+      expect(message.To[0].Email).toBe(mockParams.to);
+      expect(message.From.Email).toBe('noreply@test.com');
+      expect(message.Subject).toBe(`Set your password for ${mockParams.organizationName}`);
     });
 
     it('should include user name in email content', async () => {
       await emailService.sendPasswordSetupEmail(mockParams);
 
-      const sentMessage = mockSgMailSend.mock.calls[0][0];
-      expect(sentMessage.html).toContain(mockParams.name);
+      const message = mockRequest.mock.calls[0][0].Messages[0];
+      expect(message.HTMLPart).toContain(mockParams.name);
     });
 
     it('should include organization name in email content', async () => {
       await emailService.sendPasswordSetupEmail(mockParams);
 
-      const sentMessage = mockSgMailSend.mock.calls[0][0];
-      expect(sentMessage.html).toContain(mockParams.organizationName);
+      const message = mockRequest.mock.calls[0][0].Messages[0];
+      expect(message.HTMLPart).toContain(mockParams.organizationName);
     });
 
     it('should include setup URL in email content', async () => {
       await emailService.sendPasswordSetupEmail(mockParams);
 
-      const sentMessage = mockSgMailSend.mock.calls[0][0];
-      expect(sentMessage.html).toContain(mockParams.setupUrl);
+      const message = mockRequest.mock.calls[0][0].Messages[0];
+      expect(message.HTMLPart).toContain(mockParams.setupUrl);
     });
 
     it('should mention 72 hour expiration in email content', async () => {
       await emailService.sendPasswordSetupEmail(mockParams);
 
-      const sentMessage = mockSgMailSend.mock.calls[0][0];
-      expect(sentMessage.html).toContain('72 hours');
+      const message = mockRequest.mock.calls[0][0].Messages[0];
+      expect(message.HTMLPart).toContain('72 hours');
     });
 
-    it('should handle SendGrid errors', async () => {
-      const error = new Error('SendGrid error');
-      mockSgMailSend.mockRejectedValueOnce(error);
+    it('should handle Mailjet errors', async () => {
+      const error = new Error('Mailjet error');
+      mockRequest.mockRejectedValueOnce(error);
 
-      await expect(emailService.sendPasswordSetupEmail(mockParams)).rejects.toThrow('SendGrid error');
+      await expect(emailService.sendPasswordSetupEmail(mockParams)).rejects.toThrow('Mailjet error');
     });
   });
 
@@ -111,40 +113,41 @@ describe('EmailService', () => {
     it('should send email verification with correct parameters', async () => {
       await emailService.sendEmailVerification(mockParams);
 
-      expect(mockSgMailSend).toHaveBeenCalledTimes(1);
+      expect(mockPost).toHaveBeenCalledWith('send', { version: 'v3.1' });
+      expect(mockRequest).toHaveBeenCalledTimes(1);
       
-      const sentMessage = mockSgMailSend.mock.calls[0][0];
-      expect(sentMessage.to).toBe(mockParams.to);
-      expect(sentMessage.from).toBe('noreply@test.com');
-      expect(sentMessage.subject).toBe(`Please verify your email address for ${mockParams.organizationName}`);
+      const message = mockRequest.mock.calls[0][0].Messages[0];
+      expect(message.To[0].Email).toBe(mockParams.to);
+      expect(message.From.Email).toBe('noreply@test.com');
+      expect(message.Subject).toBe(`Please verify your email address for ${mockParams.organizationName}`);
     });
 
     it('should include user name in email content', async () => {
       await emailService.sendEmailVerification(mockParams);
 
-      const sentMessage = mockSgMailSend.mock.calls[0][0];
-      expect(sentMessage.html).toContain(mockParams.name);
+      const message = mockRequest.mock.calls[0][0].Messages[0];
+      expect(message.HTMLPart).toContain(mockParams.name);
     });
 
     it('should include verification URL in email content', async () => {
       await emailService.sendEmailVerification(mockParams);
 
-      const sentMessage = mockSgMailSend.mock.calls[0][0];
-      expect(sentMessage.html).toContain(mockParams.verificationUrl);
+      const message = mockRequest.mock.calls[0][0].Messages[0];
+      expect(message.HTMLPart).toContain(mockParams.verificationUrl);
     });
 
     it('should mention 24 hour expiration in email content', async () => {
       await emailService.sendEmailVerification(mockParams);
 
-      const sentMessage = mockSgMailSend.mock.calls[0][0];
-      expect(sentMessage.html).toContain('24 hours');
+      const message = mockRequest.mock.calls[0][0].Messages[0];
+      expect(message.HTMLPart).toContain('24 hours');
     });
 
-    it('should handle SendGrid errors', async () => {
-      const error = new Error('SendGrid error');
-      mockSgMailSend.mockRejectedValueOnce(error);
+    it('should handle Mailjet errors', async () => {
+      const error = new Error('Mailjet error');
+      mockRequest.mockRejectedValueOnce(error);
 
-      await expect(emailService.sendEmailVerification(mockParams)).rejects.toThrow('SendGrid error');
+      await expect(emailService.sendEmailVerification(mockParams)).rejects.toThrow('Mailjet error');
     });
   });
 
@@ -158,35 +161,36 @@ describe('EmailService', () => {
     it('should send connection request email with correct parameters', async () => {
       await emailService.sendConnectionRequestEmail(mockParams);
 
-      expect(mockSgMailSend).toHaveBeenCalledTimes(1);
+      expect(mockPost).toHaveBeenCalledWith('send', { version: 'v3.1' });
+      expect(mockRequest).toHaveBeenCalledTimes(1);
       
-      const sentMessage = mockSgMailSend.mock.calls[0][0];
-      expect(sentMessage.to).toBe(mockParams.to);
-      expect(sentMessage.from).toBe('noreply@test.com');
-      expect(sentMessage.subject).toBe('Connection Request from PACT Network');
+      const message = mockRequest.mock.calls[0][0].Messages[0];
+      expect(message.To[0].Email).toBe(mockParams.to);
+      expect(message.From.Email).toBe('noreply@test.com');
+      expect(message.Subject).toBe('Connection Request from PACT Network');
     });
 
     it('should include user name in email content', async () => {
       await emailService.sendConnectionRequestEmail(mockParams);
 
-      const sentMessage = mockSgMailSend.mock.calls[0][0];
-      expect(sentMessage.text).toContain(mockParams.name);
-      expect(sentMessage.html).toContain(mockParams.name);
+      const message = mockRequest.mock.calls[0][0].Messages[0];
+      expect(message.TextPart).toContain(mockParams.name);
+      expect(message.HTMLPart).toContain(mockParams.name);
     });
 
     it('should include organization name in email content', async () => {
       await emailService.sendConnectionRequestEmail(mockParams);
 
-      const sentMessage = mockSgMailSend.mock.calls[0][0];
-      expect(sentMessage.text).toContain(mockParams.organizationName);
-      expect(sentMessage.html).toContain(mockParams.organizationName);
+      const message = mockRequest.mock.calls[0][0].Messages[0];
+      expect(message.TextPart).toContain(mockParams.organizationName);
+      expect(message.HTMLPart).toContain(mockParams.organizationName);
     });
 
     it('should include management link in HTML content', async () => {
       await emailService.sendConnectionRequestEmail(mockParams);
 
-      const sentMessage = mockSgMailSend.mock.calls[0][0];
-      expect(sentMessage.html).toContain('https://pact-directory-portal.onrender.com/manage-connections');
+      const message = mockRequest.mock.calls[0][0].Messages[0];
+      expect(message.HTMLPart).toContain('https://pact-directory-portal.onrender.com/manage-connections');
     });
 
     it('should log success message after sending', async () => {
@@ -195,11 +199,11 @@ describe('EmailService', () => {
       expect(logger.info).toHaveBeenCalledWith(`Email sent to ${mockParams.name}`);
     });
 
-    it('should throw SendGrid errors', async () => {
-      const error = new Error('SendGrid error');
-      mockSgMailSend.mockRejectedValueOnce(error);
+    it('should throw Mailjet errors', async () => {
+      const error = new Error('Mailjet error');
+      mockRequest.mockRejectedValueOnce(error);
 
-      await expect(emailService.sendConnectionRequestEmail(mockParams)).rejects.toThrow('SendGrid error');
+      await expect(emailService.sendConnectionRequestEmail(mockParams)).rejects.toThrow('Mailjet error');
     });
   });
 
@@ -213,44 +217,45 @@ describe('EmailService', () => {
     it('should send password reset email with correct parameters', async () => {
       await emailService.sendPasswordResetEmail(mockParams);
 
-      expect(mockSgMailSend).toHaveBeenCalledTimes(1);
+      expect(mockPost).toHaveBeenCalledWith('send', { version: 'v3.1' });
+      expect(mockRequest).toHaveBeenCalledTimes(1);
       
-      const sentMessage = mockSgMailSend.mock.calls[0][0];
-      expect(sentMessage.to).toBe(mockParams.to);
-      expect(sentMessage.from).toBe('noreply@test.com');
-      expect(sentMessage.subject).toBe('Password Reset Request - PACT Network');
+      const message = mockRequest.mock.calls[0][0].Messages[0];
+      expect(message.To[0].Email).toBe(mockParams.to);
+      expect(message.From.Email).toBe('noreply@test.com');
+      expect(message.Subject).toBe('Password Reset Request - PACT Network');
     });
 
     it('should include both text and HTML content', async () => {
       await emailService.sendPasswordResetEmail(mockParams);
 
-      const sentMessage = mockSgMailSend.mock.calls[0][0];
-      expect(sentMessage.text).toBeDefined();
-      expect(sentMessage.html).toBeDefined();
+      const message = mockRequest.mock.calls[0][0].Messages[0];
+      expect(message.TextPart).toBeDefined();
+      expect(message.HTMLPart).toBeDefined();
     });
 
     it('should include user name in email content', async () => {
       await emailService.sendPasswordResetEmail(mockParams);
 
-      const sentMessage = mockSgMailSend.mock.calls[0][0];
-      expect(sentMessage.text).toContain(mockParams.name);
-      expect(sentMessage.html).toContain(mockParams.name);
+      const message = mockRequest.mock.calls[0][0].Messages[0];
+      expect(message.TextPart).toContain(mockParams.name);
+      expect(message.HTMLPart).toContain(mockParams.name);
     });
 
     it('should include reset URL in email content', async () => {
       await emailService.sendPasswordResetEmail(mockParams);
 
-      const sentMessage = mockSgMailSend.mock.calls[0][0];
-      expect(sentMessage.text).toContain(mockParams.resetUrl);
-      expect(sentMessage.html).toContain(mockParams.resetUrl);
+      const message = mockRequest.mock.calls[0][0].Messages[0];
+      expect(message.TextPart).toContain(mockParams.resetUrl);
+      expect(message.HTMLPart).toContain(mockParams.resetUrl);
     });
 
     it('should mention 15 minute expiration in email content', async () => {
       await emailService.sendPasswordResetEmail(mockParams);
 
-      const sentMessage = mockSgMailSend.mock.calls[0][0];
-      expect(sentMessage.text).toContain('15 minutes');
-      expect(sentMessage.html).toContain('15 minutes');
+      const message = mockRequest.mock.calls[0][0].Messages[0];
+      expect(message.TextPart).toContain('15 minutes');
+      expect(message.HTMLPart).toContain('15 minutes');
     });
 
     it('should log success message after sending', async () => {
@@ -259,17 +264,18 @@ describe('EmailService', () => {
       expect(logger.info).toHaveBeenCalledWith(`Password reset email sent to ${mockParams.to}`);
     });
 
-    it('should throw SendGrid errors', async () => {
-      const error = new Error('SendGrid error');
-      mockSgMailSend.mockRejectedValueOnce(error);
+    it('should throw Mailjet errors', async () => {
+      const error = new Error('Mailjet error');
+      mockRequest.mockRejectedValueOnce(error);
 
-      await expect(emailService.sendPasswordResetEmail(mockParams)).rejects.toThrow('SendGrid error');
+      await expect(emailService.sendPasswordResetEmail(mockParams)).rejects.toThrow('Mailjet error');
     });
   });
 
-  describe('Development mode behavior', () => {
+  describe('Mock mode behavior', () => {
     it('should mock email sending and log when api key env var is not present', async () => {
-      (config as any).SENDGRID_API_KEY = '';
+      (config as any).MAIL_API_KEY = '';
+      (config as any).MAIL_API_SECRET = '';
       const devEmailService = new EmailService();
 
       const mockParams = {
@@ -281,9 +287,9 @@ describe('EmailService', () => {
 
       await devEmailService.sendPasswordSetupEmail(mockParams);
 
-      // In development mode, the mock should log the message
-      expect(logger.debug).toHaveBeenCalledWith('--- SENDGRID MOCK SEND ---');
-      expect(logger.debug).toHaveBeenCalledWith('--- END SENDGRID MOCK SEND ---');
+      expect(logger.debug).toHaveBeenCalledWith('--- MAILJET MOCK SEND ---');
+      expect(logger.debug).toHaveBeenCalledWith('--- END MAILJET MOCK SEND ---');
+      expect(mockRequest).not.toHaveBeenCalled();
     });
   });
 });

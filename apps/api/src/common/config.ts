@@ -40,7 +40,9 @@ export default {
   JWT_SECRET: required('JWT_SECRET'),
   JWT_EXP: int('JWT_EXP', 21600), // Default to 6 hours
   EMAIL_VERIFICATION_EXP: int('EMAIL_VERIFICATION_EXP', 21600), // Default to 6 hours
-  SENDGRID_API_KEY: process.env.SENDGRID_API_KEY ?? '',
-  SENDGRID_FROM_EMAIL: process.env.SENDGRID_FROM_EMAIL ?? '',
+  MAIL_API_KEY: process.env.MAIL_API_KEY ?? '',
+  MAIL_API_SECRET: process.env.MAIL_API_SECRET ?? '',
+  MAIL_FROM_EMAIL: process.env.MAIL_FROM_EMAIL ?? 'info@carbon-transparency.org',
+  MAIL_FROM_NAME: process.env.MAIL_FROM_NAME ?? 'PACT Network',
   ENABLE_OPENAPI_VALIDATION: bool('ENABLE_OPENAPI_VALIDATION'),
 };
