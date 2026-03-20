@@ -217,7 +217,7 @@ export class NodeService {
   }
 
   /**
-   * Delete a node (soft delete by setting status to inactive)
+   * Delete a node
    */
   async delete(context: UserContext, nodeId: number): Promise<{ success: boolean, nodeId: number }> {
     // Get the existing node
