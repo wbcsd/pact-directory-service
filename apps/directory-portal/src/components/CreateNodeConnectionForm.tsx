@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Callout,
+  Flex,
   Spinner,
   Text,
   Tooltip,
@@ -310,12 +311,10 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
           </Form.Control>
         </Form.Field>
 
-        <Box className="button-group">
+        <Flex justify="end" gap="3" mt="6">
           <Button 
             type="button" 
-            variant="soft"
-            color="gray"
-            className="cancel-button" 
+            color="jade"
             onClick={onCancel}
             disabled={creating}
           >
@@ -323,15 +322,14 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
           </Button>
           <Form.Submit asChild>
             <Button 
-              disabled={creating || availableNodes.length === 0} 
-              variant="soft"
-              className="submit-button"
+              type="submit"
+              disabled={creating || availableNodes.length === 0}
             >
               {creating && <Spinner loading />}
               {creating ? "Creating..." : "Create Invitation"}
             </Button>
           </Form.Submit>
-        </Box>
+        </Flex>
       </Form.Root>
 
       {status === "success" && (
@@ -348,7 +346,7 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
                 <Button size="2" variant="soft" color="green" onClick={() => { onCancel?.(); navigate(`/nodes/${targetNode?.id}`); }}>
                   Go to {targetNode?.name}
                 </Button>
-                <Button size="2" variant="soft" color="gray" onClick={onCancel}>
+                <Button size="2" color="jade" onClick={onCancel}>
                   Close
                 </Button>
               </Box>

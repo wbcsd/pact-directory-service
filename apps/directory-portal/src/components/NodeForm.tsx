@@ -234,7 +234,7 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
       <Flex gap="3" mt="2" justify="end">
         {onCancel && (
           <Box>
-          <Button type="button" onClick={onCancel}>
+          <Button type="button" color="jade" onClick={onCancel}>
             Cancel
           </Button></Box>
         )}

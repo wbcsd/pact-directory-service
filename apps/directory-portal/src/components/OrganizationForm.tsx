@@ -180,16 +180,13 @@ const OrganizationForm: React.FC<OrganizationFormProps> = ({
         </FormField>
 
         <Flex justify="end" gap="3" mt="6">
-          <Button
-            type="button"
-            variant="soft"
-            color="gray"
-            onClick={onCancel}
-          >
-            Cancel
-          </Button>
+          {onCancel && (
+            <Button type="button" color="jade" onClick={onCancel}>
+              Cancel
+            </Button>
+          )}
           <Form.Submit asChild>
-            <Button disabled={submitting} variant="soft">
+            <Button type="submit" disabled={submitting}>
               {submitting && <Spinner loading />}
               {submitting ? "Updating..." : "Update Organization"}
             </Button>
