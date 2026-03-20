@@ -1,23 +1,19 @@
 import React, { useState, useEffect, useCallback } from "react";
 import * as Form from "@radix-ui/react-form";
 import {
-  Box,
   Button,
-  TextField,
+  Flex,
   Text,
   Callout,
   Spinner,
-  Tooltip,
-  Select,
 } from "@radix-ui/themes";
 import {
   ExclamationTriangleIcon,
-  InfoCircledIcon,
   CheckIcon,
 } from "@radix-ui/react-icons";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import { useAuth } from "../contexts/AuthContext";
-import "./NodeForm.css"; // Reuse the same CSS
+import { FormField, TextField, SelectField } from "./ui";
 
 export interface UserFormData {
   fullName: string;
@@ -143,124 +139,71 @@ const UserForm: React.FC<UserFormProps> = ({
 
   if (loading) {
     return (
-      <Box className="node-form-loading">
+      <Flex direction="column" align="center" justify="center" gap="3" py="7">
         <Spinner loading />
         <Text>Loading user data...</Text>
-      </Box>
+      </Flex>
     );
   }
 
   return (
-    <Box className="node-form">
+    <div>
       <Form.Root autoComplete="off" onSubmit={handleSubmit}>
-        {/* Email Field */}
-        <Form.Field name="email">
-          <Form.Label className="field-label">
-            Email Address<span className="required-asterisk">*</span>
-          </Form.Label>
-          <Form.Control asChild>
-            <TextField.Root
-              autoComplete="off"
-              value={formData.email}
-              required
-              type="email"
-              placeholder="Enter email address"
-              onChange={handleChange}
-              className="editable-field"
-              disabled={isEditMode}
-            >
-              <TextField.Slot side="right">
-                <Tooltip content="The email address for the user" side="right" delayDuration={0}>
-                  <InfoCircledIcon
-                    width={20}
-                    height={20}
-                    color="var(--accent-12)"
-                    className="info-icon"
-                  />
-                </Tooltip>
-              </TextField.Slot>
-            </TextField.Root>
-          </Form.Control>
-          <Form.Message match="valueMissing" className="validation-message">
-            Email address is required.
-          </Form.Message>
-          <Form.Message match="typeMismatch" className="validation-message">
+        <FormField name="email" label="Email Address" required>
+          <TextField
+            required
+            type="email"
+            value={formData.email}
+            placeholder="Enter email address"
+            tooltip="The email address for the user"
+            disabled={isEditMode}
+            onChange={handleChange}
+          />
+          <Form.Message match="typeMismatch">
             Please enter a valid email address.
           </Form.Message>
-        </Form.Field>
+        </FormField>
 
-        {/* Full Name Field */}
-        <Form.Field name="fullName">
-          <Form.Label className="field-label">
-            Full Name<span className="required-asterisk">*</span>
-          </Form.Label>
-          <Form.Control asChild>
-            <TextField.Root
-              autoComplete="off"
-              value={formData.fullName}
-              required
-              placeholder="Enter full name"
-              onChange={handleChange}
-              className="editable-field"
-            >
-              <TextField.Slot side="right">
-                <Tooltip content="The full name of the user" side="right" delayDuration={0}>
-                  <InfoCircledIcon
-                    width={20}
-                    height={20}
-                    color="var(--accent-12)"
-                    className="info-icon"
-                  />
-                </Tooltip>
-              </TextField.Slot>
-            </TextField.Root>
-          </Form.Control>
-          <Form.Message match="valueMissing" className="validation-message">
-            Full name is required.
-          </Form.Message>
-        </Form.Field>
-
-        {/* Role Field */}
-        <Box className="form-field">
-          <Text className="field-label">
-            Role<span className="required-asterisk">*</span>
-          </Text>
-          <Select.Root value={formData.role} onValueChange={handleRoleChange}>
-            <Select.Trigger placeholder="Select a role" />
-            <Select.Content>
-              <Select.Item value="administrator">Administrator</Select.Item>
-              <Select.Item value="user">User</Select.Item>
-            </Select.Content>
-          </Select.Root>
-        </Box>
-
-        {/* Organization Info Display */}
-        <Box className="form-field">
-          <Text className="field-label">Organization</Text>
-          <TextField.Root
-            value={organizationName}
-            readOnly
-            disabled
-            className="readonly-field"
+        <FormField name="fullName" label="Full Name" required>
+          <TextField
+            required
+            value={formData.fullName}
+            placeholder="Enter full name"
+            tooltip="The full name of the user"
+            onChange={handleChange}
           />
-        </Box>
+        </FormField>
 
-        <Box className="button-group">
-          <Button 
-            type="button" 
+        <FormField name="role" label="Role" required>
+          <SelectField
+            value={formData.role}
+            required
+            options={[
+              { value: "administrator", label: "Administrator" },
+              { value: "user", label: "User" },
+            ]}
+            onValueChange={handleRoleChange}
+          />
+        </FormField>
+
+        <FormField name="organization" label="Organization">
+          <TextField
+            value={organizationName}
+            disabled
+          />
+        </FormField>
+
+        <Flex justify="end" gap="3" mt="6">
+          <Button
+            type="button"
             variant="soft"
             color="gray"
-            className="cancel-button" 
             onClick={onCancel}
           >
             Cancel
           </Button>
           <Form.Submit asChild>
-            <Button 
-              disabled={submitting}
-              variant="soft"
-              className="submit-button"
-            >
+            <Button disabled={submitting} variant="soft">
               {submitting && <Spinner loading />}
               {submitting
                 ? isEditMode
@@ -271,11 +214,11 @@ const UserForm: React.FC<UserFormProps> = ({
                   : "Create User"}
             </Button>
           </Form.Submit>
-        </Box>
+        </Flex>
       </Form.Root>
 
       {status === "success" && (
-        <Callout.Root color="green" highContrast variant="surface" mt={"4"}>
+        <Callout.Root color="green" highContrast variant="surface" mt="4">
           <Callout.Icon>
             <CheckIcon />
           </Callout.Icon>
@@ -286,7 +229,7 @@ const UserForm: React.FC<UserFormProps> = ({
       )}
 
       {status === "error" && (
-        <Callout.Root color="bronze" highContrast variant="surface" mt={"4"}>
+        <Callout.Root color="bronze" highContrast variant="surface" mt="4">
           <Callout.Icon>
             <ExclamationTriangleIcon />
           </Callout.Icon>
@@ -296,7 +239,7 @@ const UserForm: React.FC<UserFormProps> = ({
           </Callout.Text>
         </Callout.Root>
       )}
-    </Box>
+    </div>
   );
 };
 
