@@ -351,10 +351,10 @@ describe('NodeService', () => {
         updatedAt: new Date(),
       });
 
-      await expect(nodeService.delete(adminUserContext, 1)).rejects.toThrow(ForbiddenError);
+      await expect(nodeService.delete(regularUserContext, 1)).rejects.toThrow(ForbiddenError);
     });
 
-    it('should soft delete node by setting status to inactive', async () => {
+    it('should delete node', async () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
         id: 1,
         organizationId: 1,
@@ -369,11 +369,7 @@ describe('NodeService', () => {
       dbMocks.executors.execute.mockResolvedValueOnce(undefined);
 
       await nodeService.delete(adminUserContext, 1);
-
-      expect(dbMocks.db.updateTable).toHaveBeenCalledWith('nodes');
-      expect(dbMocks.queryChain.set).toHaveBeenCalledWith(
-        expect.objectContaining({ status: 'inactive' })
-      );
+      expect(dbMocks.db.deleteFrom).toHaveBeenCalledWith('nodes');
     });
   });
 
