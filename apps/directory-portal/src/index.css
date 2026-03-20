@@ -124,7 +124,6 @@
 
 body {
   margin: 0;
-  overflow: hidden;
   background: var(--color-background);
   color: var(--gray-12);
   color: var(--base-color-brand--blue);
@@ -180,15 +179,12 @@ code {
 
 /* ===== App Shell Layout ===== */
 .top-bar {
-  width: 100%;
   background: var(--color-panel-solid);
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 2rem;
   border-bottom: 1px solid var(--gray-6);
-  position: relative;
-  z-index: 10;
 }
 
 .logo {

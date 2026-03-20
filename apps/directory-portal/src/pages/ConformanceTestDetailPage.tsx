@@ -512,29 +512,13 @@ const ConformanceTestDetailPage: React.FC = () => {
 
                 {selectedTest.curlRequest && (
                   <Box className="code-block">
-                    <div className="code-content">
-                      <Text
-                        size="2"
-                        mb="4"
-                        dangerouslySetInnerHTML={{
-                          __html: selectedTest.curlRequest ?? "",
-                        }}
-                      />
-                    </div>
+                    <code>{selectedTest.curlRequest ?? ""}</code>
                   </Box>
                 )}
 
                 {selectedTest.apiResponse && (
                   <Box className="code-block">
-                    <div className="code-content">
-                      <Text
-                        size="2"
-                        mb="4"
-                        dangerouslySetInnerHTML={{
-                          __html: selectedTest.apiResponse ?? "",
-                        }}
-                      />
-                    </div>
+                    <code>{selectedTest.apiResponse ?? ""}</code>
                   </Box>
                 )}
               </Box>

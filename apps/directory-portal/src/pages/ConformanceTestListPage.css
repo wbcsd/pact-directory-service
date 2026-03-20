@@ -1,9 +1,0 @@
-.headerSubtext {
-  color: var(--gray-9);
-  font-size: 0.875rem;
-}
-
-.test-gridcell-datetime span {
-  text-wrap: nowrap;
-  white-space: nowrap;
-}

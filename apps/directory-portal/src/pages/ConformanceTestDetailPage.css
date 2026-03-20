@@ -16,7 +16,7 @@
 }
 
 .main {
-  height: 90vh;
+  height: calc(100vh - 81px);
   overflow-y: auto;
   overflow-x: hidden;
   transition: width 0.3s ease;
@@ -27,7 +27,7 @@
 }
 
 .main.split {
-  width: 70%;
+  width: 60%;
 }
 
 .spinner-container {
@@ -38,7 +38,7 @@
 
 .error-container {
   padding: 20px;
-  width: 30%;
+  width: 40%;
 }
 
 .result-summary {
@@ -112,7 +112,7 @@
 }
 
 .test-details-container {
-  width: 30%;
+  width: 40%;
 }
 
 .test-box {
@@ -144,14 +144,11 @@
 }
 
 .code-block {
-  background: var(--color-panel-solid);
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid var(--gray-4);
+  background-color: rgb(245, 245, 245);
+  font-size: var(--font-size-1);
+  padding: var(--space-2);
+  border-radius: var(--radius-2);
   margin-top: 20px;
-}
-
-.code-content {
   max-height: 300px;
   overflow-y: auto;
 }
