@@ -1,8 +1,6 @@
 import config from '@src/common/config';
 import logger from '@src/common/logger';
-import sgMail from '@sendgrid/mail';
-
-sgMail.setApiKey(config.SENDGRID_API_KEY);
+import Mailjet from 'node-mailjet';
 
 interface SendNotificationEmailParams {
   to: string;
@@ -17,18 +15,45 @@ interface SendPasswordResetEmailParams {
 }
 
 export class EmailService {
+  private mailjet: InstanceType<typeof Mailjet.Client>;
+  private mockMode: boolean;
 
   constructor() {
-    // In development mode, mock the send function to avoid sending real emails
-    if (!config.SENDGRID_API_KEY.trim()) {
-      sgMail.send = async (msg: any) => {
-        logger.debug('--- SENDGRID MOCK SEND ---');
-        logger.debug(msg);
-        logger.debug('--- END SENDGRID MOCK SEND ---');
-        await Promise.resolve(); // Added await to satisfy linter
-        return [{} as sgMail.ClientResponse, {}];
-      }
+    this.mockMode = !config.MAIL_API_KEY.trim() || !config.MAIL_API_SECRET.trim();
+
+    this.mailjet = Mailjet.apiConnect(
+      config.MAIL_API_KEY,
+      config.MAIL_API_SECRET,
+    );
+  }
+
+  private async sendEmail(params: {
+    to: string;
+    subject: string;
+    html: string;
+    text: string;
+  }): Promise<void> {
+    if (this.mockMode) {
+      logger.debug('--- MAILJET MOCK SEND ---');
+      logger.debug(params);
+      logger.debug('--- END MAILJET MOCK SEND ---');
+      return;
     }
+
+    await this.mailjet.post('send', { version: 'v3.1' }).request({
+      Messages: [
+        {
+          From: {
+            Email: config.MAIL_FROM_EMAIL,
+            Name: config.MAIL_FROM_NAME,
+          },
+          To: [{ Email: params.to }],
+          Subject: params.subject,
+          TextPart: params.text,
+          HTMLPart: params.html,
+        },
+      ],
+    });
   }
 
   /**
@@ -59,7 +84,6 @@ export class EmailService {
       </div>
     `;
 
-    // text content array as fallback
     const textContent = [
       `Hello ${name},`,
       '',
@@ -75,12 +99,11 @@ export class EmailService {
       'The PACT Team',
     ].join('\n');
     
-    await sgMail.send({
+    await this.sendEmail({
       to,
-      from: config.SENDGRID_FROM_EMAIL,
       subject: `Set your password for ${organizationName}`,
       html: htmlContent,
-      text: textContent
+      text: textContent,
     });
     logger.info(`Password setup email sent to ${to}`);
   }
@@ -125,9 +148,8 @@ export class EmailService {
       'The PACT Team',
     ].join('\n');
 
-    await sgMail.send({
+    await this.sendEmail({
       to,
-      from: config.SENDGRID_FROM_EMAIL,
       subject: `Please verify your email address for ${organizationName}`,
       html: htmlContent,
       text: textContent,
@@ -140,15 +162,12 @@ export class EmailService {
     name,
     organizationName: companyName,
   }: SendNotificationEmailParams) {
-    const msg = {
+    await this.sendEmail({
       to,
-      from: config.SENDGRID_FROM_EMAIL, // Use the email address or domain you verified with SendGrid
       subject: 'Connection Request from PACT Network',
       text: `Hello ${name},\n\n${companyName} has requested to connect with your organization on the PACT Network. Please log in to your account to accept or reject the request.\n\nBest regards,\nThe PACT Network Team`,
       html: `<p>Hello ${name},</p><p>${companyName} has requested to connect with your organization on the PACT Network. Please log in to your account to accept or reject the request.</p><p>You can manage your connections from https://pact-directory-portal.onrender.com/manage-connections</p><p>Best regards,<br>The PACT Network</p>`,
-    };
-
-    await sgMail.send(msg);
+    });
     logger.info(`Email sent to ${name}`);
   }
 
@@ -194,15 +213,12 @@ export class EmailService {
       </div>
     `;
 
-    const msg = {
+    await this.sendEmail({
       to,
-      from: config.SENDGRID_FROM_EMAIL,
       subject: 'Password Reset Request - PACT Network',
       text: textContent,
       html: htmlContent,
-    };
-
-    await sgMail.send(msg);
+    });
     logger.info(`Password reset email sent to ${to}`);
   }
 }
