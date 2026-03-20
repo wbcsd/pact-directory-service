@@ -180,7 +180,7 @@ function DataTable<T extends object>({
   }
 
   return (
-    <Table.Root variant="surface">
+    <Table.Root variant="surface" className="data-table">
       <Table.Header>
         <Table.Row>
           {selectable && (
@@ -205,7 +205,7 @@ function DataTable<T extends object>({
                   <Flex
                     align="center"
                     style={{
-                      opacity: sortConfig.key === column.key ? 1 : 0.4,
+                      opacity: sortConfig.key === column.key ? 1 : 0.5,
                     }}
                   >
                     {sortConfig.key === column.key && sortConfig.direction === "asc" ? (

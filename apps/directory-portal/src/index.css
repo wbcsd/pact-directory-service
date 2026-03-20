@@ -92,6 +92,19 @@
   --jade-a10: #00b88a;
 }
 
+/* ===== DataTable Header — brand primary background + white text ===== */
+.data-table .rt-TableHeader {
+  background-color: var(--indigo-9);
+}
+
+.data-table .rt-TableHeader .rt-TableCell {
+  color: white;
+}
+
+.data-table .rt-TableHeader svg {
+  color: white;
+}
+
 /* ===== Global Resets ===== */
 *,
 *::before,
