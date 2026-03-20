@@ -13,7 +13,6 @@ import {
   ExclamationTriangleIcon,
   CheckIcon,
 } from "@radix-ui/react-icons";
-import useBodyOverflow from "../utils/use-body-overflow";
 import { LandingPageLayout } from "../layouts";
 import { FormField, TextField } from "../components/ui";
 
@@ -31,8 +30,6 @@ const SignupPage: React.FC = () => {
   const [organizationNameExists, setOrganizationNameExists] = useState(false);
 
   const [creatingAccount, setCreatingAccount] = useState(false);
-
-  useBodyOverflow(false);
 
   const checkOrganizationNameExists = async (name: string): Promise<boolean> => {
     try {

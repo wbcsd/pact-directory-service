@@ -5,7 +5,6 @@ import { Box, Button, Callout, Text } from "@radix-ui/themes";
 import { useNavigate, Link } from "react-router-dom";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { useAuth } from "../contexts/AuthContext";
-import useBodyOverflow from "../utils/use-body-overflow";
 import { LandingPageLayout } from "../layouts";
 import { FormField, TextField } from "../components/ui";
 
@@ -17,8 +16,6 @@ const LoginPage: React.FC = () => {
     password: "",
   });
   const [errorMessage, setErrorMessage] = useState("");
-
-  useBodyOverflow(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
