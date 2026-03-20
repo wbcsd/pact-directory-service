@@ -6,7 +6,6 @@ import { proxyWithAuth } from "../utils/auth-fetch";
 import StatusBadge from "../components/StatusBadge";
 import PaginatedDataTable, { PaginationInfo } from "../components/PaginatedDataTable";
 import { Column } from "../components/DataTable";
-import "./ConformanceTestListPage.css";
 import GridPageLayout from "../layouts/GridPageLayout";
 
 interface TestRun {

@@ -10,7 +10,6 @@ import { GridPageLayout } from "../layouts";
 import PolicyGuard from "../components/PolicyGuard";
 import SlideOverPanel from "../components/SlideOverPanel";
 import UserForm from "../components/UserForm";
-import "./OrganizationUsers.css";
 
 export interface User {
   id: number;
