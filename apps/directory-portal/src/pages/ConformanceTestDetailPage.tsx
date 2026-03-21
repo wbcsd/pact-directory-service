@@ -320,12 +320,11 @@ const ConformanceTestDetailPage: React.FC = () => {
 
   if (isNewTest) {
     return (
-      <FunctionalPageLayout 
-        wrapInMain={false}
+      <FormPageLayout 
+        title="Run Conformance Tests"
         loading={isSubmitting} 
         loadingMessage="Running conformance tests against your API..."
         >
-        <main className="main">
           <div className="header">
             <h2>Run conformance tests</h2>
             <p>
@@ -342,19 +341,18 @@ const ConformanceTestDetailPage: React.FC = () => {
             </Callout.Root>
           )}
           <ConformanceTestForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
-        </main>
-      </FunctionalPageLayout>
+      </FormPageLayout>
     );
   }
 
   return (
-    <FunctionalPageLayout
-      wrapInMain={false}
+    <FormPageLayout
+      title={`Test Run - ${testRunId?.substring(0, 8)}`}
       loading={isLoading}
       loadingMessage="Loading test results ..."
     >
       {error ? (
-        <main className="main">
+        <>
           <h2>Conformance Test Result</h2>
           <Callout.Root color="red" size="2">
             <Callout.Icon>
@@ -367,7 +365,7 @@ const ConformanceTestDetailPage: React.FC = () => {
               Back to Testing Form
             </Button>
           </Box>
-        </main>
+        </>
       ) : (
         <>
           <main className={`main ${selectedTest ? "split" : "full-width"}`}>
@@ -523,7 +521,7 @@ const ConformanceTestDetailPage: React.FC = () => {
           )}
         </>
       )}
-    </FunctionalPageLayout>
+    </FormPageLayout>
   );
 };
 

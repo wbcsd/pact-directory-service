@@ -12,7 +12,7 @@ import {
 } from "@radix-ui/themes";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
-import FunctionalPageLayout from "../layouts/FunctionalPageLayout";
+import FormPageLayout from "../layouts/FormPageLayout";
 import CodeBlock from "../components/CodeBlock";
 import { LazyLog } from "@melloware/react-logviewer";
 import { fetchWithAuth } from "../utils/auth-fetch";
@@ -130,16 +130,16 @@ const ActivityLogDetailPage: React.FC = () => {
 
   if (!path) {
     return (
-      <FunctionalPageLayout>
+      <FormPageLayout title="Activity Logs">
         <Box style={{ padding: "2rem" }}>
           <Text color="red">No path specified</Text>
         </Box>
-      </FunctionalPageLayout>
+      </FormPageLayout>
     );
   }
 
   return (
-    <FunctionalPageLayout loading={loading} loadingMessage="Loading activity logs...">
+    <FormPageLayout title="Activity Logs" loading={loading} loadingMessage="Loading activity logs...">
       <Box style={{ padding: "2rem" }}>
         <Flex direction="column" gap="4">
           <Flex justify="between" align="center">
@@ -252,7 +252,7 @@ const ActivityLogDetailPage: React.FC = () => {
           )}
         </Flex>
       </Box>
-    </FunctionalPageLayout>
+    </FormPageLayout>
   );
 };
 
