@@ -19,23 +19,12 @@ const FormPageLayout: React.FC<FormPageLayoutProps> = ({
   actions,
   children,
   loading,
-  loadingMessage,
-  maxWidth = "800px",
+  loadingMessage
 }) => {
   return (
     <FunctionalPageLayout loading={loading} loadingMessage={loadingMessage}>
       <PageHeader title={title} subtitle={subtitle} actions={actions} />
-      <div>
-        <Box 
-          className="form-container" 
-          style={{ 
-            maxWidth,
-            margin: "0 auto"
-          }}
-        >
-          {children}
-        </Box>
-      </div>
+      {children}
     </FunctionalPageLayout>
   );
 };

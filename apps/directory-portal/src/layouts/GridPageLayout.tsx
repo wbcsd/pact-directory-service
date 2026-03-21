@@ -22,7 +22,7 @@ const GridPageLayout: React.FC<GridPageLayoutProps> = ({
   return (
     <FunctionalPageLayout loading={loading} loadingMessage={loadingMessage}>
       <PageHeader title={title} subtitle={subtitle} actions={actions} />
-      <div>{children}</div>
+      {children}
     </FunctionalPageLayout>
   );
 };
