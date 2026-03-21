@@ -1,0 +1,25 @@
+.slide-over-dialog[data-state="open"] {
+  animation: slide-in-right 0.25s ease-out;
+}
+
+.slide-over-dialog[data-state="closed"] {
+  animation: slide-out-right 0.2s ease-in;
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-out-right {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
