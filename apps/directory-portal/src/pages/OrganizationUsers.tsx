@@ -260,7 +260,7 @@ const OrganizationUsers: React.FC = () => {
       loading={isAuthenticated && !profileData}
       loadingMessage="Loading profile data..."
       actions={
-        <PolicyGuard policies={["edit-users"]}>
+        <PolicyGuard policies={["edit-all-users","edit-users"]}>
           <Button onClick={() => setPanel({ mode: "add" })}>
             <PlusIcon />
             <span style={{ marginLeft: '4px' }}>Add User</span>
@@ -338,6 +338,7 @@ const OrganizationUsers: React.FC = () => {
         onClose={closePanel}
         title={panelTitle}
         subtitle={panelSubtitle}
+        slide={true}
       >
         {panel.mode === "add" && profileData?.organizationId && (
           <UserForm

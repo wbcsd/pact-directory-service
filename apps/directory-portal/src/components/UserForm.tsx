@@ -44,7 +44,7 @@ const UserForm: React.FC<UserFormProps> = ({
   const [formData, setFormData] = useState<UserFormData>({
     fullName: "",
     email: "",
-    role: "",
+    role: "user",
   });
   const [readOnlyOrganization, setReadOnlyOrganization] = useState("");
   const [status, setStatus] = useState<null | "success" | "error">(null);
@@ -137,6 +137,14 @@ const UserForm: React.FC<UserFormProps> = ({
   const organizationName =
     readOnlyOrganization || profileData?.organizationName || "";
 
+  let roleOptions = [ { value: "user", label: "User" }];
+  if (profileData?.role === "administrator" || profileData?.role === "root") {
+    roleOptions.unshift({ value: "administrator", label: "Administrator" });
+  }
+  if (profileData?.role === "root") {
+    roleOptions.unshift({ value: "root", label: "Root" });
+  }
+
   if (loading) {
     return (
       <Flex direction="column" align="center" justify="center" gap="3" py="7">
@@ -178,10 +186,7 @@ const UserForm: React.FC<UserFormProps> = ({
           <SelectField
             value={formData.role}
             required
-            options={[
-              { value: "administrator", label: "Administrator" },
-              { value: "user", label: "User" },
-            ]}
+            options={roleOptions}
             onValueChange={handleRoleChange}
           />
         </FormField>
