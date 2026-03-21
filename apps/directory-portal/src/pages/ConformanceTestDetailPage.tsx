@@ -3,18 +3,15 @@ import { Heading, Text, Button, Box, Badge, Callout } from "@radix-ui/themes";
 import {
   ExclamationTriangleIcon,
   ReaderIcon,
-  DoubleArrowRightIcon,
 } from "@radix-ui/react-icons";
 import DataTable, { Column } from "../components/DataTable";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { proxyWithAuth } from "../utils/auth-fetch";
-import CodeIcon from "../components/CodeIcon";
 import CodeBlock from "../components/CodeBlock";
-import ConformanceTestForm, {
-  ConformanceTestFormData,
-} from "../components/ConformanceTestForm";
-import { FunctionalPageLayout } from "../layouts";
+import ConformanceTestForm, { ConformanceTestFormData } from "../components/ConformanceTestForm";
+import { FormPageLayout } from "../layouts";
+import SlideOverPanel from "../components/SlideOverPanel";
 import "./ConformanceTestDetailPage.css";
 
 export interface TestCase {
@@ -161,6 +158,7 @@ const ConformanceTestDetailPage: React.FC = () => {
   const [organizationName, setOrganizationName] = useState("");
   const [adminName, setAdminName] = useState("");
   const [adminEmail, setAdminEmail] = useState("");
+  const [testRunDate, setTestRunDate] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
@@ -227,6 +225,7 @@ const ConformanceTestDetailPage: React.FC = () => {
         setOrganizationName(data.organizationName);
         setAdminName(data.adminName);
         setAdminEmail(data.adminEmail);
+        setTestRunDate(data.timestamp);
         setIsLoading(false);
 
         // Poll for updates if there are pending test cases
@@ -256,11 +255,8 @@ const ConformanceTestDetailPage: React.FC = () => {
     };
   }, [testRunId, isNewTest, navigate]);
 
-  const selectTestAndScroll = (test: TestCase) => {
+  const selectTest = (test: TestCase) => {
     setSelectedTest(test);
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }, 0);
   };
 
   const columns: Column<TestCase>[] = [
@@ -269,7 +265,7 @@ const ConformanceTestDetailPage: React.FC = () => {
       header: "Test Case",
       render: (test) => (
         <span
-          onClick={() => selectTestAndScroll(test)}
+          onClick={() => selectTest(test)}
           className={`clickable ${
             selectedTest?.testKey === test.testKey ? "selected" : ""
           }`}
@@ -284,32 +280,13 @@ const ConformanceTestDetailPage: React.FC = () => {
             key: "status",
             header: "Status",
             render: (test: TestCase) => (
-              <Badge color={getStatusColor(test)}>{getStatusText(test)}</Badge>
+              <Badge m="-1" color={getStatusColor(test)}>{getStatusText(test)}</Badge>
             ),
           },
           {
             key: "mandatory",
-            header: "Mandatory Test?",
+            header: "Mandatory",
             render: (test: TestCase) => test.mandatory,
-          },
-          {
-            key: "actions",
-            header: "",
-            render: (test: TestCase) => (
-              <Button
-                onClick={() => selectTestAndScroll(test)}
-                style={{
-                  background: "transparent",
-                  color: "var(--accent-12)",
-                  border: "1px solid var(--gray-4)",
-                  padding: "8px 12px",
-                  minHeight: "0",
-                }}
-              >
-                <CodeIcon />
-                Details
-              </Button>
-            ),
           },
         ]
       : []),
@@ -368,42 +345,18 @@ const ConformanceTestDetailPage: React.FC = () => {
         </>
       ) : (
         <>
-          <main className={`main ${selectedTest ? "split" : "full-width"}`}>
-            <div className="header">
-              <div>
-                <h2>
-                  Test Run ID {testRunId?.substring(0, 8)}{" "}
-                  <Badge
-                    style={{
-                      verticalAlign: "middle",
-                      color: "#84A0FF",
-                      marginLeft: "10px",
-                    }}
-                  >
-                    Testing conformance to {techSpecVersion}
-                  </Badge>
-                </h2>
-                <p style={{ color: "#888", fontSize: "0.875rem" }}>
-                  Review the test cases that were executed against your API
-                </p>
-              </div>
-              {profileData?.role === "administrator" && (
-                <div>
-                  <div>{organizationName}</div>
-                  <div>{adminName}</div>
-                  <div>{adminEmail}</div>
-                </div>
-              )}
-              {(profileData?.role !== "administrator" ||
-                profileData?.email === adminEmail) && (
-                <Button onClick={() => navigate("/conformance-test-runs/new")}>
-                  Run new test
-                </Button>
-              )}
-            </div>
-
-            <div className="result-summary">
               <Box className="summary-card">
+                <div>
+                  <div><Text size="2" weight="bold">Tech Spec:</Text> <Text size="2">{techSpecVersion}</Text></div>
+                  {["administrator", "root"].includes(profileData?.role ?? "") && (                  
+                  <>
+                    <div><Text size="2" weight="bold">Organization:</Text> <Text size="2">{organizationName}</Text></div>
+                    <div><Text size="2" weight="bold">Email:</Text> <Text size="2">{adminEmail}</Text></div>
+                  </>
+                  )}
+                  {testRunDate && <div><Text size="2" weight="bold">Date:</Text> <Text size="2">{new Date(testRunDate).toLocaleDateString()}</Text></div>}
+                </div>
+
                 <Box width={"80%"}>
                   <Text size="2">Mandatory Tests</Text>
                   <div className="mandatory-bar" role="img" aria-label="Mandatory test outcomes">
@@ -431,13 +384,12 @@ const ConformanceTestDetailPage: React.FC = () => {
                   </Heading>
                 </Box>
               </Box>
-            </div>
 
             <DataTable<TestCase>
               idColumnName="testKey"
               data={testCases.sort(sortTestCases)}
               columns={columns}
-              onRowClick={(row) => selectTestAndScroll(row)}
+              onRowClick={(row) => selectTest(row)}
               isLoading={isLoading}
               error={error}
               emptyState={{
@@ -447,57 +399,32 @@ const ConformanceTestDetailPage: React.FC = () => {
             {testCases.length === 0 && (
               <div className="no-tests">No test cases available.</div>
             )}
-          </main>
 
-          {selectedTest && (
-            <div className="test-details-container">
-              <Box id="test-details" className="test-box">
-                <Box className="test-box-header">
-                  <Heading as="h2" size="4">
-                    {selectedTest.name}
-                  </Heading>
-                  <Box className="test-box-actions">
-                    <Badge color={getStatusColor(selectedTest)}>
-                      {getStatusText(selectedTest)}
-                    </Badge>
-                    <Button
-                      onClick={() => setSelectedTest(null)}
-                      variant="ghost"
-                      size="1"
-                      style={{
-                        background: "transparent",
-                        color: "#888",
-                        border: "none",
-                        padding: "4px 8px",
-                        cursor: "pointer",
-                      }}
-                      title="Close panel"
-                    >
-                      Close Panel <DoubleArrowRightIcon />
-                    </Button>
-                  </Box>
+          <SlideOverPanel
+            slide
+            open={!!selectedTest}
+            onClose={() => setSelectedTest(null)}
+            title={selectedTest?.name ?? ""}
+            subtitle={selectedTest?.mandatory === "Yes" ? "Mandatory" : "Optional"}
+          >
+            {selectedTest && (
+              <>
+                <Box mb="3">
+                  <Badge color={getStatusColor(selectedTest)}>
+                    {getStatusText(selectedTest)}
+                  </Badge>
                 </Box>
 
                 {selectedTest.documentationUrl && (
-                  <div className="documentation-section">
-                    <div>
-                      <ReaderIcon />{" "}
-                      <a
-                        style={{ textDecoration: "underline" }}
-                        href={selectedTest.documentationUrl}
-                      >
-                        View test documentation
-                      </a>
-                    </div>
-                    <Badge
-                      color={selectedTest.mandatory === "Yes" ? "blue" : "gray"}
-                      style={{ fontSize: "12px" }}
+                  <Box mb="3">
+                    <ReaderIcon style={{ display: "inline", verticalAlign: "middle" }} />{" "}
+                    <a
+                      style={{ textDecoration: "underline" }}
+                      href={selectedTest.documentationUrl}
                     >
-                      {selectedTest.mandatory === "Yes"
-                        ? "Mandatory"
-                        : "Optional"}
-                    </Badge>
-                  </div>
+                      View test documentation
+                    </a>
+                  </Box>
                 )}
 
                 <Text
@@ -516,9 +443,9 @@ const ConformanceTestDetailPage: React.FC = () => {
                 {selectedTest.apiResponse && (
                   <CodeBlock language="json">{selectedTest.apiResponse}</CodeBlock>
                 )}
-              </Box>
-            </div>
-          )}
+              </>
+            )}
+          </SlideOverPanel>
         </>
       )}
     </FormPageLayout>
