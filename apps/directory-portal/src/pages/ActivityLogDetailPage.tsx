@@ -13,6 +13,7 @@ import {
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import FunctionalPageLayout from "../layouts/FunctionalPageLayout";
+import CodeBlock from "../components/CodeBlock";
 import { LazyLog } from "@melloware/react-logviewer";
 import { fetchWithAuth } from "../utils/auth-fetch";
 
@@ -207,20 +208,9 @@ const ActivityLogDetailPage: React.FC = () => {
                             </Flex>
                             <Text>{log.message}</Text>
                             {log.content && (
-                              <Box
-                                style={{
-                                  backgroundColor: "#f5f5f5",
-                                  padding: "0.5rem",
-                                  borderRadius: "4px",
-                                  fontFamily: "monospace",
-                                  fontSize: "0.85em",
-                                  overflow: "auto",
-                                }}
-                              >
-                                <pre style={{ margin: 0 }}>
-                                  {JSON.stringify(log.content, null, 2)}
-                                </pre>
-                              </Box>
+                              <CodeBlock language="json">
+                                {JSON.stringify(log.content)}
+                              </CodeBlock>
                             )}
                             {(log.nodeId || log.organizationId || log.userId) && (
                               <Flex gap="2" wrap="wrap">
