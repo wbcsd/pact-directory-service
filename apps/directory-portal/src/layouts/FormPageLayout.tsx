@@ -1,5 +1,4 @@
 import React from "react";
-import { Box } from "@radix-ui/themes";
 import FunctionalPageLayout from "./FunctionalPageLayout";
 import PageHeader from "../components/PageHeader";
 

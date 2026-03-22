@@ -105,6 +105,11 @@
   color: white;
 }
 
+/* ===== Badge: small caps ===== */
+.rt-Badge {
+  font-variant: all-small-caps;
+}
+
 /* ===== Global Resets ===== */
 *,
 *::before,

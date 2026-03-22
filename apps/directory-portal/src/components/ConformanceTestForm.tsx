@@ -165,10 +165,8 @@ const ConformanceTestForm: React.FC<ConformanceTestFormProps> = ({
         <FormField           
           name="authOptionsResource"
           label="Resource"
-          required
         >
           <TextField 
-            required
             placeholder="Resource used for authentication"
             value={formData.authOptionsResource}
             onChange={handleChange}

@@ -3,7 +3,6 @@ import {
   Box,
   Card,
   Text,
-  Heading,
   Flex,
   Button,
   ScrollArea,
@@ -139,20 +138,14 @@ const ActivityLogDetailPage: React.FC = () => {
   }
 
   return (
-    <FormPageLayout title="Activity Logs" loading={loading} loadingMessage="Loading activity logs...">
-      <Box style={{ padding: "2rem" }}>
-        <Flex direction="column" gap="4">
-          <Flex justify="between" align="center">
-            <Flex align="center" gap="3">
-              <Button
-                variant="soft"
-                onClick={() => navigate(-1)}
-              >
+    <FormPageLayout 
+      title="Activity Logs" 
+      loading={loading} 
+      loadingMessage="Loading activity logs..."
+      actions={<>
+              <Button variant="soft" onClick={() => navigate(-1)}>
                 <ArrowLeftIcon /> Back
               </Button>
-              <Heading size="6">Activity Logs</Heading>
-            </Flex>
-            <Flex gap="2">
               <Button
                 variant={viewMode === "table" ? "solid" : "soft"}
                 onClick={() => setViewMode("table")}
@@ -168,9 +161,9 @@ const ActivityLogDetailPage: React.FC = () => {
               <Button onClick={fetchLogs} variant="soft">
                 Refresh
               </Button>
-            </Flex>
-          </Flex>
-
+              </>
+      }
+      >
           <Card>
             <Flex direction="column" gap="2">
               <Text weight="bold">Path:</Text>
@@ -250,8 +243,6 @@ const ActivityLogDetailPage: React.FC = () => {
               />
             </Card>
           )}
-        </Flex>
-      </Box>
     </FormPageLayout>
   );
 };

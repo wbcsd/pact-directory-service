@@ -156,7 +156,7 @@ const ConformanceTestDetailPage: React.FC = () => {
   const [testCases, setTestCases] = useState<TestCase[]>([]);
   const [techSpecVersion, setTechSpecVersion] = useState("");
   const [organizationName, setOrganizationName] = useState("");
-  const [adminName, setAdminName] = useState("");
+  const [_adminName, setAdminName] = useState("");
   const [adminEmail, setAdminEmail] = useState("");
   const [testRunDate, setTestRunDate] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -298,17 +298,10 @@ const ConformanceTestDetailPage: React.FC = () => {
   if (isNewTest) {
     return (
       <FormPageLayout 
-        title="Run Conformance Tests"
+        title="Run Conformance Test"
         loading={isSubmitting} 
         loadingMessage="Running conformance tests against your API..."
         >
-          <div className="header">
-            <h2>Run conformance tests</h2>
-            <p>
-              Enter the required information to run the conformance tests
-              against your API implementation.
-            </p>
-          </div>
           {error && (
             <Callout.Root color="red" size="2">
               <Callout.Icon>
