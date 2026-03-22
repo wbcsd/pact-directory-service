@@ -15,9 +15,9 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, actions, subtitle }) => 
         <Text as="p" size="3" mb="6">{subtitle}</Text>
       </Box>
       {actions && 
-      <Box>
+      <Flex gap="2">
         {actions}
-      </Box>}
+      </Flex>}
     </Flex>
   );
 };

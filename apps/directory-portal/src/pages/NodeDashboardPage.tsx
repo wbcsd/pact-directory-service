@@ -6,6 +6,8 @@ import {
   Heading,
   Separator,
   Text,
+  Box,
+  Flex
 } from "@radix-ui/themes";
 import {
   ArrowLeftIcon,
@@ -17,8 +19,7 @@ import {
 } from "@radix-ui/react-icons";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import { useNavigate, useParams } from "react-router-dom";
-import FunctionalPageLayout from "../layouts/FunctionalPageLayout";
-import PageHeader from "../components/PageHeader";
+import { FormPageLayout } from "../layouts";
 import PaginatedDataTable, { PaginationInfo } from "../components/PaginatedDataTable";
 import { Column } from "../components/DataTable";
 import SlideOverPanel from "../components/SlideOverPanel";
@@ -246,30 +247,50 @@ const NodeDashboardPage: React.FC = () => {
   const panelSubtitle = nodeData?.name;
 
   return (
-    <FunctionalPageLayout wrapInMain={false}>
-      <main className="main node-dashboard-layout">
-        {/* ── Left / Main Content ── */}
-        <div className="node-dashboard-main">
-          {nodeLoading ? (
-            <div style={{ padding: "2rem", display: "flex", alignItems: "center", gap: "12px", color: "var(--gray-11)" }}>
-              <Text color="gray">Loading node...</Text>
-            </div>
-          ) : (
-            <>
-          <PageHeader
-            title={nodeData?.name ?? "Node"}
-            subtitle={nodeData?.organizationName}
-            actions={
-              <Button onClick={() => navigate("/nodes")}>
-                <ArrowLeftIcon /> Back to Nodes
-              </Button>
-            }
-          />
+    <FormPageLayout 
+      title={`Node ${nodeData?.name ?? ""}`}
+      subtitle={nodeData?.organizationName}
+      loading={nodeLoading}
+      loadingMessage="loading node..."
+      actions={
+        <>
+          <Button onClick={() => navigate("/nodes")}>
+            <ArrowLeftIcon /> Back
+          </Button>
+
+          <Button onClick={() => setPanel({ mode: "edit" })}>
+            <InputIcon /> Edit Node
+          </Button>
+
+          <Button onClick={() => setPanel({ mode: "connections" })}>
+            <Link2Icon /> Manage Connections
+            {pendingInvitationsCount > 0 && (
+              <span className="node-pending-badge">{pendingInvitationsCount}</span>
+            )}
+          </Button>
+
+          <Button onClick={() => setPanel({ mode: "createConnection" })}>
+            <PlusIcon /> Create Connection
+          </Button>
+
+          <Button color="red" disabled={deleting} onClick={handleDelete}>
+            <TrashIcon />
+            Delete Node
+          </Button>
+        </>
+      }>
 
           {nodeError && (
             <Callout.Root color="red" mb="4">
               <Callout.Icon><ExclamationTriangleIcon /></Callout.Icon>
               <Callout.Text>{nodeError}</Callout.Text>
+            </Callout.Root>
+          )}
+
+          {deleteError && (
+            <Callout.Root color="red" mb="2">
+              <Callout.Icon><ExclamationTriangleIcon /></Callout.Icon>
+              <Callout.Text>{deleteError}</Callout.Text>
             </Callout.Root>
           )}
 
@@ -298,7 +319,14 @@ const NodeDashboardPage: React.FC = () => {
 
           {/* PCF Exchange Section */}
           <section className="node-dashboard-section">
-            <Heading size="4" mb="3">PCF Exchange</Heading>
+            <Flex mb="3" gap="2">
+              <Box flexGrow="1">
+                <Heading size="4">PCF Exchange</Heading>
+              </Box>
+              <Button onClick={() => navigate(`/nodes/${nodeId}/footprints/new`)}>
+                <PlusIcon /> Add PCF
+              </Button>
+            </Flex>
             <div className="node-dashboard-placeholder">
               <Text color="gray" size="2">
                 PCF data exchange activity between this node and its connected peers will appear here.
@@ -327,66 +355,6 @@ const NodeDashboardPage: React.FC = () => {
               }
             />
           </section>
-            </>
-          )}
-        </div>
-
-        {/* ── Right / Quick Actions Sidebar ── */}
-        <aside className="node-dashboard-sidebar">
-          <Heading size="3" mb="3">Quick Actions</Heading>
-
-          <div className="node-quick-actions">
-            <Button
-              variant="soft"
-              className="node-quick-action-btn"
-              onClick={() => setPanel({ mode: "edit" })}
-            >
-              <InputIcon /> Edit Node
-            </Button>
-
-            <div className="node-quick-action-wrapper">
-              <Button
-                variant="soft"
-                className="node-quick-action-btn"
-                onClick={() => setPanel({ mode: "connections" })}
-              >
-                <Link2Icon /> Manage Connections
-              </Button>
-              {pendingInvitationsCount > 0 && (
-                <span className="node-pending-badge">{pendingInvitationsCount}</span>
-              )}
-            </div>
-
-            <Button
-              variant="soft"
-              className="node-quick-action-btn"
-              onClick={() => setPanel({ mode: "createConnection" })}
-            >
-              <PlusIcon /> Create Connection
-            </Button>
-
-            <Separator size="4" my="2" />
-
-            {deleteError && (
-              <Callout.Root color="red" mb="2">
-                <Callout.Icon><ExclamationTriangleIcon /></Callout.Icon>
-                <Callout.Text>{deleteError}</Callout.Text>
-              </Callout.Root>
-            )}
-
-            <Button
-              variant="soft"
-              color="red"
-              className="node-quick-action-btn"
-              disabled={deleting}
-              onClick={handleDelete}
-            >
-              <TrashIcon />
-              Delete Node
-            </Button>
-          </div>
-        </aside>
-      </main>
 
       {/* Slide-over panels */}
       <SlideOverPanel
@@ -418,7 +386,7 @@ const NodeDashboardPage: React.FC = () => {
           />
         )}
       </SlideOverPanel>
-    </FunctionalPageLayout>
+    </FormPageLayout>
   );
 };
 
