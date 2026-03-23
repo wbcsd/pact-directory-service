@@ -108,6 +108,10 @@ export function createInternalNodeRoutes(): Router {
    * List product footprints (PACT v3)
    */
   router.get("/:nodeId/3/footprints", authenticateInternalNode, nodeContext(async (req, res) => {
+    if (req.query.$filter) {
+      throw new BadRequestError("$filter is not supported. Use query parameters instead.");
+    }
+
     const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
     const offset = req.query.offset ? parseInt(req.query.offset as string, 10) : 0;
 
@@ -117,7 +121,7 @@ export function createInternalNodeRoutes(): Router {
       return param.split(',').map(s => s.trim());
     };
 
-    const result = req.services.internalNodePact.getFootprints(
+    const result = await req.services.internalNodePact.getFootprints(
       req.nodeId,
       {
         productId: parseArrayParam(req.query.productId as string | string[] | undefined),
@@ -146,7 +150,7 @@ export function createInternalNodeRoutes(): Router {
    * Get single product footprint by ID (PACT v3)
    */
   router.get("/:nodeId/3/footprints/:id", authenticateInternalNode, nodeContext(async (req) => {
-    const footprint = req.services.internalNodePact.getFootprintById(req.nodeId, req.params.id);
+    const footprint = await req.services.internalNodePact.getFootprintById(req.nodeId, req.params.id);
     if (!footprint) {
       throw new NotFoundError("Product footprint not found");
     }
@@ -169,6 +173,7 @@ export function createInternalNodeRoutes(): Router {
       eventSource: req.body.source,
     }, "Received PACT event for internal node");
 
+    await req.services.internalNodePact.handleEvent(req.nodeId, req.body);
     res.status(200).send();
   }));
 
