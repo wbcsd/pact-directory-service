@@ -11,6 +11,7 @@ export interface Database {
   connections: ConnectionTable;
   password_tokens: PasswordTokenTable;
   activity_logs: ActivityLogsTable;
+  pcfs: PcfsTable;
 }
 
 export interface OrganizationsTable {
@@ -98,4 +99,12 @@ export interface ActivityLogsTable {
   organizationId: number | null;
   userId: number | null;
   createdAt: Generated<Date>;
+}
+
+export interface PcfsTable {
+  id: Generated<string>; // UUID, auto-generated
+  nodeId: number;
+  pcf: Record<string, any>; // JSONB
+  createdAt: Generated<Date>;
+  updatedAt: Generated<Date>;
 }

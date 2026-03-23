@@ -298,6 +298,27 @@ components:
         clientId: { type: string }
         clientSecret: { type: string }
       required: [connectionId, clientId, clientSecret]
+    PcfData:
+      type: object
+      properties:
+        id: { type: string, format: uuid, description: "Unique PCF identifier" }
+        nodeId: { type: integer, description: "ID of the node this PCF belongs to" }
+        pcf: { type: object, additionalProperties: true, description: "Product Carbon Footprint data (JSONB)" }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+      required: [id, nodeId, pcf, createdAt, updatedAt]
+    CreatePcfRequest:
+      type: object
+      description: >
+        The request body is the PCF form data itself (stored as JSONB).
+        Any valid JSON object is accepted.
+      additionalProperties: true
+    DeletePcfResponse:
+      type: object
+      properties:
+        success: { type: boolean }
+        pcfId: { type: string, format: uuid }
+      required: [success, pcfId]
   responses:
     Unauthorized:
       description: Unauthorized
@@ -1247,6 +1268,118 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /directory/nodes/{id}/footprints:
+    post:
+      summary: Create a Product Carbon Footprint for a node
+      tags: [PCFs]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          description: Node ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreatePcfRequest" }
+      responses:
+        "201":
+          description: PCF created successfully
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PcfData" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    get:
+      summary: List Product Carbon Footprints for a node
+      tags: [PCFs]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          description: Node ID
+        - in: query
+          name: page
+          required: false
+          schema: { type: integer, minimum: 1, default: 1 }
+          description: Page number for pagination
+        - in: query
+          name: pageSize
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+          description: Number of items per page
+        - in: query
+          name: sortBy
+          required: false
+          schema: { type: string, enum: [createdAt, updatedAt] }
+          description: Field to sort by
+        - in: query
+          name: sortOrder
+          required: false
+          schema: { type: string, enum: [asc, desc], default: desc }
+          description: Sort order
+      responses:
+        "200":
+          description: List of PCFs for the node with pagination
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PcfData"
+                  pagination:
+                    $ref: "#/components/schemas/PaginationInfo"
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /directory/pcfs/{id}:
+    get:
+      summary: Get a single Product Carbon Footprint by ID
+      tags: [PCFs]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+          description: PCF ID
+      responses:
+        "200":
+          description: PCF details
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PcfData" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      summary: Delete a Product Carbon Footprint by ID
+      tags: [PCFs]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+          description: PCF ID
+      responses:
+        "200":
+          description: PCF deleted successfully
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DeletePcfResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /proxy/test:
     post:
       summary: Run test cases via proxy
@@ -1329,4 +1462,5 @@ tags:
   - name: Users
   - name: Organizations
   - name: Nodes
+  - name: PCFs
   - name: Proxy

@@ -312,6 +312,44 @@ router.post('/directory/node-connections/:id/credentials/rotate', authenticate, 
   );
 }));
 
+/////////////////// PCFs (Product Carbon Footprints)
+
+// Create a PCF for a node
+router.post('/directory/nodes/:id/footprints', authenticate, context(async (req, res) => {
+  const result = await req.services.pcfData.create(
+    req.context,
+    parseInt(req.params.id),
+    { pcf: req.body }
+  );
+  res.status(201);
+  return result;
+}));
+
+// List PCFs for a node
+router.get('/directory/nodes/:id/footprints', authenticate, context(async (req) => {
+  return req.services.pcfData.listByNode(
+    req.context,
+    parseInt(req.params.id),
+    ListQuery.parse(req.query)
+  );
+}));
+
+// Get a single PCF by ID
+router.get('/directory/pcfs/:id', authenticate, context(async (req) => {
+  return req.services.pcfData.get(
+    req.context,
+    req.params.id
+  );
+}));
+
+// Delete a PCF by ID
+router.delete('/directory/pcfs/:id', authenticate, context(async (req) => {
+  return req.services.pcfData.delete(
+    req.context,
+    req.params.id
+  );
+}));
+
 
 //////////////// Organization connections
 
