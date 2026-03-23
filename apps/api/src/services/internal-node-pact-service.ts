@@ -45,9 +45,9 @@ export class InternalNodePactService {
 
     if (filters.geography && filters.geography.length > 0) {
       filtered = filtered.filter((fp) => {
-        const country = fp.pcf.geography?.country?.toLowerCase();
-        const region = fp.pcf.geography?.regionOrSubregion?.toLowerCase();
-        const subdivision = fp.pcf.geography?.countrySubdivision?.toLowerCase();
+        const region = fp.pcf.geographyRegionOrSubregion?.toLowerCase();
+        const country = fp.pcf.geographyCountry?.toLowerCase();
+        const subdivision = fp.pcf.geographyCountrySubdivision?.toLowerCase();
         
         return filters.geography!.some((geo) => {
           const lowerGeo = geo.toLowerCase();
@@ -74,15 +74,15 @@ export class InternalNodePactService {
     if (filters.validOn) {
       const validOnDate = new Date(filters.validOn);
       filtered = filtered.filter((fp) => {
-        if (fp.validityPeriod?.start && fp.validityPeriod?.end) {
-          const start = new Date(fp.validityPeriod.start);
-          const end = new Date(fp.validityPeriod.end);
+        if (fp.validityPeriodStart && fp.validityPeriodEnd) {
+          const start = new Date(fp.validityPeriodStart);
+          const end = new Date(fp.validityPeriodEnd);
           return validOnDate >= start && validOnDate <= end;
         }
         // Fallback to reference period if validityPeriod not available
-        if (fp.pcf.referencePeriod) {
-          const start = new Date(fp.pcf.referencePeriod.start);
-          const end = new Date(fp.pcf.referencePeriod.end);
+        if (fp.pcf.referencePeriodStart && fp.pcf.referencePeriodEnd) {
+          const start = new Date(fp.pcf.referencePeriodStart);
+          const end = new Date(fp.pcf.referencePeriodEnd);
           return validOnDate >= start && validOnDate <= end;
         }
         return false;
@@ -93,9 +93,9 @@ export class InternalNodePactService {
     if (filters.validAfter) {
       const validAfterDate = new Date(filters.validAfter);
       filtered = filtered.filter((fp) => {
-        const validityStart = fp.validityPeriod?.start
-          ? new Date(fp.validityPeriod.start)
-          : new Date(fp.pcf.referencePeriod.start);
+        const validityStart = fp.validityPeriodStart
+          ? new Date(fp.validityPeriodStart)
+          : new Date(fp.pcf.referencePeriodStart);
         return validityStart >= validAfterDate;
       });
     }
@@ -104,9 +104,9 @@ export class InternalNodePactService {
     if (filters.validBefore) {
       const validBeforeDate = new Date(filters.validBefore);
       filtered = filtered.filter((fp) => {
-        const validityEnd = fp.validityPeriod?.end
-          ? new Date(fp.validityPeriod.end)
-          : new Date(fp.pcf.referencePeriod.end);
+        const validityEnd = fp.validityPeriodEnd
+          ? new Date(fp.validityPeriodEnd)
+          : new Date(fp.pcf.referencePeriodEnd);
         return validityEnd <= validBeforeDate;
       });
     }
