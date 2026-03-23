@@ -4,14 +4,12 @@ import PaginatedDataTable from "../components/PaginatedDataTable";
 import { Column } from "../components/DataTable";
 import { useAuth } from "../contexts/AuthContext";
 import { InputIcon, PlusIcon } from "@radix-ui/react-icons";
-import { Box, Button, Text } from "@radix-ui/themes";
+import { Box, Button, IconButton, Text } from "@radix-ui/themes";
 import StatusBadge from "../components/StatusBadge";
 import { GridPageLayout } from "../layouts";
-import ActionButton from "../components/ActionButton";
 import PolicyGuard from "../components/PolicyGuard";
 import SlideOverPanel from "../components/SlideOverPanel";
 import UserForm from "../components/UserForm";
-import "./OrganizationUsers.css";
 
 export interface User {
   id: number;
@@ -215,10 +213,11 @@ const OrganizationUsers: React.FC = () => {
       header: "",
       render: (row: User) => (
         <PolicyGuard policies={["edit-users", "edit-all-users"]}>
-          <ActionButton
+          <IconButton
             title="Edit User Details"
-            variant="secondary"
-            size="small"
+            variant="soft"
+            color="gray"
+            size="1"
             onClick={() =>
               setPanel({
                 mode: "edit",
@@ -229,7 +228,7 @@ const OrganizationUsers: React.FC = () => {
             }
           >
             <InputIcon />
-          </ActionButton>
+          </IconButton>
         </PolicyGuard>
       ),
     },
@@ -261,7 +260,7 @@ const OrganizationUsers: React.FC = () => {
       loading={isAuthenticated && !profileData}
       loadingMessage="Loading profile data..."
       actions={
-        <PolicyGuard policies={["edit-users"]}>
+        <PolicyGuard policies={["edit-all-users","edit-users"]}>
           <Button onClick={() => setPanel({ mode: "add" })}>
             <PlusIcon />
             <span style={{ marginLeft: '4px' }}>Add User</span>
@@ -339,6 +338,7 @@ const OrganizationUsers: React.FC = () => {
         onClose={closePanel}
         title={panelTitle}
         subtitle={panelSubtitle}
+        slide={true}
       >
         {panel.mode === "add" && profileData?.organizationId && (
           <UserForm

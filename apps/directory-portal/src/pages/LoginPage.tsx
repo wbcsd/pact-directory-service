@@ -5,9 +5,8 @@ import { Box, Button, Callout, Text } from "@radix-ui/themes";
 import { useNavigate, Link } from "react-router-dom";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { useAuth } from "../contexts/AuthContext";
-import useBodyOverflow from "../utils/use-body-overflow";
 import { LandingPageLayout } from "../layouts";
-import { TextField } from "../components/ui";
+import { FormField, TextField } from "../components/ui";
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -17,8 +16,6 @@ const LoginPage: React.FC = () => {
     password: "",
   });
   const [errorMessage, setErrorMessage] = useState("");
-
-  useBodyOverflow(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -71,25 +68,33 @@ const LoginPage: React.FC = () => {
         <h2>Log in to PACT Network Services</h2>
       </Box>
       <Form.Root onSubmit={handleSubmit}>
-        <TextField
+        <FormField
           name="email"
           label="Email Address"
-          type="email"
           required
-          value={formData.email}
-          placeholder="Enter your email"
-          onChange={handleChange}
-        />
+        >
+          <TextField
+            required
+            type="email"
+            value={formData.email}
+            placeholder="Enter your email"
+            onChange={handleChange}
+          />
+        </FormField>
 
-        <TextField
+        <FormField
           name="password"
           label="Password"
-          type="password"
           required
-          value={formData.password}
-          placeholder="Enter your password"
-          onChange={handleChange}
-        />
+        >
+          <TextField
+            required
+            type="password"
+            value={formData.password}
+            placeholder="Enter your password"
+            onChange={handleChange}
+          />
+        </FormField>
 
         <Box>
           <Form.Submit asChild>

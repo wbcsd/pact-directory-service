@@ -1,12 +1,12 @@
 import React from "react";
-import { Box, Badge, Text, Heading } from "@radix-ui/themes";
+import { Badge, Text } from "@radix-ui/themes";
 import { useNavigate } from "react-router-dom";
-import FunctionalPageLayout from "../layouts/FunctionalPageLayout";
 import PaginatedDataTable, {
   PaginationInfo,
 } from "../components/PaginatedDataTable";
 import { Column } from "../components/DataTable";
 import { fetchWithAuth } from "../utils/auth-fetch";
+import { GridPageLayout } from "../layouts";
 
 interface ActivityLogGrouped {
   path: string;
@@ -125,12 +125,10 @@ const ActivityLogsPage: React.FC = () => {
   ];
 
   return (
-    <FunctionalPageLayout>
-      <Box style={{ padding: "2rem" }}>
-        <Heading size="6" mb="4">
-          Activity Logs
-        </Heading>
-
+    <GridPageLayout
+      title="Activity Logs"
+      subtitle="Monitor and view all activity in your organization"
+      >
         <PaginatedDataTable<ActivityLogGrouped>
           isSearchable={true}
           searchPlaceholder="Search log paths..."
@@ -144,8 +142,7 @@ const ActivityLogsPage: React.FC = () => {
           }}
           onRowClick={handleRowClick}
         />
-      </Box>
-    </FunctionalPageLayout>
+    </GridPageLayout>
   );
 };
 

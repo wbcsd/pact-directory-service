@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import * as Form from "@radix-ui/react-form";
-import { Box, Button, TextField, Callout } from "@radix-ui/themes";
+import { Box, Button, Callout } from "@radix-ui/themes";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
 import { LandingPageLayout } from "../layouts";
-import Spinner from "../components/LoadingSpinner";
+import LoadingSpinner from "../components/LoadingSpinner";
+import { FormField, TextField } from "../components/ui";
 
 
 const ResetPasswordPage: React.FC = () => {
@@ -113,7 +114,7 @@ const ResetPasswordPage: React.FC = () => {
       <LandingPageLayout>
 
           <Box>
-            <Spinner loadingText="Verifying reset link..." />
+            <LoadingSpinner loadingText="Verifying reset link..." />
           </Box>
 
       </LandingPageLayout>
@@ -123,7 +124,7 @@ const ResetPasswordPage: React.FC = () => {
   if (tokenStatus === "invalid") {
     return (
       <LandingPageLayout>
-            <h2 style={{ marginBottom: "20px", color: "#0A0552" }}>
+            <h2 style={{ marginBottom: "20px", color: "var(--accent-12)" }}>
               Invalid Reset Link
             </h2>
             <Callout.Root color="bronze" variant="surface">
@@ -139,7 +140,7 @@ const ResetPasswordPage: React.FC = () => {
               <Link
                 to="/forgot-password"
                 style={{
-                  color: "#0A0552",
+                  color: "var(--accent-12)",
                   textDecoration: "underline",
                   fontWeight: "500",
                 }}
@@ -169,7 +170,7 @@ const ResetPasswordPage: React.FC = () => {
 
             {status === "success" ? (
               <Box>
-                <h2 style={{ marginBottom: "20px", color: "#0A0552" }}>
+                <h2 style={{ marginBottom: "20px", color: "var(--accent-12)" }}>
                   Password Reset Successful
                 </h2>
                 <Callout.Root color="green" variant="surface">
@@ -185,7 +186,7 @@ const ResetPasswordPage: React.FC = () => {
                   <Link
                     to="/login"
                     style={{
-                      color: "#0A0552",
+                      color: "var(--accent-12)",
                       textDecoration: "underline",
                       fontWeight: "500",
                     }}
@@ -202,95 +203,39 @@ const ResetPasswordPage: React.FC = () => {
                 </p>
 
                 <Form.Root onSubmit={handleSubmit}>
-                  <Form.Field name="password">
-                    <Form.Label
-                      style={{
-                        display: "block",
-                        marginBottom: "8px",
-                        fontWeight: "500",
-                      }}
-                    >
-                      New Password<span style={{ color: "red" }}>*</span>
-                    </Form.Label>
-                    <Form.Control asChild>
-                      <TextField.Root
-                        type="password"
-                        name="password"
-                        value={formData.password}
-                        required
-                        minLength={6}
-                        placeholder="Enter new password"
-                        onChange={handleChange}
-                        disabled={status === "loading"}
-                        style={{
-                          width: "100%",
-                          border: "1px solid #ccc",
-                          padding: "12px",
-                          fontSize: "16px",
-                        }}
-                      />
-                    </Form.Control>
-                    <Form.Message
-                      match="valueMissing"
-                      style={{
-                        color: "var(--base-color-brand--light-blue)",
-                        fontSize: "0.85em",
-                      }}
-                    >
-                      Password is required.
-                    </Form.Message>
-                    <Form.Message
-                      match="tooShort"
-                      style={{
-                        color: "var(--base-color-brand--light-blue)",
-                        fontSize: "0.85em",
-                      }}
-                    >
+                  <FormField
+                    name="password"
+                    label="New Password"
+                    required
+                  >
+                    <TextField
+                      type="password"
+                      value={formData.password}
+                      required
+                      minLength={6}
+                      placeholder="Enter new password"
+                      onChange={handleChange}
+                      disabled={status === "loading"}
+                    />
+                    <Form.Message match="tooShort">
                       Password must be at least 6 characters long.
                     </Form.Message>
-                  </Form.Field>
+                  </FormField>
 
-                  <Form.Field
+                  <FormField
                     name="confirmPassword"
-                    style={{ marginTop: "16px" }}
+                    label="Confirm New Password"
+                    required
                   >
-                    <Form.Label
-                      style={{
-                        display: "block",
-                        marginBottom: "8px",
-                        fontWeight: "500",
-                      }}
-                    >
-                      Confirm New Password
-                      <span style={{ color: "red" }}>*</span>
-                    </Form.Label>
-                    <Form.Control asChild>
-                      <TextField.Root
-                        type="password"
-                        name="confirmPassword"
-                        value={formData.confirmPassword}
-                        required
-                        placeholder="Confirm new password"
-                        onChange={handleChange}
-                        disabled={status === "loading"}
-                        style={{
-                          width: "100%",
-                          border: "1px solid #ccc",
-                          padding: "12px",
-                          fontSize: "16px",
-                        }}
-                      />
-                    </Form.Control>
-                    <Form.Message
-                      match="valueMissing"
-                      style={{
-                        color: "var(--base-color-brand--light-blue)",
-                        fontSize: "0.85em",
-                      }}
-                    >
-                      Please confirm your password.
-                    </Form.Message>
-                  </Form.Field>
+                    <TextField
+                      type="password"
+                      value={formData.confirmPassword}
+                      required
+                      placeholder="Confirm new password"
+                      onChange={handleChange}
+                      disabled={status === "loading"}
+                    />
+                  </FormField>
 
                   <Box style={{ marginTop: "30px" }}>
                     <Form.Submit asChild>

@@ -1,5 +1,5 @@
 import React from "react";
-import * as Dialog from "@radix-ui/react-dialog";
+import { Dialog, Flex, IconButton } from "@radix-ui/themes";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import "./SlideOverPanel.css";
 
@@ -8,19 +8,64 @@ interface SlideOverPanelProps {
   onClose: () => void;
   title: string;
   subtitle?: string;
+  slide?: boolean;
   children: React.ReactNode;
 }
+
+const slideStyles: React.CSSProperties = {
+  position: "fixed",
+  top: 0,
+  right: 0,
+  bottom: 0,
+  width: "50%",
+  maxWidth: "none",
+  margin: 0,
+  borderRadius: 0,
+  height: "100vh",
+  overflowY: "auto",
+};
 
 const SlideOverPanel: React.FC<SlideOverPanelProps> = ({
   open,
   onClose,
   title,
   subtitle,
+  slide = false,
   children,
 }) => {
   return (
     <Dialog.Root open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <Dialog.Portal>
+      <Dialog.Content
+        maxWidth={slide ? undefined : "700px"}
+        className={slide ? "slide-over-dialog" : undefined}
+        style={slide ? slideStyles : undefined}
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
+        <Flex justify="between" align="center" mb="4">
+          <Flex direction="column" gap="1">
+            <Dialog.Title size="4" weight="bold">{title}</Dialog.Title>
+            {subtitle && (
+              <Dialog.Description size="2" color="gray">
+                {subtitle}
+              </Dialog.Description>
+            )}
+          </Flex>
+          <Dialog.Close>
+            <IconButton variant="ghost" color="gray" aria-label="Close">
+              <Cross2Icon width={18} height={18} />
+            </IconButton>
+          </Dialog.Close>
+        </Flex>
+        {children}
+      </Dialog.Content>
+    </Dialog.Root>
+  );
+};
+
+export default SlideOverPanel;
+
+/*
+      <Dialog.Portal container={document.querySelector("[data-is-root-theme]") ?? undefined}>
         <Dialog.Overlay className="slide-over-overlay" />
         <Dialog.Content
           className="slide-over-content"
@@ -46,8 +91,4 @@ const SlideOverPanel: React.FC<SlideOverPanelProps> = ({
           <div className="slide-over-body">{children}</div>
         </Dialog.Content>
       </Dialog.Portal>
-    </Dialog.Root>
-  );
-};
-
-export default SlideOverPanel;
+*/

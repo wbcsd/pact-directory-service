@@ -3,7 +3,6 @@ import {
   Box,
   Card,
   Text,
-  Heading,
   Flex,
   Button,
   ScrollArea,
@@ -12,7 +11,8 @@ import {
 } from "@radix-ui/themes";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
-import FunctionalPageLayout from "../layouts/FunctionalPageLayout";
+import FormPageLayout from "../layouts/FormPageLayout";
+import CodeBlock from "../components/CodeBlock";
 import { LazyLog } from "@melloware/react-logviewer";
 import { fetchWithAuth } from "../utils/auth-fetch";
 
@@ -129,29 +129,23 @@ const ActivityLogDetailPage: React.FC = () => {
 
   if (!path) {
     return (
-      <FunctionalPageLayout>
+      <FormPageLayout title="Activity Logs">
         <Box style={{ padding: "2rem" }}>
           <Text color="red">No path specified</Text>
         </Box>
-      </FunctionalPageLayout>
+      </FormPageLayout>
     );
   }
 
   return (
-    <FunctionalPageLayout loading={loading} loadingMessage="Loading activity logs...">
-      <Box style={{ padding: "2rem" }}>
-        <Flex direction="column" gap="4">
-          <Flex justify="between" align="center">
-            <Flex align="center" gap="3">
-              <Button
-                variant="soft"
-                onClick={() => navigate(-1)}
-              >
+    <FormPageLayout 
+      title="Activity Logs" 
+      loading={loading} 
+      loadingMessage="Loading activity logs..."
+      actions={<>
+              <Button variant="soft" onClick={() => navigate(-1)}>
                 <ArrowLeftIcon /> Back
               </Button>
-              <Heading size="6">Activity Logs</Heading>
-            </Flex>
-            <Flex gap="2">
               <Button
                 variant={viewMode === "table" ? "solid" : "soft"}
                 onClick={() => setViewMode("table")}
@@ -167,9 +161,9 @@ const ActivityLogDetailPage: React.FC = () => {
               <Button onClick={fetchLogs} variant="soft">
                 Refresh
               </Button>
-            </Flex>
-          </Flex>
-
+              </>
+      }
+      >
           <Card>
             <Flex direction="column" gap="2">
               <Text weight="bold">Path:</Text>
@@ -207,20 +201,9 @@ const ActivityLogDetailPage: React.FC = () => {
                             </Flex>
                             <Text>{log.message}</Text>
                             {log.content && (
-                              <Box
-                                style={{
-                                  backgroundColor: "#f5f5f5",
-                                  padding: "0.5rem",
-                                  borderRadius: "4px",
-                                  fontFamily: "monospace",
-                                  fontSize: "0.85em",
-                                  overflow: "auto",
-                                }}
-                              >
-                                <pre style={{ margin: 0 }}>
-                                  {JSON.stringify(log.content, null, 2)}
-                                </pre>
-                              </Box>
+                              <CodeBlock language="json">
+                                {JSON.stringify(log.content)}
+                              </CodeBlock>
                             )}
                             {(log.nodeId || log.organizationId || log.userId) && (
                               <Flex gap="2" wrap="wrap">
@@ -260,9 +243,7 @@ const ActivityLogDetailPage: React.FC = () => {
               />
             </Card>
           )}
-        </Flex>
-      </Box>
-    </FunctionalPageLayout>
+    </FormPageLayout>
   );
 };
 

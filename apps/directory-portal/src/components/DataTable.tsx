@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from "react";
-import { Box, Spinner, Text, Checkbox } from "@radix-ui/themes";
+import { Box, Flex, Spinner, Text, Checkbox, Table } from "@radix-ui/themes";
 import { CaretSortIcon, CaretUpIcon, CaretDownIcon } from "@radix-ui/react-icons";
-import "./DataTable.css";
 
 export interface Column<T> {
   key: string;
@@ -113,10 +112,8 @@ function DataTable<T extends object>({
     if (!onSelectionChange) return;
     
     if (selectedIds.length === selectableRowIds.length && selectableRowIds.length > 0) {
-      // Deselect all
       onSelectionChange([]);
     } else {
-      // Select all selectable rows
       onSelectionChange(selectableRowIds);
     }
   };
@@ -135,21 +132,20 @@ function DataTable<T extends object>({
 
   const isAllSelected = selectableRowIds.length > 0 && 
                         selectedIds.length === selectableRowIds.length;
-  const isSomeSelected = selectedIds.length > 0 && selectedIds.length < selectableRowIds.length;
 
   // Render loading state
   if (isLoading) {
     return (
-      <Box className="loadingBox">
+      <Flex justify="center" p="5">
         <Spinner size="3" />
-      </Box>
+      </Flex>
     );
   }
 
   // Render error state
   if (error) {
     return (
-      <Box className="errorBox">
+      <Box p="5" maxWidth="800px">
         <Text color="red" size="3">
           {error}
         </Text>
@@ -161,108 +157,115 @@ function DataTable<T extends object>({
   if (data.length === 0) {
     if (emptyState) {
       return (
-        <Box className="emptyState">
+        <Flex direction="column" align="center" justify="center" p="6" minHeight="200px">
           <Text size="5" weight="medium">
             {emptyState.title}
           </Text>
           {emptyState.description && (
-            <><br /><Text size="2" className="emptyHint">
+            <Text size="2" color="gray" mt="2" mb="4">
               {emptyState.description}
-            </Text></>  
+            </Text>
           )}
           {emptyState.action && <Box mt="4">{emptyState.action}</Box>}
-        </Box>
+        </Flex>
       );
     }
     return (
-      <Box className="emptyState">
+      <Flex direction="column" align="center" justify="center" p="6" minHeight="200px">
         <Text size="3" color="gray">
           No data available
         </Text>
-      </Box>
+      </Flex>
     );
   }
 
   return (
-    <div className="table-container">
-      <table className="data-table">
-        <thead>
-          <tr>
-            {selectable && (
-              <th className="checkbox-column">
-                <Checkbox
-                  checked={isAllSelected}
-                  onCheckedChange={handleSelectAll}
-                  disabled={selectableRowIds.length === 0}
-                  aria-label={selectAllText}
-                  className={isSomeSelected ? "indeterminate" : ""}
-                />
-              </th>
-            )}
-            {columns.map((column) => (
-              <th
-                key={column.key}
-                className={column.sortable ? "sortable" : ""}
-                onClick={() => column.sortable && handleSort(column.key)}
-              >
-                <div className="header-content">
-                  <span>{column.header}</span>
-                  {column.sortable && (
-                    <span className={`sort-indicator ${sortConfig.key === column.key ? "active" : ""}`}>
-                      {sortConfig.key === column.key && sortConfig.direction === "asc" ? (
-                        <CaretUpIcon />
-                      ) : sortConfig.key === column.key && sortConfig.direction === "desc" ? (
-                        <CaretDownIcon />
-                      ) : (
-                        <CaretSortIcon />
-                      )}
-                    </span>
-                  )}
-                </div>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {sortedData.map((row) => {
-            const rowId = row[idColumnName] as string | number;
-            const isSelected = selectedIds.includes(rowId);
-            const isDisabled = disabledRowIds.includes(rowId);
-            
-            return (
-              <tr
-                onClick={(e) => {
-                  // Prevent row click if the click originated from the checkbox
-                  if ((e.target as HTMLElement).closest(".checkbox-column")) {
-                    return;
-                  }
-                  
-                  if (onRowClick) {
-                    onRowClick(row);
-                  }
-                }}
-                key={String(rowId)}
-                className={`${isSelected ? "selected-row" : ""} ${isDisabled ? "disabled-row" : ""}`}
-              >
-                {selectable && (
-                  <td className="checkbox-column">
-                    <Checkbox
-                      checked={isSelected}
-                      onCheckedChange={() => handleRowSelect(rowId)}
-                      disabled={isDisabled}
-                      aria-label={`Select row ${rowId}`}
-                    />
-                  </td>
+    <Table.Root variant="surface" className="data-table">
+      <Table.Header>
+        <Table.Row>
+          {selectable && (
+            <Table.ColumnHeaderCell width="48px">
+              <Checkbox
+                checked={isAllSelected}
+                onCheckedChange={handleSelectAll}
+                disabled={selectableRowIds.length === 0}
+                aria-label={selectAllText}
+              />
+            </Table.ColumnHeaderCell>
+          )}
+          {columns.map((column) => (
+            <Table.ColumnHeaderCell
+              key={column.key}
+              style={column.sortable ? { cursor: "pointer", userSelect: "none" } : undefined}
+              onClick={() => column.sortable && handleSort(column.key)}
+            >
+              <Flex align="center" gap="1">
+                <span>{column.header}</span>
+                {column.sortable && (
+                  <Flex
+                    align="center"
+                    style={{
+                      opacity: sortConfig.key === column.key ? 1 : 0.5,
+                    }}
+                  >
+                    {sortConfig.key === column.key && sortConfig.direction === "asc" ? (
+                      <CaretUpIcon />
+                    ) : sortConfig.key === column.key && sortConfig.direction === "desc" ? (
+                      <CaretDownIcon />
+                    ) : (
+                      <CaretSortIcon />
+                    )}
+                  </Flex>
                 )}
-                {columns.map((column) => (
-                  <td key={column.key} style={column.extendedStyle}>{column.render(row)}</td>
-                ))}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+              </Flex>
+            </Table.ColumnHeaderCell>
+          ))}
+        </Table.Row>
+      </Table.Header>
+
+      <Table.Body>
+        {sortedData.map((row) => {
+          const rowId = row[idColumnName] as string | number;
+          const isSelected = selectedIds.includes(rowId);
+          const isDisabled = disabledRowIds.includes(rowId);
+          
+          return (
+            <Table.Row
+              key={String(rowId)}
+              onClick={(e) => {
+                if ((e.target as HTMLElement).closest("[data-checkbox-cell]")) {
+                  return;
+                }
+                if (onRowClick) {
+                  onRowClick(row);
+                }
+              }}
+              style={{
+                cursor: onRowClick ? "pointer" : undefined,
+                opacity: isDisabled ? 0.5 : undefined,
+                backgroundColor: isSelected ? "var(--indigo-a3)" : undefined,
+              }}
+            >
+              {selectable && (
+                <Table.Cell data-checkbox-cell width="48px">
+                  <Checkbox
+                    checked={isSelected}
+                    onCheckedChange={() => handleRowSelect(rowId)}
+                    disabled={isDisabled}
+                    aria-label={`Select row ${rowId}`}
+                  />
+                </Table.Cell>
+              )}
+              {columns.map((column) => (
+                <Table.Cell key={column.key} style={column.extendedStyle}>
+                  {column.render(row)}
+                </Table.Cell>
+              ))}
+            </Table.Row>
+          );
+        })}
+      </Table.Body>
+    </Table.Root>
   );
 }
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { Flex, Box } from "@radix-ui/themes";
+import { Flex, Box, Heading, Text } from "@radix-ui/themes";
 
 interface PageHeaderProps {
   title: string;
@@ -11,8 +11,8 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, actions, subtitle }) => 
   return (
     <Flex className="header">
       <Box flexGrow="1">
-        <h2>{title}</h2>
-        {subtitle && <p style={{ margin: "5px 0 0 0", color: "#666" }}>{subtitle}</p>}
+        <Heading as="h2" mt="0">{title}</Heading>
+        <Text as="p" size="3" mb="6">{subtitle}</Text>
       </Box>
       {actions && 
       <Box>

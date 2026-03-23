@@ -1,14 +1,12 @@
 import React from "react";
 import * as Form from "@radix-ui/react-form";
 import { Text } from "@radix-ui/themes";
-import styles from "./FormField.module.css";
 
 interface FormFieldProps {
   name: string;
   label: string;
   required?: boolean;
   description?: React.ReactNode;
-  customErrors?: React.ReactNode;
   children: React.ReactNode;
 }
 
@@ -17,26 +15,35 @@ const FormField: React.FC<FormFieldProps> = ({
   label,
   required = false,
   description,
-  customErrors,
   children,
-}) => (
-  <Form.Field name={name} className={styles.field}>
-    <Form.Label className={styles.label}>
-      {label}
-      {required && <span className={styles.required}>*</span>}
+}) => {
+  const childArray = React.Children.toArray(children);
+  const control = childArray.at(0);
+  const messages = childArray.slice(1);
+  
+  return (
+  <Form.Field name={name} className="form-field">
+    <Form.Label>
+        {label}
+        {required && <span >*</span>}
     </Form.Label>
     {description && (
-      <div className={styles.description}>
-        <Text size="1">{description}</Text>
-      </div>
+      <Text as="p" size="1" color="gray" style={{ marginBottom: "1em" }}>{description}</Text>
     )}
-    {children}
-    <Form.Message match="valueMissing" className={styles.error}>
+    <Form.Control asChild>
+      {control}
+    </Form.Control>
+    { required ? 
+    <Form.Message match="valueMissing" className="form-error">
       {label} is required
     </Form.Message>
-    {customErrors}
+    : null}
+    {messages.map((message, index) => (
+      <Form.Message asChild className="form-error" key={index}>{message}</Form.Message>
+    ))}
   </Form.Field>
-);
+  );
+}
 
 export { FormField };
 export type { FormFieldProps };

@@ -13,9 +13,8 @@ import {
   ExclamationTriangleIcon,
   CheckIcon,
 } from "@radix-ui/react-icons";
-import useBodyOverflow from "../utils/use-body-overflow";
 import { LandingPageLayout } from "../layouts";
-import { TextField } from "../components/ui";
+import { FormField, TextField } from "../components/ui";
 
 const SignupPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -31,8 +30,6 @@ const SignupPage: React.FC = () => {
   const [organizationNameExists, setOrganizationNameExists] = useState(false);
 
   const [creatingAccount, setCreatingAccount] = useState(false);
-
-  useBodyOverflow(false);
 
   const checkOrganizationNameExists = async (name: string): Promise<boolean> => {
     try {
@@ -154,84 +151,94 @@ const SignupPage: React.FC = () => {
             <h2>Sign up to PACT Network Services</h2>
           </Box>
           <Form.Root onSubmit={handleSubmit}>
-              <TextField
+              <FormField
                 name="organizationName"
                 label="Organization Name"
                 required
-                value={formData.organizationName}
-                placeholder="Enter organization name"
-                tooltip="The full registered/legal name of your organization."
-                onBlur={handleOrganizationNameBlur}
-                onChange={handleChange}
-                customErrors={
-                  organizationNameExists && (
-                    <Form.Message>
-                      An organization with this name already exists.
-                      Please choose a different name or contact its administrator to join.
-                    </Form.Message>
-                  )
-                }
-              />
+>
+                <TextField
+                  required
+                  value={formData.organizationName}
+                  placeholder="Enter organization name"
+                  tooltip="The full registered/legal name of your organization."
+                  onBlur={handleOrganizationNameBlur}
+                  onChange={handleChange}
+                />
+                { organizationNameExists && 
+                <Form.Message>
+                  An organization with this name already exists.
+                  Please choose a different name or contact its administrator to join.
+                </Form.Message>}
+              </FormField>
 
-              <TextField
+              <FormField
                 name="fullName"
                 label="Account Admin Full Name"
                 required
-                value={formData.fullName}
-                placeholder="Enter your full name"
-                tooltip="Name of the person / mailbox to serve as account admin and point of contact for your account."
-                onChange={handleChange}
-              />
+              >
+                <TextField
+                  required
+                  value={formData.fullName}
+                  placeholder="Enter your full name"
+                  tooltip="Name of the person / mailbox to serve as account admin and point of contact for your account."
+                  onChange={handleChange}
+                />
+              </FormField>
 
-              <TextField
+              <FormField
                 name="email"
                 label="Account Admin Email"
-                type="email"
                 required
-                value={formData.email}
-                placeholder="Enter your email address"
-                tooltip="Email address of account admin, to be used to log in and receive notifications."
-                onChange={handleChange}
-                customErrors={
-                  <Form.Message match="typeMismatch">
-                    Invalid email.
-                  </Form.Message>
-                }
-              />
+              >
+                <TextField
+                  required
+                  type="email"
+                  value={formData.email}
+                  placeholder="Enter your email address"
+                  tooltip="Email address of account admin, to be used to log in and receive notifications."
+                  onChange={handleChange}
+                />
+                <Form.Message match="typeMismatch">
+                  Invalid email.
+                </Form.Message>
+              </FormField>
 
-              <TextField
+              <FormField
                 name="password"
                 label="Password"
-                type="password"
                 required
-                value={formData.password}
-                placeholder="Enter password"
-                tooltip="Your password must be at least 6 characters long."
-                minLength={6}
-                onChange={handleChange}
-                customErrors={
-                  <Form.Message match="tooShort">
-                    Password needs to be at least 6 characters long.
-                  </Form.Message>
-                }
-              />
+              >
+                <TextField
+                  required
+                  type="password"
+                  value={formData.password}
+                  placeholder="Enter password"
+                  tooltip="Your password must be at least 6 characters long."
+                  minLength={6}
+                  onChange={handleChange}
+                />
+                <Form.Message match="tooShort">
+                  Password needs to be at least 6 characters long.
+                </Form.Message>
+              </FormField>
 
-              <TextField
+              <FormField
                 name="confirmPassword"
                 label="Confirm Password"
-                type="password"
                 required
-                value={formData.confirmPassword}
-                placeholder="Confirm your password"
-                tooltip="Please confirm your password."
-                onChange={handleChange}
-                customErrors={
-                  <Form.Message match={(value) => value !== formData.password}>
-
-                    Passwords do not match.
-                  </Form.Message>
-                }
-              />
+              >
+                <TextField
+                  required
+                  type="password"
+                  value={formData.confirmPassword}
+                  placeholder="Confirm your password"
+                  tooltip="Please confirm your password."
+                  onChange={handleChange}
+                />
+                <Form.Message match={(value) => value !== formData.password}>
+                  Passwords do not match.
+                </Form.Message>
+              </FormField>
 
               <Box>
                 <Text size="2" color="gray">

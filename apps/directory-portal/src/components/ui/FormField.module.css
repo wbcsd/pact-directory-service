@@ -17,11 +17,11 @@
 
 .description {
   margin-bottom: 8px;
-  color: #888;
+  color: var(--gray-9);
 }
 
 .error {
-  color: #E5484D;
+  color: var(--red-9);
   font-size: 13px;
   margin-top: 6px;
 }

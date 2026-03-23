@@ -67,7 +67,7 @@ const EmailVerificationPage: React.FC = () => {
 
             {status === "success" && (
               <Box>
-                <h2 style={{ marginBottom: "20px", color: "#0A0552" }}>
+                <h2 style={{ marginBottom: "20px", color: "var(--accent-12)" }}>
                   Email Verified Successfully!
                 </h2>
                 <Callout.Root color="green" variant="surface" style={{ marginBottom: "30px" }}>
@@ -83,7 +83,7 @@ const EmailVerificationPage: React.FC = () => {
                     to="/login"
                     style={{
                       display: "inline-block",
-                      backgroundColor: "#0A0552",
+                      backgroundColor: "var(--accent-9)",
                       color: "white",
                       padding: "12px 24px",
                       textDecoration: "none",
@@ -99,7 +99,7 @@ const EmailVerificationPage: React.FC = () => {
 
             {status === "error" && (
               <Box>
-                <h2 style={{ marginBottom: "20px", color: "#0A0552" }}>
+                <h2 style={{ marginBottom: "20px", color: "var(--accent-12)" }}>
                   Verification Failed
                 </h2>
                 <Callout.Root color="bronze" highContrast variant="surface" style={{ marginBottom: "30px" }}>
@@ -117,7 +117,7 @@ const EmailVerificationPage: React.FC = () => {
                   <Link
                     to="/resend-verification"
                     style={{
-                      color: "#0A0552",
+                      color: "var(--accent-12)",
                       textDecoration: "underline",
                       fontSize: "0.9em",
                     }}
@@ -127,7 +127,7 @@ const EmailVerificationPage: React.FC = () => {
                   <Link
                     to="/login"
                     style={{
-                      color: "#0A0552",
+                      color: "var(--accent-12)",
                       textDecoration: "underline",
                       fontSize: "0.9em",
                     }}

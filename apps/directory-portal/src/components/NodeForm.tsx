@@ -1,24 +1,21 @@
 import React, { useState, useEffect, useCallback } from "react";
 import * as Form from "@radix-ui/react-form";
-import * as Select from "@radix-ui/react-select";
 import {
   Box,
   Button,
-  TextField,
   Text,
   Callout,
+  Flex,
   Spinner,
+  Select
 } from "@radix-ui/themes";
-import * as Tooltip from "@radix-ui/react-tooltip";
 import {
   ExclamationTriangleIcon,
-  InfoCircledIcon,
   CheckIcon,
-  ChevronDownIcon,
 } from "@radix-ui/react-icons";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import { useAuth } from "../contexts/AuthContext";
-import "./NodeForm.css";
+import { FormField, TextField } from "../components/ui";
 
 enum NodeType {
   INTERNAL = "internal",
@@ -159,164 +156,7 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
   }
 
   return (
-    <Box className="node-form">
-      <Form.Root autoComplete="off" onSubmit={handleSubmit}>
-        {/* Name */}
-        <Form.Field name="name">
-          <Form.Label className="field-label">
-            Node Name<span className="required-asterisk">*</span>
-          </Form.Label>
-          <Form.Control asChild>
-            <TextField.Root
-              autoComplete="off"
-              value={formData.name}
-              required
-              placeholder="Enter node name"
-              onChange={handleChange}
-              className="editable-field"
-            >
-              <TextField.Slot side="right">
-                <Tooltip.Provider delayDuration={0}>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <InfoCircledIcon
-                        width={20}
-                        height={20}
-                        color="#0A0552"
-                        className="info-icon"
-                      />
-                    </Tooltip.Trigger>
-                    <Tooltip.Content
-                      className="TooltipContent"
-                      side="right"
-                      align="center"
-                      sideOffset={5}
-                    >
-                      The name of the node
-                    </Tooltip.Content>
-                  </Tooltip.Root>
-                </Tooltip.Provider>
-              </TextField.Slot>
-            </TextField.Root>
-          </Form.Control>
-          <Form.Message match="valueMissing" className="validation-message">
-            Node name is required.
-          </Form.Message>
-        </Form.Field>
-
-        {/* Type */}
-        <Box className="form-field">
-          <Text className="field-label">
-            Node Type<span className="required-asterisk">*</span>
-          </Text>
-          <Select.Root
-            value={formData.type}
-            onValueChange={handleTypeChange}
-          >
-            <Select.Trigger className="select-trigger">
-              <Select.Value placeholder="Select a node type" />
-              <Select.Icon>
-                <ChevronDownIcon />
-              </Select.Icon>
-            </Select.Trigger>
-            <Select.Content className="select-content" position="popper" sideOffset={4}>
-              <Select.Viewport>
-                <Select.Item value={NodeType.INTERNAL} className="select-item">
-                  <Select.ItemText>Internal</Select.ItemText>
-                </Select.Item>
-                <Select.Item value={NodeType.EXTERNAL} className="select-item">
-                  <Select.ItemText>External</Select.ItemText>
-                </Select.Item>
-              </Select.Viewport>
-            </Select.Content>
-          </Select.Root>
-        </Box>
-
-        {/* API URL (external only) */}
-        {isExternalNode && (
-          <Form.Field name="apiUrl">
-            <Form.Label className="field-label">
-              API URL<span className="required-asterisk">*</span>
-            </Form.Label>
-            <Form.Control asChild>
-              <TextField.Root
-                autoComplete="off"
-                value={formData.apiUrl}
-                required={isExternalNode}
-                type="url"
-                placeholder="Enter API URL"
-                onChange={handleChange}
-                className="editable-field"
-              >
-                <TextField.Slot side="right">
-                  <Tooltip.Provider delayDuration={0}>
-                    <Tooltip.Root>
-                      <Tooltip.Trigger asChild>
-                        <InfoCircledIcon
-                          width={20}
-                          height={20}
-                          color="#0A0552"
-                          className="info-icon"
-                        />
-                      </Tooltip.Trigger>
-                      <Tooltip.Content
-                        className="TooltipContent"
-                        side="right"
-                        align="center"
-                        sideOffset={5}
-                      >
-                        The API URL for the external node
-                      </Tooltip.Content>
-                    </Tooltip.Root>
-                  </Tooltip.Provider>
-                </TextField.Slot>
-              </TextField.Root>
-            </Form.Control>
-            <Form.Message match="valueMissing" className="validation-message">
-              API URL is required for external nodes.
-            </Form.Message>
-            <Form.Message match="typeMismatch" className="validation-message">
-              Please enter a valid URL.
-            </Form.Message>
-          </Form.Field>
-        )}
-
-        {/* Organization (read-only) */}
-        <Box className="form-field">
-          <Text className="field-label">Organization</Text>
-          <TextField.Root
-            value={organizationName}
-            readOnly
-            disabled
-            className="readonly-field"
-          />
-        </Box>
-
-        {/* Actions */}
-        <Box className="node-form-actions">
-          {onCancel && (
-            <Button
-              type="button"
-              className="cancel-button"
-              onClick={onCancel}
-            >
-              Cancel
-            </Button>
-          )}
-          <Form.Submit asChild>
-            <Button disabled={submitting} className="submit-button">
-              {submitting && <Spinner loading />}
-              {submitting
-                ? isEditMode
-                  ? "Saving..."
-                  : "Creating..."
-                : isEditMode
-                  ? "Save Changes"
-                  : "Create Node"}
-            </Button>
-          </Form.Submit>
-        </Box>
-      </Form.Root>
+    <Form.Root autoComplete="off" onSubmit={handleSubmit}>
 
       {status === "success" && (
         <Callout.Root color="green" highContrast variant="surface" mt="4">
@@ -342,7 +182,76 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
           </Callout.Text>
         </Callout.Root>
       )}
-    </Box>
+
+      {/* Name */}
+      <FormField name="name" label="Node Name" required>
+        <TextField
+          required
+          value={formData.name}
+          placeholder="Enter node name"
+          tooltip="The name of the node"
+          onChange={handleChange}
+        />
+      </FormField>
+
+      {/* Type */}
+      <FormField name="type" label="Node Type" required>
+        <Select.Root value={formData.type} onValueChange={handleTypeChange}>
+          <Select.Trigger/>
+          <Select.Content>
+            <Select.Item value={NodeType.INTERNAL}>Internal</Select.Item>
+            <Select.Item value={NodeType.EXTERNAL}>External</Select.Item>
+          </Select.Content>
+        </Select.Root>
+      </FormField>
+
+      {/* API URL (external only) */}
+      {isExternalNode && (
+        <FormField name="apiUrl" label="API URL" required>
+          <TextField
+            required
+            value={formData.apiUrl || ""}
+            type="url"
+            placeholder="Enter API URL"
+            tooltip="The API URL for the external node"
+            onChange={handleChange}
+          />                  
+          <Form.Message match="typeMismatch" className="validation-message">
+            Please enter a valid URL.
+          </Form.Message>
+        </FormField>
+      )}
+
+      {/* Organization (read-only) */}        
+      <TextField
+        name="organization"
+        label="Organization"
+        value={organizationName}
+        disabled
+      />
+
+      {/* Actions */}
+      <Flex gap="3" mt="2" justify="end">
+        {onCancel && (
+          <Box>
+          <Button type="button" color="jade" onClick={onCancel}>
+            Cancel
+          </Button></Box>
+        )}
+        <Form.Submit asChild>
+          <Button type="submit" disabled={submitting}>
+            {submitting && <Spinner loading />}
+            {submitting
+              ? isEditMode
+                ? "Saving..."
+                : "Creating..."
+              : isEditMode
+                ? "Save Changes"
+                : "Create Node"}
+          </Button>
+        </Form.Submit>
+      </Flex>
+    </Form.Root>
   );
 };
 

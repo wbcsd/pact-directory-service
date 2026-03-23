@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useCallback } from "react";
 import * as Form from "@radix-ui/react-form";
-import * as Select from "@radix-ui/react-select";
 import {
   Box,
   Button,
   Callout,
+  Flex,
   Spinner,
   Text,
+  Tooltip,
+  Select,
 } from "@radix-ui/themes";
-import * as Tooltip from "@radix-ui/react-tooltip";
 import {
   ExclamationTriangleIcon,
   InfoCircledIcon,
   CheckIcon,
-  ChevronDownIcon,
 } from "@radix-ui/react-icons";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import { useAuth } from "../contexts/AuthContext";
@@ -210,22 +210,14 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
             <Form.Label className="field-label" style={{ margin: 0 }}>
               From Node<span className="required-asterisk">*</span>
             </Form.Label>
-            <Tooltip.Provider delayDuration={0}>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <InfoCircledIcon
-                    width={20}
-                    height={20}
-                    color="#0A0552"
-                    className="info-icon"
-                    style={{ cursor: "help" }}
-                  />
-                </Tooltip.Trigger>
-                <Tooltip.Content className="TooltipContent" sideOffset={5}>
-                  Select the node that will initiate the connection.
-                </Tooltip.Content>
-              </Tooltip.Root>
-            </Tooltip.Provider>
+            <Tooltip content="Select the node that will initiate the connection." delayDuration={0}>
+              <InfoCircledIcon
+                width={20}
+                height={20}
+                color="var(--accent-12)"
+                style={{ cursor: "help" }}
+              />
+            </Tooltip>
           </Box>
           {lockedFromNodeId ? (
             <div className="readonly-field">
@@ -233,38 +225,20 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
             </div>
           ) : (
             <Select.Root
-              value={formData.fromNodeId > 0 ? formData.fromNodeId.toString() : ""}
+              value={formData.fromNodeId > 0 ? formData.fromNodeId.toString() : undefined}
               onValueChange={handleFromNodeChange}
             >
-              <Select.Trigger className="select-trigger">
-                <Select.Value placeholder="Select source node" />
-                <Select.Icon>
-                  <ChevronDownIcon />
-                </Select.Icon>
-              </Select.Trigger>
-              <Select.Content className="select-content" position="popper">
-                <Select.Viewport>
-                  {availableNodes.length === 0 ? (
-                    <Select.Item value="none" disabled className="select-item">
-                      <Select.ItemText>No available nodes</Select.ItemText>
+              <Select.Trigger placeholder="Select source node" />
+              <Select.Content position="popper">
+                {availableNodes.length === 0 ? (
+                  <Select.Item value="none" disabled>No available nodes</Select.Item>
+                ) : (
+                  availableNodes.map((node) => (
+                    <Select.Item key={node.id} value={node.id.toString()}>
+                      {node.name} ({node.type})
                     </Select.Item>
-                  ) : (
-                    availableNodes.map((node) => (
-                      <Select.Item
-                        key={node.id}
-                        value={node.id.toString()}
-                        className="select-item"
-                      >
-                        <Select.ItemText>
-                          {node.name} - <span style={{ textTransform: 'capitalize', color: '#666' }}>{node.type}</span>
-                        </Select.ItemText>
-                        <Select.ItemIndicator style={{ marginLeft: "auto" }}>
-                          <CheckIcon />
-                        </Select.ItemIndicator>
-                      </Select.Item>
-                    ))
-                  )}
-                </Select.Viewport>
+                  ))
+                )}
               </Select.Content>
             </Select.Root>
           )}
@@ -276,59 +250,33 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
             <Form.Label className="field-label" style={{ margin: 0 }}>
               Target Node<span className="required-asterisk">*</span>
             </Form.Label>
-            <Tooltip.Provider delayDuration={0}>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <InfoCircledIcon
-                    width={20}
-                    height={20}
-                    color="#0A0552"
-                    className="info-icon"
-                    style={{ cursor: "help" }}
-                  />
-                </Tooltip.Trigger>
-                <Tooltip.Content className="TooltipContent" sideOffset={5}>
-                  Select the node that will receive the connection invitation. The target node must accept the invitation to establish the connection.
-                </Tooltip.Content>
-              </Tooltip.Root>
-            </Tooltip.Provider>
+            <Tooltip content="Select the node that will receive the connection invitation. The target node must accept the invitation to establish the connection." delayDuration={0}>
+              <InfoCircledIcon
+                width={20}
+                height={20}
+                color="var(--accent-12)"
+                style={{ cursor: "help" }}
+              />
+            </Tooltip>
           </Box>
           <Select.Root
-            value={formData.targetNodeId > 0 ? formData.targetNodeId.toString() : ""}
+            value={formData.targetNodeId > 0 ? formData.targetNodeId.toString() : undefined}
             onValueChange={handleTargetNodeChange}
             disabled={!formData.fromNodeId}
           >
-            <Select.Trigger className="select-trigger">
-              <Select.Value placeholder={formData.fromNodeId ? "Select target node" : "Select source node first"} />
-              <Select.Icon>
-                <ChevronDownIcon />
-              </Select.Icon>
-            </Select.Trigger>
-            <Select.Content className="select-content" position="popper">
-              <Select.Viewport>
-                {availableTargetNodes.length === 0 ? (
-                  <Select.Item value="none" disabled className="select-item">
-                    <Select.ItemText>
-                      {formData.fromNodeId ? "No other nodes available" : "Select source node first"}
-                    </Select.ItemText>
+            <Select.Trigger placeholder={formData.fromNodeId ? "Select target node" : "Select source node first"} />
+            <Select.Content position="popper">
+              {availableTargetNodes.length === 0 ? (
+                <Select.Item value="none" disabled>
+                  {formData.fromNodeId ? "No other nodes available" : "Select source node first"}
+                </Select.Item>
+              ) : (
+                availableTargetNodes.map((node) => (
+                  <Select.Item key={node.id} value={node.id.toString()}>
+                    {node.name} ({node.type})
                   </Select.Item>
-                ) : (
-                  availableTargetNodes.map((node) => (
-                    <Select.Item
-                      key={node.id}
-                      value={node.id.toString()}
-                      className="select-item"
-                    >
-                      <Select.ItemText>
-                        {node.name} - <span style={{ textTransform: 'capitalize', color: '#666' }}>{node.type}</span>
-                      </Select.ItemText>
-                      <Select.ItemIndicator style={{ marginLeft: "auto" }}>
-                        <CheckIcon />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                  ))
-                )}
-              </Select.Viewport>
+                ))
+              )}
             </Select.Content>
           </Select.Root>
         </Form.Field>
@@ -339,22 +287,14 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
             <Form.Label className="field-label" style={{ margin: 0 }}>
               Message (Optional)
             </Form.Label>
-            <Tooltip.Provider delayDuration={0}>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <InfoCircledIcon
-                    width={20}
-                    height={20}
-                    color="#0A0552"
-                    className="info-icon"
-                    style={{ cursor: "help" }}
-                  />
-                </Tooltip.Trigger>
-                <Tooltip.Content className="TooltipContent" sideOffset={5}>
-                  You can include a message to provide context about why you want to establish this connection.
-                </Tooltip.Content>
-              </Tooltip.Root>
-            </Tooltip.Provider>
+            <Tooltip content="You can include a message to provide context about why you want to establish this connection." delayDuration={0}>
+              <InfoCircledIcon
+                width={20}
+                height={20}
+                color="var(--accent-12)"
+                style={{ cursor: "help" }}
+              />
+            </Tooltip>
           </Box>
           <Form.Control asChild>
             <textarea
@@ -371,12 +311,10 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
           </Form.Control>
         </Form.Field>
 
-        <Box className="button-group">
+        <Flex justify="end" gap="3" mt="6">
           <Button 
             type="button" 
-            variant="soft"
-            color="gray"
-            className="cancel-button" 
+            color="jade"
             onClick={onCancel}
             disabled={creating}
           >
@@ -384,15 +322,14 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
           </Button>
           <Form.Submit asChild>
             <Button 
-              disabled={creating || availableNodes.length === 0} 
-              variant="soft"
-              className="submit-button"
+              type="submit"
+              disabled={creating || availableNodes.length === 0}
             >
               {creating && <Spinner loading />}
               {creating ? "Creating..." : "Create Invitation"}
             </Button>
           </Form.Submit>
-        </Box>
+        </Flex>
       </Form.Root>
 
       {status === "success" && (
@@ -409,7 +346,7 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
                 <Button size="2" variant="soft" color="green" onClick={() => { onCancel?.(); navigate(`/nodes/${targetNode?.id}`); }}>
                   Go to {targetNode?.name}
                 </Button>
-                <Button size="2" variant="soft" color="gray" onClick={onCancel}>
+                <Button size="2" color="jade" onClick={onCancel}>
                   Close
                 </Button>
               </Box>

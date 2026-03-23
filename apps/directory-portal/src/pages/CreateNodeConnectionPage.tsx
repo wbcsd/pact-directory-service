@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from "react";
 import * as Form from "@radix-ui/react-form";
-import * as Select from "@radix-ui/react-select";
 import {
   Box,
   Button,
   Callout,
   Spinner,
+  Tooltip,
+  Select,
 } from "@radix-ui/themes";
-import * as Tooltip from "@radix-ui/react-tooltip";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   ExclamationTriangleIcon,
   InfoCircledIcon,
   CheckIcon,
-  ChevronDownIcon,
 } from "@radix-ui/react-icons";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import { useAuth } from "../contexts/AuthContext";
@@ -190,113 +189,31 @@ const CreateNodeConnectionPage: React.FC = () => {
                   Target Node<span className="required-asterisk">*</span>
                 </Form.Label>
                 <Select.Root
-                  value={formData.targetNodeId > 0 ? formData.targetNodeId.toString() : ""}
+                  value={formData.targetNodeId > 0 ? formData.targetNodeId.toString() : undefined}
                   onValueChange={handleTargetNodeChange}
-                  required
                 >
-                  <Select.Trigger
-                    className="SelectTrigger"
-                    aria-label="Select target node"
-                    style={{
-                      width: "100%",
-                      padding: "8px 12px",
-                      borderRadius: "4px",
-                      border: "1px solid #ccc",
-                      backgroundColor: "white",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <Select.Value placeholder="Select a target node" />
-                    <Select.Icon>
-                      <ChevronDownIcon />
-                    </Select.Icon>
-                  </Select.Trigger>
-                  <Select.Portal>
-                    <Select.Content
-                      className="SelectContent"
-                      position="popper"
-                      style={{
-                        backgroundColor: "white",
-                        borderRadius: "4px",
-                        border: "1px solid #ccc",
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                        maxHeight: "300px",
-                        overflowY: "auto",
-                        zIndex: 1000,
-                      }}
-                    >
-                      <Select.Viewport>
-                        {availableNodes.length === 0 ? (
-                          <Select.Item
-                            value="none"
-                            disabled
-                            style={{
-                              padding: "8px 12px",
-                              color: "#999",
-                            }}
-                          >
-                            <Select.ItemText>No available nodes</Select.ItemText>
-                          </Select.Item>
-                        ) : (
-                          availableNodes.map((node) => (
-                            <Select.Item
-                              key={node.id}
-                              value={node.id.toString()}
-                              style={{
-                                padding: "8px 12px",
-                                cursor: "pointer",
-                                outline: "none",
-                              }}
-                              className="SelectItem"
-                            >
-                              <Select.ItemText>
-                                {node.name} - <span style={{ textTransform: 'capitalize', color: '#666' }}>{node.type}</span>
-                              </Select.ItemText>
-                              <Select.ItemIndicator style={{ marginLeft: "auto" }}>
-                                <CheckIcon />
-                              </Select.ItemIndicator>
-                            </Select.Item>
-                          ))
-                        )}
-                      </Select.Viewport>
-                    </Select.Content>
-                  </Select.Portal>
+                  <Select.Trigger placeholder="Select a target node" />
+                  <Select.Content position="popper">
+                    {availableNodes.length === 0 ? (
+                      <Select.Item value="none" disabled>No available nodes</Select.Item>
+                    ) : (
+                      availableNodes.map((node) => (
+                        <Select.Item key={node.id} value={node.id.toString()}>
+                          {node.name} ({node.type})
+                        </Select.Item>
+                      ))
+                    )}
+                  </Select.Content>
                 </Select.Root>
                 <Box mt="2">
-                  <Tooltip.Provider delayDuration={0}>
-                    <Tooltip.Root>
-                      <Tooltip.Trigger asChild>
-                        <InfoCircledIcon
-                          width={20}
-                          height={20}
-                          color="#0A0552"
-                          className="info-icon"
-                          style={{ cursor: "help" }}
-                        />
-                      </Tooltip.Trigger>
-                      <Tooltip.Portal>
-                        <Tooltip.Content
-                          className="TooltipContent"
-                          sideOffset={5}
-                          style={{
-                            backgroundColor: "#333",
-                            color: "white",
-                            padding: "8px 12px",
-                            borderRadius: "4px",
-                            fontSize: "14px",
-                            maxWidth: "300px",
-                            zIndex: 1001,
-                          }}
-                        >
-                          Select the node within your organization that you want to connect to. The target node must accept the invitation to establish the connection.
-                          <Tooltip.Arrow style={{ fill: "#333" }} />
-                        </Tooltip.Content>
-                      </Tooltip.Portal>
-                    </Tooltip.Root>
-                  </Tooltip.Provider>
+                  <Tooltip content="Select the node within your organization that you want to connect to. The target node must accept the invitation to establish the connection." delayDuration={0}>
+                    <InfoCircledIcon
+                      width={20}
+                      height={20}
+                      color="var(--accent-12)"
+                      style={{ cursor: "help" }}
+                    />
+                  </Tooltip>
                 </Box>
               </Form.Field>
 
@@ -315,7 +232,7 @@ const CreateNodeConnectionPage: React.FC = () => {
                       width: "100%",
                       padding: "8px 12px",
                       borderRadius: "4px",
-                      border: "1px solid #ccc",
+                      border: "1px solid var(--gray-7)",
                       fontFamily: "inherit",
                       fontSize: "14px",
                       resize: "vertical",
@@ -323,37 +240,14 @@ const CreateNodeConnectionPage: React.FC = () => {
                   />
                 </Form.Control>
                 <Box mt="2">
-                  <Tooltip.Provider delayDuration={0}>
-                    <Tooltip.Root>
-                      <Tooltip.Trigger asChild>
-                        <InfoCircledIcon
-                          width={20}
-                          height={20}
-                          color="#0A0552"
-                          className="info-icon"
-                          style={{ cursor: "help" }}
-                        />
-                      </Tooltip.Trigger>
-                      <Tooltip.Portal>
-                        <Tooltip.Content
-                          className="TooltipContent"
-                          sideOffset={5}
-                          style={{
-                            backgroundColor: "#333",
-                            color: "white",
-                            padding: "8px 12px",
-                            borderRadius: "4px",
-                            fontSize: "14px",
-                            maxWidth: "300px",
-                            zIndex: 1001,
-                          }}
-                        >
-                          You can include a message to provide context about why you want to establish this connection.
-                          <Tooltip.Arrow style={{ fill: "#333" }} />
-                        </Tooltip.Content>
-                      </Tooltip.Portal>
-                    </Tooltip.Root>
-                  </Tooltip.Provider>
+                  <Tooltip content="You can include a message to provide context about why you want to establish this connection." delayDuration={0}>
+                    <InfoCircledIcon
+                      width={20}
+                      height={20}
+                      color="var(--accent-12)"
+                      style={{ cursor: "help" }}
+                    />
+                  </Tooltip>
                 </Box>
               </Form.Field>
 

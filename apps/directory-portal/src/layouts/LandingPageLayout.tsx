@@ -19,7 +19,7 @@ const LandingPageLayout: React.FC<LandingPageLayoutProps> = ({
           width: "589px",
           minWidth: "589px",
           minHeight: "800px",
-          background: "#0A0552",
+          background: "var(--accent-9)",
           backgroundImage: `url(${HeroImage})`,
           backgroundPosition: "-230px +230px",
           backgroundSize: "180% auto",

@@ -1,9 +1,6 @@
 import React from "react";
-import * as Form from "@radix-ui/react-form";
-import { TextField as RadixTextField } from "@radix-ui/themes";
-import { FormField } from "./FormField";
+import { TextField as BaseTextField } from "@radix-ui/themes";
 import { TooltipIcon } from "./TooltipIcon";
-import styles from "./TextField.module.css";
 
 type InputType =
   | "text" | "email" | "password" | "number" | "search"
@@ -11,55 +8,31 @@ type InputType =
   | "time" | "week" | "hidden";
 
 interface TextFieldProps {
-  name: string;
-  label: string;
+  name?: string;
   required?: boolean;
   value: string;
   type?: InputType;
   placeholder?: string;
-  description?: React.ReactNode;
   tooltip?: string;
   minLength?: number;
-  customErrors?: React.ReactNode;
+  disabled?: boolean;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const TextField: React.FC<TextFieldProps> = ({
-  name,
-  label,
-  required = false,
-  value,
-  type,
-  placeholder,
-  description,
-  tooltip,
-  minLength,
-  customErrors,
-  onBlur,
-  onChange,
-}) => (
-  <FormField name={name} label={label} required={required} description={description} customErrors={customErrors}>
-    <Form.Control asChild>
-      <RadixTextField.Root
-        name={name}
-        value={value}
-        type={type}
-        required={required}
-        placeholder={placeholder}
-        minLength={minLength}
-        onBlur={onBlur}
-        onChange={onChange}
-        className={styles.input}
+const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
+  ({ tooltip, ...rest }, ref) => (
+      <BaseTextField.Root radius="large"
+        ref={ref}
+        {...rest}
       >
         {tooltip && (
-          <RadixTextField.Slot side="right">
+          <BaseTextField.Slot side="right">
             <TooltipIcon text={tooltip} />
-          </RadixTextField.Slot>
+          </BaseTextField.Slot>
         )}
-      </RadixTextField.Root>
-    </Form.Control>
-  </FormField>
+      </BaseTextField.Root>
+  )
 );
 
 export { TextField };
