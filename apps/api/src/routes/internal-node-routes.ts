@@ -55,6 +55,7 @@ export function createInternalNodeRoutes(): Router {
    */
   router.post("/:nodeId/auth/token", async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const authHeader = req.headers.authorization;
       const services = req.app.locals.services as Services;
       const nodeId = parseInt(req.params.nodeId as string, 10);
 
@@ -62,11 +63,28 @@ export function createInternalNodeRoutes(): Router {
         throw new BadRequestError("Invalid node ID");
       }
 
-      // Extract client credentials from request body (application/x-www-form-urlencoded or JSON)
-      const grantType = req.body.grant_type;
-      const clientId = req.body.client_id;
-      const clientSecret = req.body.client_secret;
+      // Authentication for token endpoint MUST use Basic auth with client credentials, 
+      // https://www.rfc-editor.org/rfc/rfc6749#section-2.3.1
+      // Check for Basic auth header
+      if (!authHeader || !authHeader.startsWith("Basic ")) {
+        res.status(401).json({ error: "Authorization header missing or invalid" });
+        return;
+      }
 
+      // Extract client credentials from request body (application/x-www-form-urlencoded or JSON)
+      const base64Credentials = authHeader.split(" ")[1];
+      const credentials = Buffer.from(base64Credentials, "base64").toString(
+        "ascii"
+      );
+      const [clientId, clientSecret] = credentials.split(":");
+
+      if (!clientId || !clientSecret) {
+        res.status(400).json({
+          error: "Missing client_id or client_secret in Basic auth header",
+        });
+        return;
+      }
+      const grantType = req.body.grant_type;
       if (grantType !== "client_credentials") {
         throw new BadRequestError("Unsupported grant_type. Only 'client_credentials' is supported");
       }
