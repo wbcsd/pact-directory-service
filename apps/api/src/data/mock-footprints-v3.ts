@@ -17,6 +17,8 @@ export const mockFootprintsV3: ProductFootprintV3[] = [
     version: 1,
     created: "2023-07-01T00:00:00Z",
     status: ProductFootprintStatus.Active,
+    validityPeriodStart: "2023-01-15T10:15:30Z",
+    validityPeriodEnd: "2025-12-31T00:00:00Z",
     companyName: "Example Company Inc.",
     companyIds: ["urn:uuid:12345678-1234-1234-1234-123456789012"],
     productDescription: "Exemplary Laptop Model X",
@@ -44,13 +46,9 @@ export const mockFootprintsV3: ProductFootprintV3[] = [
       ],
       boundaryProcessesDescription:
         "Cradle-to-gate assessment including raw material extraction, component manufacturing, and final assembly",
-      referencePeriod: {
-        start: "2022-01-01T00:00:00Z",
-        end: "2022-12-31T23:59:59Z",
-      },
-      geography: {
-        country: "US",
-      },
+      referencePeriodStart: "2022-01-01T00:00:00Z",
+      referencePeriodEnd: "2022-12-31T23:59:59Z",
+      geographyCountry: "US",
       exemptedEmissionsPercent: 2.5,
       exemptedEmissionsDescription: "Infrastructure and capital goods excluded",
       packagingEmissionsIncluded: true,
@@ -65,6 +63,8 @@ export const mockFootprintsV3: ProductFootprintV3[] = [
     created: "2023-08-15T00:00:00Z",
     updated: "2023-09-01T00:00:00Z",
     status: ProductFootprintStatus.Active,
+    validityPeriodStart: "2023-01-15T10:15:30Z",
+    validityPeriodEnd: "2025-12-31T00:00:00Z",
     companyName: "Green Materials Corp",
     companyIds: ["urn:uuid:87654321-4321-4321-4321-210987654321"],
     productDescription: "Sustainable Steel Beam Grade A",
@@ -94,14 +94,9 @@ export const mockFootprintsV3: ProductFootprintV3[] = [
       ],
       boundaryProcessesDescription:
         "Cradle-to-gate including iron ore mining, steel production via electric arc furnace, and rolling",
-      referencePeriod: {
-        start: "2023-01-01T00:00:00Z",
-        end: "2023-06-30T23:59:59Z",
-      },
-      geography: {
-        country: "DE",
-        regionOrSubregion: "Europe",
-      },
+      referencePeriodStart: "2023-01-01T00:00:00Z",
+      referencePeriodEnd: "2023-06-30T23:59:59Z",
+      geographyCountry: "DE",
       exemptedEmissionsPercent: 1.8,
       exemptedEmissionsDescription: "Office operations and employee commuting",
       packagingEmissionsIncluded: false,
@@ -122,10 +117,8 @@ export const mockFootprintsV3: ProductFootprintV3[] = [
     version: 1,
     created: "2023-09-20T00:00:00Z",
     status: ProductFootprintStatus.Active,
-    validityPeriod: {
-      start: "2023-09-01T00:00:00Z",
-      end: "2024-08-31T23:59:59Z",
-    },
+    validityPeriodStart: "2023-09-01T00:00:00Z",
+    validityPeriodEnd: "2024-08-31T23:59:59Z",
     companyName: "BioPack Solutions",
     companyIds: ["urn:uuid:abcdef12-3456-7890-abcd-ef1234567890"],
     productDescription: "Compostable Food Container 500ml",
@@ -153,13 +146,9 @@ export const mockFootprintsV3: ProductFootprintV3[] = [
       crossSectoralStandardsUsed: [CrossSectoralStandard.GHGProtocol],
       boundaryProcessesDescription:
         "Cradle-to-gate including agricultural feedstock production, PLA manufacturing, thermoforming",
-      referencePeriod: {
-        start: "2023-01-01T00:00:00Z",
-        end: "2023-08-31T23:59:59Z",
-      },
-      geography: {
-        country: "NL",
-      },
+      referencePeriodStart: "2023-01-01T00:00:00Z",
+      referencePeriodEnd: "2023-08-31T23:59:59Z",
+      geographyCountry: "NL",
       exemptedEmissionsPercent: 3.2,
       packagingEmissionsIncluded: true,
       packagingGhgEmissions: "0.05",

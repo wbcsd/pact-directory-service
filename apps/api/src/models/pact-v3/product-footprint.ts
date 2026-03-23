@@ -11,10 +11,8 @@ export interface ProductFootprintV3 {
   updated?: string;
   status: ProductFootprintStatus;
   statusComment?: string;
-  validityPeriod?: {
-    start?: string;
-    end?: string;
-  };
+  validityPeriodStart?: string;
+  validityPeriodEnd?: string;
   companyName: string;
   companyIds: string[];
   productDescription: string;
@@ -51,15 +49,11 @@ export interface CarbonFootprintV3 {
   productOrSectorSpecificRules?: ProductOrSectorSpecificRule[];
   biogenicAccountingMethodology?: BiogenicAccountingMethodology;
   boundaryProcessesDescription: string;
-  referencePeriod: {
-    start: string;
-    end: string;
-  };
-  geography?: {
-    countrySubdivision?: string;
-    country?: string;
-    regionOrSubregion?: string;
-  };
+  referencePeriodStart: string;
+  referencePeriodEnd: string;
+  geographyRegionOrSubregion?: string;
+  geographyCountry?: string;
+  geographyCountrySubdivision?: string;
   secondaryEmissionFactorSources?: EmissionFactorDS[];
   exemptedEmissionsPercent: number;
   exemptedEmissionsDescription?: string;
