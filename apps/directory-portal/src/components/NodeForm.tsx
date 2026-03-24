@@ -225,7 +225,6 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
       {/* Organization (read-only) */}        
       <TextField
         name="organization"
-        label="Organization"
         value={organizationName}
         disabled
       />
