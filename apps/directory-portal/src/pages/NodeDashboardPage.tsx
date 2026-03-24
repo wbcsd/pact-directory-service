@@ -3,7 +3,9 @@ import {
   Badge,
   Button,
   Callout,
+  DropdownMenu,
   Heading,
+  IconButton,
   Separator,
   Text,
   Box,
@@ -11,6 +13,7 @@ import {
 } from "@radix-ui/themes";
 import {
   ArrowLeftIcon,
+  DotsHorizontalIcon,
   ExclamationTriangleIcon,
   InputIcon,
   Link2Icon,
@@ -321,25 +324,31 @@ const NodeDashboardPage: React.FC = () => {
             <ArrowLeftIcon /> Back
           </Button>
 
-          <Button onClick={() => setPanel({ mode: "edit" })}>
-            <InputIcon /> Edit Node
-          </Button>
-
-          <Button onClick={() => setPanel({ mode: "connections" })}>
-            <Link2Icon /> Manage Connections
-            {pendingInvitationsCount > 0 && (
-              <span className="node-pending-badge">{pendingInvitationsCount}</span>
-            )}
-          </Button>
-
-          <Button onClick={() => setPanel({ mode: "createConnection" })}>
-            <PlusIcon /> Create Connection
-          </Button>
-
-          <Button color="red" disabled={deleting} onClick={handleDelete}>
-            <TrashIcon />
-            Delete Node
-          </Button>
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger>
+              <IconButton variant="soft" size="2">
+                <DotsHorizontalIcon />
+              </IconButton>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content align="end">
+              <DropdownMenu.Item onSelect={() => setPanel({ mode: "edit" })}>
+                <InputIcon /> Edit Node
+              </DropdownMenu.Item>
+              <DropdownMenu.Item onSelect={() => setPanel({ mode: "connections" })}>
+                <Link2Icon /> Manage Connections
+                {pendingInvitationsCount > 0 && (
+                  <Badge size="1" ml="2">{pendingInvitationsCount}</Badge>
+                )}
+              </DropdownMenu.Item>
+              <DropdownMenu.Item onSelect={() => setPanel({ mode: "createConnection" })}>
+                <PlusIcon /> Create Connection
+              </DropdownMenu.Item>
+              <DropdownMenu.Separator />
+              <DropdownMenu.Item color="red" disabled={deleting} onSelect={handleDelete}>
+                <TrashIcon /> Delete Node
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
         </>
       }>
 
