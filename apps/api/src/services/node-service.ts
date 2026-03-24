@@ -44,9 +44,9 @@ export class NodeService {
   constructor(private db: Kysely<Database>) {}
 
   /**
-   * Get a single node by ID
+   * Get a single node by ID (no access control, for internal service use)
    */
-  async get(context: UserContext, nodeId: number): Promise<NodeData> {
+  async getById(nodeId: number): Promise<NodeData> {
     const node = await this.db
       .selectFrom('nodes')
       .leftJoin('organizations', 'organizations.id', 'nodes.organizationId')
@@ -67,6 +67,15 @@ export class NodeService {
     if (!node) {
       throw new NotFoundError('Node not found');
     }
+
+    return node as NodeData;
+  }
+
+  /**
+   * Get a single node by ID (with access control)
+   */
+  async get(context: UserContext, nodeId: number): Promise<NodeData> {
+    const node = await this.getById(nodeId);
 
     // Check access
     const allowed =
