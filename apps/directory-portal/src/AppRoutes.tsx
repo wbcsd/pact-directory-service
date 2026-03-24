@@ -22,6 +22,7 @@ import CreateNodeConnectionPage from "./pages/CreateNodeConnectionPage";
 import ActivityLogsPage from "./pages/ActivityLogsPage";
 import ActivityLogDetailPage from "./pages/ActivityLogDetailPage";
 import AddProductFootprintPage from "./pages/AddProductFootprintPage";
+import ViewProductFootprintPage from "./pages/ViewProductFootprintPage";
 
 const AppRoutes: React.FC = () => {
   return (
@@ -40,6 +41,7 @@ const AppRoutes: React.FC = () => {
           <Route path="/nodes/:id" element={<NodeDashboardPage />} />
           <Route path="/nodes/:id/create-connection" element={<CreateNodeConnectionPage />} />
           <Route path="/nodes/:id/footprints/new" element={<AddProductFootprintPage />} />
+          <Route path="/nodes/:nodeId/footprints/:pcfId" element={<ViewProductFootprintPage />} />
           <Route path="/edit-node/:id" element={<EditNodePage />} />
           <Route path="/add-node" element={<AddNodePage />} />
         </>

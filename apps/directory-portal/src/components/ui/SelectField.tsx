@@ -11,6 +11,7 @@ const SelectField = React.forwardRef<HTMLSelectElement, SelectFieldProps>(
   value,
   required = false,
   defaultValue,
+  disabled,
   options,
   onValueChange,
   children
@@ -20,7 +21,8 @@ const SelectField = React.forwardRef<HTMLSelectElement, SelectFieldProps>(
       value={value} 
       onValueChange={onValueChange}
       defaultValue={defaultValue}
-      required={required}>
+      required={required}
+      disabled={disabled}>
       <BaseSelect.Trigger/>
       <BaseSelect.Content>
         {options.map((opt) => (

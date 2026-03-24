@@ -49,6 +49,14 @@ interface ActivityLog {
   createdAt: string;
 }
 
+interface PcfRecord {
+  id: string;
+  nodeId: number;
+  pcf: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}
+
 type PanelState =
   | { mode: "closed" }
   | { mode: "edit" }
@@ -198,6 +206,61 @@ const NodeDashboardPage: React.FC = () => {
     };
   }, [nodeId]);
 
+  const fetchPcfs = useCallback(async (params: {
+    page: number;
+    pageSize: number;
+    search?: string;
+  }): Promise<{ data: PcfRecord[]; pagination: PaginationInfo }> => {
+    const queryParams = new URLSearchParams({
+      page: params.page.toString(),
+      pageSize: params.pageSize.toString(),
+    });
+    const response = await fetchWithAuth(`/nodes/${nodeId}/footprints?${queryParams}`);
+    if (!response?.ok) throw new Error("Failed to fetch PCF records");
+    return response.json();
+  }, [nodeId]);
+
+  const pcfColumns: Column<PcfRecord>[] = [
+    {
+      key: "pcf.productNameCompany",
+      header: "Product Name",
+      render: (row) => (
+        <Text size="2">{(row.pcf.productNameCompany as string) || "—"}</Text>
+      ),
+    },
+    {
+      key: "pcf.companyName",
+      header: "Company",
+      render: (row) => (
+        <Text size="2">{(row.pcf.companyName as string) || "—"}</Text>
+      ),
+    },
+    {
+      key: "pcf.status",
+      header: "Status",
+      render: (row) => {
+        const status = (row.pcf.status as string) || "—";
+        return (
+          <Badge color={status === "Active" ? "green" : "gray"}>
+            {status}
+          </Badge>
+        );
+      },
+    },
+    {
+      key: "pcf.declaredUnitOfMeasurement",
+      header: "Unit",
+      render: (row) => (
+        <Text size="2">{(row.pcf.declaredUnitOfMeasurement as string) || "—"}</Text>
+      ),
+    },
+    {
+      key: "createdAt",
+      header: "Created",
+      render: (row) => <Text size="2">{formatDate(row.createdAt)}</Text>,
+    },
+  ];
+
   const logColumns: Column<ActivityLog>[] = [
     {
       key: "path",
@@ -317,21 +380,29 @@ const NodeDashboardPage: React.FC = () => {
 
           <Separator size="4" my="4" />
 
-          {/* PCF Exchange Section */}
+          {/* PCF Records Section */}
           <section className="node-dashboard-section">
             <Flex mb="3" gap="2">
               <Box flexGrow="1">
-                <Heading size="4">PCF Exchange</Heading>
+                <Heading size="4">PCF Records</Heading>
               </Box>
               <Button onClick={() => navigate(`/nodes/${nodeId}/footprints/new`)}>
                 <PlusIcon /> Add PCF
               </Button>
             </Flex>
-            <div className="node-dashboard-placeholder">
-              <Text color="gray" size="2">
-                PCF data exchange activity between this node and its connected peers will appear here.
-              </Text>
-            </div>
+            <PaginatedDataTable<PcfRecord>
+              isSearchable={false}
+              fetchData={fetchPcfs}
+              columns={pcfColumns}
+              idColumnName="id"
+              defaultPageSize={10}
+              refreshTrigger={refreshTrigger}
+              emptyState={{
+                title: "No PCF records found",
+                description: "Product Carbon Footprint records for this node will appear here.",
+              }}
+              onRowClick={(pcf) => navigate(`/nodes/${nodeId}/footprints/${pcf.id}`)}
+            />
           </section>
 
           <Separator size="4" my="4" />
