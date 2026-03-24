@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
-import { Kysely } from "kysely";
-import { Database } from "../database/types";
 import config from "../common/config";
-import { UnauthorizedError } from "../common/errors";
+import { BadRequestError, UnauthorizedError } from "../common/errors";
+import { NodeService } from "./node-service";
+import { NodeConnectionService } from "./node-connection-service";
 
 /**
  * Token payload for internal node authentication
@@ -32,38 +32,13 @@ export interface TokenResponse {
  * Implements OAuth2 Client Credentials flow for node-to-node communication
  */
 export class InternalNodeAuthService {
-  constructor(private db: Kysely<Database>) {}
-
-  /**
-   * Validate that a node exists and is an internal node type
-   * @param nodeId - The node ID to validate
-   * @throws NotFoundError if node doesn't exist
-   * @throws BadRequestError if node is not internal type
-   */
-  async validateInternalNode(nodeId: number): Promise<void> {
-    const node = await this.db
-      .selectFrom("nodes")
-      .select(["id", "type"])
-      .where("id", "=", nodeId)
-      .executeTakeFirst();
-
-    if (!node) {
-      const { NotFoundError } = await import("../common/errors");
-      throw new NotFoundError("Node not found");
-    }
-
-    if (node.type !== "internal") {
-      const { BadRequestError } = await import("../common/errors");
-      throw new BadRequestError("Authentication only available for internal nodes");
-    }
-  }
+  constructor(
+    private nodeService: NodeService,
+    private nodeConnectionService: NodeConnectionService
+  ) {}
 
   /**
    * Generate access token for internal node using client credentials
-   * @param nodeId - The node ID requesting access
-   * @param clientId - The client ID from connection credentials
-   * @param clientSecret - The client secret from connection credentials
-   * @returns Token response with JWT access token
    */
   async generateToken(
     nodeId: number,
@@ -71,22 +46,17 @@ export class InternalNodeAuthService {
     clientSecret: string
   ): Promise<TokenResponse> {
     // Validate node exists and is internal type
-    await this.validateInternalNode(nodeId);
-
-    // Verify credentials and get connection
-    const connection = await this.verifyCredentials(
-      nodeId,
-      clientId,
-      clientSecret
-    );
-
-    if (!connection) {
-      throw new UnauthorizedError("Invalid client credentials");
+    const node = await this.nodeService.getById(nodeId);
+    if (node.type !== "internal") {
+      throw new BadRequestError("Authentication only available for internal nodes");
     }
 
-    // Check connection is accepted
-    if (connection.status !== "accepted") {
-      throw new UnauthorizedError("Connection is not accepted");
+    // Verify credentials and get connection
+    const connection = await this.nodeConnectionService.verifyConnectionCredentials(
+      nodeId, clientId, clientSecret
+    );
+    if (!connection) {
+      throw new UnauthorizedError("Invalid client credentials");
     }
 
     // Generate JWT token
@@ -116,9 +86,6 @@ export class InternalNodeAuthService {
 
   /**
    * Verify JWT token and return payload
-   * @param token - The JWT token to verify
-   * @param nodeId - The node ID that should be the audience
-   * @returns Token payload if valid
    */
   async verifyToken(
     token: string,
@@ -136,57 +103,5 @@ export class InternalNodeAuthService {
     } catch {
       throw new UnauthorizedError("Invalid or expired token");
     }
-  }
-
-  /**
-   * Verify client credentials against stored connection credentials
-   * @param nodeId - The target node ID
-   * @param clientId - The client ID to verify
-   * @param clientSecret - The client secret to verify
-   * @returns Connection if credentials are valid, null otherwise
-   */
-  private async verifyCredentials(
-    nodeId: number,
-    clientId: string,
-    clientSecret: string
-  ) {
-    // Find connection where:
-    // - targetNodeId matches the requested nodeId
-    // - clientId matches the credentials
-    const connection = await this.db
-      .selectFrom("connections")
-      .innerJoin("nodes as fromNode", "connections.fromNodeId", "fromNode.id")
-      .innerJoin(
-        "organizations as fromOrg",
-        "fromNode.organizationId",
-        "fromOrg.id"
-      )
-      .select([
-        "connections.id",
-        "connections.fromNodeId",
-        "connections.targetNodeId",
-        "connections.status",
-        "connections.clientId",
-        "connections.clientSecret",
-        "fromOrg.id as fromNodeOrganizationId",
-      ])
-      .where("connections.targetNodeId", "=", nodeId)
-      .where("connections.clientId", "=", clientId)
-      .where("connections.status", "=", "accepted")
-      .executeTakeFirst();
-
-    if (!connection) {
-      return null;
-    }
-
-    // Verify client secret (in production, use proper comparison)
-    // TODO: Use secure comparison (crypto.timingSafeEqual)
-    const secretMatches = connection.clientSecret === clientSecret;
-
-    if (!secretMatches) {
-      return null;
-    }
-
-    return connection;
   }
 }
