@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Dialog, Flex, IconButton } from "@radix-ui/themes";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import "./SlideOverPanel.css";
@@ -33,13 +33,32 @@ const SlideOverPanel: React.FC<SlideOverPanelProps> = ({
   slide = false,
   children,
 }) => {
+  // Keep the Dialog mounted while it animates closed so Radix can clean up
+  // (e.g. removing pointer-events:none from <body>).
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    if (open) setMounted(true);
+  }, [open]);
+
+  if (!mounted) return null;
+
   return (
-    <Dialog.Root open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+    <Dialog.Root
+      open={open}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) onClose();
+      }}
+    >
       <Dialog.Content
         maxWidth={slide ? undefined : "700px"}
         className={slide ? "slide-over-dialog" : undefined}
         style={slide ? slideStyles : undefined}
         onOpenAutoFocus={(e) => e.preventDefault()}
+        onCloseAutoFocus={(e) => e.preventDefault()}
+        onAnimationEnd={() => {
+          if (!open) setMounted(false);
+        }}
       >
         <Flex justify="between" align="center" mb="4">
           <Flex direction="column" gap="1">
