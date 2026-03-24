@@ -59,14 +59,14 @@ export class ServiceContainer implements Services {
     this.user = new UserService(db, this.email);
     this.testRun = new TestRunService(db, this.user, this.organization);
     this.node = new NodeService(db);
-    this.internalNodePact = new InternalNodePactService();
-    this.internalNodeAuth = new InternalNodeAuthService(db);
     this.nodeConnection = new NodeConnectionService(
       db,
       this.node,
       this.email,
       config.INTERNAL_API_BASE_URL
     );
+    this.internalNodePact = new InternalNodePactService();
+    this.internalNodeAuth = new InternalNodeAuthService(this.node, this.nodeConnection);
     this.activityLog = new ActivityLogService(db);
     // this.environment = new EnvironmentService(db);
   }
