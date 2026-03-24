@@ -20,10 +20,10 @@ const ViewProductFootprintPage: React.FC = () => {
       try {
         setLoading(true);
         setError("");
-        const response = await fetchWithAuth(`/pcfs/${pcfId}`);
+        const response = await fetchWithAuth(`/footprints/${pcfId}`);
         if (!response?.ok) throw new Error("Failed to fetch PCF");
         const result = await response.json();
-        setPcfData(result.pcf as ProductFootprintFormData);
+        setPcfData(result.data as ProductFootprintFormData);
       } catch {
         setError("Failed to load PCF data.");
       } finally {

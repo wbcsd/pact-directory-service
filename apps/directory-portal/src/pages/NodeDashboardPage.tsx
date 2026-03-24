@@ -49,10 +49,10 @@ interface ActivityLog {
   createdAt: string;
 }
 
-interface PcfRecord {
+interface Footprint {
   id: string;
   nodeId: number;
-  pcf: Record<string, unknown>;
+  data: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
 }
@@ -206,11 +206,11 @@ const NodeDashboardPage: React.FC = () => {
     };
   }, [nodeId]);
 
-  const fetchPcfs = useCallback(async (params: {
+  const fetchFootprints = useCallback(async (params: {
     page: number;
     pageSize: number;
     search?: string;
-  }): Promise<{ data: PcfRecord[]; pagination: PaginationInfo }> => {
+  }): Promise<{ data: Footprint[]; pagination: PaginationInfo }> => {
     const queryParams = new URLSearchParams({
       page: params.page.toString(),
       pageSize: params.pageSize.toString(),
@@ -220,26 +220,26 @@ const NodeDashboardPage: React.FC = () => {
     return response.json();
   }, [nodeId]);
 
-  const pcfColumns: Column<PcfRecord>[] = [
+  const footprintColumns: Column<Footprint>[] = [
     {
-      key: "pcf.productNameCompany",
+      key: "data.productNameCompany",
       header: "Product Name",
       render: (row) => (
-        <Text size="2">{(row.pcf.productNameCompany as string) || "—"}</Text>
+        <Text size="2">{(row.data.productNameCompany as string) || "—"}</Text>
       ),
     },
     {
-      key: "pcf.companyName",
+      key: "data.companyName",
       header: "Company",
       render: (row) => (
-        <Text size="2">{(row.pcf.companyName as string) || "—"}</Text>
+        <Text size="2">{(row.data.companyName as string) || "—"}</Text>
       ),
     },
     {
-      key: "pcf.status",
+      key: "data.status",
       header: "Status",
       render: (row) => {
-        const status = (row.pcf.status as string) || "—";
+        const status = (row.data.status as string) || "—";
         return (
           <Badge color={status === "Active" ? "green" : "gray"}>
             {status}
@@ -248,10 +248,10 @@ const NodeDashboardPage: React.FC = () => {
       },
     },
     {
-      key: "pcf.declaredUnitOfMeasurement",
+      key: "data.declaredUnitOfMeasurement",
       header: "Unit",
       render: (row) => (
-        <Text size="2">{(row.pcf.declaredUnitOfMeasurement as string) || "—"}</Text>
+        <Text size="2">{(row.data.declaredUnitOfMeasurement as string) || "—"}</Text>
       ),
     },
     {
@@ -390,10 +390,10 @@ const NodeDashboardPage: React.FC = () => {
                 <PlusIcon /> Add PCF
               </Button>
             </Flex>
-            <PaginatedDataTable<PcfRecord>
+            <PaginatedDataTable<Footprint>
               isSearchable={false}
-              fetchData={fetchPcfs}
-              columns={pcfColumns}
+              fetchData={fetchFootprints}
+              columns={footprintColumns}
               idColumnName="id"
               defaultPageSize={10}
               refreshTrigger={refreshTrigger}
@@ -401,7 +401,7 @@ const NodeDashboardPage: React.FC = () => {
                 title: "No PCF records found",
                 description: "Product Carbon Footprint records for this node will appear here.",
               }}
-              onRowClick={(pcf) => navigate(`/nodes/${nodeId}/footprints/${pcf.id}`)}
+              onRowClick={(footprint) => navigate(`/nodes/${nodeId}/footprints/${footprint.id}`)}
             />
           </section>
 

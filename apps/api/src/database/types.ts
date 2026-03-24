@@ -11,7 +11,7 @@ export interface Database {
   connections: ConnectionTable;
   password_tokens: PasswordTokenTable;
   activity_logs: ActivityLogsTable;
-  pcfs: PcfsTable;
+  product_footprints: ProductFootprintsTable;
 }
 
 export interface OrganizationsTable {
@@ -101,10 +101,10 @@ export interface ActivityLogsTable {
   createdAt: Generated<Date>;
 }
 
-export interface PcfsTable {
+export interface ProductFootprintsTable {
   id: Generated<string>; // UUID, auto-generated
   nodeId: number;
-  pcf: Record<string, any>; // JSONB
+  data: Record<string, any>; // JSONB
   createdAt: Generated<Date>;
   updatedAt: Generated<Date>;
 }

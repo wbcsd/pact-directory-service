@@ -1,13 +1,13 @@
-import { PCFDataService } from './pcf-data-service';
+import { FootprintService } from './footprint-service';
 import { BadRequestError, NotFoundError, ForbiddenError } from '@src/common/errors';
 import { Role } from '@src/common/policies';
 import { createMockDatabase } from '../common/mock-utils';
 import { UserContext } from './user-service';
 import { NodeService } from './node-service';
 
-describe('PCFDataService', () => {
+describe('FootprintService', () => {
   let dbMocks: ReturnType<typeof createMockDatabase>;
-  let pcfDataService: PCFDataService;
+  let footprintService: FootprintService;
   let nodeService: NodeService;
 
   const adminUserContext: UserContext = {
@@ -18,7 +18,7 @@ describe('PCFDataService', () => {
     policies: [
       'view-nodes-own-organization',
       'edit-nodes-own-organization',
-      'manage-pcfs-own-organization',
+      'manage-footprints-own-organization',
     ],
     status: 'enabled',
   };
@@ -31,7 +31,7 @@ describe('PCFDataService', () => {
     policies: [
       'view-nodes-all-organizations',
       'edit-nodes-all-organizations',
-      'manage-pcfs-all-organizations',
+      'manage-footprints-all-organizations',
     ],
     status: 'enabled',
   };
@@ -57,10 +57,10 @@ describe('PCFDataService', () => {
     organizationName: 'Test Org',
   };
 
-  const mockPcf = {
+  const mockFootprint = {
     id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
     nodeId: 1,
-    pcf: {
+    data: {
       status: 'Active',
       companyName: 'Test Company',
       productDescription: 'Test Product',
@@ -72,22 +72,22 @@ describe('PCFDataService', () => {
   beforeEach(() => {
     dbMocks = createMockDatabase();
     nodeService = new NodeService(dbMocks.db as any);
-    pcfDataService = new PCFDataService(dbMocks.db as any, nodeService);
+    footprintService = new FootprintService(dbMocks.db as any, nodeService);
   });
 
   describe('create', () => {
-    it('should create a PCF for a node the user has access to', async () => {
+    it('should create a footprint for a node the user has access to', async () => {
       // Mock nodeService.get (selectFrom -> executeTakeFirst for node lookup)
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
       // Mock the insert
-      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce(mockPcf);
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce(mockFootprint);
 
-      const result = await pcfDataService.create(adminUserContext, 1, {
-        pcf: { status: 'Active', companyName: 'Test Company' },
+      const result = await footprintService.create(adminUserContext, 1, {
+        data: { status: 'Active', companyName: 'Test Company' },
       });
 
-      expect(result).toEqual(mockPcf);
-      expect(dbMocks.db.insertInto).toHaveBeenCalledWith('pcfs');
+      expect(result).toEqual(mockFootprint);
+      expect(dbMocks.db.insertInto).toHaveBeenCalledWith('product_footprints');
     });
 
     it('should throw ForbiddenError if user does not have access to the node', async () => {
@@ -98,104 +98,104 @@ describe('PCFDataService', () => {
       });
 
       await expect(
-        pcfDataService.create(adminUserContext, 1, {
-          pcf: { status: 'Active' },
+        footprintService.create(adminUserContext, 1, {
+          data: { status: 'Active' },
         })
       ).rejects.toThrow(ForbiddenError);
     });
 
-    it('should throw ForbiddenError if user has no PCF policies', async () => {
+    it('should throw ForbiddenError if user has no footprint policies', async () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
 
       await expect(
-        pcfDataService.create(regularUserContext, 1, {
-          pcf: { status: 'Active' },
+        footprintService.create(regularUserContext, 1, {
+          data: { status: 'Active' },
         })
       ).rejects.toThrow(ForbiddenError);
     });
 
-    it('should throw BadRequestError if PCF data is not an object', async () => {
+    it('should throw BadRequestError if footprint data is not an object', async () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
 
       await expect(
-        pcfDataService.create(adminUserContext, 1, {
-          pcf: null as any,
+        footprintService.create(adminUserContext, 1, {
+          data: null as any,
         })
       ).rejects.toThrow(BadRequestError);
     });
 
-    it('should allow root user to create PCF for any node', async () => {
+    it('should allow root user to create footprint for any node', async () => {
       const otherOrgNode = { ...mockNode, organizationId: 999 };
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(otherOrgNode);
       dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({
-        ...mockPcf,
+        ...mockFootprint,
         nodeId: otherOrgNode.id,
       });
 
-      const result = await pcfDataService.create(rootUserContext, 1, {
-        pcf: { status: 'Active' },
+      const result = await footprintService.create(rootUserContext, 1, {
+        data: { status: 'Active' },
       });
 
       expect(result).toBeDefined();
-      expect(dbMocks.db.insertInto).toHaveBeenCalledWith('pcfs');
+      expect(dbMocks.db.insertInto).toHaveBeenCalledWith('product_footprints');
     });
   });
 
   describe('get', () => {
-    it('should return a PCF if user has access', async () => {
-      // Mock PCF lookup
-      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockPcf);
+    it('should return a footprint if user has access', async () => {
+      // Mock footprint lookup
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockFootprint);
       // Mock node lookup (via nodeService.get)
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
 
-      const result = await pcfDataService.get(adminUserContext, mockPcf.id);
+      const result = await footprintService.get(adminUserContext, mockFootprint.id);
 
-      expect(result).toEqual(mockPcf);
+      expect(result).toEqual(mockFootprint);
     });
 
-    it('should throw NotFoundError if PCF does not exist', async () => {
+    it('should throw NotFoundError if footprint does not exist', async () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(null);
 
       await expect(
-        pcfDataService.get(adminUserContext, 'nonexistent-id')
+        footprintService.get(adminUserContext, 'nonexistent-id')
       ).rejects.toThrow(NotFoundError);
     });
 
     it('should throw ForbiddenError if user does not have access to the node', async () => {
-      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockPcf);
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockFootprint);
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
         ...mockNode,
         organizationId: 999,
       });
 
       await expect(
-        pcfDataService.get(adminUserContext, mockPcf.id)
+        footprintService.get(adminUserContext, mockFootprint.id)
       ).rejects.toThrow(ForbiddenError);
     });
 
-    it('should allow root user to view any PCF', async () => {
-      const otherOrgPcf = { ...mockPcf, nodeId: 2 };
+    it('should allow root user to view any footprint', async () => {
+      const otherOrgFootprint = { ...mockFootprint, nodeId: 2 };
       const otherOrgNode = { ...mockNode, id: 2, organizationId: 999 };
 
-      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(otherOrgPcf);
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(otherOrgFootprint);
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(otherOrgNode);
 
-      const result = await pcfDataService.get(rootUserContext, otherOrgPcf.id);
+      const result = await footprintService.get(rootUserContext, otherOrgFootprint.id);
 
-      expect(result).toEqual(otherOrgPcf);
+      expect(result).toEqual(otherOrgFootprint);
     });
   });
 
   describe('listByNode', () => {
-    it('should return paginated list of PCFs for a node', async () => {
+    it('should return paginated list of footprints for a node', async () => {
       // Mock nodeService.get
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
       // Mock count query
       dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 2 });
       // Mock data query
-      dbMocks.executors.execute.mockResolvedValueOnce([mockPcf, { ...mockPcf, id: 'second-id' }]);
+      dbMocks.executors.execute.mockResolvedValueOnce([mockFootprint, { ...mockFootprint, id: 'second-id' }]);
 
-      const result = await pcfDataService.listByNode(adminUserContext, 1);
+      const result = await footprintService.listByNode(adminUserContext, 1);
 
       expect(result.data).toHaveLength(2);
       expect(result.pagination.total).toBe(2);
@@ -208,34 +208,34 @@ describe('PCFDataService', () => {
       });
 
       await expect(
-        pcfDataService.listByNode(adminUserContext, 1)
+        footprintService.listByNode(adminUserContext, 1)
       ).rejects.toThrow(ForbiddenError);
     });
 
-    it('should throw ForbiddenError if user has no PCF policies', async () => {
+    it('should throw ForbiddenError if user has no footprint policies', async () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
 
       await expect(
-        pcfDataService.listByNode(regularUserContext, 1)
+        footprintService.listByNode(regularUserContext, 1)
       ).rejects.toThrow(ForbiddenError);
     });
 
-    it('should allow root user to list PCFs for any node', async () => {
+    it('should allow root user to list footprints for any node', async () => {
       const otherOrgNode = { ...mockNode, organizationId: 999 };
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(otherOrgNode);
       dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 1 });
-      dbMocks.executors.execute.mockResolvedValueOnce([mockPcf]);
+      dbMocks.executors.execute.mockResolvedValueOnce([mockFootprint]);
 
-      const result = await pcfDataService.listByNode(rootUserContext, 1);
+      const result = await footprintService.listByNode(rootUserContext, 1);
 
       expect(result.data).toHaveLength(1);
     });
   });
 
   describe('delete', () => {
-    it('should delete a PCF if user has access', async () => {
-      // Mock get -> PCF lookup
-      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockPcf);
+    it('should delete a footprint if user has access', async () => {
+      // Mock get -> footprint lookup
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockFootprint);
       // Mock get -> node lookup (inside this.get)
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
       // Mock delete -> node lookup (explicit in delete method)
@@ -243,38 +243,38 @@ describe('PCFDataService', () => {
       // Mock the delete execution
       dbMocks.executors.execute.mockResolvedValueOnce(undefined);
 
-      const result = await pcfDataService.delete(adminUserContext, mockPcf.id);
+      const result = await footprintService.delete(adminUserContext, mockFootprint.id);
 
-      expect(result).toEqual({ success: true, pcfId: mockPcf.id });
-      expect(dbMocks.db.deleteFrom).toHaveBeenCalledWith('pcfs');
+      expect(result).toEqual({ success: true, footprintId: mockFootprint.id });
+      expect(dbMocks.db.deleteFrom).toHaveBeenCalledWith('product_footprints');
     });
 
-    it('should throw NotFoundError if PCF does not exist', async () => {
+    it('should throw NotFoundError if footprint does not exist', async () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(null);
 
       await expect(
-        pcfDataService.delete(adminUserContext, 'nonexistent-id')
+        footprintService.delete(adminUserContext, 'nonexistent-id')
       ).rejects.toThrow(NotFoundError);
     });
 
     it('should throw ForbiddenError if user does not have access', async () => {
-      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockPcf);
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockFootprint);
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
         ...mockNode,
         organizationId: 999,
       });
 
       await expect(
-        pcfDataService.delete(adminUserContext, mockPcf.id)
+        footprintService.delete(adminUserContext, mockFootprint.id)
       ).rejects.toThrow(ForbiddenError);
     });
 
-    it('should allow root user to delete any PCF', async () => {
-      const otherOrgPcf = { ...mockPcf, nodeId: 2 };
+    it('should allow root user to delete any footprint', async () => {
+      const otherOrgFootprint = { ...mockFootprint, nodeId: 2 };
       const otherOrgNode = { ...mockNode, id: 2, organizationId: 999 };
 
-      // Mock get -> PCF lookup
-      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(otherOrgPcf);
+      // Mock get -> footprint lookup
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(otherOrgFootprint);
       // Mock get -> node lookup (inside this.get)
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(otherOrgNode);
       // Mock delete -> node lookup
@@ -282,9 +282,9 @@ describe('PCFDataService', () => {
       // Mock delete execution
       dbMocks.executors.execute.mockResolvedValueOnce(undefined);
 
-      const result = await pcfDataService.delete(rootUserContext, otherOrgPcf.id);
+      const result = await footprintService.delete(rootUserContext, otherOrgFootprint.id);
 
-      expect(result).toEqual({ success: true, pcfId: otherOrgPcf.id });
+      expect(result).toEqual({ success: true, footprintId: otherOrgFootprint.id });
     });
   });
 });
