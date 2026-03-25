@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import * as Form from "@radix-ui/react-form";
 import {
+  Box,
   Button,
   Flex,
   Text,
@@ -137,7 +138,7 @@ const UserForm: React.FC<UserFormProps> = ({
   const organizationName =
     readOnlyOrganization || profileData?.organizationName || "";
 
-  let roleOptions = [ { value: "user", label: "User" }];
+  const roleOptions = [ { value: "user", label: "User" }];
   if (profileData?.role === "administrator" || profileData?.role === "root") {
     roleOptions.unshift({ value: "administrator", label: "Administrator" });
   }
@@ -147,77 +148,17 @@ const UserForm: React.FC<UserFormProps> = ({
 
   if (loading) {
     return (
-      <Flex direction="column" align="center" justify="center" gap="3" py="7">
-        <Spinner loading />
-        <Text>Loading user data...</Text>
-      </Flex>
+      <Box py="7">
+        <Flex direction="column" align="center" justify="center" gap="3">
+          <Spinner loading />
+          <Text>Loading user data...</Text>
+        </Flex>
+      </Box>
     );
   }
 
   return (
-    <div>
-      <Form.Root autoComplete="off" onSubmit={handleSubmit}>
-        <FormField name="email" label="Email Address" required>
-          <TextField
-            required
-            type="email"
-            value={formData.email}
-            placeholder="Enter email address"
-            tooltip="The email address for the user"
-            disabled={isEditMode}
-            onChange={handleChange}
-          />
-          <Form.Message match="typeMismatch">
-            Please enter a valid email address.
-          </Form.Message>
-        </FormField>
-
-        <FormField name="fullName" label="Full Name" required>
-          <TextField
-            required
-            value={formData.fullName}
-            placeholder="Enter full name"
-            tooltip="The full name of the user"
-            onChange={handleChange}
-          />
-        </FormField>
-
-        <FormField name="role" label="Role" required>
-          <SelectField
-            value={formData.role}
-            required
-            options={roleOptions}
-            onValueChange={handleRoleChange}
-          />
-        </FormField>
-
-        <FormField name="organization" label="Organization">
-          <TextField
-            value={organizationName}
-            disabled
-          />
-        </FormField>
-
-        <Flex justify="end" gap="3" mt="6">
-          {onCancel && (
-            <Button type="button" color="jade" onClick={onCancel}>
-              Cancel
-            </Button>
-          )}
-          <Form.Submit asChild>
-            <Button type="submit" disabled={submitting}>
-              {submitting && <Spinner loading />}
-              {submitting
-                ? isEditMode
-                  ? "Updating..."
-                  : "Creating..."
-                : isEditMode
-                  ? "Update User"
-                  : "Create User"}
-            </Button>
-          </Form.Submit>
-        </Flex>
-      </Form.Root>
+    <Form.Root autoComplete="off" onSubmit={handleSubmit}>
 
       {status === "success" && (
         <Callout.Root color="green" highContrast variant="surface" mt="4">
@@ -241,7 +182,73 @@ const UserForm: React.FC<UserFormProps> = ({
           </Callout.Text>
         </Callout.Root>
       )}
-    </div>
+
+      {/* Email */}
+      <FormField name="email" label="Email Address" required>
+        <TextField
+          required
+          type="email"
+          value={formData.email}
+          placeholder="Enter email address"
+          tooltip="The email address for the user"
+          disabled={isEditMode}
+          onChange={handleChange}
+        />
+        <Form.Message match="typeMismatch">
+          Please enter a valid email address.
+        </Form.Message>
+      </FormField>
+
+      {/* Full Name */}
+      <FormField name="fullName" label="Full Name" required>
+        <TextField
+          required
+          value={formData.fullName}
+          placeholder="Enter full name"
+          tooltip="The full name of the user"
+          onChange={handleChange}
+        />
+      </FormField>
+
+      {/* Role */}
+      <FormField name="role" label="Role" required>
+        <SelectField
+          value={formData.role}
+          required
+          options={roleOptions}
+          onValueChange={handleRoleChange}
+        />
+      </FormField>
+
+      {/* Organization (read-only) */}
+      <FormField name="organization" label="Organization">
+        <TextField
+          value={organizationName}
+          disabled
+        />
+      </FormField>
+
+      {/* Actions */}
+      <Flex gap="3" mt="2" justify="end">
+        {onCancel && (
+          <Button type="button" color="jade" onClick={onCancel}>
+            Cancel
+          </Button>
+        )}
+        <Form.Submit asChild>
+          <Button type="submit" disabled={submitting}>
+            {submitting && <Spinner loading />}
+            {submitting
+              ? isEditMode
+                ? "Updating..."
+                : "Creating..."
+              : isEditMode
+                ? "Update User"
+                : "Create User"}
+          </Button>
+        </Form.Submit>
+      </Flex>
+    </Form.Root>
   );
 };
 
