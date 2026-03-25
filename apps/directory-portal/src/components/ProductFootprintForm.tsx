@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { TextField as BaseTextField } from "@radix-ui/themes";
 import { Button, Heading, Text, Box } from "@radix-ui/themes";
 import * as Form from "@radix-ui/react-form";
 import { FormField, TextField, SelectField } from "./ui";
@@ -312,7 +313,7 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
       <FieldGrid>
         <FormField name="validityPeriodStart" label="Validity Period Start">
           <TextField
-            type="datetime-local"
+            type="date"
             value={formData.validityPeriodStart}
             readOnly={readOnly} onChange={handleChange}
           />
@@ -320,7 +321,7 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
 
         <FormField name="validityPeriodEnd" label="Validity Period End">
           <TextField
-            type="datetime-local"
+            type="date"
             value={formData.validityPeriodEnd}
             readOnly={readOnly} onChange={handleChange}
           />
@@ -376,20 +377,22 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
         <FormField name="referencePeriodStart" label="Reference Period Start" required>
           <TextField
             required
-            type="datetime-local"
+            type="date"
             value={formData.referencePeriodStart}
             tooltip="Start of the time boundary for which the PCF is representative."
-            readOnly={readOnly} onChange={handleChange}
+            readOnly={readOnly} 
+            onChange={handleChange}
           />
         </FormField>
 
         <FormField name="referencePeriodEnd" label="Reference Period End" required>
           <TextField
             required
-            type="datetime-local"
+            type="date"
             value={formData.referencePeriodEnd}
             tooltip="End of the time boundary for which the PCF is representative."
-            readOnly={readOnly} onChange={handleChange}
+            readOnly={readOnly} 
+            onChange={handleChange}
           />
         </FormField>
       </FieldGrid>
