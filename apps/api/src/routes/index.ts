@@ -312,6 +312,44 @@ router.post('/directory/node-connections/:id/credentials/rotate', authenticate, 
   );
 }));
 
+/////////////////// Footprints (Product Footprints)
+
+// Create a footprint for a node
+router.post('/directory/nodes/:id/footprints', authenticate, context(async (req, res) => {
+  const result = await req.services.footprint.create(
+    req.context,
+    parseInt(req.params.id),
+    { data: req.body }
+  );
+  res.status(201);
+  return result;
+}));
+
+// List footprints for a node
+router.get('/directory/nodes/:id/footprints', authenticate, context(async (req) => {
+  return req.services.footprint.listByNode(
+    req.context,
+    parseInt(req.params.id),
+    ListQuery.parse(req.query)
+  );
+}));
+
+// Get a single footprint by ID
+router.get('/directory/footprints/:id', authenticate, context(async (req) => {
+  return req.services.footprint.get(
+    req.context,
+    req.params.id
+  );
+}));
+
+// Delete a footprint by ID
+router.delete('/directory/footprints/:id', authenticate, context(async (req) => {
+  return req.services.footprint.delete(
+    req.context,
+    req.params.id
+  );
+}));
+
 
 //////////////// Organization connections
 

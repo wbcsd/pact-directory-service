@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { TextField as BaseTextField } from "@radix-ui/themes";
 import { Button, Heading, Text, Box } from "@radix-ui/themes";
 import * as Form from "@radix-ui/react-form";
 import { FormField, TextField, SelectField } from "./ui";
@@ -110,8 +111,10 @@ export interface ProductFootprintFormData {
 }
 
 interface ProductFootprintFormProps {
-  onSubmit: (data: ProductFootprintFormData) => void;
+  onSubmit?: (data: ProductFootprintFormData) => void;
   isSubmitting?: boolean;
+  initialData?: Partial<ProductFootprintFormData>;
+  readOnly?: boolean;
 }
 
 const INITIAL_FORM_DATA: ProductFootprintFormData = {
@@ -188,17 +191,25 @@ const BOOLEAN_OPTIONS = [
 const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
   onSubmit,
   isSubmitting = false,
+  initialData,
+  readOnly = false,
 }) => {
-  const [formData, setFormData] = useState<ProductFootprintFormData>(INITIAL_FORM_DATA);
+  const [formData, setFormData] = useState<ProductFootprintFormData>({
+    ...INITIAL_FORM_DATA,
+    ...initialData,
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (readOnly) return;
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    if (!readOnly && onSubmit) {
+      onSubmit(formData);
+    }
   };
 
   return (
@@ -208,7 +219,7 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
       <SectionHeading>Product Information</SectionHeading>
 
       <FormField name="status" label="Status" required>
-        <SelectField
+        <SelectField disabled={readOnly}
           defaultValue={formData.status}
           options={STATUS_OPTIONS}
           onValueChange={(status) => setFormData((prev) => ({ ...prev, status }))}
@@ -221,7 +232,7 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
           value={formData.companyName}
           placeholder="Name of the data owner company"
           tooltip="The name of the company that is the PCF Data Owner."
-          onChange={handleChange}
+          readOnly={readOnly} onChange={handleChange}
         />
       </FormField>
 
@@ -235,7 +246,7 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
           required
           value={formData.companyIds}
           placeholder="urn:company:example:company1"
-          onChange={handleChange}
+          readOnly={readOnly} onChange={handleChange}
         />
       </FormField>
 
@@ -245,7 +256,7 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
           value={formData.productNameCompany}
           placeholder="Product trade name recognizable by the receiver"
           tooltip="The trade name of the product as used by the producing company."
-          onChange={handleChange}
+          readOnly={readOnly} onChange={handleChange}
         />
       </FormField>
 
@@ -255,7 +266,7 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
           value={formData.productDescription}
           placeholder="Free-form description including technology, packaging, etc."
           tooltip="Description of the product including any additional relevant information such as production technology, packaging, process, feedstock and technical parameters."
-          onChange={handleChange}
+          readOnly={readOnly} onChange={handleChange}
         />
       </FormField>
 
@@ -269,7 +280,7 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
           required
           value={formData.productIds}
           placeholder="urn:gtin:4012345678901"
-          onChange={handleChange}
+          readOnly={readOnly} onChange={handleChange}
         />
       </FormField>
 
@@ -281,7 +292,7 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
         <TextField
           value={formData.productClassifications}
           placeholder="urn:pact:productclassification:un-cpc:1234"
-          onChange={handleChange}
+          readOnly={readOnly} onChange={handleChange}
         />
       </FormField>
 
@@ -289,7 +300,7 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
         <TextField
           value={formData.comment}
           placeholder="Additional notes"
-          onChange={handleChange}
+          readOnly={readOnly} onChange={handleChange}
         />
       </FormField>
 
@@ -302,17 +313,17 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
       <FieldGrid>
         <FormField name="validityPeriodStart" label="Validity Period Start">
           <TextField
-            type="datetime-local"
+            type="date"
             value={formData.validityPeriodStart}
-            onChange={handleChange}
+            readOnly={readOnly} onChange={handleChange}
           />
         </FormField>
 
         <FormField name="validityPeriodEnd" label="Validity Period End">
           <TextField
-            type="datetime-local"
+            type="date"
             value={formData.validityPeriodEnd}
-            onChange={handleChange}
+            readOnly={readOnly} onChange={handleChange}
           />
         </FormField>
       </FieldGrid>
@@ -327,7 +338,7 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
           required
           description="Emissions are expressed in kgCO2e per declared unit."
         >
-          <SelectField
+          <SelectField disabled={readOnly}
             defaultValue={formData.declaredUnitOfMeasurement}
             options={UNIT_OPTIONS}
             onValueChange={(declaredUnitOfMeasurement) => setFormData((prev) => ({ ...prev, declaredUnitOfMeasurement }))}
@@ -340,7 +351,7 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
             value={formData.declaredUnitAmount}
             placeholder="e.g. 12.5"
             tooltip="The amount of units contained within the product to which the PCF refers."
-            onChange={handleChange}
+            readOnly={readOnly} onChange={handleChange}
           />
         </FormField>
 
@@ -354,7 +365,7 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
             required
             value={formData.productMassPerDeclaredUnit}
             placeholder="e.g. 9.86"
-            onChange={handleChange}
+            readOnly={readOnly} onChange={handleChange}
           />
         </FormField>
       </FieldGrid>
@@ -366,9 +377,10 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
         <FormField name="referencePeriodStart" label="Reference Period Start" required>
           <TextField
             required
-            type="datetime-local"
+            type="date"
             value={formData.referencePeriodStart}
             tooltip="Start of the time boundary for which the PCF is representative."
+            readOnly={readOnly} 
             onChange={handleChange}
           />
         </FormField>
@@ -376,9 +388,10 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
         <FormField name="referencePeriodEnd" label="Reference Period End" required>
           <TextField
             required
-            type="datetime-local"
+            type="date"
             value={formData.referencePeriodEnd}
             tooltip="End of the time boundary for which the PCF is representative."
+            readOnly={readOnly} 
             onChange={handleChange}
           />
         </FormField>
@@ -392,7 +405,7 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
 
       <FieldGrid columns={3}>
         <FormField name="geographyRegionOrSubregion" label="Region or Subregion">
-          <SelectField
+          <SelectField disabled={readOnly}
             defaultValue={formData.geographyRegionOrSubregion}
             options={GEOGRAPHY_REGION_OPTIONS}
             onValueChange={(geographyRegionOrSubregion) => setFormData((prev) => ({ ...prev, geographyRegionOrSubregion }))}
@@ -404,7 +417,7 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
             value={formData.geographyCountry}
             placeholder="e.g. DE"
             tooltip="ISO 3166-1 alpha-2 country code."
-            onChange={handleChange}
+            readOnly={readOnly} onChange={handleChange}
           />
         </FormField>
 
@@ -413,7 +426,7 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
             value={formData.geographyCountrySubdivision}
             placeholder="e.g. DE-BW"
             tooltip="ISO 3166-2 country subdivision code."
-            onChange={handleChange}
+            readOnly={readOnly} onChange={handleChange}
           />
         </FormField>
       </FieldGrid>
@@ -423,61 +436,61 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
 
       <FieldGrid>
         <FormField name="pcfExcludingBiogenicUptake" label="PCF Excl. Biogenic Uptake" required description="kgCO2e/unit. Excl. biogenic CO₂ uptake.">
-          <TextField required value={formData.pcfExcludingBiogenicUptake} placeholder="e.g. 5.14" onChange={handleChange} />
+          <TextField required value={formData.pcfExcludingBiogenicUptake} placeholder="e.g. 5.14" readOnly={readOnly} onChange={handleChange} />
         </FormField>
 
         <FormField name="pcfIncludingBiogenicUptake" label="PCF Incl. Biogenic Uptake" required description="kgCO2e/unit. Incl. biogenic CO₂ uptake.">
-          <TextField required value={formData.pcfIncludingBiogenicUptake} placeholder="e.g. -14.22" onChange={handleChange} />
+          <TextField required value={formData.pcfIncludingBiogenicUptake} placeholder="e.g. -14.22" readOnly={readOnly} onChange={handleChange} />
         </FormField>
       </FieldGrid>
 
       <FieldGrid columns={3}>
         <FormField name="fossilGhgEmissions" label="Fossil GHG Emissions" required description="kgCO2e/unit.">
-          <TextField required value={formData.fossilGhgEmissions} placeholder="e.g. 3.20" onChange={handleChange} />
+          <TextField required value={formData.fossilGhgEmissions} placeholder="e.g. 3.20" readOnly={readOnly} onChange={handleChange} />
         </FormField>
 
         <FormField name="fossilCarbonContent" label="Fossil Carbon Content" required description="kgC/unit.">
-          <TextField required value={formData.fossilCarbonContent} placeholder="e.g. 0.50" onChange={handleChange} />
+          <TextField required value={formData.fossilCarbonContent} placeholder="e.g. 0.50" readOnly={readOnly} onChange={handleChange} />
         </FormField>
 
         <FormField name="biogenicCarbonContent" label="Biogenic Carbon Content" description="kgC/unit.">
-          <TextField value={formData.biogenicCarbonContent} placeholder="e.g. 0.10" onChange={handleChange} />
+          <TextField value={formData.biogenicCarbonContent} placeholder="e.g. 0.10" readOnly={readOnly} onChange={handleChange} />
         </FormField>
 
         <FormField name="recycledCarbonContent" label="Recycled Carbon Content" description="kgC/unit.">
-          <TextField value={formData.recycledCarbonContent} placeholder="e.g. 0.05" onChange={handleChange} />
+          <TextField value={formData.recycledCarbonContent} placeholder="e.g. 0.05" readOnly={readOnly} onChange={handleChange} />
         </FormField>
 
         <FormField name="landUseChangeGhgEmissions" label="Land Use Change GHG" description="kgCO2e/unit.">
-          <TextField value={formData.landUseChangeGhgEmissions} placeholder="e.g. 0.30" onChange={handleChange} />
+          <TextField value={formData.landUseChangeGhgEmissions} placeholder="e.g. 0.30" readOnly={readOnly} onChange={handleChange} />
         </FormField>
 
         <FormField name="landCarbonLeakage" label="Land Carbon Leakage" description="kgCO2e/unit.">
-          <TextField value={formData.landCarbonLeakage} placeholder="e.g. 0.00" onChange={handleChange} />
+          <TextField value={formData.landCarbonLeakage} placeholder="e.g. 0.00" readOnly={readOnly} onChange={handleChange} />
         </FormField>
 
         <FormField name="landManagementFossilGhgEmissions" label="Land Mgmt Fossil GHG" description="kgCO2e/unit.">
-          <TextField value={formData.landManagementFossilGhgEmissions} placeholder="e.g. 0.10" onChange={handleChange} />
+          <TextField value={formData.landManagementFossilGhgEmissions} placeholder="e.g. 0.10" readOnly={readOnly} onChange={handleChange} />
         </FormField>
 
         <FormField name="landManagementBiogenicCO2Emissions" label="Land Mgmt Biogenic CO₂" description="kgCO2e/unit.">
-          <TextField value={formData.landManagementBiogenicCO2Emissions} placeholder="e.g. 0.05" onChange={handleChange} />
+          <TextField value={formData.landManagementBiogenicCO2Emissions} placeholder="e.g. 0.05" readOnly={readOnly} onChange={handleChange} />
         </FormField>
 
         <FormField name="landManagementBiogenicCO2Removals" label="Land Mgmt Bio Removals" description="kgCO2e/unit. Must be ≤ 0.">
-          <TextField value={formData.landManagementBiogenicCO2Removals} placeholder="e.g. -0.20" onChange={handleChange} />
+          <TextField value={formData.landManagementBiogenicCO2Removals} placeholder="e.g. -0.20" readOnly={readOnly} onChange={handleChange} />
         </FormField>
 
         <FormField name="biogenicCO2Uptake" label="Biogenic CO₂ Uptake" description="kgCO2e/unit. Must be ≤ 0.">
-          <TextField value={formData.biogenicCO2Uptake} placeholder="e.g. -1.50" onChange={handleChange} />
+          <TextField value={formData.biogenicCO2Uptake} placeholder="e.g. -1.50" readOnly={readOnly} onChange={handleChange} />
         </FormField>
 
         <FormField name="biogenicNonCO2Emissions" label="Biogenic Non-CO₂" description="kgCO2e/unit.">
-          <TextField value={formData.biogenicNonCO2Emissions} placeholder="e.g. 0.02" onChange={handleChange} />
+          <TextField value={formData.biogenicNonCO2Emissions} placeholder="e.g. 0.02" readOnly={readOnly} onChange={handleChange} />
         </FormField>
 
         <FormField name="landAreaOccupation" label="Land Area Occupation" description="m²/year per unit.">
-          <TextField value={formData.landAreaOccupation} placeholder="e.g. 2.00" onChange={handleChange} />
+          <TextField value={formData.landAreaOccupation} placeholder="e.g. 2.00" readOnly={readOnly} onChange={handleChange} />
         </FormField>
       </FieldGrid>
 
@@ -486,11 +499,11 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
 
       <FieldGrid columns={3}>
         <FormField name="aircraftGhgEmissions" label="Aircraft GHG" description="kgCO2e/unit, excl. radiative forcing.">
-          <TextField value={formData.aircraftGhgEmissions} placeholder="e.g. 0.15" onChange={handleChange} />
+          <TextField value={formData.aircraftGhgEmissions} placeholder="e.g. 0.15" readOnly={readOnly} onChange={handleChange} />
         </FormField>
 
         <FormField name="packagingEmissionsIncluded" label="Packaging Included" required>
-          <SelectField
+          <SelectField disabled={readOnly}
             defaultValue={formData.packagingEmissionsIncluded}
             options={BOOLEAN_OPTIONS}
             onValueChange={(packagingEmissionsIncluded) => setFormData((prev) => ({ ...prev, packagingEmissionsIncluded }))}
@@ -498,18 +511,18 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
         </FormField>
 
         <FormField name="outboundLogisticsGhgEmissions" label="Outbound Logistics GHG" description="kgCO2e/unit.">
-          <TextField value={formData.outboundLogisticsGhgEmissions} placeholder="e.g. 0.08" onChange={handleChange} />
+          <TextField value={formData.outboundLogisticsGhgEmissions} placeholder="e.g. 0.08" readOnly={readOnly} onChange={handleChange} />
         </FormField>
       </FieldGrid>
 
       {formData.packagingEmissionsIncluded === "true" && (
         <FieldGrid>
           <FormField name="packagingGhgEmissions" label="Packaging GHG Emissions" description="kgCO2e/unit.">
-            <TextField value={formData.packagingGhgEmissions} placeholder="e.g. 0.30" onChange={handleChange} />
+            <TextField value={formData.packagingGhgEmissions} placeholder="e.g. 0.30" readOnly={readOnly} onChange={handleChange} />
           </FormField>
 
           <FormField name="packagingBiogenicCarbonContent" label="Packaging Biogenic Carbon" description="kgC/unit.">
-            <TextField value={formData.packagingBiogenicCarbonContent} placeholder="e.g. 0.01" onChange={handleChange} />
+            <TextField value={formData.packagingBiogenicCarbonContent} placeholder="e.g. 0.01" readOnly={readOnly} onChange={handleChange} />
           </FormField>
         </FieldGrid>
       )}
@@ -519,7 +532,7 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
 
       <FieldGrid columns={3}>
         <FormField name="ccsTechnologicalCO2CaptureIncluded" label="CCS Included" required>
-          <SelectField
+          <SelectField disabled={readOnly}
             defaultValue={formData.ccsTechnologicalCO2CaptureIncluded}
             options={BOOLEAN_OPTIONS}
             onValueChange={(ccsTechnologicalCO2CaptureIncluded) => setFormData((prev) => ({ ...prev, ccsTechnologicalCO2CaptureIncluded }))}
@@ -527,11 +540,11 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
         </FormField>
 
         <FormField name="ccuCarbonContent" label="CCU Carbon Content" description="kgC/unit.">
-          <TextField value={formData.ccuCarbonContent} placeholder="e.g. 0.50" onChange={handleChange} />
+          <TextField value={formData.ccuCarbonContent} placeholder="e.g. 0.50" readOnly={readOnly} onChange={handleChange} />
         </FormField>
 
         <FormField name="ccuCalculationApproach" label="CCU Calculation Approach">
-          <SelectField
+          <SelectField disabled={readOnly}
             defaultValue={formData.ccuCalculationApproach}
             options={CCU_APPROACH_OPTIONS}
             onValueChange={(ccuCalculationApproach) => setFormData((prev) => ({ ...prev, ccuCalculationApproach }))}
@@ -542,22 +555,22 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
       {formData.ccsTechnologicalCO2CaptureIncluded === "true" && (
         <FieldGrid columns={3}>
           <FormField name="ccsTechnologicalCO2Capture" label="CCS Tech CO₂ Capture" description="kgCO2e/unit. Must be ≤ 0.">
-            <TextField value={formData.ccsTechnologicalCO2Capture} placeholder="e.g. -4.34" onChange={handleChange} />
+            <TextField value={formData.ccsTechnologicalCO2Capture} placeholder="e.g. -4.34" readOnly={readOnly} onChange={handleChange} />
           </FormField>
 
           <FormField name="technologicalCO2Removals" label="Tech CO₂ Removals" description="kgCO2e/unit. Must be ≤ 0.">
-            <TextField value={formData.technologicalCO2Removals} placeholder="e.g. -1.00" onChange={handleChange} />
+            <TextField value={formData.technologicalCO2Removals} placeholder="e.g. -1.00" readOnly={readOnly} onChange={handleChange} />
           </FormField>
 
           <FormField name="technologicalCO2CaptureOrigin" label="Tech CO₂ Capture Origin" description="Origin, path, and location.">
-            <TextField value={formData.technologicalCO2CaptureOrigin} placeholder="Origin details" onChange={handleChange} />
+            <TextField value={formData.technologicalCO2CaptureOrigin} placeholder="Origin details" readOnly={readOnly} onChange={handleChange} />
           </FormField>
         </FieldGrid>
       )}
 
       {formData.ccuCalculationApproach === "Credit" && (
         <FormField name="ccuCreditCertification" label="CCU Credit Certification URL" description="URL to documentation verifying certification from an external bookkeeping scheme.">
-          <TextField value={formData.ccuCreditCertification} placeholder="https://..." onChange={handleChange} />
+          <TextField value={formData.ccuCreditCertification} placeholder="https://..." readOnly={readOnly} onChange={handleChange} />
         </FormField>
       )}
 
@@ -571,7 +584,7 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
           required
           description="e.g. AR6"
         >
-          <TextField required value={formData.ipccCharacterizationFactors} placeholder="AR6" onChange={handleChange} />
+          <TextField required value={formData.ipccCharacterizationFactors} placeholder="AR6" readOnly={readOnly} onChange={handleChange} />
         </FormField>
 
         <FormField
@@ -580,38 +593,40 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
           required
           description="e.g. ISO14067, PACT-3.0"
         >
-          <TextField required value={formData.crossSectoralStandards} placeholder="ISO14067, PACT-3.0" onChange={handleChange} />
+          <TextField required value={formData.crossSectoralStandards} placeholder="ISO14067, PACT-3.0" readOnly={readOnly} onChange={handleChange} />
         </FormField>
 
         <FormField name="exemptedEmissionsPercent" label="Exempted Emissions (%)" required>
-          <TextField required value={formData.exemptedEmissionsPercent} placeholder="e.g. 5.3" onChange={handleChange} />
+          <TextField required value={formData.exemptedEmissionsPercent} placeholder="e.g. 5.3" readOnly={readOnly} onChange={handleChange} />
         </FormField>
 
         <FormField name="primaryDataShare" label="Primary Data Share" description="Share of primary data in PCF value.">
-          <TextField value={formData.primaryDataShare} placeholder="e.g. 60.0" onChange={handleChange} />
+          <TextField value={formData.primaryDataShare} placeholder="e.g. 60.0" readOnly={readOnly} onChange={handleChange} />
         </FormField>
       </FieldGrid>
 
       <FormField name="exemptedEmissionsDescription" label="Exempted Emissions Description" description="Rationale behind exclusion of specific PCF emissions.">
-        <TextField value={formData.exemptedEmissionsDescription} placeholder="Rationale for exclusions" onChange={handleChange} />
+        <TextField value={formData.exemptedEmissionsDescription} placeholder="Rationale for exclusions" readOnly={readOnly} onChange={handleChange} />
       </FormField>
 
       <FormField name="allocationRulesDescription" label="Allocation Rules Description" description="Description of allocation rules applied to the foreground data.">
-        <TextField value={formData.allocationRulesDescription} placeholder="Allocation method used" onChange={handleChange} />
+        <TextField value={formData.allocationRulesDescription} placeholder="Allocation method used" readOnly={readOnly} onChange={handleChange} />
       </FormField>
 
       <FormField name="boundaryProcessesDescription" label="Boundary Processes Description" description="Brief description of processes included in each life cycle stage.">
-        <TextField value={formData.boundaryProcessesDescription} placeholder="Manufacturing steps, technologies used, etc." onChange={handleChange} />
+        <TextField value={formData.boundaryProcessesDescription} placeholder="Manufacturing steps, technologies used, etc." readOnly={readOnly} onChange={handleChange} />
       </FormField>
 
       {/* ── Submit ── */}
-      <Box mt="5">
-        <Form.Submit asChild>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : "Save Product Footprint"}
-          </Button>
-        </Form.Submit>
-      </Box>
+      {!readOnly && (
+        <Box mt="5">
+          <Form.Submit asChild>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Saving..." : "Save Product Footprint"}
+            </Button>
+          </Form.Submit>
+        </Box>
+      )}
     </Form.Root>
   );
 };
