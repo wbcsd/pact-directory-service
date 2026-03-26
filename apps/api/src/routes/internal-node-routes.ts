@@ -14,7 +14,7 @@ export const authenticateInternalNode = async (
 ) => {
   try {
     const services = req.app.locals.services as Services;
-    const nodeId = parseInt(req.params.nodeId, 10);
+    const nodeId = parseInt(req.params.nodeId as string);
 
     if (isNaN(nodeId)) {
       throw new BadRequestError("Invalid node ID");
@@ -56,7 +56,7 @@ export function createInternalNodeRoutes(): Router {
   router.post("/:nodeId/auth/token", async (req: Request, res: Response, next: NextFunction) => {
     try {
       const services = req.app.locals.services as Services;
-      const nodeId = parseInt(req.params.nodeId, 10);
+      const nodeId = parseInt(req.params.nodeId as string, 10);
 
       if (isNaN(nodeId)) {
         throw new BadRequestError("Invalid node ID");
@@ -100,7 +100,7 @@ export function createInternalNodeRoutes(): Router {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const services = req.app.locals.services as Services;
-        const nodeId = parseInt(req.params.nodeId, 10);
+        const nodeId = parseInt(req.params.nodeId as string, 10);
 
         // Parse query parameters
         const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
@@ -154,10 +154,10 @@ export function createInternalNodeRoutes(): Router {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const services = req.app.locals.services as Services;
-        const nodeId = parseInt(req.params.nodeId, 10);
+        const nodeId = parseInt(req.params.nodeId as string);
         const footprintId = req.params.id;
 
-        const footprint = services.internalNodePact.getFootprintById(nodeId, footprintId);
+        const footprint = services.internalNodePact.getFootprintById(nodeId, footprintId as string);
 
         if (!footprint) {
           throw new NotFoundError("Product footprint not found");
@@ -179,7 +179,7 @@ export function createInternalNodeRoutes(): Router {
     authenticateInternalNode,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const nodeId = parseInt(req.params.nodeId, 10);
+        const nodeId = parseInt(req.params.nodeId as string);
         
         // Validate CloudEvents format
         if (!req.body.type || !req.body.specversion || !req.body.id || !req.body.source) {
