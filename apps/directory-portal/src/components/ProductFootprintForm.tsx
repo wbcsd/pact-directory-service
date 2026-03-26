@@ -227,7 +227,6 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
 
       <FormField name="companyName" label="Company Name" required>
         <TextField
-          required
           value={formData.companyName}
           placeholder="Name of the data owner company"
           tooltip="The name of the company that is the PCF Data Owner."
@@ -242,7 +241,6 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
         description="Comma-separated URNs uniquely identifying the data owner (e.g. urn:company:example:co1)."
       >
         <TextField
-          required
           value={formData.companyIds}
           placeholder="urn:company:example:company1"
           readOnly={readOnly} onChange={handleChange}
