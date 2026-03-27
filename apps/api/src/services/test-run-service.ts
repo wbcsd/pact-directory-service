@@ -91,12 +91,15 @@ export class TestRunService {
           }),
         }
       );
-
+      if (!response.ok) {
+        const errorbodyText = await response.text();
+        throw new Error(`Failed to create test run: ${response.status} ${response.statusText} - ${errorbodyText}`);
+      } 
       const responseData: unknown = await response.json();
       return responseData;
     } catch (error) {
       logger.error('createTestRun error', error);
-      throw new Error('Failed to execute test cases.');
+      throw error;
     }
   }
 
