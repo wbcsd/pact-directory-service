@@ -605,6 +605,49 @@ export class NodeConnectionService {
   }
 
   /**
+   * Verify client credentials for a target node (no access control, for machine-to-machine auth)
+   * Returns connection info if credentials are valid, null otherwise.
+   */
+  async verifyConnectionCredentials(
+    targetNodeId: number,
+    clientId: string,
+    clientSecret: string
+  ): Promise<{ id: number; fromNodeId: number; fromNodeOrganizationId: number; status: string } | null> {
+    const connection = await this.db
+      .selectFrom('connections')
+      .innerJoin('nodes as fromNode', 'connections.fromNodeId', 'fromNode.id')
+      .innerJoin('organizations as fromOrg', 'fromNode.organizationId', 'fromOrg.id')
+      .select([
+        'connections.id',
+        'connections.fromNodeId',
+        'connections.status',
+        'connections.clientId',
+        'connections.clientSecret',
+        'fromOrg.id as fromNodeOrganizationId',
+      ])
+      .where('connections.targetNodeId', '=', targetNodeId)
+      .where('connections.clientId', '=', clientId)
+      .where('connections.status', '=', 'accepted')
+      .executeTakeFirst();
+
+    if (!connection) {
+      return null;
+    }
+
+    // TODO: Use crypto.timingSafeEqual for constant-time comparison
+    if (this.decryptSecret(connection.clientSecret) !== clientSecret) {
+      return null;
+    }
+
+    return {
+      id: connection.id,
+      fromNodeId: connection.fromNodeId,
+      fromNodeOrganizationId: connection.fromNodeOrganizationId,
+      status: connection.status,
+    };
+  }
+
+  /**
    * Request footprints from a connected node
    * 
    * This is an example integration showing how to use the unified PACT client

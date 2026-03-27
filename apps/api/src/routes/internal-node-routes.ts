@@ -3,6 +3,33 @@ import { Services } from "../services";
 import { BadRequestError, NotFoundError, UnauthorizedError } from "../common/errors";
 import logger from "../common/logger";
 
+type NodeContextRequest = Request & { services: Services; nodeId: number };
+type NodeHandler = (req: NodeContextRequest, res: Response) => Promise<any>;
+
+/**
+ * Middleware wrapper that injects services and parsed nodeId into the request object,
+ * then executes the provided handler function. If the handler returns a result and the response
+ * headers have not been sent, the result is sent as a JSON response.
+ */
+const nodeContext =
+  (handler: NodeHandler) =>
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const nodeReq = req as NodeContextRequest;
+      nodeReq.services = req.app.locals.services;
+      nodeReq.nodeId = parseInt(req.params.nodeId, 10);
+      if (isNaN(nodeReq.nodeId)) {
+        throw new BadRequestError("Invalid node ID");
+      }
+      const result = await handler(nodeReq, res);
+      if (result && !res.headersSent) {
+        res.json(result);
+      }
+    } catch (error) {
+      next(error);
+    }
+  };
+
 /**
  * Authentication middleware for internal node PACT API
  * Verifies Bearer token and injects connection context
@@ -20,18 +47,13 @@ export const authenticateInternalNode = async (
       throw new BadRequestError("Invalid node ID");
     }
 
-    // Get token from Authorization header
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       throw new UnauthorizedError("Missing or invalid Authorization header");
     }
 
     const token = authHeader.substring(7);
-
-    // Verify token
     const payload = await services.internalNodeAuth.verifyToken(token, nodeId);
-
-    // Attach payload to request for use in route handlers
     res.locals.nodeAuth = payload;
 
     next();
@@ -50,158 +72,119 @@ export function createInternalNodeRoutes(): Router {
   const router = Router({ mergeParams: true });
 
   /**
-   * POST /api/internal/:nodeId/auth/token
+   * POST /api/nodes/:nodeId/auth/token
    * OAuth2 Client Credentials flow - Generate access token
    */
-  router.post("/:nodeId/auth/token", async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const services = req.app.locals.services as Services;
-      const nodeId = parseInt(req.params.nodeId as string, 10);
+  router.post("/:nodeId/auth/token", nodeContext(async (req, res) => {
+    const authHeader = req.headers.authorization;
 
-      if (isNaN(nodeId)) {
-        throw new BadRequestError("Invalid node ID");
-      }
-
-      // Extract client credentials from request body (application/x-www-form-urlencoded or JSON)
-      const grantType = req.body.grant_type;
-      const clientId = req.body.client_id;
-      const clientSecret = req.body.client_secret;
-
-      if (grantType !== "client_credentials") {
-        throw new BadRequestError("Unsupported grant_type. Only 'client_credentials' is supported");
-      }
-
-      if (!clientId || !clientSecret) {
-        throw new BadRequestError("client_id and client_secret are required");
-      }
-
-      // Generate token (service validates node and credentials)
-      const tokenResponse = await services.internalNodeAuth.generateToken(
-        nodeId,
-        clientId,
-        clientSecret
-      );
-
-      logger.info({ nodeId, clientId }, "Generated access token for internal node");
-
-      res.json(tokenResponse);
-    } catch (error) {
-      next(error);
+    // Authentication for token endpoint MUST use Basic auth with client credentials,
+    // https://www.rfc-editor.org/rfc/rfc6749#section-2.3.1
+    if (!authHeader || !authHeader.startsWith("Basic ")) {
+      res.status(401).json({ error: "Authorization header missing or invalid" });
+      return;
     }
-  });
+
+    const base64Credentials = authHeader.split(" ")[1];
+    const credentials = Buffer.from(base64Credentials, "base64").toString("ascii");
+    const [clientId, clientSecret] = credentials.split(":");
+
+    if (!clientId || !clientSecret) {
+      throw new BadRequestError("Missing client_id or client_secret in Basic auth header");
+    }
+    if (req.body.grant_type !== "client_credentials") {
+      throw new BadRequestError("Unsupported grant_type. Only 'client_credentials' is supported");
+    }
+
+    const tokenResponse = await req.services.internalNodeAuth.generateToken(
+      req.nodeId, clientId, clientSecret
+    );
+    logger.info({ nodeId: req.nodeId, clientId }, "Generated access token for internal node");
+    return tokenResponse;
+  }));
 
   /**
-   * GET /api/internal/:nodeId/3/footprints
+   * GET /api/nodes/:nodeId/3/footprints
    * List product footprints (PACT v3)
    */
-  router.get(
-    "/:nodeId/3/footprints",
-    authenticateInternalNode,
-    async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        const services = req.app.locals.services as Services;
-        const nodeId = parseInt(req.params.nodeId as string, 10);
-
-        // Parse query parameters
-        const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
-        const offset = req.query.offset ? parseInt(req.query.offset as string, 10) : 0;
-        
-        // Array parameters - can be passed multiple times or as comma-separated
-        const parseArrayParam = (param: string | string[] | undefined): string[] | undefined => {
-          if (!param) return undefined;
-          if (Array.isArray(param)) return param;
-          return param.split(',').map(s => s.trim());
-        };
-        
-        const productId = parseArrayParam(req.query.productId as string | string[] | undefined);
-        const companyId = parseArrayParam(req.query.companyId as string | string[] | undefined);
-        const geography = parseArrayParam(req.query.geography as string | string[] | undefined);
-        const classification = parseArrayParam(req.query.classification as string | string[] | undefined);
-        const status = req.query.status as string | undefined;
-        const validOn = req.query.validOn as string | undefined;
-        const validAfter = req.query.validAfter as string | undefined;
-        const validBefore = req.query.validBefore as string | undefined;
-
-        // Get footprints
-        const result = services.internalNodePact.getFootprints(
-          nodeId,
-          { productId, companyId, geography, classification, status, validOn, validAfter, validBefore },
-          { limit, offset }
-        );
-
-        // Build Link header
-        const baseUrl = `${req.protocol}://${req.get("host")}${req.baseUrl}${req.path}`;
-        const linkHeader = services.internalNodePact.buildLinkHeader(result.links, baseUrl);
-
-        if (linkHeader) {
-          res.set("Link", linkHeader);
-        }
-
-        res.json({ data: result.data });
-      } catch (error) {
-        next(error);
-      }
+  router.get("/:nodeId/3/footprints", authenticateInternalNode, nodeContext(async (req, res) => {
+    // Test Case #40: Reject legacy V2 $filter syntax
+    if (req.query.$filter) {
+      throw new BadRequestError("The $filter parameter is not supported. Use PACT v3 query parameters instead.");
     }
-  );
+
+    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
+    const offset = req.query.offset ? parseInt(req.query.offset as string, 10) : 0;
+
+    const parseArrayParam = (param: string | string[] | undefined): string[] | undefined => {
+      if (!param) return undefined;
+      if (Array.isArray(param)) return param;
+      return param.split(',').map(s => s.trim());
+    };
+
+    const result = await req.services.internalNodePact.getFootprints(
+      req.nodeId,
+      {
+        productId: parseArrayParam(req.query.productId as string | string[] | undefined),
+        companyId: parseArrayParam(req.query.companyId as string | string[] | undefined),
+        geography: parseArrayParam(req.query.geography as string | string[] | undefined),
+        classification: parseArrayParam(req.query.classification as string | string[] | undefined),
+        status: req.query.status as string | undefined,
+        validOn: req.query.validOn as string | undefined,
+        validAfter: req.query.validAfter as string | undefined,
+        validBefore: req.query.validBefore as string | undefined,
+      },
+      { limit, offset }
+    );
+
+    const baseUrl = `${req.protocol}://${req.get("host")}${req.baseUrl}${req.path}`;
+    const linkHeader = req.services.internalNodePact.buildLinkHeader(result.links, baseUrl);
+    if (linkHeader) {
+      res.set("Link", linkHeader);
+    }
+
+    return { data: result.data };
+  }));
 
   /**
-   * GET /api/internal/:nodeId/3/footprints/:id
+   * GET /api/nodes/:nodeId/3/footprints/:id
    * Get single product footprint by ID (PACT v3)
    */
-  router.get(
-    "/:nodeId/3/footprints/:id",
-    authenticateInternalNode,
-    async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        const services = req.app.locals.services as Services;
-        const nodeId = parseInt(req.params.nodeId as string);
-        const footprintId = req.params.id;
-
-        const footprint = services.internalNodePact.getFootprintById(nodeId, footprintId as string);
-
-        if (!footprint) {
-          throw new NotFoundError("Product footprint not found");
-        }
-
-        res.json({ data: footprint });
-      } catch (error) {
-        next(error);
-      }
+  router.get("/:nodeId/3/footprints/:id", authenticateInternalNode, nodeContext(async (req) => {
+    const footprint = await req.services.internalNodePact.getFootprintById(req.nodeId, req.params.id);
+    if (!footprint) {
+      throw new NotFoundError("Product footprint not found");
     }
-  );
+    return { data: footprint };
+  }));
 
   /**
-   * POST /api/internal/:nodeId/3/events
+   * POST /api/nodes/:nodeId/3/events
    * Handle PACT v3 events (Published, RequestCreated, RequestFulfilled, RequestRejected)
    */
-  router.post(
-    "/:nodeId/3/events",
-    authenticateInternalNode,
-    async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        const nodeId = parseInt(req.params.nodeId as string);
-        
-        // Validate CloudEvents format
-        if (!req.body.type || !req.body.specversion || !req.body.id || !req.body.source) {
-          throw new BadRequestError("Invalid CloudEvents format. Missing required fields: type, specversion, id, or source");
-        }
-
-        // Log the event (in production, process it)
-        logger.info({
-          nodeId,
-          eventType: req.body.type,
-          eventId: req.body.id,
-          eventSource: req.body.source,
-        }, "Received PACT event for internal node");
-
-        // For now, just acknowledge receipt
-        // In a full implementation, this would trigger workflows based on event type
-        res.status(200).send();
-      } catch (error) {
-        next(error);
-      }
+  router.post("/:nodeId/3/events", authenticateInternalNode, nodeContext(async (req, res) => {
+    if (!req.body.type || !req.body.specversion || !req.body.id || !req.body.source) {
+      throw new BadRequestError("Invalid CloudEvents format. Missing required fields: type, specversion, id, or source");
     }
-  );
+
+    logger.info({
+      nodeId: req.nodeId,
+      eventType: req.body.type,
+      eventId: req.body.id,
+      eventSource: req.body.source,
+    }, "Received PACT event for internal node");
+
+    await req.services.internalNodePact.handleEvent(req.nodeId, {
+      type: req.body.type,
+      specversion: req.body.specversion,
+      id: req.body.id,
+      source: req.body.source,
+      time: req.body.time,
+      data: req.body.data,
+    });
+
+    res.status(200).send();
+  }));
 
   return router;
 }

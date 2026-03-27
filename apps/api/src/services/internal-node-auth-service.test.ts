@@ -1,63 +1,43 @@
 import jwt from 'jsonwebtoken';
 import { InternalNodeAuthService } from './internal-node-auth-service';
 import { UnauthorizedError, NotFoundError, BadRequestError } from '@src/common/errors';
-import { createMockDatabase } from '../common/mock-utils';
 import config from '@src/common/config';
+import { NodeService } from './node-service';
+import { NodeConnectionService } from './node-connection-service';
 
 jest.mock('jsonwebtoken');
 jest.mock('@src/common/config', () => ({
   JWT_SECRET: 'test-secret',
 }));
 
+const mockNodeService = {
+  getById: jest.fn(),
+} as unknown as jest.Mocked<NodeService>;
+
+const mockNodeConnectionService = {
+  verifyConnectionCredentials: jest.fn(),
+} as unknown as jest.Mocked<NodeConnectionService>;
+
 describe('InternalNodeAuthService', () => {
   let authService: InternalNodeAuthService;
-  let dbMocks: ReturnType<typeof createMockDatabase>;
 
   beforeEach(() => {
     jest.resetAllMocks();
-    dbMocks = createMockDatabase();
-    authService = new InternalNodeAuthService(dbMocks.db as any);
-  });
-
-  describe('validateInternalNode', () => {
-    it('should throw NotFoundError if node does not exist', async () => {
-      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(null);
-
-      await expect(authService.validateInternalNode(999)).rejects.toThrow(NotFoundError);
-    });
-
-    it('should throw BadRequestError if node is not internal type', async () => {
-      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
-        id: 1,
-        type: 'external',
-      });
-
-      await expect(authService.validateInternalNode(1)).rejects.toThrow(BadRequestError);
-    });
-
-    it('should not throw error for valid internal node', async () => {
-      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
-        id: 1,
-        type: 'internal',
-      });
-
-      await expect(authService.validateInternalNode(1)).resolves.toBeUndefined();
-    });
+    authService = new InternalNodeAuthService(
+      mockNodeService,
+      mockNodeConnectionService
+    );
   });
 
   describe('generateToken', () => {
     const mockConnection = {
       id: 10,
       fromNodeId: 2,
-      targetNodeId: 1,
-      status: 'accepted',
-      clientId: 'client-123',
-      clientSecret: 'secret-456',
       fromNodeOrganizationId: 5,
+      status: 'accepted',
     };
 
     beforeEach(() => {
-      // Mock Date.now() for consistent timestamps
       jest.spyOn(Date, 'now').mockReturnValue(1000000000000);
       process.env.BASE_URL = 'http://localhost:3010';
     });
@@ -68,7 +48,9 @@ describe('InternalNodeAuthService', () => {
     });
 
     it('should throw NotFoundError if node does not exist', async () => {
-      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(null); // node not found
+      (mockNodeService.getById as jest.Mock).mockRejectedValueOnce(
+        new NotFoundError('Node not found')
+      );
 
       await expect(
         authService.generateToken(999, 'client-id', 'client-secret')
@@ -76,9 +58,10 @@ describe('InternalNodeAuthService', () => {
     });
 
     it('should throw BadRequestError if node is not internal type', async () => {
-      dbMocks.executors.executeTakeFirst
-        .mockResolvedValueOnce({ id: 1, type: 'external' }) // node lookup
-        .mockResolvedValueOnce(mockConnection); // connection lookup
+      (mockNodeService.getById as jest.Mock).mockResolvedValueOnce({
+        id: 1,
+        type: 'external',
+      });
 
       await expect(
         authService.generateToken(1, 'client-123', 'secret-456')
@@ -86,32 +69,25 @@ describe('InternalNodeAuthService', () => {
     });
 
     it('should throw UnauthorizedError if credentials are invalid', async () => {
-      dbMocks.executors.executeTakeFirst
-        .mockResolvedValueOnce({ id: 1, type: 'internal' }) // node lookup in validateInternalNode
-        .mockResolvedValueOnce(null); // connection not found in verifyCredentials
+      (mockNodeService.getById as jest.Mock).mockResolvedValueOnce({
+        id: 1,
+        type: 'internal',
+      });
+      (mockNodeConnectionService.verifyConnectionCredentials as jest.Mock).mockResolvedValueOnce(null);
 
       await expect(
         authService.generateToken(1, 'invalid-client', 'invalid-secret')
       ).rejects.toThrow(UnauthorizedError);
     });
 
-    it('should throw UnauthorizedError if connection is not accepted', async () => {
-      dbMocks.executors.executeTakeFirst
-        .mockResolvedValueOnce({ id: 1, type: 'internal' }) // node lookup in validateInternalNode
-        .mockResolvedValueOnce({ ...mockConnection, status: 'pending' }); // connection not accepted
-
-      await expect(
-        authService.generateToken(1, 'client-123', 'secret-456')
-      ).rejects.toThrow(UnauthorizedError);
-    });
-
     it('should generate valid JWT token for valid credentials', async () => {
       const mockToken = 'mock-jwt-token';
       (jwt.sign as jest.Mock).mockReturnValue(mockToken);
-
-      dbMocks.executors.executeTakeFirst
-        .mockResolvedValueOnce({ id: 1, type: 'internal' }) // node lookup
-        .mockResolvedValueOnce(mockConnection); // connection lookup
+      (mockNodeService.getById as jest.Mock).mockResolvedValueOnce({
+        id: 1,
+        type: 'internal',
+      });
+      (mockNodeConnectionService.verifyConnectionCredentials as jest.Mock).mockResolvedValueOnce(mockConnection);
 
       const result = await authService.generateToken(1, 'client-123', 'secret-456');
 
@@ -121,7 +97,6 @@ describe('InternalNodeAuthService', () => {
         expires_in: 3600,
       });
 
-      // Verify JWT was signed with correct payload
       expect(jwt.sign).toHaveBeenCalledWith(
         {
           nodeId: 2,
@@ -142,10 +117,11 @@ describe('InternalNodeAuthService', () => {
       delete process.env.BASE_URL;
       const mockToken = 'mock-jwt-token';
       (jwt.sign as jest.Mock).mockReturnValue(mockToken);
-
-      dbMocks.executors.executeTakeFirst
-        .mockResolvedValueOnce({ id: 1, type: 'internal' })
-        .mockResolvedValueOnce(mockConnection);
+      (mockNodeService.getById as jest.Mock).mockResolvedValueOnce({
+        id: 1,
+        type: 'internal',
+      });
+      (mockNodeConnectionService.verifyConnectionCredentials as jest.Mock).mockResolvedValueOnce(mockConnection);
 
       await authService.generateToken(1, 'client-123', 'secret-456');
 
@@ -236,54 +212,6 @@ describe('InternalNodeAuthService', () => {
           issuer: 'http://localhost:3010',
         })
       );
-    });
-  });
-
-  describe('verifyCredentials (private method via generateToken)', () => {
-    it('should return null if clientId does not match', async () => {
-      dbMocks.executors.executeTakeFirst
-        .mockResolvedValueOnce({ id: 1, type: 'internal' }) // validateInternalNode
-        .mockResolvedValueOnce(null); // no connection with matching clientId
-
-      await expect(
-        authService.generateToken(1, 'wrong-client-id', 'secret-456')
-      ).rejects.toThrow(UnauthorizedError);
-    });
-
-    it('should return null if clientSecret does not match', async () => {
-      dbMocks.executors.executeTakeFirst
-        .mockResolvedValueOnce({ id: 1, type: 'internal' }) // validateInternalNode
-        .mockResolvedValueOnce({
-          id: 10,
-          fromNodeId: 2,
-          targetNodeId: 1,
-          status: 'accepted',
-          clientId: 'client-123',
-          clientSecret: 'different-secret',
-          fromNodeOrganizationId: 5,
-        });
-
-      await expect(
-        authService.generateToken(1, 'client-123', 'wrong-secret')
-      ).rejects.toThrow(UnauthorizedError);
-    });
-
-    it('should verify connection status is accepted', async () => {
-      dbMocks.executors.executeTakeFirst
-        .mockResolvedValueOnce({ id: 1, type: 'internal' }) // validateInternalNode
-        .mockResolvedValueOnce({
-          id: 10,
-          fromNodeId: 2,
-          targetNodeId: 1,
-          status: 'rejected',
-          clientId: 'client-123',
-          clientSecret: 'secret-456',
-          fromNodeOrganizationId: 5,
-        });
-
-      await expect(
-        authService.generateToken(1, 'client-123', 'secret-456')
-      ).rejects.toThrow(UnauthorizedError);
     });
   });
 });
