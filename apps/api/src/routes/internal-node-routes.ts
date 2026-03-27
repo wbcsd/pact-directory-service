@@ -108,8 +108,9 @@ export function createInternalNodeRoutes(): Router {
    * List product footprints (PACT v3)
    */
   router.get("/:nodeId/3/footprints", authenticateInternalNode, nodeContext(async (req, res) => {
+    // Test Case #40: Reject legacy V2 $filter syntax
     if (req.query.$filter) {
-      throw new BadRequestError("$filter is not supported. Use query parameters instead.");
+      throw new BadRequestError("The $filter parameter is not supported. Use PACT v3 query parameters instead.");
     }
 
     const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
@@ -173,7 +174,15 @@ export function createInternalNodeRoutes(): Router {
       eventSource: req.body.source,
     }, "Received PACT event for internal node");
 
-    await req.services.internalNodePact.handleEvent(req.nodeId, req.body);
+    await req.services.internalNodePact.handleEvent(req.nodeId, {
+      type: req.body.type,
+      specversion: req.body.specversion,
+      id: req.body.id,
+      source: req.body.source,
+      time: req.body.time,
+      data: req.body.data,
+    });
+
     res.status(200).send();
   }));
 
