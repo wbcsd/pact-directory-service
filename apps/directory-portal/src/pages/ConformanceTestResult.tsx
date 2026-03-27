@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Heading, Text, Button, Box, Badge, Callout } from "@radix-ui/themes";
+import { Heading, Text, Code, Button, Box, Badge, Callout } from "@radix-ui/themes";
 import {
-  ExclamationTriangleIcon,
   ReaderIcon,
   DoubleArrowRightIcon,
 } from "@radix-ui/react-icons";
@@ -170,9 +169,12 @@ const ConformanceTestResult: React.FC = () => {
             resource: authOptions?.resource,
           }),
         });
-
-        if (!response || !response.ok) {
-          throw new Error("Failed to fetch test response");
+        if (!response) {
+          throw new Error("No response from server");
+        }
+        if (!response.ok) {
+          const errorText = await response!.text();
+          throw new Error("Failed to fetch test response: " + response.status + " " + response.statusText + " - " + errorText);
         }
 
         const data = await response.json();
@@ -198,9 +200,7 @@ const ConformanceTestResult: React.FC = () => {
         pollTestResults(1, setTestCases, data.testRunId, isCancelled);
       } catch (error) {
         console.error("Error fetching test response:", error);
-        setError(
-          "An unexpected error occurred while running tests. Please try again."
-        );
+        setError("" + error);
         setIsLoading(false);
       }
     };
@@ -301,13 +301,10 @@ const ConformanceTestResult: React.FC = () => {
           />
         </Box>
       ) : error ? (
-        <Box className="error-container">
+        <Box className="error-container" style={{ width: "unset" }}>
           <h2>Conformance Test Result</h2>
           <Callout.Root color="red" size="2">
-            <Callout.Icon>
-              <ExclamationTriangleIcon />
-            </Callout.Icon>
-            <Callout.Text>{error}</Callout.Text>
+            <Callout.Text><Code>{error}</Code></Callout.Text>
           </Callout.Root>
           <Box mt="4">
             <Button onClick={() => navigate("/conformance-testing")}>
