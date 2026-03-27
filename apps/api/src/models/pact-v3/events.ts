@@ -87,50 +87,60 @@ export interface PublishedEventData {
 
 /**
  * Data payload for RequestCreatedEvent
+ * Per PACT v3 spec: `productId` is an array of product IDs
  */
 export interface RequestCreatedEventData {
   /**
-   * Unique identifier for the request
-   */
-  requestId: string;
-
-  /**
    * Product ID(s) requested
    */
-  productIds?: string[];
+  productId: string[];
 
   /**
-   * Company ID(s) requested
+   * Optional: comment or additional information
    */
-  companyIds?: string[];
+  comment?: string;
 }
 
 /**
  * Data payload for RequestFulfilledEvent
+ * Per PACT v3 spec: `requestEventId` references the original request,
+ * and `pfs` contains the matching product footprints
  */
 export interface RequestFulfilledEventData {
   /**
    * Unique identifier for the request being fulfilled
    */
-  requestId: string;
+  requestEventId: string;
 
   /**
-   * Product footprint IDs that fulfill the request
+   * Array of product footprints that fulfill the request
    */
-  pfIds: string[];
+  pfs: Record<string, any>[];
 }
 
 /**
  * Data payload for RequestRejectedEvent
+ * Per PACT v3 spec: `requestEventId` references the original request,
+ * and `error` provides details about the rejection
  */
 export interface RequestRejectedEventData {
   /**
    * Unique identifier for the request being rejected
    */
-  requestId: string;
+  requestEventId: string;
 
   /**
-   * Reason for rejection
+   * Error details for the rejection
    */
-  reason?: string;
+  error: {
+    /**
+     * Error code
+     */
+    code: string;
+
+    /**
+     * Error message
+     */
+    message: string;
+  };
 }

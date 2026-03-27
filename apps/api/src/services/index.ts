@@ -69,7 +69,7 @@ export class ServiceContainer implements Services {
       this.email,
       config.INTERNAL_API_BASE_URL
     );
-    this.internalNodePact = new InternalNodePactService();
+    this.internalNodePact = new InternalNodePactService(db);
     this.internalNodeAuth = new InternalNodeAuthService(this.node, this.nodeConnection);
     this.activityLog = new ActivityLogService(db);
     this.footprint = new FootprintService(db, this.node);
