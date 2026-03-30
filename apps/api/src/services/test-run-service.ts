@@ -92,10 +92,15 @@ export class TestRunService {
           }),
         }
       );
-
+      // If the response is not ok, throw an error with the response text
+      if (!response.ok) {
+        const errorbodyText = await response.text();
+        throw new Error(`Failed to create test run: ${response.status} ${response.statusText} - ${errorbodyText}`);
+      } 
       const responseData: any = await response.json();
       
       // Log test run creation
+      // TODO: Also log failure to intialize test run if response is not ok. 
       const testRunId = responseData?.testRunId || 'unknown';
 
       // If the test has failed, extract the failed tests
@@ -116,7 +121,7 @@ export class TestRunService {
         userId: user.id,
         error: error instanceof Error ? error.message : 'Unknown error',
       });
-      throw new Error('Failed to execute test cases.');
+      throw error;
     }
   }
 

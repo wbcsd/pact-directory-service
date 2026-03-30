@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Heading, Text, Button, Box, Badge, Callout } from "@radix-ui/themes";
+import { Heading, Text, Code, Button, Box, Badge, Callout } from "@radix-ui/themes";
 import {
   ExclamationTriangleIcon,
   ReaderIcon,
@@ -182,9 +182,14 @@ const ConformanceTestDetailPage: React.FC = () => {
           resource: data.authOptions.resource,
         }),
       });
+      
+      if (!response) {
+        throw new Error("No response from server");
+      }
 
-      if (!response || !response.ok) {
-        throw new Error("Failed to create test run");
+      if (!response.ok) {
+        const errorText = await response!.text();
+        throw new Error("Failed to create test run: " + response.status + " " + response.statusText + " - " + errorText);
       }
 
       const result = await response.json();
@@ -197,9 +202,7 @@ const ConformanceTestDetailPage: React.FC = () => {
       navigate(`/conformance-test-runs/${result.testRunId}`);
     } catch (err) {
       console.error("Error creating test run:", err);
-      setError(
-        "An unexpected error occurred while running tests. Please try again."
-      );
+      setError("" + err);
       setIsSubmitting(false);
     }
   };
@@ -304,10 +307,7 @@ const ConformanceTestDetailPage: React.FC = () => {
         >
           {error && (
             <Callout.Root color="red" size="2">
-              <Callout.Icon>
-                <ExclamationTriangleIcon />
-              </Callout.Icon>
-              <Callout.Text>{error}</Callout.Text>
+              <Callout.Text><Code>{error}</Code></Callout.Text>
             </Callout.Root>
           )}
           <ConformanceTestForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
@@ -328,7 +328,7 @@ const ConformanceTestDetailPage: React.FC = () => {
             <Callout.Icon>
               <ExclamationTriangleIcon />
             </Callout.Icon>
-            <Callout.Text>{error}</Callout.Text>
+            <Callout.Text><Code>{error}</Code></Callout.Text>
           </Callout.Root>
           <Box mt="4">
             <Button onClick={() => navigate("/conformance-test-runs/new")}>
