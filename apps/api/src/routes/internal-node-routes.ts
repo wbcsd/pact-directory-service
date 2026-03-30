@@ -1,7 +1,24 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { Services } from "../services";
-import { BadRequestError, NotFoundError, UnauthorizedError } from "../common/errors";
+import {
+   BadRequestError as BaseBadRequestError, 
+   NotFoundError as BaseNotFoundError, 
+   UnauthorizedError as BaseUnauthorizedError 
+  } from "../common/errors";
 import logger from "../common/logger";
+
+export class NotFoundError extends BaseNotFoundError {
+  code = 'NotFound';
+}
+
+export class BadRequestError extends BaseBadRequestError {
+  code = 'BadRequest';
+}
+
+export class UnauthorizedError extends BaseUnauthorizedError {
+  code = 'Unauthorized';
+}
+
 
 type NodeContextRequest = Request & { services: Services; nodeId: number };
 type NodeHandler = (req: NodeContextRequest, res: Response) => Promise<any>;
@@ -17,7 +34,7 @@ const nodeContext =
     try {
       const nodeReq = req as NodeContextRequest;
       nodeReq.services = req.app.locals.services;
-      nodeReq.nodeId = parseInt(req.params.nodeId, 10);
+      nodeReq.nodeId = parseInt(req.params.nodeId as string, 10);
       if (isNaN(nodeReq.nodeId)) {
         throw new BadRequestError("Invalid node ID");
       }
@@ -151,7 +168,7 @@ export function createInternalNodeRoutes(): Router {
    * Get single product footprint by ID (PACT v3)
    */
   router.get("/:nodeId/3/footprints/:id", authenticateInternalNode, nodeContext(async (req) => {
-    const footprint = await req.services.internalNodePact.getFootprintById(req.nodeId, req.params.id);
+    const footprint = await req.services.internalNodePact.getFootprintById(req.nodeId, req.params.id as string);
     if (!footprint) {
       throw new NotFoundError("Product footprint not found");
     }
