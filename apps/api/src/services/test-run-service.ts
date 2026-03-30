@@ -169,8 +169,11 @@ export class TestRunService {
       if (query.pageSize)
         url.searchParams.append('pageSize', query.pageSize.toString());
 
-      // Non-administrator users should only see their own test runs
-      if (user.role !== Role.Administrator && user.role !== Role.Root)
+      // Non-root users should only see their own test runs.
+      // TODO: In the future, we may want to allow users to see all 
+      // test runs from their organization, but for now we will 
+      // only show their own test runs.
+      if (user.role !== Role.Root)
         url.searchParams.append('adminEmail', user.email);
 
       const response = await fetch(url, {

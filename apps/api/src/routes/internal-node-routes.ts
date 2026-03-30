@@ -41,7 +41,7 @@ export const authenticateInternalNode = async (
 ) => {
   try {
     const services = req.app.locals.services as Services;
-    const nodeId = parseInt(req.params.nodeId, 10);
+    const nodeId = parseInt(req.params.nodeId as string);
 
     if (isNaN(nodeId)) {
       throw new BadRequestError("Invalid node ID");
@@ -108,6 +108,11 @@ export function createInternalNodeRoutes(): Router {
    * List product footprints (PACT v3)
    */
   router.get("/:nodeId/3/footprints", authenticateInternalNode, nodeContext(async (req, res) => {
+    // Test Case #40: Reject legacy V2 $filter syntax
+    if (req.query.$filter) {
+      throw new BadRequestError("The $filter parameter is not supported. Use PACT v3 query parameters instead.");
+    }
+
     const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
     const offset = req.query.offset ? parseInt(req.query.offset as string, 10) : 0;
 
@@ -117,7 +122,7 @@ export function createInternalNodeRoutes(): Router {
       return param.split(',').map(s => s.trim());
     };
 
-    const result = req.services.internalNodePact.getFootprints(
+    const result = await req.services.internalNodePact.getFootprints(
       req.nodeId,
       {
         productId: parseArrayParam(req.query.productId as string | string[] | undefined),
@@ -146,7 +151,7 @@ export function createInternalNodeRoutes(): Router {
    * Get single product footprint by ID (PACT v3)
    */
   router.get("/:nodeId/3/footprints/:id", authenticateInternalNode, nodeContext(async (req) => {
-    const footprint = req.services.internalNodePact.getFootprintById(req.nodeId, req.params.id);
+    const footprint = await req.services.internalNodePact.getFootprintById(req.nodeId, req.params.id);
     if (!footprint) {
       throw new NotFoundError("Product footprint not found");
     }
@@ -168,6 +173,15 @@ export function createInternalNodeRoutes(): Router {
       eventId: req.body.id,
       eventSource: req.body.source,
     }, "Received PACT event for internal node");
+
+    await req.services.internalNodePact.handleEvent(req.nodeId, {
+      type: req.body.type,
+      specversion: req.body.specversion,
+      id: req.body.id,
+      source: req.body.source,
+      time: req.body.time,
+      data: req.body.data,
+    });
 
     res.status(200).send();
   }));

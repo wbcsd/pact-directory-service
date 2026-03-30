@@ -370,7 +370,7 @@ export class UserService {
         .values({
           fullName: data.fullName,
           email: normalizedEmail,
-          role: Role.User,
+          role: Role.Administrator,
           password: hashedPassword,
           organizationId: organization.id,
           status: 'unverified', // Set as unverified initially

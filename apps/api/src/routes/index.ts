@@ -103,7 +103,7 @@ router.post('/directory/users/reset-password', context(async (req) => {
 }));
 
 router.get('/directory/users/verify-reset-token/:token', context(async (req) => {
-  const result = await req.services.user.verifyResetToken(req.params.token);
+  const result = await req.services.user.verifyResetToken(req.params.token as string);
   return result;
 }));
 
@@ -114,14 +114,14 @@ router.get('/directory/organizations', authenticate, context(async (req) => {
 
 // Organization list and search, only show organizations the user is allowed to see.
 router.get('/directory/organizations/:id', authenticate, context(async (req) => {
-  return req.services.organization.get(req.context, parseInt(req.params.id));
+  return req.services.organization.get(req.context, parseInt(req.params.id as string));
 }));
 
 // Update organization details
 router.post('/directory/organizations/:id', authenticate, context(async (req) => {
   return req.services.organization.update(
     req.context,
-    parseInt(req.params.id),
+    parseInt(req.params.id as string),
     req.body
   );
 }));
@@ -130,7 +130,7 @@ router.post('/directory/organizations/:id', authenticate, context(async (req) =>
 router.get('/directory/organizations/:id/users', authenticate, context(async (req) => {
   return req.services.organization.listMembers(
     req.context,
-    parseInt(req.params.id),
+    parseInt(req.params.id as string),
     ListQuery.parse(req.query)
   );
 }));
@@ -139,7 +139,7 @@ router.get('/directory/organizations/:id/users', authenticate, context(async (re
 router.post('/directory/organizations/:id/users', authenticate, context(async (req) => {
   return req.services.user.addUserToOrganization(
     req.context,
-     parseInt(req.params.id),
+     parseInt(req.params.id as string),
     req.body as AddUserToOrganizationData
   );
 }));
@@ -148,7 +148,7 @@ router.post('/directory/organizations/:id/users', authenticate, context(async (r
 router.get('/directory/organizations/:id/users', authenticate, context(async (req) => {
   return req.services.organization.listMembers(
     req.context,
-    parseInt(req.params.id),
+    parseInt(req.params.id as string),
     ListQuery.parse(req.query)
   );
 }));
@@ -156,20 +156,20 @@ router.get('/directory/organizations/:id/users', authenticate, context(async (re
 router.get('/directory/organizations/:oid/users/:uid', authenticate, context(async (req) => {
   return req.services.organization.getMember(
     req.context,
-    parseInt(req.params.oid),
-    parseInt(req.params.uid)
+    parseInt(req.params.oid as string),
+    parseInt(req.params.uid as string )
   );
 }));
 
 router.get('/directory/organizations/check-name/:name', context(async (req) => {
-  const organizationName = req.params.name;
+  const organizationName = req.params.name as string;
   const response = await req.services.organization.checkOrganizationExistsByName(organizationName);
   return response;
 }));
 
 router.post('/directory/organizations/:oid/users/:uid', authenticate, context(async (req) => {
-  const organizationId = parseInt(req.params.oid);
-  const userId = parseInt(req.params.uid);
+  const organizationId = parseInt(req.params.oid as string);
+  const userId = parseInt(req.params.uid as string);
 
   return req.services.organization.updateMember(
     req.context,
@@ -183,7 +183,7 @@ router.post('/directory/organizations/:oid/users/:uid', authenticate, context(as
 router.get('/directory/organizations/:id/connections', authenticate, context(async (req) => {
   return req.services.connection.listConnections(
     req.context, 
-    parseInt(req.params.id), 
+    parseInt(req.params.id as string), 
     ListQuery.parse(req.query)
   );
 }));
@@ -192,7 +192,7 @@ router.get('/directory/organizations/:id/connections', authenticate, context(asy
 router.get('/directory/organizations/:id/connection-requests', authenticate, context(async (req) => {
   return req.services.connection.listConnectionRequests(
     req.context, 
-    parseInt(req.params.id), 
+    parseInt(req.params.id as string), 
     ListQuery.parse(req.query)
   );
 }));
@@ -211,7 +211,7 @@ router.post('/directory/organizations/create-connection-request', authenticate, 
 router.post('/directory/organizations/:id/nodes', authenticate, context(async (req) => {
   return req.services.node.create(
     req.context,
-    parseInt(req.params.id),
+    parseInt(req.params.id as string),
     req.body
   );
 }));
@@ -220,7 +220,7 @@ router.post('/directory/organizations/:id/nodes', authenticate, context(async (r
 router.put('/directory/nodes/:id', authenticate, context(async (req) => {
   return req.services.node.update(
     req.context,
-    parseInt(req.params.id),
+    parseInt(req.params.id as string),
     req.body as UpdateNodeData
   );
 }));
@@ -229,7 +229,7 @@ router.put('/directory/nodes/:id', authenticate, context(async (req) => {
 router.delete('/directory/nodes/:id', authenticate, context(async (req) => {
   return req.services.node.delete(
     req.context,
-    parseInt(req.params.id)
+    parseInt(req.params.id as string)
   );
 }));
 
@@ -239,7 +239,7 @@ router.get('/directory/organizations/:id/nodes', authenticate, context(async (re
   console.log('List nodes query params:', req.query);
   return req.services.node.list(
     req.context,
-    parseInt(req.params.id),
+    parseInt(req.params.id as string),
     ListQuery.parse(req.query)
   );
 }));
@@ -248,7 +248,7 @@ router.get('/directory/organizations/:id/nodes', authenticate, context(async (re
 router.get('/directory/nodes/:id', authenticate, context(async (req) => {
   return req.services.node.get(
     req.context,
-    parseInt(req.params.id)
+    parseInt(req.params.id as string)
   );
 }));
 
@@ -256,7 +256,7 @@ router.get('/directory/nodes/:id', authenticate, context(async (req) => {
 router.get('/directory/nodes/:id/connections', authenticate, context(async (req) => {
   return req.services.nodeConnection.listConnections(
     req.context,
-    parseInt(req.params.id)
+    parseInt(req.params.id as string)
   );
 }));
 
@@ -265,7 +265,7 @@ router.get('/directory/nodes/:id/connections', authenticate, context(async (req)
 router.post('/directory/nodes/:id/invitations', authenticate, context(async (req) => {
   return req.services.nodeConnection.createInvitation(
     req.context,
-    parseInt(req.params.id),
+    parseInt(req.params.id as string),
     req.body
   );
 }));
@@ -274,7 +274,7 @@ router.post('/directory/nodes/:id/invitations', authenticate, context(async (req
 router.get('/directory/nodes/:id/invitations', authenticate, context(async (req) => {
   return req.services.nodeConnection.listInvitations(
     req.context,
-    parseInt(req.params.id),
+    parseInt(req.params.id as string),
     ListQuery.parse(req.query)
   );
 }));
@@ -283,7 +283,7 @@ router.get('/directory/nodes/:id/invitations', authenticate, context(async (req)
 router.post('/directory/node-invitations/:id/accept', authenticate, context(async (req) => {
   return req.services.nodeConnection.acceptInvitation(
     req.context,
-    parseInt(req.params.id),
+    parseInt(req.params.id as string),
   );
 }));
 
@@ -291,7 +291,7 @@ router.post('/directory/node-invitations/:id/accept', authenticate, context(asyn
 router.post('/directory/node-invitations/:id/reject', authenticate, context(async (req, res) => {
   await req.services.nodeConnection.rejectInvitation(
     req.context,
-    parseInt(req.params.id),
+    parseInt(req.params.id as string),
   );
   res.status(204).send();
 }));
@@ -300,7 +300,7 @@ router.post('/directory/node-invitations/:id/reject', authenticate, context(asyn
 router.delete('/directory/node-invitations/:id', authenticate, context(async (req) => {
   return req.services.nodeConnection.removeConnection(
     req.context,
-    parseInt(req.params.id),
+    parseInt(req.params.id as string),
   );
 }));
 
@@ -308,7 +308,45 @@ router.delete('/directory/node-invitations/:id', authenticate, context(async (re
 router.post('/directory/node-connections/:id/credentials/rotate', authenticate, context(async (req) => {
   return req.services.nodeConnection.rotateCredentials(
     req.context,
-    parseInt(req.params.id),
+    parseInt(req.params.id as string),
+  );
+}));
+
+/////////////////// Footprints (Product Footprints)
+
+// Create a footprint for a node
+router.post('/directory/nodes/:id/footprints', authenticate, context(async (req, res) => {
+  const result = await req.services.footprint.create(
+    req.context,
+    parseInt(req.params.id as string),
+    { data: req.body }
+  );
+  res.status(201);
+  return result;
+}));
+
+// List footprints for a node
+router.get('/directory/nodes/:id/footprints', authenticate, context(async (req) => {
+  return req.services.footprint.listByNode(
+    req.context,
+    parseInt(req.params.id as string),
+    ListQuery.parse(req.query)
+  );
+}));
+
+// Get a single footprint by ID
+router.get('/directory/footprints/:id', authenticate, context(async (req) => {
+  return req.services.footprint.get(
+    req.context,
+    req.params.id as string
+  );
+}));
+
+// Delete a footprint by ID
+router.delete('/directory/footprints/:id', authenticate, context(async (req) => {
+  return req.services.footprint.delete(
+    req.context,
+    req.params.id as string
   );
 }));
 
@@ -393,7 +431,7 @@ router.get('/directory/activity-logs/path', authenticate, context(async (req, re
  * Requires authentication
  */
 router.get('/directory/activity-logs/nodes/:nodeId', authenticate, context(async (req, res) => {
-  const nodeId = parseInt(req.params.nodeId, 10);
+  const nodeId = parseInt(req.params.nodeId as string, 10);
 
   if (isNaN(nodeId)) {
     res.status(400);

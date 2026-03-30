@@ -332,13 +332,12 @@ const OrganizationUsers: React.FC = () => {
         />
       )}
 
-      {/* Slide-over panel for Add / Edit */}
+      {/* Modal dialog for Add / Edit */}
       <SlideOverPanel
         open={panel.mode !== "closed"}
         onClose={closePanel}
         title={panelTitle}
         subtitle={panelSubtitle}
-        slide={true}
       >
         {panel.mode === "add" && profileData?.organizationId && (
           <UserForm

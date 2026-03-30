@@ -35,7 +35,7 @@
     "pino-pretty": "^13.1.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.0",
+    "@eslint/js": "^9.39.4",
     "@stylistic/eslint-plugin-ts": "^2.9.0",
     "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.17",

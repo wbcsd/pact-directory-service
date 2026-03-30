@@ -20,7 +20,7 @@ const FormField: React.FC<FormFieldProps> = ({
   const childArray = React.Children.toArray(children);
   const control = childArray.at(0);
   const messages = childArray.slice(1);
-  
+
   return (
   <Form.Field name={name} className="form-field">
     <Form.Label>
@@ -30,7 +30,7 @@ const FormField: React.FC<FormFieldProps> = ({
     {description && (
       <Text as="p" size="1" color="gray" style={{ marginBottom: "1em" }}>{description}</Text>
     )}
-    <Form.Control asChild>
+    <Form.Control asChild required={required}>
       {control}
     </Form.Control>
     { required ? 

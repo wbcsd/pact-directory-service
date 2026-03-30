@@ -16,6 +16,7 @@ interface TextFieldProps {
   tooltip?: string;
   minLength?: number;
   disabled?: boolean;
+  readOnly?: boolean;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
