@@ -1,6 +1,7 @@
 import React from "react";
 import { Box } from "@radix-ui/themes";
 import HeroImage from "../assets/providers-header.webp";
+import pactLogo from "../assets/pact-logo.svg";
 
 interface LandingPageLayoutProps {
   children: React.ReactNode;
@@ -12,7 +13,14 @@ const LandingPageLayout: React.FC<LandingPageLayoutProps> = ({
   title = "Helping you adopt PACT standards",
 }) => {
   return (
-    <Box style={{ display: "flex", width: "100%" }}>
+    <div className="layout">
+      <header className="top-bar">
+        <div className="logo">
+          <img width={153} src={pactLogo} alt="PACT Logo" />
+        </div>
+      </header>
+
+      <div className="container">
       {/* Hero Section */}
       <Box
         style={{
@@ -63,7 +71,8 @@ const LandingPageLayout: React.FC<LandingPageLayoutProps> = ({
           {children}
         </Box>
       </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 
