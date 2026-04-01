@@ -129,6 +129,8 @@
 
 body {
   margin: 0;
+  padding: 0;
+  overflow: hidden;
   background: var(--color-background);
   color: var(--gray-12);
   color: var(--base-color-brand--blue);
@@ -254,17 +256,6 @@ code {
   background: var(--color-background);
   overflow-y: auto;
   overflow-x: hidden;
-}
-
-.marker-divider {
-  width: 8px;
-  height: 8px;
-  background-color: var(--gray-4);
-  transform: rotate(45deg);
-  position: absolute;
-  right: -4px;
-  top: -4px;
-  z-index: 10;
 }
 
 /* ===== Auth Pages ===== */

@@ -9,14 +9,16 @@ const App: React.FC = () => {
   return (
     <Router>
       <AuthProvider>
-        <div className="top-bar">
-          <div className="logo">
-            <img width={153} src={pactLogo} alt="Pact Logo" />
+        <div className="layout">
+          <div className="top-bar">
+            <div className="logo">
+              <img width={153} src={pactLogo} alt="PACT Logo" />
+            </div>
+            <SignUp />
           </div>
-          <SignUp />
-        </div>
-        <div className="container">
-          <AppRoutes />
+          <div className="container">
+            <AppRoutes />
+          </div>
         </div>
       </AuthProvider>
     </Router>
