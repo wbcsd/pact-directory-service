@@ -7,6 +7,10 @@ import {
   } from "../common/errors";
 import logger from "../common/logger";
 
+/**
+ * Custom error classes for internal node routes, extending base API errors 
+ * with specific codes to comply to PACT tech specifications.
+ */
 export class NotFoundError extends BaseNotFoundError {
   code = 'NotFound';
 }
@@ -34,7 +38,7 @@ const nodeContext =
     try {
       const nodeReq = req as NodeContextRequest;
       nodeReq.services = req.app.locals.services;
-      nodeReq.nodeId = parseInt(req.params.nodeId as string, 10);
+      nodeReq.nodeId = parseInt(req.params.nodeId as string);
       if (isNaN(nodeReq.nodeId)) {
         throw new BadRequestError("Invalid node ID");
       }
@@ -130,8 +134,8 @@ export function createInternalNodeRoutes(): Router {
       throw new BadRequestError("The $filter parameter is not supported. Use PACT v3 query parameters instead.");
     }
 
-    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
-    const offset = req.query.offset ? parseInt(req.query.offset as string, 10) : 0;
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+    const offset = req.query.offset ? parseInt(req.query.offset as string) : 0;
 
     const parseArrayParam = (param: string | string[] | undefined): string[] | undefined => {
       if (!param) return undefined;

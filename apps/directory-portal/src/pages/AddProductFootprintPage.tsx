@@ -7,6 +7,7 @@ import ProductFootprintForm, {
   ProductFootprintFormData,
 } from "../components/ProductFootprintForm";
 import { fetchWithAuth } from "../utils/auth-fetch";
+import { formDataToProductFootprint } from "../models/pact-v3/form-to-footprint";
 
 const AddProductFootprintPage: React.FC = () => {
   const { id: nodeId } = useParams<{ id: string }>();
@@ -16,10 +17,11 @@ const AddProductFootprintPage: React.FC = () => {
   const handleSubmit = async (data: ProductFootprintFormData) => {
     try {
       setIsSubmitting(true);
+      const footprint = formDataToProductFootprint(data);
       const response = await fetchWithAuth(`/nodes/${nodeId}/footprints`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(footprint),
       });
       if (response?.ok) {
         navigate(`/nodes/${nodeId}`);

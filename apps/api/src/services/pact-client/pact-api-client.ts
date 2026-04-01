@@ -8,71 +8,71 @@
  * Key Design Decisions:
  * - Single HTTP implementation for all node types (internal + external)
  * - Internal nodes call themselves via HTTP (localhost)
- * - All requests authenticated via OAuth2 Client Credentials + JWT
- * - Token caching per base URL to minimize auth overhead
+ * - Credentials provided at construction time; authentication is automatic
+ * - Token caching with automatic refresh to minimize auth overhead
  * - Stateless design enables horizontal scaling
  */
 
-import {
-  PactApiClient,
-  TokenResponse,
-  PactApiResponse,
-  PactApiListResponse,
-  FootprintFilters,
-  PaginationParams,
-} from './pact-api-client.interface';
 import { ProductFootprintV3 } from '../../models/pact-v3/product-footprint';
-import { CloudEvent } from '../../models/pact-v3/events';
+import { CloudEvent, EventTypesV3 } from '../../models/pact-v3/events';
+import { FootprintFilters, PaginationParams, PagedResponse } from '../../models/pact-v3/types';
 
-export class PactApiClientImpl implements PactApiClient {
-  private baseUrl: string;
+// Re-export for convenience
+export type { FootprintFilters, PaginationParams };
+
+export interface PactApiResponse<T> {
+  data: T;
+}
+
+export type PactApiListResponse<T> = PagedResponse<T>;
+
+export class PactApiClient {
+  private readonly baseUrl: string;
+  private readonly clientId: string;
+  private readonly clientSecret: string;
+  private readonly source: string;
   private tokenCache: { token: string; expiresAt: number } | null = null;
 
   /**
    * Create a PACT API client
    * 
-   * Always provide both nodeId and apiUrl. The client will use apiUrl if provided (external node),
-   * otherwise construct the URL dynamically from nodeId and internalApiBaseUrl (internal node).
-   * 
-   * @param nodeId - Node ID (used for internal nodes)
-   * @param apiUrl - Full API URL (used for external nodes, or null for internal)
-   * @param internalApiBaseUrl - Base URL for internal API (optional, defaults to env var)
+   * @param baseUrl - Base URL of the PACT node API
+   * @param clientId - OAuth2 client ID for authentication
+   * @param clientSecret - OAuth2 client secret for authentication
+   * @param source - Source URI used in outgoing CloudEvents (defaults to baseUrl)
    * 
    * @example
-   * // External node - apiUrl is provided
-   * const client = new PactApiClientImpl(nodeId, 'https://partner.com/pact');
+   * // External node
+   * const client = new PactApiClientImpl('https://partner.com/pact', clientId, clientSecret);
    * 
    * @example
-   * // Internal node - apiUrl is null, URL constructed from nodeId
-   * const client = new PactApiClientImpl(nodeId, null, 'http://localhost:3010');
+   * // Internal node — construct the URL before passing it in
+   * const baseUrl = `${internalApiBaseUrl}/api/nodes/${nodeId}`;
+   * const client = new PactApiClientImpl(baseUrl, clientId, clientSecret);
    */
   constructor(
-    nodeId: number,
-    apiUrl: string | null,
-    internalApiBaseUrl?: string
+    baseUrl: string,
+    clientId: string,
+    clientSecret: string,
+    source?: string
   ) {
-    if (apiUrl) {
-      // External node: use provided API URL
-      this.baseUrl = apiUrl.replace(/\/$/, '');
-    } else {
-      // Internal node: construct URL dynamically
-      if (!internalApiBaseUrl) {
-        throw new Error('internalApiBaseUrl is required for internal nodes (when apiUrl is null)');
-      }
-      this.baseUrl = `${internalApiBaseUrl}/api/nodes/${nodeId}`;
-    }
+    this.baseUrl = baseUrl.replace(/\/$/, '');
+    this.clientId = clientId;
+    this.clientSecret = clientSecret;
+    this.source = source ?? this.baseUrl;
   }
 
   /**
    * Authenticate with the PACT node using OAuth2 Client Credentials flow
+   * and cache the resulting token.
    */
-  async authenticate(clientId: string, clientSecret: string): Promise<TokenResponse> {
+  private async authenticate(): Promise<void> {
     const url = `${this.baseUrl}/auth/token`;
     
     const body = new URLSearchParams({
       grant_type: 'client_credentials',
-      client_id: clientId,
-      client_secret: clientSecret,
+      client_id: this.clientId,
+      client_secret: this.clientSecret,
     });
 
     const response = await fetch(url, {
@@ -91,30 +91,23 @@ export class PactApiClientImpl implements PactApiClient {
     }
 
     const data = await response.json();
-    const accessToken = data.access_token;
     const expiresIn = data.expires_in || 3600; // Default 1 hour if not specified
 
     // Cache token with 5-minute buffer before expiration
     this.tokenCache = {
-      token: accessToken,
+      token: data.access_token,
       expiresAt: Date.now() + (expiresIn - 300) * 1000,
-    };
-
-    return {
-      accessToken,
-      tokenType: data.token_type || 'Bearer',
-      expiresIn,
     };
   }
 
   /**
-   * Get a valid access token from cache, throws if not authenticated
+   * Return a valid access token, authenticating or refreshing automatically if needed.
    */
-  private getAccessToken(): string {
+  private async ensureAuthenticated(): Promise<string> {
     if (!this.tokenCache || this.tokenCache.expiresAt <= Date.now()) {
-      throw new Error('Not authenticated. Call authenticate() first.');
+      await this.authenticate();
     }
-    return this.tokenCache.token;
+    return this.tokenCache!.token;
   }
 
   /**
@@ -124,7 +117,7 @@ export class PactApiClientImpl implements PactApiClient {
     filters?: FootprintFilters,
     pagination?: PaginationParams
   ): Promise<PactApiListResponse<ProductFootprintV3>> {
-    const token = this.getAccessToken();
+    const token = await this.ensureAuthenticated();
     
     // Build query string from filters
     const queryParams = new URLSearchParams();
@@ -210,7 +203,7 @@ export class PactApiClientImpl implements PactApiClient {
    * Get a specific footprint by ID
    */
   async getFootprint(id: string): Promise<PactApiResponse<ProductFootprintV3>> {
-    const token = this.getAccessToken();
+    const token = await this.ensureAuthenticated();
     const url = `${this.baseUrl}/2/footprints/${encodeURIComponent(id)}`;
 
     const response = await fetch(url, {
@@ -233,10 +226,10 @@ export class PactApiClientImpl implements PactApiClient {
   }
 
   /**
-   * Send an event to the PACT node
+   * Send a CloudEvent to the PACT node's events endpoint.
    */
-  async sendEvent(event: CloudEvent): Promise<void> {
-    const token = this.getAccessToken();
+  private async sendEvent(event: CloudEvent): Promise<void> {
+    const token = await this.ensureAuthenticated();
     const url = `${this.baseUrl}/2/events`;
 
     const response = await fetch(url, {
@@ -257,9 +250,58 @@ export class PactApiClientImpl implements PactApiClient {
   }
 
   /**
-   * Clear cached token (useful for testing or forcing re-authentication)
+   * Request one or more product footprints from the data owner.
    */
-  clearTokenCache(): void {
-    this.tokenCache = null;
+  async requestFootprint(productIds: string[], comment?: string): Promise<void> {
+    await this.sendEvent({
+      type: EventTypesV3.REQUEST_CREATED,
+      specversion: '1.0',
+      id: crypto.randomUUID(),
+      source: this.source,
+      time: new Date().toISOString(),
+      data: { productId: productIds, ...(comment !== undefined ? { comment } : {}) },
+    });
+  }
+
+  /**
+   * Notify a data recipient that their footprint request has been fulfilled.
+   */
+  async fulfillFootprint(requestEventId: string, footprints: ProductFootprintV3[]): Promise<void> {
+    await this.sendEvent({
+      type: EventTypesV3.REQUEST_FULFILLED,
+      specversion: '1.0',
+      id: crypto.randomUUID(),
+      source: this.source,
+      time: new Date().toISOString(),
+      data: { requestEventId, pfs: footprints },
+    });
+  }
+
+  /**
+   * Notify a data recipient that their footprint request has been rejected.
+   */
+  async rejectFootprint(requestEventId: string, error: { code: string; message: string }): Promise<void> {
+    await this.sendEvent({
+      type: EventTypesV3.REQUEST_REJECTED,
+      specversion: '1.0',
+      id: crypto.randomUUID(),
+      source: this.source,
+      time: new Date().toISOString(),
+      data: { requestEventId, error },
+    });
+  }
+
+  /**
+   * Notify data recipients that a footprint has been published or updated.
+   */
+  async publishFootprint(pfIds: string[]): Promise<void> {
+    await this.sendEvent({
+      type: EventTypesV3.PUBLISHED,
+      specversion: '1.0',
+      id: crypto.randomUUID(),
+      source: this.source,
+      time: new Date().toISOString(),
+      data: { pfIds },
+    });
   }
 }
