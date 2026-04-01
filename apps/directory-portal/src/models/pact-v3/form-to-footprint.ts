@@ -1,82 +1,10 @@
-import { randomUUID } from 'crypto';
 import {
   ProductFootprintV3,
   ProductFootprintStatus,
   DeclaredUnit,
   CarbonFootprintV3,
 } from './product-footprint';
-
-/**
- * Flat form data shape submitted by the directory portal's ProductFootprintForm.
- * All values come in as strings from the HTML form.
- */
-export interface FlatFootprintFormData {
-  status?: string;
-  companyName?: string;
-  companyIds?: string;
-  productDescription?: string;
-  productIds?: string;
-  productClassifications?: string;
-  productNameCompany?: string;
-  comment?: string;
-  validityPeriodStart?: string;
-  validityPeriodEnd?: string;
-  declaredUnitOfMeasurement?: string;
-  declaredUnitAmount?: string;
-  productMassPerDeclaredUnit?: string;
-  referencePeriodStart?: string;
-  referencePeriodEnd?: string;
-  geographyRegionOrSubregion?: string;
-  geographyCountry?: string;
-  geographyCountrySubdivision?: string;
-  boundaryProcessesDescription?: string;
-  pcfExcludingBiogenicUptake?: string;
-  pcfIncludingBiogenicUptake?: string;
-  fossilGhgEmissions?: string;
-  fossilCarbonContent?: string;
-  biogenicCarbonContent?: string;
-  recycledCarbonContent?: string;
-  landUseChangeGhgEmissions?: string;
-  landCarbonLeakage?: string;
-  landManagementFossilGhgEmissions?: string;
-  landManagementBiogenicCO2Emissions?: string;
-  landManagementBiogenicCO2Removals?: string;
-  biogenicCO2Uptake?: string;
-  biogenicNonCO2Emissions?: string;
-  landAreaOccupation?: string;
-  aircraftGhgEmissions?: string;
-  packagingEmissionsIncluded?: string;
-  packagingGhgEmissions?: string;
-  packagingBiogenicCarbonContent?: string;
-  outboundLogisticsGhgEmissions?: string;
-  ccsTechnologicalCO2CaptureIncluded?: string;
-  ccsTechnologicalCO2Capture?: string;
-  technologicalCO2CaptureOrigin?: string;
-  technologicalCO2Removals?: string;
-  ccuCarbonContent?: string;
-  ccuCalculationApproach?: string;
-  ccuCreditCertification?: string;
-  ipccCharacterizationFactors?: string;
-  crossSectoralStandards?: string;
-  exemptedEmissionsPercent?: string;
-  exemptedEmissionsDescription?: string;
-  allocationRulesDescription?: string;
-  primaryDataShare?: string;
-  [key: string]: unknown;
-}
-
-/**
- * Detects whether a data object is already a valid PACT v3 ProductFootprint
- * (has the nested `pcf` object and `specVersion`).
- */
-export function isProductFootprintV3(data: Record<string, any>): boolean {
-  return (
-    typeof data.specVersion === 'string' &&
-    typeof data.pcf === 'object' &&
-    data.pcf !== null &&
-    typeof data.id === 'string'
-  );
-}
+import { ProductFootprintFormData } from '../../components/ProductFootprintForm';
 
 /**
  * Convert flat portal form data into a PACT v3 ProductFootprintV3 object.
@@ -88,7 +16,7 @@ export function isProductFootprintV3(data: Record<string, any>): boolean {
  * - Parses numeric strings and booleans as appropriate for the spec.
  */
 export function formDataToProductFootprint(
-  flat: FlatFootprintFormData
+  flat: ProductFootprintFormData
 ): ProductFootprintV3 {
   const now = new Date().toISOString();
 
@@ -148,7 +76,7 @@ export function formDataToProductFootprint(
   if (flat.ccuCreditCertification) pcf.ccuCreditCertification = flat.ccuCreditCertification;
 
   const footprint: ProductFootprintV3 = {
-    id: randomUUID(),
+    id: crypto.randomUUID(),
     specVersion: '3.0.0',
     version: 1,
     created: now,
@@ -182,7 +110,6 @@ function parseUrnList(value?: string): string[] {
 
 function parseProductClassifications(value?: string): string[] {
   if (!value || !value.trim()) return [];
-  // In v3, productClassifications are URN strings (comma or semicolon separated)
   return value
     .split(/[,;]/)
     .map((s) => s.trim())
@@ -206,7 +133,6 @@ function mapDeclaredUnit(value?: string): DeclaredUnit {
 
 function mapCharacterizationFactors(value?: string): string[] {
   if (!value) return ['AR6'];
-  // Parse comma-separated values, or single value
   const parts = value.split(',').map(s => s.trim()).filter(Boolean);
   if (parts.length > 0) return parts;
   return ['AR6'];
@@ -234,7 +160,6 @@ function mapCrossSectoralStandards(value?: string): string[] {
     result.push('PEF');
   }
   if (normalized.includes('PACT')) {
-    // Map PACT-X.0 strings directly
     const pactMatch = value.match(/PACT-\d+\.\d+/i);
     if (pactMatch) {
       result.push(pactMatch[0]);
@@ -256,8 +181,6 @@ function mapCrossSectoralStandards(value?: string): string[] {
 function toIso8601(value?: string): string | undefined {
   if (!value || !value.trim()) return undefined;
   const trimmed = value.trim();
-  // If it already looks like a full ISO 8601 timestamp, return as-is
   if (trimmed.includes('T')) return trimmed;
-  // Date-only → append midnight UTC
   return `${trimmed}T00:00:00Z`;
 }
