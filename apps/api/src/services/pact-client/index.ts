@@ -5,5 +5,4 @@
  * Export everything needed for using the client.
  */
 
-export * from "./pact-api-client.interface";
 export * from "./pact-api-client";
