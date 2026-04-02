@@ -8,8 +8,8 @@
 
 import path from 'path';
 import fs from 'fs/promises';
-import { OpenApiSchemaExtractor } from '../schemas/schema-extractor';
-import type { VersionSchema } from '../schemas/index';
+import { OpenApiSchemaExtractor } from '../src/_old/schema-extractor';
+import type { VersionSchema } from '../src/schemas/index';
 
 const SCHEMAS_DIR = path.resolve(__dirname, '..', 'schemas');
 const OUTPUT_DIR = path.resolve(__dirname, '..', 'src', 'schemas');

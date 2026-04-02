@@ -9,7 +9,8 @@
     "declaration": true,
     "outDir": "dist",
     "paths": {
-      "pact-data-model": ["../pact-data-model/src/index.ts"]
+      "pact-data-model": ["../pact-data-model/src/index.ts"],
+      "pact-data-model/*": ["../pact-data-model/src/*"]
     }
   },
   "include": ["src/**/*.ts"],

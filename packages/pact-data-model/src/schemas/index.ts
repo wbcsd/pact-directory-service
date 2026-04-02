@@ -1,5 +1,5 @@
 import path from 'path';
-import { OpenApiSchemaExtractor } from './schema-extractor';
+import { OpenApiSchemaExtractor } from '../_old/schema-extractor';
 
 // Define the schema structure for each version
 export interface VersionSchema {
