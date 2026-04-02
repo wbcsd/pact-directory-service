@@ -11,7 +11,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   return (
     <Flex direction="column" align="center" justify="center" gap="3">
       <RadixSpinner size="3" />
-      <Text size="3" weight="bold" color="indigo">
+      <Text size="2">
         {loadingText}
       </Text>
     </Flex>
