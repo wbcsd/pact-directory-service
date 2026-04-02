@@ -5,6 +5,7 @@ import SideNav from "../components/SideNav";
 import LoadingSpinner from "../components/LoadingSpinner";
 import SignUp from "../components/SignUp";
 import pactLogo from "../assets/pact-logo.svg";
+import pactLogoDark from "../assets/pact-logo-dark.svg";
 
 interface FunctionalPageLayoutProps {
   children: React.ReactNode;
@@ -36,7 +37,10 @@ const FunctionalPageLayout: React.FC<FunctionalPageLayoutProps> = ({
           </IconButton>
         </div>
         <div className="logo">
-          <img width={153} src={pactLogo} alt="PACT Logo" />
+          <picture>
+            <source srcSet={pactLogoDark} media="(prefers-color-scheme: dark)" />
+            <img width={153} src={pactLogo} alt="PACT Logo" />
+          </picture>
         </div>
         <div className="top-bar-right">
           <SignUp />

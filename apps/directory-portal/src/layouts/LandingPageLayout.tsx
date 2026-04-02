@@ -2,6 +2,7 @@ import React from "react";
 import { Box } from "@radix-ui/themes";
 import HeroImage from "../assets/providers-header.webp";
 import pactLogo from "../assets/pact-logo.svg";
+import pactLogoDark from "../assets/pact-logo-dark.svg";
 import SignUp from "../components/SignUp";
 
 interface LandingPageLayoutProps {
@@ -17,7 +18,10 @@ const LandingPageLayout: React.FC<LandingPageLayoutProps> = ({
     <div className="layout">
       <header className="top-bar">
         <div className="logo">
-          <img width={153} src={pactLogo} alt="PACT Logo" />
+          <picture>
+            <source srcSet={pactLogoDark} media="(prefers-color-scheme: dark)" />
+            <img width={153} src={pactLogo} alt="PACT Logo" />
+          </picture>
         </div>
         <div className="top-bar-right">
           <SignUp />
