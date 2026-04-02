@@ -7,7 +7,7 @@
  * PACT v3 Event Types
  * Following the format: org.wbcsd.pact.ProductFootprint.<EventName>.3
  */
-export enum EventTypesV3 {
+export enum EventTypes {
   /**
    * A new request for product footprint data has been created
    */

@@ -20,7 +20,7 @@
  *   NEW: productMassPerDeclaredUnit (required)
  */
 
-export interface ProductFootprintV3 {
+export interface ProductFootprint {
   id: string;
   specVersion: string;
   version: number;
@@ -37,11 +37,11 @@ export interface ProductFootprintV3 {
   productClassifications?: string[];
   productNameCompany: string;
   comment?: string;
-  pcf: CarbonFootprintV3;
+  pcf: CarbonFootprint;
   extensions?: Extension[];
 }
 
-export interface CarbonFootprintV3 {
+export interface CarbonFootprint {
   declaredUnitOfMeasurement: DeclaredUnit;
   declaredUnitAmount: string;
   productMassPerDeclaredUnit: string;
@@ -177,18 +177,6 @@ export enum VerificationLevel {
 export enum VerificationBoundary {
   Gate2Gate = "Gate-to-Gate",
   Cradle2Gate = "Cradle-to-Gate",
-}
-
-/** @deprecated v2.x — use Verification in v3 */
-export interface Assurance {
-  assurance: boolean;
-  coverage?: VerificationCoverage;
-  level?: VerificationLevel;
-  boundary?: VerificationBoundary;
-  providerName?: string;
-  completedAt?: string;
-  standardName?: string;
-  comments?: string;
 }
 
 export interface Extension {
