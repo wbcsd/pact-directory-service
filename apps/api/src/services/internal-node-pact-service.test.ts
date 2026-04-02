@@ -1,7 +1,7 @@
 import { InternalNodePactService } from './internal-node-pact-service';
 import { BadRequestError } from '@src/common/errors';
 import { createMockDatabase } from '../common/mock-utils';
-import { EventTypesV3 } from '@src/models/pact-v3/events';
+import { EventTypesV3 } from 'pact-data-model';
 
 // Mock logger to suppress output and allow spying
 jest.mock('@src/common/logger', () => ({

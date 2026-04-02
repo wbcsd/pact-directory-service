@@ -69,7 +69,9 @@
     "skipLibCheck": true /* Skip type checking of declaration files. */,
     "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */,
     "paths": {
-      "@src/*": ["./src/*"]
+      "@src/*": ["./src/*"],
+      "pact-data-model": ["../../packages/pact-data-model/src/index.ts"],
+      "pact-api-client": ["../../packages/pact-api-client/src/index.ts"]
     },
     "useUnknownInCatchVariables": false
   },

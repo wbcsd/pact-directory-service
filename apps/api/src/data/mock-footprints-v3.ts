@@ -2,7 +2,7 @@ import {
   ProductFootprintV3,
   ProductFootprintStatus,
   DeclaredUnit,
-} from "../models/pact-v3/product-footprint";
+} from "pact-data-model";
 
 /**
  * Mock Product Carbon Footprint data for PACT API v3.0.4

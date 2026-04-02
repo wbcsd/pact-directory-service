@@ -2,7 +2,7 @@
  * PACT API Client - Single HTTP Implementation
  * 
  * This client provides a unified HTTP-based interface for communicating with
- * both internal and external PACT nodes. All requests flow through Express
+ * PACT conformant API implementations. All requests flow through Express
  * middleware for consistent security, logging, and rate limiting.
  * 
  * Key Design Decisions:
@@ -13,9 +13,9 @@
  * - Stateless design enables horizontal scaling
  */
 
-import { ProductFootprintV3 } from '../../models/pact-v3/product-footprint';
-import { CloudEvent, EventTypesV3 } from '../../models/pact-v3/events';
-import { FootprintFilters, PaginationParams, PagedResponse } from '../../models/pact-v3/types';
+import { ProductFootprintV3 } from 'pact-data-model';
+import { CloudEvent, EventTypesV3 } from 'pact-data-model';
+import { FootprintFilters, PaginationParams, PagedResponse } from 'pact-data-model';
 
 // Re-export for convenience
 export type { FootprintFilters, PaginationParams };

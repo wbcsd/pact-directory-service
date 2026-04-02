@@ -1,9 +1,7 @@
 import { Kysely, sql } from 'kysely';
 import { Database } from '@src/database/types';
 import { BadRequestError } from '@src/common/errors';
-import { FootprintFilters, PaginationParams, PagedResponse } from '@src/models/pact-v3/types';
-import { ProductFootprintV3 } from '@src/models/pact-v3/product-footprint';
-import { EventTypesV3 } from '@src/models/pact-v3/events';
+import { FootprintFilters, PaginationParams, PagedResponse, ProductFootprintV3, EventTypesV3 } from 'pact-data-model';
 import logger from '@src/common/logger';
 import config from '@src/common/config';
 
