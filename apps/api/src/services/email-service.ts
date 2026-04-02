@@ -15,16 +15,18 @@ interface SendPasswordResetEmailParams {
 }
 
 export class EmailService {
-  private mailjet: InstanceType<typeof Mailjet.Client>;
+  private mailjet?: InstanceType<typeof Mailjet.Client>;
   private mockMode: boolean;
 
   constructor() {
     this.mockMode = !config.MAIL_API_KEY.trim() || !config.MAIL_API_SECRET.trim();
 
-    this.mailjet = Mailjet.apiConnect(
-      config.MAIL_API_KEY,
-      config.MAIL_API_SECRET,
-    );
+    if (!this.mockMode) {
+      this.mailjet = Mailjet.apiConnect(
+        config.MAIL_API_KEY,
+        config.MAIL_API_SECRET,
+      );
+    }
   }
 
   private async sendEmail(params: {
@@ -40,20 +42,22 @@ export class EmailService {
       return;
     }
 
-    await this.mailjet.post('send', { version: 'v3.1' }).request({
-      Messages: [
-        {
-          From: {
-            Email: config.MAIL_FROM_EMAIL,
-            Name: config.MAIL_FROM_NAME,
+    if (this.mailjet) {
+      await this.mailjet.post('send', { version: 'v3.1' }).request({
+        Messages: [
+          {
+            From: {
+              Email: config.MAIL_FROM_EMAIL,
+              Name: config.MAIL_FROM_NAME,
+            },
+            To: [{ Email: params.to }],
+            Subject: params.subject,
+            TextPart: params.text,
+            HTMLPart: params.html,
           },
-          To: [{ Email: params.to }],
-          Subject: params.subject,
-          TextPart: params.text,
-          HTMLPart: params.html,
-        },
-      ],
-    });
+        ],
+      });
+    }
   }
 
   /**
