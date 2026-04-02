@@ -7,11 +7,29 @@
   "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./*": "./src/*.ts"
+    "./v2_0": "./src/v2_0/index.ts",
+    "./v2_0/*": "./src/v2_0/*.ts",
+    "./v2_1": "./src/v2_1/index.ts",
+    "./v2_1/*": "./src/v2_1/*.ts",
+    "./v2_2": "./src/v2_2/index.ts",
+    "./v2_2/*": "./src/v2_2/*.ts",
+    "./v2_3": "./src/v2_3/index.ts",
+    "./v2_3/*": "./src/v2_3/*.ts",
+    "./v3_0": "./src/v3_0/index.ts",
+    "./v3_0/*": "./src/v3_0/*.ts"
   },
   "typesVersions": {
     "*": {
-      "*": ["./src/*"]
+      "v2_0": ["./src/v2_0/index.ts"],
+      "v2_0/*": ["./src/v2_0/*.ts"],
+      "v2_1": ["./src/v2_1/index.ts"],
+      "v2_1/*": ["./src/v2_1/*.ts"],
+      "v2_2": ["./src/v2_2/index.ts"],
+      "v2_2/*": ["./src/v2_2/*.ts"],
+      "v2_3": ["./src/v2_3/index.ts"],
+      "v2_3/*": ["./src/v2_3/*.ts"],
+      "v3_0": ["./src/v3_0/index.ts"],
+      "v3_0/*": ["./src/v3_0/*.ts"]
     }
   },
   "scripts": {

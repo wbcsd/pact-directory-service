@@ -1,5 +1,5 @@
 import { PactApiClient, FootprintFilters, PaginationParams, EventTypes } from './pact-api-client';
-import { ProductFootprint } from 'pact-data-model/types_v3_0';
+import { ProductFootprint } from 'pact-data-model/v3_0';
 
 // Mock fetch globally
 global.fetch = jest.fn();

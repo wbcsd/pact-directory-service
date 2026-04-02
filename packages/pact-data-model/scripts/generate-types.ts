@@ -10,7 +10,7 @@ import fs from 'fs/promises';
 import path from 'path';
 
 const SCHEMAS_DIR = path.resolve(__dirname, '..', 'schemas');
-const OUTPUT_DIR = path.resolve(__dirname, '..', 'src');
+const SRC_DIR = path.resolve(__dirname, '..', 'src');
 
 interface OpenAPISpec {
   components?: {
@@ -385,22 +385,23 @@ async function generateTypesFile(yamlFile: string): Promise<void> {
 
   const versionUnderscore = match[1];
   const versionDot = versionUnderscore.replace('_', '.');
+  const versionFolder = `v${versionUnderscore}`;
+  const outputDir = path.join(SRC_DIR, versionFolder);
+  const outputPath = path.join(outputDir, 'types.ts');
   const yamlPath = path.join(SCHEMAS_DIR, yamlFile);
-  const outputPath = path.join(OUTPUT_DIR, `types_v${versionUnderscore}.ts`);
 
-  console.log(`Generating types_v${versionUnderscore}.ts from ${yamlFile} (PACT v${versionDot})...`);
+  console.log(`Generating ${versionFolder}/types.ts from ${yamlFile} (PACT v${versionDot})...`);
 
   const yamlContent = await fs.readFile(yamlPath, 'utf8');
   const spec = yaml.load(yamlContent) as OpenAPISpec;
 
   const content = new TypesGenerator(spec).generate();
+  await fs.mkdir(outputDir, { recursive: true });
   await fs.writeFile(outputPath, content, 'utf8');
-  console.log(`  ✓ src/generated/types_v${versionUnderscore}.ts`);
+  console.log(`  ✓ src/${versionFolder}/types.ts`);
 }
 
 async function main(): Promise<void> {
-  await fs.mkdir(OUTPUT_DIR, { recursive: true });
-
   const files = await fs.readdir(SCHEMAS_DIR);
   const yamlFiles = files.filter(f => /^openapi_v\d+_\d+\.yaml$/.test(f)).sort();
 

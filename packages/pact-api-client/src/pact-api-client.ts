@@ -14,26 +14,16 @@
  */
 
 import { 
-  ProductFootprint, 
+  ProductFootprint,
   BaseEvent,
-  RequestCreatedEvent, 
-  RequestFulfilledEvent, 
-  RequestRejectedEvent, 
-  PublishedEvent 
-} from 'pact-data-model/types_v3_0';
+  RequestCreatedEvent,
+  RequestFulfilledEvent,
+  RequestRejectedEvent,
+  PublishedEvent,
+  EventTypes,
+} from 'pact-data-model/v3_0';
+export { EventTypes } from 'pact-data-model/v3_0';
 
-/**
- * Event types for CloudEvents sent to the PACT node. These should 
- * match the types defined in the PACT spec and data model.
- * Using an enum here for type safety and to avoid typos, but these 
- * could also be simple string constants.
- */
-export enum EventTypes {
-  RequestCreated = 'org.wbcsd.pact.ProductFootprint.RequestCreatedEvent.3',
-  RequestFulfilled = 'org.wbcsd.pact.ProductFootprint.RequestFulfilledEvent.3',
-  RequestRejected = 'org.wbcsd.pact.ProductFootprint.RequestRejectedEvent.3',
-  Published = 'org.wbcsd.pact.ProductFootprint.PublishedEvent.3',
-}
 
 /**
  * Pagination parameters for listing footprints
