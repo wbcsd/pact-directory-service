@@ -5,6 +5,7 @@ import { registerPolicy, Role } from '@src/common/policies';
 import { UserContext } from './user-service';
 import { ListQuery, ListResult } from '@src/common/list-query';
 import { NodeService } from './node-service';
+import { schema, validate } from 'pact-data-model/v3_0';
 
 // Register all policies used in this service
 registerPolicy([Role.Administrator], 'manage-footprints-own-organization');
@@ -51,6 +52,11 @@ export class FootprintService {
 
     if (!input.data || typeof input.data !== 'object') {
       throw new BadRequestError('Footprint data is required and must be a valid object');
+    }
+
+    const validation = validate(schema.ProductFootprint, input.data);
+    if (!validation.valid) {
+      throw new BadRequestError(`Footprint data failed v3.0 schema validation: ${validation.errors.join('; ')}`);
     }
 
     const result = await this.db

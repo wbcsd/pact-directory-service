@@ -23,3 +23,5 @@ export * as V2_2 from './v2_2';
 export * as V2_3 from './v2_3';
 export * as V3_0 from './v3_0';
 
+export { validate } from './common/validate';
+export type { ValidationResult } from './common/validate';

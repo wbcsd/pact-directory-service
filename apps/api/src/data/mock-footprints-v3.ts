@@ -1,18 +1,17 @@
 import {
-  ProductFootprintV3,
+  ProductFootprint,
   ProductFootprintStatus,
-  DeclaredUnit,
-} from "pact-data-model";
+  CarbonFootprintDeclaredUnitOfMeasurement as DeclaredUnit,
+} from "pact-data-model/v3_0";
 
 /**
  * Mock Product Carbon Footprint data for PACT API v3.0.4
  * Field names match the official PACT v3 OpenAPI schema.
  */
-export const mockFootprintsV3: ProductFootprintV3[] = [
+export const mockFootprintsV3: ProductFootprint[] = [
   {
     id: "d9be4477-e351-45b3-acd9-e1da05e6f633",
     specVersion: "3.0.0",
-    version: 1,
     created: "2023-07-01T00:00:00Z",
     status: ProductFootprintStatus.Active,
     validityPeriodStart: "2023-01-15T10:15:30Z",
@@ -27,7 +26,7 @@ export const mockFootprintsV3: ProductFootprintV3[] = [
     productNameCompany: "Laptop Model X",
     comment: "First version of PCF for Laptop Model X",
     pcf: {
-      declaredUnitOfMeasurement: DeclaredUnit.kilogram,
+      declaredUnitOfMeasurement: DeclaredUnit.Kilogram,
       declaredUnitAmount: "1.0",
       productMassPerDeclaredUnit: "1.0",
       pcfExcludingBiogenicUptake: "120.5",
@@ -51,9 +50,7 @@ export const mockFootprintsV3: ProductFootprintV3[] = [
   {
     id: "f8c3d912-7b4e-4a2c-b567-8e9f0a1b2c3d",
     specVersion: "3.0.0",
-    version: 2,
     created: "2023-08-15T00:00:00Z",
-    updated: "2023-09-01T00:00:00Z",
     status: ProductFootprintStatus.Active,
     validityPeriodStart: "2023-01-15T10:15:30Z",
     validityPeriodEnd: "2025-12-31T00:00:00Z",
@@ -67,7 +64,7 @@ export const mockFootprintsV3: ProductFootprintV3[] = [
     productNameCompany: "EcoSteel Beam A500",
     comment: "Updated version with improved primary data coverage",
     pcf: {
-      declaredUnitOfMeasurement: DeclaredUnit.kilogram,
+      declaredUnitOfMeasurement: DeclaredUnit.Kilogram,
       declaredUnitAmount: "1000.0",
       productMassPerDeclaredUnit: "1000.0",
       pcfExcludingBiogenicUptake: "450.8",
@@ -97,7 +94,6 @@ export const mockFootprintsV3: ProductFootprintV3[] = [
   {
     id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
     specVersion: "3.0.0",
-    version: 1,
     created: "2023-09-20T00:00:00Z",
     status: ProductFootprintStatus.Active,
     validityPeriodStart: "2023-09-01T00:00:00Z",
@@ -112,7 +108,7 @@ export const mockFootprintsV3: ProductFootprintV3[] = [
     productNameCompany: "EcoContainer 500",
     comment: "First PCF for compostable container line",
     pcf: {
-      declaredUnitOfMeasurement: DeclaredUnit.kilogram,
+      declaredUnitOfMeasurement: DeclaredUnit.Kilogram,
       declaredUnitAmount: "0.025",
       productMassPerDeclaredUnit: "0.025",
       pcfExcludingBiogenicUptake: "0.85",

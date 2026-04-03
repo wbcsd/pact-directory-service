@@ -1,5 +1,8 @@
 // Re-export all generated types from the v3.0 spec
 export * from './types';
+export * from './schema';
+export * from '../common/types';
+export * from '../common/validate';
 
 // PACT v3 CloudEvent type identifiers.
 // These string constants are part of the data model specification, not the

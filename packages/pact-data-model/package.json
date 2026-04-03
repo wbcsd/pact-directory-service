@@ -7,6 +7,8 @@
   "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
+    "./common": "./src/common/validate.ts",
+    "./common/*": "./src/common/*.ts",
     "./v2_0": "./src/v2_0/index.ts",
     "./v2_0/*": "./src/v2_0/*.ts",
     "./v2_1": "./src/v2_1/index.ts",
@@ -20,6 +22,8 @@
   },
   "typesVersions": {
     "*": {
+      "common": ["./src/common/validate.ts"],
+      "common/*": ["./src/common/*.ts"],
       "v2_0": ["./src/v2_0/index.ts"],
       "v2_0/*": ["./src/v2_0/*.ts"],
       "v2_1": ["./src/v2_1/index.ts"],
