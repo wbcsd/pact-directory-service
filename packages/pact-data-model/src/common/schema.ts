@@ -1,5 +1,5 @@
 // Define the schema structure for each version
-export interface VersionSchema {
+export interface Schema {
   ProductFootprint: any;
   ListFootprintResponse: any;
   GetFootprintResponse: any;
