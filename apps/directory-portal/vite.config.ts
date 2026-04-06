@@ -6,8 +6,10 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    alias: {
-      'pact-data-model': path.resolve(__dirname, '../../packages/pact-data-model/src/index.ts'),
-    },
+    extensions: ['.mjs', '.mts', '.ts', '.tsx', '.js', '.jsx', '.json'],
+    alias: [
+      { find: /^pact-data-model\/(.+)$/, replacement: path.resolve(__dirname, '../../packages/pact-data-model/src/$1') },
+      { find: 'pact-data-model', replacement: path.resolve(__dirname, '../../packages/pact-data-model/src/index.ts') },
+    ],
   },
 })
