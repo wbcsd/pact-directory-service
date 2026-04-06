@@ -3,15 +3,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button, Callout } from "@radix-ui/themes";
 import { ArrowLeftIcon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { FormPageLayout } from "../layouts";
-import ProductFootprintForm, {
-  ProductFootprintFormData,
-} from "../components/ProductFootprintForm";
+import { ProductFootprint } from "pact-data-model/v3_0";
+import ProductFootprintForm from "../components/ProductFootprintForm";
 import { fetchWithAuth } from "../utils/auth-fetch";
 
 const ViewProductFootprintPage: React.FC = () => {
   const { nodeId, pcfId } = useParams<{ nodeId: string; pcfId: string }>();
   const navigate = useNavigate();
-  const [pcfData, setPcfData] = useState<ProductFootprintFormData | null>(null);
+  const [footprint, setFootprint] = useState<ProductFootprint | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -23,7 +22,7 @@ const ViewProductFootprintPage: React.FC = () => {
         const response = await fetchWithAuth(`/footprints/${pcfId}`);
         if (!response?.ok) throw new Error("Failed to fetch PCF");
         const result = await response.json();
-        setPcfData(result.data as ProductFootprintFormData);
+        setFootprint(result.data as ProductFootprint);
       } catch {
         setError("Failed to load PCF data.");
       } finally {
@@ -51,9 +50,9 @@ const ViewProductFootprintPage: React.FC = () => {
         </Callout.Root>
       )}
 
-      {pcfData && (
+      {footprint && (
         <ProductFootprintForm
-          initialData={pcfData}
+          initialData={footprint}
           readOnly
         />
       )}
