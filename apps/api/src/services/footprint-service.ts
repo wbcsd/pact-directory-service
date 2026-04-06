@@ -63,7 +63,7 @@ export class FootprintService {
       .insertInto('product_footprints')
       .values({
         nodeId,
-        data,
+        data: input.data,
         createdAt: new Date(),
         updatedAt: new Date(),
       })

@@ -53,6 +53,9 @@ export const createMockQueryChain = (executors = createMockExecutors()) => ({
 
   // Delete methods
   deleteFrom: jest.fn().mockReturnThis(),
+
+  // Compile method to finalize the query
+  compile: jest.fn().mockReturnValue({ sql: 'MOCK_SQL', parameters: [] }),
   
   // Execution methods
   ...executors,
