@@ -1,9 +1,11 @@
 import {
-  ProductFootprintV3,
+  ProductFootprint,
   ProductFootprintStatus,
-  DeclaredUnit,
-  CarbonFootprintV3,
-} from './product-footprint';
+  CarbonFootprintDeclaredUnitOfMeasurement as DeclaredUnit,
+  CarbonFootprint,
+  CarbonFootprintGeographyRegionOrSubregion,
+  CarbonFootprintCcuCalculationApproach,
+} from 'pact-data-model/v3_0';
 import { ProductFootprintFormData } from '../../components/ProductFootprintForm';
 
 /**
@@ -17,7 +19,7 @@ import { ProductFootprintFormData } from '../../components/ProductFootprintForm'
  */
 export function formDataToProductFootprint(
   flat: ProductFootprintFormData
-): ProductFootprintV3 {
+): ProductFootprint {
   const now = new Date().toISOString();
 
   // Parse comma-separated URN lists into arrays
@@ -30,7 +32,7 @@ export function formDataToProductFootprint(
   // Map crossSectoralStandards string to string array
   const crossSectoralStandards = mapCrossSectoralStandards(flat.crossSectoralStandards);
 
-  const pcf: CarbonFootprintV3 = {
+  const pcf: CarbonFootprint = {
     declaredUnitOfMeasurement: mapDeclaredUnit(flat.declaredUnitOfMeasurement),
     declaredUnitAmount: flat.declaredUnitAmount || '1.0',
     productMassPerDeclaredUnit: flat.productMassPerDeclaredUnit || '0',
@@ -48,7 +50,7 @@ export function formDataToProductFootprint(
 
   // Optional PCF fields — only include if non-empty
   if (flat.biogenicCarbonContent) pcf.biogenicCarbonContent = flat.biogenicCarbonContent;
-  if (flat.geographyRegionOrSubregion) pcf.geographyRegionOrSubregion = flat.geographyRegionOrSubregion;
+  if (flat.geographyRegionOrSubregion) pcf.geographyRegionOrSubregion = flat.geographyRegionOrSubregion as CarbonFootprintGeographyRegionOrSubregion;
   if (flat.geographyCountry) pcf.geographyCountry = flat.geographyCountry;
   if (flat.geographyCountrySubdivision) pcf.geographyCountrySubdivision = flat.geographyCountrySubdivision;
   if (flat.boundaryProcessesDescription) pcf.boundaryProcessesDescription = flat.boundaryProcessesDescription;
@@ -72,13 +74,12 @@ export function formDataToProductFootprint(
   if (flat.technologicalCO2CaptureOrigin) pcf.technologicalCO2CaptureOrigin = flat.technologicalCO2CaptureOrigin;
   if (flat.technologicalCO2Removals) pcf.technologicalCO2Removals = flat.technologicalCO2Removals;
   if (flat.ccuCarbonContent) pcf.ccuCarbonContent = flat.ccuCarbonContent;
-  if (flat.ccuCalculationApproach) pcf.ccuCalculationApproach = flat.ccuCalculationApproach;
+  if (flat.ccuCalculationApproach) pcf.ccuCalculationApproach = flat.ccuCalculationApproach as CarbonFootprintCcuCalculationApproach;
   if (flat.ccuCreditCertification) pcf.ccuCreditCertification = flat.ccuCreditCertification;
 
-  const footprint: ProductFootprintV3 = {
+  const footprint: ProductFootprint = {
     id: crypto.randomUUID(),
     specVersion: '3.0.0',
-    version: 1,
     created: now,
     status: (flat.status as ProductFootprintStatus) || ProductFootprintStatus.Active,
     companyName: flat.companyName || '',
@@ -117,18 +118,18 @@ function parseProductClassifications(value?: string): string[] {
 }
 
 function mapDeclaredUnit(value?: string): DeclaredUnit {
-  if (!value) return DeclaredUnit.kilogram;
+  if (!value) return DeclaredUnit.Kilogram;
   const normalized = value.toLowerCase().trim();
   const mapping: Record<string, DeclaredUnit> = {
-    liter: DeclaredUnit.liter,
-    kilogram: DeclaredUnit.kilogram,
-    'cubic meter': DeclaredUnit.cubicMeter,
-    'kilowatt hour': DeclaredUnit.kilowattHour,
-    megajoule: DeclaredUnit.megajoule,
-    'ton kilometer': DeclaredUnit.tonKilometer,
-    'square meter': DeclaredUnit.squareMeter,
+    liter: DeclaredUnit.Liter,
+    kilogram: DeclaredUnit.Kilogram,
+    'cubic meter': DeclaredUnit.CubicMeter,
+    'kilowatt hour': DeclaredUnit.KilowattHour,
+    megajoule: DeclaredUnit.Megajoule,
+    'ton kilometer': DeclaredUnit.TonKilometer,
+    'square meter': DeclaredUnit.SquareMeter,
   };
-  return mapping[normalized] ?? DeclaredUnit.kilogram;
+  return mapping[normalized] ?? DeclaredUnit.Kilogram;
 }
 
 function mapCharacterizationFactors(value?: string): string[] {
