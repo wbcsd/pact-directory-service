@@ -10,7 +10,7 @@ import { UserContext } from './user-service';
 import { NodeService } from './node-service';
 import { EmailService } from './email-service';
 import { ListQuery, ListResult } from '@src/common/list-query';
-import { PactApiClientImpl, FootprintFilters } from './pact-client';
+import { PactApiClient, FootprintFilters } from './pact-client';
 import crypto from 'crypto';
 import { logNodeConnection } from '@src/common/activity-logger';
 
@@ -109,21 +109,14 @@ export class NodeConnectionService {
       throw new ForbiddenError('You are not allowed to create connections from this node');
     }
 
-    // Check if connection already exists
     const existingConnection = await this.db
       .selectFrom('connections')
       .selectAll()
       .where((eb) =>
         eb.and([
-          eb.or([
-            eb.and([
-              eb('fromNodeId', '=', nodeId),
-              eb('targetNodeId', '=', data.targetNodeId),
-            ]),
-            eb.and([
-              eb('fromNodeId', '=', data.targetNodeId),
-              eb('targetNodeId', '=', nodeId),
-            ]),
+          eb.and([
+            eb('fromNodeId', '=', nodeId),
+            eb('targetNodeId', '=', data.targetNodeId),
           ]),
           eb('status', 'in', ['pending', 'accepted']),
         ])
@@ -694,16 +687,13 @@ export class NodeConnectionService {
       .where('id', '=', connection.targetNodeId)
       .executeTakeFirstOrThrow();
 
-    // Create client - always pass both nodeId and apiUrl
-    // Client decides internally which to use based on apiUrl presence
-    const client = new PactApiClientImpl(
-      targetNode.id,
-      targetNode.apiUrl,
-      this.internalApiBaseUrl
-    );
+    // Create client with credentials — authentication happens automatically
+    const baseUrl = targetNode.apiUrl
+      ? targetNode.apiUrl.replace(/\/$/, '')
+      : `${this.internalApiBaseUrl}/api/nodes/${targetNode.id}`;
 
-    // Authenticate - same code for internal and external!
-    await client.authenticate(
+    const client = new PactApiClient(
+      baseUrl,
       connection.clientId,
       this.decryptSecret(connection.clientSecret)
     );

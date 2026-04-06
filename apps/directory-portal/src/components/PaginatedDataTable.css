@@ -18,7 +18,7 @@
   display: flex;
   align-items: center;
   position: relative;
-  flex: 1 1 200px;
+  flex: 1;
   min-width: 0;
 }
 
@@ -30,7 +30,8 @@
   border-radius: var(--radius-2) 0 0 var(--radius-2);
   outline: none;
   transition: border-color 0.15s;
-  min-height: 36px;
+  min-height: 32px;
+  max-height: 32px;;
 }
 
 .search-bar input:focus {
@@ -39,7 +40,7 @@
 
 .search-bar .clear-btn {
   position: absolute;
-  right: 2.25rem;
+  right: 2.6rem;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -64,7 +65,8 @@
   border-radius: 0 var(--radius-2) var(--radius-2) 0;
   cursor: pointer;
   transition: opacity 0.15s;
-  min-height: 36px;
+  min-height: 32px;
+  max-height: 32px;;
 }
 
 .search-bar .search-btn:hover:not(:disabled) {
