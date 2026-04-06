@@ -59,6 +59,41 @@ describe('FootprintService', () => {
 
   const mockFootprint = {
     id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+    status: 'Active', 
+    created: '2025-09-20T00:00:00Z',
+    companyName: 'Test Company', 
+    companyIds: ['urn:https://acme.com'],
+    specVersion: '3.0.0',
+    productNameCompany: 'Test Product',
+    productDescription: 'Test Product',
+    productIds: ['urn:gtin:12345678'],
+    productClassifications: ['urn:pact:productclassification:un-cpc:123'],
+    pcf: {
+      declaredUnitOfMeasurement: 'kilogram',
+      declaredUnitAmount: '1000.0',
+      productMassPerDeclaredUnit: '1000.0',
+      pcfExcludingBiogenicUptake: '500.0',
+      pcfIncludingBiogenicUptake: '450.0',
+      fossilGhgEmissions: '480.0',
+      fossilCarbonContent: '20.0',
+      biogenicCarbonContent: '50.0',
+      biogenicCO2Uptake: '-50.0',
+      ipccCharacterizationFactors: ['AR6'],
+      crossSectoralStandards: ['ISO14067'],
+      boundaryProcessesDescription: 'Cradle-to-gate including raw material extraction and manufacturing',
+      referencePeriodStart: '2023-01-01T00:00:00Z',
+      referencePeriodEnd: '2023-12-31T23:59:59Z',
+      geographyCountry: 'US',
+      exemptedEmissionsPercent: '2.5',
+      exemptedEmissionsDescription: 'Infrastructure and capital goods excluded',
+      packagingEmissionsIncluded: true,
+      packagingGhgEmissions: '10.0',
+      primaryDataShare: '80.0',
+    }
+  }
+
+  const mockFootprintData = {
+    id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
     nodeId: 1,
     data: {
       status: 'Active',
@@ -80,13 +115,13 @@ describe('FootprintService', () => {
       // Mock nodeService.get (selectFrom -> executeTakeFirst for node lookup)
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
       // Mock the insert
-      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce(mockFootprint);
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce(mockFootprintData);
 
       const result = await footprintService.create(adminUserContext, 1, {
-        data: { status: 'Active', companyName: 'Test Company' },
+        data: mockFootprint, // Using the full mockFootprint object to ensure validation logic is exercised
       });
 
-      expect(result).toEqual(mockFootprint);
+      expect(result).toEqual(mockFootprintData);
       expect(dbMocks.db.insertInto).toHaveBeenCalledWith('product_footprints');
     });
 
@@ -128,12 +163,12 @@ describe('FootprintService', () => {
       const otherOrgNode = { ...mockNode, organizationId: 999 };
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(otherOrgNode);
       dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({
-        ...mockFootprint,
+        ...mockFootprintData,
         nodeId: otherOrgNode.id,
       });
 
       const result = await footprintService.create(rootUserContext, 1, {
-        data: { status: 'Active' },
+        data: mockFootprint, // Using the full mockFootprint object to ensure validation logic is exercised
       });
 
       expect(result).toBeDefined();
@@ -144,13 +179,13 @@ describe('FootprintService', () => {
   describe('get', () => {
     it('should return a footprint if user has access', async () => {
       // Mock footprint lookup
-      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockFootprint);
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockFootprintData);
       // Mock node lookup (via nodeService.get)
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
 
-      const result = await footprintService.get(adminUserContext, mockFootprint.id);
+      const result = await footprintService.get(adminUserContext, mockFootprintData.id);
 
-      expect(result).toEqual(mockFootprint);
+      expect(result).toEqual(mockFootprintData);
     });
 
     it('should throw NotFoundError if footprint does not exist', async () => {
@@ -162,19 +197,19 @@ describe('FootprintService', () => {
     });
 
     it('should throw ForbiddenError if user does not have access to the node', async () => {
-      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockFootprint);
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockFootprintData);
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
         ...mockNode,
         organizationId: 999,
       });
 
       await expect(
-        footprintService.get(adminUserContext, mockFootprint.id)
+        footprintService.get(adminUserContext, mockFootprintData.id)
       ).rejects.toThrow(ForbiddenError);
     });
 
     it('should allow root user to view any footprint', async () => {
-      const otherOrgFootprint = { ...mockFootprint, nodeId: 2 };
+      const otherOrgFootprint = { ...mockFootprintData, nodeId: 2 };
       const otherOrgNode = { ...mockNode, id: 2, organizationId: 999 };
 
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(otherOrgFootprint);
@@ -193,7 +228,7 @@ describe('FootprintService', () => {
       // Mock count query
       dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 2 });
       // Mock data query
-      dbMocks.executors.execute.mockResolvedValueOnce([mockFootprint, { ...mockFootprint, id: 'second-id' }]);
+      dbMocks.executors.execute.mockResolvedValueOnce([mockFootprintData, { ...mockFootprintData, id: 'second-id' }]);
 
       const result = await footprintService.listByNode(adminUserContext, 1);
 
@@ -224,7 +259,7 @@ describe('FootprintService', () => {
       const otherOrgNode = { ...mockNode, organizationId: 999 };
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(otherOrgNode);
       dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 1 });
-      dbMocks.executors.execute.mockResolvedValueOnce([mockFootprint]);
+      dbMocks.executors.execute.mockResolvedValueOnce([mockFootprintData]);
 
       const result = await footprintService.listByNode(rootUserContext, 1);
 
@@ -235,7 +270,7 @@ describe('FootprintService', () => {
   describe('delete', () => {
     it('should delete a footprint if user has access', async () => {
       // Mock get -> footprint lookup
-      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockFootprint);
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockFootprintData);
       // Mock get -> node lookup (inside this.get)
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
       // Mock delete -> node lookup (explicit in delete method)
@@ -243,9 +278,9 @@ describe('FootprintService', () => {
       // Mock the delete execution
       dbMocks.executors.execute.mockResolvedValueOnce(undefined);
 
-      const result = await footprintService.delete(adminUserContext, mockFootprint.id);
+      const result = await footprintService.delete(adminUserContext, mockFootprintData.id);
 
-      expect(result).toEqual({ success: true, footprintId: mockFootprint.id });
+      expect(result).toEqual({ success: true, footprintId: mockFootprintData.id });
       expect(dbMocks.db.deleteFrom).toHaveBeenCalledWith('product_footprints');
     });
 
@@ -258,19 +293,19 @@ describe('FootprintService', () => {
     });
 
     it('should throw ForbiddenError if user does not have access', async () => {
-      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockFootprint);
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockFootprintData);
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
         ...mockNode,
         organizationId: 999,
       });
 
       await expect(
-        footprintService.delete(adminUserContext, mockFootprint.id)
+        footprintService.delete(adminUserContext, mockFootprintData.id)
       ).rejects.toThrow(ForbiddenError);
     });
 
     it('should allow root user to delete any footprint', async () => {
-      const otherOrgFootprint = { ...mockFootprint, nodeId: 2 };
+      const otherOrgFootprint = { ...mockFootprintData, nodeId: 2 };
       const otherOrgNode = { ...mockNode, id: 2, organizationId: 999 };
 
       // Mock get -> footprint lookup

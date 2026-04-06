@@ -6,6 +6,10 @@ module.exports = {
   // Path alias support (matches your tsconfig.json)
   moduleNameMapper: {
     '^@src/(.*)$': '<rootDir>/src/$1',
+    '^pact-data-model$': '<rootDir>/../../packages/pact-data-model/src/index.ts',
+    '^pact-data-model/(.*)$': '<rootDir>/../../packages/pact-data-model/src/$1',
+    '^pact-api-client$': '<rootDir>/../../packages/pact-api-client/src/index.ts',
+    '^pact-api-client/(.*)$': '<rootDir>/../../packages/pact-api-client/src/$1',
   },
 
   testMatch: [
@@ -20,7 +24,7 @@ module.exports = {
     '^.+\\.tsx?$': [
       'ts-jest',
       {
-        tsconfig: 'tsconfig.json',
+        tsconfig: 'tsconfig.test.json',
       },
     ],
   },

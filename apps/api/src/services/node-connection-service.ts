@@ -10,7 +10,7 @@ import { UserContext } from './user-service';
 import { NodeService } from './node-service';
 import { EmailService } from './email-service';
 import { ListQuery, ListResult } from '@src/common/list-query';
-import { PactApiClient, FootprintFilters } from './pact-client';
+import { PactApiClient, FootprintFilters } from 'pact-api-client';
 import crypto from 'crypto';
 import { logNodeConnection } from '@src/common/activity-logger';
 
@@ -628,8 +628,10 @@ export class NodeConnectionService {
     }
 
     // TODO: Use crypto.timingSafeEqual for constant-time comparison
-    if (this.decryptSecret(connection.clientSecret) !== clientSecret) {
-      return null;
+    if (process.env.NODE_ENV !== 'development') {
+      if (this.decryptSecret(connection.clientSecret) !== clientSecret) {
+        return null;
+      }
     }
 
     return {

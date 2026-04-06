@@ -5,7 +5,7 @@ import { registerPolicy, Role } from '@src/common/policies';
 import { UserContext } from './user-service';
 import { ListQuery, ListResult } from '@src/common/list-query';
 import { NodeService } from './node-service';
-import { isProductFootprintV3, formDataToProductFootprint } from '@src/models/pact-v3/form-to-footprint';
+import { schema, validate } from 'pact-data-model/v3_0';
 
 // Register all policies used in this service
 registerPolicy([Role.Administrator], 'manage-footprints-own-organization');
@@ -54,11 +54,10 @@ export class FootprintService {
       throw new BadRequestError('Footprint data is required and must be a valid object');
     }
 
-    // If the data is flat form data (from the portal), transform it to PACT v3 format.
-    // If it's already a valid PACT v3 object (has specVersion, id, pcf), use as-is.
-    const data = isProductFootprintV3(input.data)
-      ? input.data
-      : formDataToProductFootprint(input.data);
+    const validation = validate(schema.ProductFootprint, input.data);
+    if (!validation.valid) {
+      throw new BadRequestError(`Footprint data failed v3.0 schema validation: ${validation.errors.join('; ')}`);
+    }
 
     const result = await this.db
       .insertInto('product_footprints')

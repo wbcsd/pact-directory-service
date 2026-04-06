@@ -2,8 +2,12 @@
   "name": "pact-directory",
   "version": "1.0.0",
   "workspaces": [
-    "apps/api",
-    "apps/directory-portal"
+    "apps/*",
+    "packages/*"
   ],
-  "private": true
+  "private": true,
+  "scripts": {
+    "build": "npm run build --workspace=packages/pact-data-model && npm run build --workspace=packages/pact-api-client && npm run build --workspace=apps/api",
+    "test": "npm run test --workspaces --if-present"
+  }
 }

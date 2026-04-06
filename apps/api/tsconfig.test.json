@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@src/*": ["./src/*"],
+      "pact-data-model": ["../../packages/pact-data-model/src/index.ts"],
+      "pact-data-model/*": ["../../packages/pact-data-model/src/*"],
+      "pact-api-client": ["../../packages/pact-api-client/src/index.ts"],
+      "pact-api-client/*": ["../../packages/pact-api-client/src/*"]
+    }
+  },
+  "include": ["src/**/*.ts"]
+}
