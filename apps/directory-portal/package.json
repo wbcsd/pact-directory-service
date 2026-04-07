@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "test": "vitest run .",
-    "build": "tsc -b && vite build",
+    "prebuild": "npm --prefix ../.. install",
+    "build": "npm run prebuild && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
