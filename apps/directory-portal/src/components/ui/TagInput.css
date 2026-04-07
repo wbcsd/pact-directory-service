@@ -1,0 +1,106 @@
+/* TagInput.css — works alongside Radix UI Themes */
+
+.tag-input-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  min-height: 36px;
+  padding: 5px 8px;
+  border-radius: var(--radius-2);
+  border: 1px solid var(--gray-a7);
+  background: var(--color-surface);
+  cursor: text;
+  transition: border-color 120ms, box-shadow 120ms;
+}
+
+.tag-input-wrap:focus-within {
+  border-color: var(--accent-8);
+  box-shadow: 0 0 0 1px var(--accent-8);
+  outline: none;
+}
+
+.tag-input-wrap--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--gray-a2);
+}
+
+.tag-input-wrap--invalid:not(:focus-within) {
+  border-color: var(--red-7);
+}
+
+/* Badge tweaks */
+.tag-input-badge {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 4px;
+  max-width: 300px;
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 12px !important;
+}
+
+.tag-input-badge-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Remove button inside badge */
+.tag-input-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  opacity: 0.6;
+  cursor: pointer;
+  line-height: 1;
+  transition: opacity 100ms, background 100ms;
+}
+
+.tag-input-remove:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+/* Text input inside the wrap */
+.tag-input-field {
+  flex: 1;
+  min-width: 160px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: var(--font-size-2);
+  font-family: var(--font-mono, monospace);
+  color: var(--gray-12);
+  padding: 0;
+  line-height: 1.4;
+}
+
+.tag-input-field::placeholder {
+  font-family: var(--default-font-family, sans-serif);
+  color: var(--gray-a9);
+}
+
+.tag-input-field:disabled {
+  cursor: not-allowed;
+}
+
+/* Keyboard hint styling */
+.tag-input-kbd {
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  border: 1px solid var(--gray-a6);
+  background: var(--gray-a2);
+  color: var(--gray-11);
+}

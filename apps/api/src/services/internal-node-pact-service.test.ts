@@ -1,7 +1,7 @@
 import { InternalNodePactService } from './internal-node-pact-service';
 import { BadRequestError } from '@src/common/errors';
 import { createMockDatabase } from '../common/mock-utils';
-import { EventTypes } from 'pact-data-model/v3_0';
+import { BaseEvent, EventTypes } from 'pact-data-model/v3_0';
 
 // Mock logger to suppress output and allow spying
 jest.mock('@src/common/logger', () => ({
@@ -440,7 +440,7 @@ describe('InternalNodePactService', () => {
           service.handleEvent(nodeId, {
             ...baseEvent,
             type: 'org.wbcsd.pact.ProductFootprint.UnknownEvent.3',
-          })
+          } as BaseEvent)
         ).rejects.toThrow(BadRequestError);
       });
     });

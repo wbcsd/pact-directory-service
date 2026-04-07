@@ -109,21 +109,14 @@ export class NodeConnectionService {
       throw new ForbiddenError('You are not allowed to create connections from this node');
     }
 
-    // Check if connection already exists
     const existingConnection = await this.db
       .selectFrom('connections')
       .selectAll()
       .where((eb) =>
         eb.and([
-          eb.or([
-            eb.and([
-              eb('fromNodeId', '=', nodeId),
-              eb('targetNodeId', '=', data.targetNodeId),
-            ]),
-            eb.and([
-              eb('fromNodeId', '=', data.targetNodeId),
-              eb('targetNodeId', '=', nodeId),
-            ]),
+          eb.and([
+            eb('fromNodeId', '=', nodeId),
+            eb('targetNodeId', '=', data.targetNodeId),
           ]),
           eb('status', 'in', ['pending', 'accepted']),
         ])
