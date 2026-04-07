@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "scripts": {
     "clean": "rimraf ./dist",
-    "build": "npm run clean && npm run lint && tsc --build tsconfig.prod.json && tsc-alias",
+    "prebuild": "npm --prefix ../.. install && npm --prefix ../.. run build -w pact-data-model -- --force && npm --prefix ../.. run build -w pact-api-client -- --force",
+    "build": "npm run clean && npm run prebuild && npm run lint && tsc --build tsconfig.prod.json && tsc-alias",
     "dev": "tsx watch ./src",
     "lint": "eslint ./src",
     "lint:tests": "eslint ./spec",
