@@ -8,10 +8,9 @@ export class ApiError extends Error {
 
   constructor(status: number, message: string) {
     super(message);
+    this.message = message;
     this.status = status;
     this.name = new.target.name;
-    // Ensure instanceof works reliably across transpilation targets.
-    Object.setPrototypeOf(this, new.target.prototype);
   }
 }
 

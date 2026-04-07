@@ -7,16 +7,15 @@ export function errorHandler(err: any, _req: Request, res: Response, _next: Next
   }
 
   // Handle API custom errors defined in common/errors.ts.
-  if (err instanceof ApiError) {  
-    // Exclude the status property from the error response body to avoid redundancy, 
-    // as it's already set in the HTTP status code.
-    const { status, ...rest } = err;
-    return res.status(status).json(rest);
+  if (err instanceof ApiError) {
+    const { status, message, stack: _stack, ...rest } = err;
+    return res.status(status).json({ status, message, ...rest });
   }
 
   // Default error
   if (typeof err.status === 'number' && err.status >= 100 && err.status <= 599) {
-    return res.status(err.status).json(err)
+    const { status, message, stack: _stack, ...rest } = err;
+    return res.status(status).json({ status, message, ...rest });
   }
   return res.status(500).json({ message: err.message ?? 'Internal Server Error' });
 }

@@ -1,6 +1,5 @@
-import { PactApiClient, FootprintFilters, PaginationParams } from './pact-api-client';
-import { ProductFootprintV3 } from '../../models/pact-v3/product-footprint';
-import { EventTypesV3 } from '../../models/pact-v3/events';
+import { PactApiClient, FootprintFilters, PaginationParams, EventTypes } from './pact-api-client';
+import { ProductFootprint } from 'pact-data-model/v3_0';
 
 // Mock fetch globally
 global.fetch = jest.fn();
@@ -66,11 +65,10 @@ describe('PactApiClientImpl', () => {
     });
 
     it('should fetch footprints without filters', async () => {
-      const mockFootprints: ProductFootprintV3[] = [
+      const mockFootprints: ProductFootprint[] = [
         {
           id: 'fp-1',
           specVersion: '3.0.0',
-          version: 1,
           created: '2024-01-01T00:00:00Z',
           status: 'Active' as any,
           companyName: 'Test Company',
@@ -206,10 +204,9 @@ describe('PactApiClientImpl', () => {
     });
 
     it('should fetch single footprint by ID', async () => {
-      const mockFootprint: ProductFootprintV3 = {
+      const mockFootprint: ProductFootprint = {
         id: 'fp-123',
         specVersion: '3.0.0',
-        version: 1,
         created: '2024-01-01T00:00:00Z',
         status: 'Active' as any,
         companyName: 'Test Company',
@@ -293,7 +290,7 @@ describe('PactApiClientImpl', () => {
       const [url, init] = mockFetch.mock.calls[1] as [string, RequestInit];
       expect(url).toBe('https://partner.com/pact/2/events');
       const body = JSON.parse(init.body as string);
-      expect(body.type).toBe(EventTypesV3.REQUEST_CREATED);
+      expect(body.type).toBe(EventTypes.RequestCreated);
       expect(body.source).toBe('https://my-node.example.com');
       expect(body.data).toEqual({ productId: ['prod-1', 'prod-2'], comment: 'please send' });
       expect(body.specversion).toBe('1.0');
@@ -318,7 +315,7 @@ describe('PactApiClientImpl', () => {
       await client.fulfillFootprint('req-event-id', footprints);
 
       const body = JSON.parse((mockFetch.mock.calls[1][1] as RequestInit).body as string);
-      expect(body.type).toBe(EventTypesV3.REQUEST_FULFILLED);
+      expect(body.type).toBe(EventTypes.RequestFulfilled);
       expect(body.data).toEqual({ requestEventId: 'req-event-id', pfs: footprints });
     });
 
@@ -328,7 +325,7 @@ describe('PactApiClientImpl', () => {
       await client.rejectFootprint('req-event-id', { code: 'AccessDenied', message: 'Not allowed' });
 
       const body = JSON.parse((mockFetch.mock.calls[1][1] as RequestInit).body as string);
-      expect(body.type).toBe(EventTypesV3.REQUEST_REJECTED);
+      expect(body.type).toBe(EventTypes.RequestRejected);
       expect(body.data).toEqual({
         requestEventId: 'req-event-id',
         error: { code: 'AccessDenied', message: 'Not allowed' },
@@ -341,7 +338,7 @@ describe('PactApiClientImpl', () => {
       await client.publishFootprint(['fp-1', 'fp-2']);
 
       const body = JSON.parse((mockFetch.mock.calls[1][1] as RequestInit).body as string);
-      expect(body.type).toBe(EventTypesV3.PUBLISHED);
+      expect(body.type).toBe(EventTypes.Published);
       expect(body.data).toEqual({ pfIds: ['fp-1', 'fp-2'] });
     });
 

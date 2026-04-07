@@ -2,7 +2,7 @@
  * PACT API Client - Single HTTP Implementation
  * 
  * This client provides a unified HTTP-based interface for communicating with
- * both internal and external PACT nodes. All requests flow through Express
+ * PACT conformant API implementations. All requests flow through Express
  * middleware for consistent security, logging, and rate limiting.
  * 
  * Key Design Decisions:
@@ -13,15 +13,53 @@
  * - Stateless design enables horizontal scaling
  */
 
-import { ProductFootprintV3 } from '../../models/pact-v3/product-footprint';
-import { CloudEvent, EventTypesV3 } from '../../models/pact-v3/events';
-import { FootprintFilters, PaginationParams, PagedResponse } from '../../models/pact-v3/types';
+import { 
+  ProductFootprint,
+  BaseEvent,
+  RequestCreatedEvent,
+  RequestFulfilledEvent,
+  RequestRejectedEvent,
+  PublishedEvent,
+  EventTypes,
+} from 'pact-data-model/v3_0';
+export { EventTypes } from 'pact-data-model/v3_0';
 
-// Re-export for convenience
-export type { FootprintFilters, PaginationParams };
 
-export interface PactApiResponse<T> {
-  data: T;
+/**
+ * Pagination parameters for listing footprints
+ */
+export interface PaginationParams {
+  limit?: number;
+  offset?: number;
+}
+
+/**
+ * Filter parameters for footprints (PACT v3 spec)
+ * Per https://docs.carbon-transparency.org/tr/data-exchange-protocol/latest/#parameters
+ * productId, companyId, geography and classification are arrays of strings
+ */
+export interface FootprintFilters {
+  productId?: string[];
+  companyId?: string[];
+  geography?: string[]; // Can match geographyCountry, geographyRegionOrSubregion, or geographyCountrySubdivision
+  classification?: string[]; // Match against productClassifications array
+  status?: string; // Active or Deprecated
+  validOn?: string; // ISO 8601 date - footprint valid on this date
+  validAfter?: string; // ISO 8601 date - footprint valid after this date
+  validBefore?: string; // ISO 8601 date - footprint valid before this date
+}
+
+/**
+ * Paginated response structure (PACT v3 spec)
+ */
+export interface PagedResponse<T> {
+  data: T[];
+  links?: {
+    first?: string;
+    last?: string;
+    prev?: string;
+    next?: string;
+  };
 }
 
 export type PactApiListResponse<T> = PagedResponse<T>;
@@ -116,7 +154,7 @@ export class PactApiClient {
   async listFootprints(
     filters?: FootprintFilters,
     pagination?: PaginationParams
-  ): Promise<PactApiListResponse<ProductFootprintV3>> {
+  ): Promise<PactApiListResponse<ProductFootprint>> {
     const token = await this.ensureAuthenticated();
     
     // Build query string from filters
@@ -202,7 +240,7 @@ export class PactApiClient {
   /**
    * Get a specific footprint by ID
    */
-  async getFootprint(id: string): Promise<PactApiResponse<ProductFootprintV3>> {
+  async getFootprint(id: string): Promise<{ data: ProductFootprint }> {
     const token = await this.ensureAuthenticated();
     const url = `${this.baseUrl}/2/footprints/${encodeURIComponent(id)}`;
 
@@ -228,7 +266,7 @@ export class PactApiClient {
   /**
    * Send a CloudEvent to the PACT node's events endpoint.
    */
-  private async sendEvent(event: CloudEvent): Promise<void> {
+  private async sendEvent(event: BaseEvent): Promise<void> {
     const token = await this.ensureAuthenticated();
     const url = `${this.baseUrl}/2/events`;
 
@@ -254,27 +292,27 @@ export class PactApiClient {
    */
   async requestFootprint(productIds: string[], comment?: string): Promise<void> {
     await this.sendEvent({
-      type: EventTypesV3.REQUEST_CREATED,
+      type: EventTypes.RequestCreated,
       specversion: '1.0',
       id: crypto.randomUUID(),
       source: this.source,
       time: new Date().toISOString(),
       data: { productId: productIds, ...(comment !== undefined ? { comment } : {}) },
-    });
+    } as RequestCreatedEvent);
   }
 
   /**
    * Notify a data recipient that their footprint request has been fulfilled.
    */
-  async fulfillFootprint(requestEventId: string, footprints: ProductFootprintV3[]): Promise<void> {
+  async fulfillFootprint(requestEventId: string, footprints: ProductFootprint[]): Promise<void> {
     await this.sendEvent({
-      type: EventTypesV3.REQUEST_FULFILLED,
+      type: EventTypes.RequestFulfilled,
       specversion: '1.0',
       id: crypto.randomUUID(),
       source: this.source,
       time: new Date().toISOString(),
       data: { requestEventId, pfs: footprints },
-    });
+    } as RequestFulfilledEvent);
   }
 
   /**
@@ -282,13 +320,13 @@ export class PactApiClient {
    */
   async rejectFootprint(requestEventId: string, error: { code: string; message: string }): Promise<void> {
     await this.sendEvent({
-      type: EventTypesV3.REQUEST_REJECTED,
+      type: EventTypes.RequestRejected,
       specversion: '1.0',
       id: crypto.randomUUID(),
       source: this.source,
       time: new Date().toISOString(),
       data: { requestEventId, error },
-    });
+    } as RequestRejectedEvent);
   }
 
   /**
@@ -296,12 +334,12 @@ export class PactApiClient {
    */
   async publishFootprint(pfIds: string[]): Promise<void> {
     await this.sendEvent({
-      type: EventTypesV3.PUBLISHED,
+      type: EventTypes.Published,
       specversion: '1.0',
       id: crypto.randomUUID(),
       source: this.source,
       time: new Date().toISOString(),
       data: { pfIds },
-    });
+    } as PublishedEvent);
   }
 }

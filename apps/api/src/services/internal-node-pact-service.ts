@@ -1,9 +1,7 @@
 import { Kysely, sql } from 'kysely';
 import { Database } from '@src/database/types';
 import { BadRequestError } from '@src/common/errors';
-import { FootprintFilters, PaginationParams, PagedResponse } from '@src/models/pact-v3/types';
-import { ProductFootprintV3 } from '@src/models/pact-v3/product-footprint';
-import { EventTypesV3 } from '@src/models/pact-v3/events';
+import { FootprintFilters, PaginationParams, PagedResponse, ProductFootprint, EventTypes, RequestCreatedEvent, BaseEvent, RequestFulfilledEvent, RequestRejectedEvent } from 'pact-data-model/v3_0';
 import logger from '@src/common/logger';
 import config from '@src/common/config';
 
@@ -18,17 +16,19 @@ import config from '@src/common/config';
  *   createdAt / updatedAt
  */
 export class InternalNodePactService {
+
   constructor(private db: Kysely<Database>) {}
 
   /**
    * Get list of product footprints (v3) for a given node.
    * Applies PACT v3 filtering on the JSONB `data` column.
    */
-  async getFootprints(
+  public async getFootprints(
     nodeId: number,
     filters: FootprintFilters = {},
     pagination: PaginationParams = {}
-  ): Promise<PagedResponse<ProductFootprintV3>> {
+  ): Promise<PagedResponse<ProductFootprint>> {
+
     let qb = this.db
       .selectFrom('product_footprints')
       .select(['data'])
@@ -56,7 +56,7 @@ export class InternalNodePactService {
       .offset(offset)
       .execute();
 
-    const data = rows.map((row) => row.data as unknown as ProductFootprintV3);
+    const data = rows.map((row) => row.data as unknown as ProductFootprint);
 
     return {
       data,
@@ -70,7 +70,7 @@ export class InternalNodePactService {
   async getFootprintById(
     nodeId: number,
     footprintId: string
-  ): Promise<ProductFootprintV3 | null> {
+  ): Promise<ProductFootprint | null> {
     const row = await this.db
       .selectFrom('product_footprints')
       .select(['data'])
@@ -79,7 +79,7 @@ export class InternalNodePactService {
       .executeTakeFirst();
 
     if (!row) return null;
-    return row.data as unknown as ProductFootprintV3;
+    return row.data as unknown as ProductFootprint;
   }
 
   /**
@@ -91,24 +91,17 @@ export class InternalNodePactService {
    * - RequestFulfilledEvent: acknowledge (200) — inbound fulfillments
    * - RequestRejectedEvent:  acknowledge (200) — inbound rejections
    */
-  async handleEvent(
+  public async handleEvent(
     nodeId: number,
-    event: {
-      type: string;
-      specversion: string;
-      id: string;
-      source: string;
-      time?: string;
-      data?: Record<string, any>;
-    }
-  ): Promise<void> {
+    event: BaseEvent
+  ) {
     const { type, id, source, data } = event;
 
     // UUID v4 regex for validating pfIds
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
     switch (type) {
-      case EventTypesV3.PUBLISHED: {
+      case EventTypes.Published: {
         // Validate pfIds are present and contain valid UUIDs
         if (!data?.pfIds || !Array.isArray(data.pfIds) || data.pfIds.length === 0) {
           throw new BadRequestError('PublishedEvent data must contain a non-empty pfIds array');
@@ -126,13 +119,13 @@ export class InternalNodePactService {
         break;
       }
 
-      case EventTypesV3.REQUEST_CREATED: {
+      case EventTypes.RequestCreated: {
         logger.info(
           { nodeId, eventId: id, source, productId: data?.productId },
           'Received RequestCreatedEvent for internal node'
         );
         // Fire-and-forget: look up footprints and send callback
-        this.handleRequestCreatedEvent(nodeId, id, source, data).catch((err) =>
+        this.handleRequestCreatedEvent(nodeId, id, source, event as RequestCreatedEvent).catch((err) =>
           logger.error(
             { nodeId, eventId: id, error: (err as Error).message },
             'Failed to handle RequestCreatedEvent callback'
@@ -141,7 +134,7 @@ export class InternalNodePactService {
         break;
       }
 
-      case EventTypesV3.REQUEST_FULFILLED: {
+      case EventTypes.RequestFulfilled: {
         logger.info(
           { nodeId, eventId: id },
           'Received RequestFulfilledEvent for internal node'
@@ -149,7 +142,7 @@ export class InternalNodePactService {
         break;
       }
 
-      case EventTypesV3.REQUEST_REJECTED: {
+      case EventTypes.RequestRejected: {
         logger.info(
           { nodeId, eventId: id },
           'Received RequestRejectedEvent for internal node'
@@ -178,31 +171,23 @@ export class InternalNodePactService {
     nodeId: number,
     requestEventId: string,
     source: string,
-    data?: Record<string, any>
+    event: RequestCreatedEvent
   ): Promise<void> {
-    const productIds: string[] = data?.productId ?? [];
 
-    // Search footprints matching any of the requested product IDs
-    let matchingFootprints: ProductFootprintV3[] = [];
+    // Use the same filters as ListFootprints
+    const filters = event.data as FootprintFilters;
 
-    if (productIds.length > 0) {
-      const rows = await this.db
-        .selectFrom('product_footprints')
-        .select(['data'])
-        .where('nodeId', '=', nodeId)
-        .where((eb) => {
-          const conditions = productIds.map((pid) =>
-            sql`${eb.ref('data')}->'productIds' @> ${sql`${JSON.stringify([pid])}::jsonb`}`
-          );
-          return eb.or(conditions.map((c) => eb(c, 'is not', null)));
-        })
-        .execute();
+    let query = this.db
+      .selectFrom('product_footprints')
+      .select(['data'])
+      .where('nodeId', '=', nodeId);
 
-      matchingFootprints = rows.map(
-        (r) => r.data as unknown as ProductFootprintV3
-      );
-    }
+    query = this.applyFilters(query, filters);
 
+    // Execute the query to get matching footprints
+    const rows = await query.execute();
+    const footprints = rows.map((r) => r.data as unknown as ProductFootprint);
+    
     // Determine callback URL — the conformance test service or the event source
     const callbackUrl = source.endsWith('/3/events')
       ? source
@@ -211,45 +196,47 @@ export class InternalNodePactService {
     // Obtain auth token for the callback
     const authToken = await this.getCallbackToken(nodeId);
 
-    if (matchingFootprints.length > 0) {
-      // RequestFulfilledEvent
-      const fulfilledEvent = {
-        type: EventTypesV3.REQUEST_FULFILLED,
-        specversion: '1.0',
-        id: crypto.randomUUID(),
-        source: `${config.INTERNAL_API_BASE_URL}/api/nodes/${nodeId}`,
-        time: new Date().toISOString(),
-        data: {
-          requestEventId,
-          pfs: matchingFootprints,
-        },
-      };
+    // If matching footprints are found, send RequestFulfilledEvent
+    // with the footprint data; otherwise send RequestRejectedEvent.
+    if (footprints.length > 0) {
 
-      await this.postEvent(callbackUrl, fulfilledEvent, authToken);
-
+      await this.postEvent(
+        callbackUrl, {
+          type: EventTypes.RequestFulfilled,
+          specversion: '1.0',
+          id: crypto.randomUUID(),
+          source: `${config.INTERNAL_API_BASE_URL}/api/nodes/${nodeId}`,
+          time: new Date().toISOString(),
+          data: {
+            requestEventId,
+            pfs: footprints,
+          },
+        } as RequestFulfilledEvent, 
+        authToken
+      );
       logger.info(
-        { nodeId, requestEventId, matchCount: matchingFootprints.length },
+        { nodeId, requestEventId, matchCount: footprints.length },
         'Sent RequestFulfilledEvent callback'
       );
     } else {
-      // RequestRejectedEvent
-      const rejectedEvent = {
-        type: EventTypesV3.REQUEST_REJECTED,
-        specversion: '1.0',
-        id: crypto.randomUUID(),
-        source: `${config.INTERNAL_API_BASE_URL}/api/nodes/${nodeId}`,
-        time: new Date().toISOString(),
-        data: {
-          requestEventId,
-          error: {
-            code: 'NotFound',
-            message: 'The requested footprint could not be found.',
+      
+      await this.postEvent(
+        callbackUrl, {
+          type: EventTypes.RequestRejected,
+          specversion: '1.0',
+          id: crypto.randomUUID(),
+          source: `${config.INTERNAL_API_BASE_URL}/api/nodes/${nodeId}`,
+          time: new Date().toISOString(),
+          data: {
+            requestEventId,
+            error: {
+              code: 'NotFound',
+              message: 'The requested footprint could not be found.',
+            },
           },
-        },
-      };
-
-      await this.postEvent(callbackUrl, rejectedEvent, authToken);
-
+        } as RequestRejectedEvent, 
+        authToken 
+      );
       logger.info(
         { nodeId, requestEventId },
         'Sent RequestRejectedEvent callback'
@@ -318,9 +305,9 @@ export class InternalNodePactService {
    */
   private async postEvent(
     url: string,
-    event: Record<string, any>,
+    event: BaseEvent,
     authToken: string
-  ): Promise<void> {
+  ) {
     const headers: Record<string, string> = {
       'Content-Type': 'application/cloudevents+json; charset=UTF-8',
     };
@@ -354,7 +341,7 @@ export class InternalNodePactService {
         const conditions = filters.productId!.map((pid) =>
           sql`${eb.ref('data')}->'productIds' @> ${sql`${JSON.stringify([pid])}::jsonb`}`
         );
-        return eb.or(conditions.map((c: any) => eb(c, 'is not', null)));
+        return eb.or(conditions);
       });
     }
 
@@ -364,7 +351,7 @@ export class InternalNodePactService {
         const conditions = filters.companyId!.map((cid) =>
           sql`${eb.ref('data')}->'companyIds' @> ${sql`${JSON.stringify([cid])}::jsonb`}`
         );
-        return eb.or(conditions.map((c: any) => eb(c, 'is not', null)));
+        return eb.or(conditions);
       });
     }
 
@@ -378,7 +365,7 @@ export class InternalNodePactService {
             OR ${eb.ref('data')}#>>'{pcf,geographyCountrySubdivision}' = ${geo}
           )`
         );
-        return eb.or(geoConditions.map((c: any) => eb(c, 'is not', null)));
+        return eb.or(geoConditions);
       });
     }
 
@@ -388,7 +375,7 @@ export class InternalNodePactService {
         const conditions = filters.classification!.map((cls) =>
           sql`${eb.ref('data')}->'productClassifications' @> ${sql`${JSON.stringify([cls])}::jsonb`}`
         );
-        return eb.or(conditions.map((c: any) => eb(c, 'is not', null)));
+        return eb.or(conditions);
       });
     }
 
@@ -432,6 +419,13 @@ export class InternalNodePactService {
         ) < ${filters.validBefore}::timestamptz`
       );
     }
+
+    // Log the generated SQL for debugging
+    const { sql: generatedSql, parameters } = qb.compile();
+    logger.info(
+      { filters, generatedSql, parameters },
+      'Compiled SQL query for getFootprints with filters'
+    );
 
     return qb;
   }

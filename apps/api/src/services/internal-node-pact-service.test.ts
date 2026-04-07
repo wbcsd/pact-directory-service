@@ -1,7 +1,7 @@
 import { InternalNodePactService } from './internal-node-pact-service';
 import { BadRequestError } from '@src/common/errors';
 import { createMockDatabase } from '../common/mock-utils';
-import { EventTypesV3 } from '@src/models/pact-v3/events';
+import { BaseEvent, EventTypes } from 'pact-data-model/v3_0';
 
 // Mock logger to suppress output and allow spying
 jest.mock('@src/common/logger', () => ({
@@ -277,7 +277,7 @@ describe('InternalNodePactService', () => {
         await expect(
           service.handleEvent(nodeId, {
             ...baseEvent,
-            type: EventTypesV3.PUBLISHED,
+            type: EventTypes.Published,
             data: { pfIds: ['3a6c14a7-4deb-498a-b5ea-16ce2535b576'] },
           })
         ).resolves.toBeUndefined();
@@ -287,7 +287,7 @@ describe('InternalNodePactService', () => {
         await expect(
           service.handleEvent(nodeId, {
             ...baseEvent,
-            type: EventTypesV3.PUBLISHED,
+            type: EventTypes.Published,
             data: { pfIds: ['urn:gtin:4712345060507'] },
           })
         ).rejects.toThrow('Invalid pfId format');
@@ -297,7 +297,7 @@ describe('InternalNodePactService', () => {
         await expect(
           service.handleEvent(nodeId, {
             ...baseEvent,
-            type: EventTypesV3.PUBLISHED,
+            type: EventTypes.Published,
             data: {},
           })
         ).rejects.toThrow('PublishedEvent data must contain a non-empty pfIds array');
@@ -316,7 +316,7 @@ describe('InternalNodePactService', () => {
         await expect(
           service.handleEvent(nodeId, {
             ...baseEvent,
-            type: EventTypesV3.REQUEST_CREATED,
+            type: EventTypes.RequestCreated,
             data: {
               productId: ['urn:gtin:1234567890123'],
               comment: 'Please send PCF data for this year.',
@@ -346,7 +346,7 @@ describe('InternalNodePactService', () => {
 
         await service.handleEvent(nodeId, {
           ...baseEvent,
-          type: EventTypesV3.REQUEST_CREATED,
+          type: EventTypes.RequestCreated,
           data: { productId: ['urn:gtin:1234567890123'] },
         });
 
@@ -360,7 +360,7 @@ describe('InternalNodePactService', () => {
         expect(callbackCall).toBeDefined();
         if (callbackCall && callbackCall[1]) {
           const body = JSON.parse(callbackCall[1].body);
-          expect(body.type).toBe(EventTypesV3.REQUEST_FULFILLED);
+          expect(body.type).toBe(EventTypes.RequestFulfilled);
           expect(body.data.requestEventId).toBe('test-event-123');
           expect(body.data.pfs).toHaveLength(1);
         }
@@ -384,7 +384,7 @@ describe('InternalNodePactService', () => {
 
         await service.handleEvent(nodeId, {
           ...baseEvent,
-          type: EventTypesV3.REQUEST_CREATED,
+          type: EventTypes.RequestCreated,
           data: { productId: ['urn:null'] },
         });
 
@@ -397,7 +397,7 @@ describe('InternalNodePactService', () => {
         expect(callbackCall).toBeDefined();
         if (callbackCall && callbackCall[1]) {
           const body = JSON.parse(callbackCall[1].body);
-          expect(body.type).toBe(EventTypesV3.REQUEST_REJECTED);
+          expect(body.type).toBe(EventTypes.RequestRejected);
           expect(body.data.requestEventId).toBe('test-event-123');
           expect(body.data.error.code).toBe('NotFound');
         }
@@ -409,7 +409,7 @@ describe('InternalNodePactService', () => {
         await expect(
           service.handleEvent(nodeId, {
             ...baseEvent,
-            type: EventTypesV3.REQUEST_FULFILLED,
+            type: EventTypes.RequestFulfilled,
             data: {
               requestEventId: 'original-request-id',
               pfs: [mockFootprintData],
@@ -424,7 +424,7 @@ describe('InternalNodePactService', () => {
         await expect(
           service.handleEvent(nodeId, {
             ...baseEvent,
-            type: EventTypesV3.REQUEST_REJECTED,
+            type: EventTypes.RequestRejected,
             data: {
               requestEventId: 'original-request-id',
               error: { code: 'NotFound', message: 'Not found' },
@@ -440,7 +440,7 @@ describe('InternalNodePactService', () => {
           service.handleEvent(nodeId, {
             ...baseEvent,
             type: 'org.wbcsd.pact.ProductFootprint.UnknownEvent.3',
-          })
+          } as BaseEvent)
         ).rejects.toThrow(BadRequestError);
       });
     });

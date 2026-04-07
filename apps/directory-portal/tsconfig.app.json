@@ -20,7 +20,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "paths": {
+      "pact-data-model": ["../../packages/pact-data-model/src/index.ts"],
+      "pact-data-model/*": ["../../packages/pact-data-model/src/*"]
+    }
   },
   "include": ["src"],
   "exclude": ["**/*.test.tsx"]
