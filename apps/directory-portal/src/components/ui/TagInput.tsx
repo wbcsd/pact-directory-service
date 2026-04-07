@@ -27,6 +27,7 @@ export function TagInput({
 }: TagInputProps) {
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  if (!value) value = [];
 
   const tags: Tag[] = value.map((v) => ({ value: v, valid: validate(v) }));
   const hasInvalid = tags.some((t) => !t.valid);
