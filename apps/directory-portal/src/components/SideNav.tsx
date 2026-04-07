@@ -16,6 +16,24 @@ const SideNav: React.FC = () => {
         </nav>
       </div>
       <div className="nav-group">
+        <div className="nav-title">Exchange</div>
+        <nav>
+          <FeatureFlag flag="enableNodeManagement">
+            <PolicyGuard policies={["view-nodes-own-organization", "view-nodes-all-organizations"]}>
+              <NavLink
+                to="/nodes"
+                style={{ textDecoration: "none", flex: 1 }}
+              >
+                <Text>Nodes</Text>
+              </NavLink>
+            </PolicyGuard>
+          </FeatureFlag>          
+          <NavLink to="/activity-logs">
+            <Text>Activity Logs</Text>
+          </NavLink>
+        </nav>
+      </div>
+      <div className="nav-group">
         <div className="nav-title">Settings</div>
         <nav>
           <NavLink to="/my-profile">
@@ -41,19 +59,6 @@ const SideNav: React.FC = () => {
             </PolicyGuard>
             </>
           </FeatureFlag>
-          <FeatureFlag flag="enableNodeManagement">
-            <PolicyGuard policies={["view-nodes-own-organization", "view-nodes-all-organizations"]}>
-              <NavLink
-                to="/nodes"
-                style={{ textDecoration: "none", flex: 1 }}
-              >
-                <Text>Nodes</Text>
-              </NavLink>
-            </PolicyGuard>
-          </FeatureFlag>          
-          <NavLink to="/activity-logs">
-            <Text>Activity Logs</Text>
-          </NavLink>
         </nav>
       </div>
       <div className="nav-group">
