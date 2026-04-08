@@ -456,6 +456,7 @@ const NodeDashboardPage: React.FC = () => {
             key={nodeId}
             nodeId={nodeId}
             onClose={closePanel}
+            onCreateConnection={() => setPanel({ mode: "createConnection" })}
           />
         )}
         {panel.mode === "createConnection" && nodeId && (
