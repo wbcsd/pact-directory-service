@@ -9,7 +9,7 @@
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
-    "clean": "rm -f apps/*/**.tsbuildinfo && rm -f packages/*/**.tsbuildinfo && rm -rf dist && rm -rf packages/*/dist && rm -rf apps/*/dist",
-    "pristine": "rm -rf node_modules && rm -rf packages/*/node_modules && rm -rf apps/*/node_modules && npm run clean"
+    "clean": "npm run clean --workspaces --if-present",
+    "pristine": "npm run clean --workspaces --if-present && rm -rf node_modules && rm -rf packages/*/node_modules && rm -rf apps/*/node_modules"
   }
 }

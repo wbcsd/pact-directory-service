@@ -9,7 +9,7 @@
   },
   "exclude": ["dist", "node_modules", "spec", "scripts", "src/**/*.test.ts"],
   "references": [
-    { "path": "../../packages/pact-data-model" },
-    { "path": "../../packages/pact-api-client" }
+    { "path": "../../packages/pact-data-model/tsconfig.prod.json" },
+    { "path": "../../packages/pact-api-client/tsconfig.prod.json" }
   ]
 }

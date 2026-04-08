@@ -8,9 +8,8 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "declaration": true,
-    "rootDir": "src",
-    "outDir": "dist"
-  },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+    "removeComments": true,
+    "sourceMap": false,
+    "types": ["jest", "node"]
+  }
 }
