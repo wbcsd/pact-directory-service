@@ -13,11 +13,13 @@ import {
   ExclamationTriangleIcon,
   InfoCircledIcon,
   CheckIcon,
+  Link2Icon,
 } from "@radix-ui/react-icons";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import { useAuth } from "../contexts/AuthContext";
 import "../components/NodeForm.css";
 import { FormPageLayout } from "../layouts";
+import { Flex } from "@radix-ui/themes";
 
 interface Node {
   id: number;
@@ -38,6 +40,7 @@ const CreateNodeConnectionPage: React.FC = () => {
   const { profileData } = useAuth();
   const [fromNode, setFromNode] = useState<Node | null>(null);
   const [availableNodes, setAvailableNodes] = useState<Node[]>([]);
+  const [connectedNodeIds, setConnectedNodeIds] = useState<Set<number>>(new Set());
   const [targetNode, setTargetNode] = useState<Node | null>(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState<CreateInvitationData>({
@@ -83,7 +86,25 @@ const CreateNodeConnectionPage: React.FC = () => {
           (node: Node) => node.id !== Number(fromNodeId)
         );
         setAvailableNodes(filteredNodes);
-        
+
+        // Fetch existing connections to mark already-connected nodes
+        const connectionsResponse = await fetchWithAuth(
+          `/nodes/${fromNodeId}/connections?pageSize=200`
+        );
+        if (connectionsResponse?.ok) {
+          const connectionsResult = await connectionsResponse.json();
+          const ids = new Set<number>(
+            (connectionsResult.data ?? []).flatMap(
+              (c: { fromNodeId: number; targetNodeId: number }) => [
+                c.fromNodeId,
+                c.targetNodeId,
+              ]
+            )
+          );
+          ids.delete(Number(fromNodeId));
+          setConnectedNodeIds(ids);
+        }
+
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -197,11 +218,19 @@ const CreateNodeConnectionPage: React.FC = () => {
                     {availableNodes.length === 0 ? (
                       <Select.Item value="none" disabled>No available nodes</Select.Item>
                     ) : (
-                      availableNodes.map((node) => (
-                        <Select.Item key={node.id} value={node.id.toString()}>
-                          {node.name} ({node.type})
-                        </Select.Item>
-                      ))
+                    availableNodes.map((node) => {
+                        const isConnected = connectedNodeIds.has(node.id);
+                        return (
+                          <Select.Item key={node.id} value={node.id.toString()} disabled={isConnected}>
+                            <Flex align="center" gap="2">
+                              <span style={{ flex: 1 }}>{node.name} ({node.type})</span>
+                              {isConnected && (
+                                <Link2Icon style={{ opacity: 0.6, flexShrink: 0 }} />
+                              )}
+                            </Flex>
+                          </Select.Item>
+                        );
+                      })
                     )}
                   </Select.Content>
                 </Select.Root>
