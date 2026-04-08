@@ -1,18 +1,7 @@
-import { defineConfig } from "vitest/config";
-import path from "path";
-import { fileURLToPath } from "url";
+import { defineConfig, mergeConfig } from "vitest/config";
+import viteConfig from "./vite.config";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-export default defineConfig({
-  resolve: {
-    alias: {
-      "pact-data-model": path.resolve(
-        __dirname,
-        "../../packages/pact-data-model/src/index.ts"
-      ),
-    },
-  },
+export default mergeConfig(viteConfig, defineConfig({
   test: {
     environment: "jsdom",
     setupFiles: ["./src/test/setupTests.js"],
@@ -21,4 +10,4 @@ export default defineConfig({
     // If you import images/fonts, this keeps Vitest from choking on them:
     // You can also use a Vite plugin, but this is usually enough with "css: true".
   },
-});
+}));

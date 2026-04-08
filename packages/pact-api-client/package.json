@@ -6,11 +6,12 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "clean": "tsc --build --clean",
     "build": "tsc --build",
     "test": "jest"
   },
   "dependencies": {
-    "pact-data-model": "file:../pact-data-model"
+    "pact-data-model": "*"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",

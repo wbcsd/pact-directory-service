@@ -1,37 +1,23 @@
 {
   "compilerOptions": {
-    /* Visit https://aka.ms/tsconfig.json to read more about this file */
-
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-
-    /* Basic Options */
     "target": "ES2020",
     "module": "commonjs",
     "rootDir": "src",
     "outDir": "dist",
-
-    /* Strict Type-Checking Options */
     "strict": true,
-
-    /* Module Resolution Options */
     "esModuleInterop": true,
-    "paths": {
-      "@src/*": ["./src/*"]
-    },
-
-    /* Advanced Options */
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "useUnknownInCatchVariables": false
+    "useUnknownInCatchVariables": false,
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
+    "types": ["jest", "node"],
+    "paths": {
+      "@src/*": ["./src/*"],
+      "pact-data-model": ["../../packages/pact-data-model/src/index.ts"],
+      "pact-data-model/*": ["../../packages/pact-data-model/src/*"],
+      "pact-api-client": ["../../packages/pact-api-client/src/index.ts"],
+      "pact-api-client/*": ["../../packages/pact-api-client/src/*"]
+    }
   },
-  "ts-node": {
-    "require": ["tsconfig-paths/register"]
-  },
-  "include": ["src/**/*.ts"],
-  "exclude": ["src/public/*"],
-  "references": [
-    { "path": "../../packages/pact-data-model" },
-    { "path": "../../packages/pact-api-client" }
-  ]
+  "include": ["src/**/*.ts"]
 }
