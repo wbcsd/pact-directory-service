@@ -49,6 +49,7 @@ interface NodeConnectionsManagerProps {
 const NodeConnectionsManager: React.FC<NodeConnectionsManagerProps> = ({ nodeId, onCreateConnection }) => {
   const [connectionsRefreshKey, setConnectionsRefreshKey] = useState(0);
   const [invitationsRefreshKey, setInvitationsRefreshKey] = useState(0);
+  const [hasPendingInvitations, setHasPendingInvitations] = useState<boolean | null>(null);
   const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error', message: string } | null>(null);
   const [showCredentials, setShowCredentials] = useState<ConnectionCredentials | null>(null);
 
@@ -407,6 +408,29 @@ const NodeConnectionsManager: React.FC<NodeConnectionsManagerProps> = ({ nodeId,
         </Callout.Root>
       )}
 
+      {/* Pending Invitations Section — only shown when invitations exist */}
+      {hasPendingInvitations !== false && (
+        <Box mb="6">
+          <Text size="4" weight="bold" mb="3" style={{ display: 'block' }}>
+            Pending Invitations
+          </Text>
+          <PaginatedDataTable<NodeInvitation>
+            refreshTrigger={invitationsRefreshKey}
+            isSearchable={false}
+            fetchData={fetchInvitations}
+            columns={invitationColumns}
+            idColumnName="id"
+            onDataLoaded={(data) => setHasPendingInvitations(data.length > 0)}
+            emptyState={{
+              title: "No pending invitations",
+              description: "You don't have any pending connection invitations for this node.",
+            }}
+          />
+        </Box>
+      )}
+
+      {hasPendingInvitations && <Separator size="4" mb="6" />}
+
       {/* Active Connections Section */}
       <Box mb="6">
         <Flex align="center" mb="3">
@@ -428,28 +452,6 @@ const NodeConnectionsManager: React.FC<NodeConnectionsManagerProps> = ({ nodeId,
           emptyState={{
             title: "No connections found",
             description: "This node doesn't have any active connections yet.",
-          }}
-        />
-      </Box>
-
-      <Separator size="4" mb="6" />
-
-      <br />
-
-      {/* Pending Invitations Section */}
-      <Box>
-        <Text size="4" weight="bold" mb="3" style={{ display: 'block' }}>
-          Pending Invitations
-        </Text>
-        <PaginatedDataTable<NodeInvitation>
-          refreshTrigger={invitationsRefreshKey}
-          isSearchable={false}
-          fetchData={fetchInvitations}
-          columns={invitationColumns}
-          idColumnName="id"
-          emptyState={{
-            title: "No pending invitations",
-            description: "You don't have any pending connection invitations for this node.",
           }}
         />
       </Box>
