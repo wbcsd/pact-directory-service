@@ -14,6 +14,7 @@ import {
   ExclamationTriangleIcon,
   InfoCircledIcon,
   CheckIcon,
+  Link2Icon,
 } from "@radix-ui/react-icons";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import { useAuth } from "../contexts/AuthContext";
@@ -48,6 +49,7 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
   const { profileData } = useAuth();
   const navigate = useNavigate();
   const [availableNodes, setAvailableNodes] = useState<Node[]>([]);
+  const [connectedNodeIds, setConnectedNodeIds] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(true);
   const [targetNode, setTargetNode] = useState<Node | null>(null);
   const [formData, setFormData] = useState<CreateInvitationData>({
@@ -80,6 +82,27 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
       }
       const nodesResult = await nodesResponse.json();
       setAvailableNodes(nodesResult.data || []);
+
+      // Fetch existing connections to mark already-connected nodes
+      if (lockedFromNodeId) {
+        const connectionsResponse = await fetchWithAuth(
+          `/nodes/${lockedFromNodeId}/connections?pageSize=200`
+        );
+        if (connectionsResponse?.ok) {
+          const connectionsResult = await connectionsResponse.json();
+          const ids = new Set<number>(
+            (connectionsResult.data ?? []).flatMap(
+              (c: { fromNodeId: number; targetNodeId: number }) => [
+                c.fromNodeId,
+                c.targetNodeId,
+              ]
+            )
+          );
+          ids.delete(lockedFromNodeId);
+          setConnectedNodeIds(ids);
+        }
+      }
+
       setLoading(false);
     } catch (error) {
       console.error("Error fetching nodes:", error);
@@ -87,7 +110,7 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
       setStatus("error");
       setLoading(false);
     }
-  }, [profileData]);
+  }, [profileData, lockedFromNodeId]);
 
   useEffect(() => {
     if (profileData) {
@@ -271,11 +294,19 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
                   {formData.fromNodeId ? "No other nodes available" : "Select source node first"}
                 </Select.Item>
               ) : (
-                availableTargetNodes.map((node) => (
-                  <Select.Item key={node.id} value={node.id.toString()}>
-                    {node.name} ({node.type})
-                  </Select.Item>
-                ))
+                availableTargetNodes.map((node) => {
+                  const isConnected = connectedNodeIds.has(node.id);
+                  return (
+                    <Select.Item key={node.id} value={node.id.toString()} disabled={isConnected}>
+                      <Flex align="center" gap="2">
+                        <span style={{ flex: 1 }}>{node.name} ({node.type})</span>
+                        {isConnected && (
+                          <Link2Icon style={{ opacity: 0.6, flexShrink: 0 }} />
+                        )}
+                      </Flex>
+                    </Select.Item>
+                  );
+                })
               )}
             </Select.Content>
           </Select.Root>
