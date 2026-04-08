@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import PaginatedDataTable, { PaginationInfo } from "./PaginatedDataTable";
 import { Column } from "./DataTable";
-import { Box, Button, Callout, Text, Separator } from "@radix-ui/themes";
-import { CheckIcon, Cross2Icon, ExclamationTriangleIcon, TrashIcon } from "@radix-ui/react-icons";
+import { Box, Button, Callout, Flex, Text, Separator } from "@radix-ui/themes";
+import { CheckIcon, Cross2Icon, ExclamationTriangleIcon, PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import "./NodeForm.css";
 
 export interface NodeConnection {
@@ -43,9 +43,10 @@ interface ConnectionCredentials {
 interface NodeConnectionsManagerProps {
   nodeId: number | string;
   onClose?: () => void;
+  onCreateConnection?: () => void;
 }
 
-const NodeConnectionsManager: React.FC<NodeConnectionsManagerProps> = ({ nodeId }) => {
+const NodeConnectionsManager: React.FC<NodeConnectionsManagerProps> = ({ nodeId, onCreateConnection }) => {
   const [connectionsRefreshKey, setConnectionsRefreshKey] = useState(0);
   const [invitationsRefreshKey, setInvitationsRefreshKey] = useState(0);
   const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error', message: string } | null>(null);
@@ -408,9 +409,16 @@ const NodeConnectionsManager: React.FC<NodeConnectionsManagerProps> = ({ nodeId 
 
       {/* Active Connections Section */}
       <Box mb="6">
-        <Text size="4" weight="bold" mb="3" style={{ display: 'block' }}>
-          Active Connections
-        </Text>
+        <Flex align="center" mb="3">
+          <Text size="4" weight="bold" style={{ flex: 1 }}>
+            Active Connections
+          </Text>
+          {onCreateConnection && (
+            <Button size="2" onClick={onCreateConnection}>
+              <PlusIcon /> Create Connection
+            </Button>
+          )}
+        </Flex>
         <PaginatedDataTable<NodeConnection>
           refreshTrigger={connectionsRefreshKey}
           isSearchable={false}
