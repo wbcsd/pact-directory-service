@@ -23,11 +23,11 @@ enum NodeType {
 }
 
 const VERSION_OPTIONS = [
-  { value: "V2.0", label: "2.0 (beta)" },
-  { value: "V2.1", label: "2.1 (beta)" },
-  { value: "V2.2", label: "2.2 (beta)" },
-  { value: "V2.3", label: "2.3 (beta)" },
-  { value: "V3.0", label: "3.0 (beta)" },
+  { value: "V2.0", label: "2.0" },
+  { value: "V2.1", label: "2.1" },
+  { value: "V2.2", label: "2.2" },
+  { value: "V2.3", label: "2.3" },
+  { value: "V3.0", label: "3.0" },
 ];
 
 export interface NodeFormData {
@@ -298,11 +298,7 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
           </FormField>
           <FormField
             name="specVersion"
-            label="Spec Version"
-            description={
-              <>The PACT Technical Specifications describe the PCF data model and API requirements. Select the version that this node implements. A given version is in beta if the testing suite has not yet been tested by a sufficient number of organizations; it can nevertheless still be used to grant PACT Conformance status, but organizations may be subject to mandatory retesting.</>
-            }
-          >
+            label="Spec Version">
             <SelectField
               value={formData.specVersion || "V3.0"}
               options={VERSION_OPTIONS}
