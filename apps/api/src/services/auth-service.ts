@@ -25,6 +25,7 @@ export class AuthService {
         'organizations.clientSecret',
         'organizations.networkKey',
         'organizations.name as organizationName',
+        'organizations.status',
         'users.email',
       ])
       .where('clientId', '=', client_id)
@@ -39,6 +40,11 @@ export class AuthService {
     // Check if both organizations exist
     if (!clientOrganization || !networkOrganization) {
       throw new UnauthorizedError('Invalid client_id or network_id');
+    }
+
+    // Check if the client organization is active
+    if (clientOrganization.status !== 'active') {
+      throw new UnauthorizedError('Organization is not active');
     }
 
     // 2. Check if the client_id and client_secret match the organization
