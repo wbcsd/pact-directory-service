@@ -38,6 +38,25 @@ describe('AuthService', () => {
       await expect(authService.token(loginData)).rejects.toThrow(UnauthorizedError);
     });
 
+    it('should throw UnauthorizedError if organization status is not active', async () => {
+      dbMocks.executors.executeTakeFirst
+        .mockResolvedValueOnce({
+          id: 'c1',
+          clientSecret: 'secret123',
+          networkKey: 'netA',
+          organizationName: 'Client Org',
+          status: 'disabled',
+          email: 'client@test.com',
+        }) // client org
+        .mockResolvedValueOnce({
+          id: 'n1',
+          clientSecret: 'network-secret',
+          networkKey: 'networkXYZ',
+        }); // network org
+
+      await expect(authService.token(loginData)).rejects.toThrow(UnauthorizedError);
+    });
+
     it('should throw UnauthorizedError for invalid client_secret', async () => {
       dbMocks.executors.executeTakeFirst
         .mockResolvedValueOnce({
@@ -45,6 +64,7 @@ describe('AuthService', () => {
           clientSecret: 'wrong-secret',
           networkKey: 'netA',
           organizationName: 'Client Org',
+          status: 'active',
           email: 'client@test.com',
         }) // client org
         .mockResolvedValueOnce({
