@@ -7,7 +7,9 @@
   ],
   "private": true,
   "scripts": {
-    "build": "npm run build --workspace=packages/pact-data-model && npm run build --workspace=packages/pact-api-client && npm run build --workspace=apps/api",
-    "test": "npm run test --workspaces --if-present"
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "clean": "npm run clean --workspaces --if-present",
+    "pristine": "npm run clean --workspaces --if-present && rm -rf node_modules && rm -rf packages/*/node_modules && rm -rf apps/*/node_modules"
   }
 }

@@ -2,7 +2,14 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "sourceMap": false,
-    "removeComments": true
+    "removeComments": true,
+    "paths": {
+      "@src/*": ["./src/*"]
+    }
   },
-  "exclude": ["spec", "src/public/", "scripts", "src/**/*.test.ts"],
+  "exclude": ["dist", "node_modules", "spec", "scripts", "src/**/*.test.ts"],
+  "references": [
+    { "path": "../../packages/pact-data-model/tsconfig.prod.json" },
+    { "path": "../../packages/pact-api-client/tsconfig.prod.json" }
+  ]
 }

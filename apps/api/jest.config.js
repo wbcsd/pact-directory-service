@@ -1,31 +1,15 @@
+const { pathsToModuleNameMapper } = require('ts-jest');
+const { compilerOptions } = require('./tsconfig.json');
+
 /** @type {import('jest').Config} */
 module.exports = {
+  // Rely on ts-jest to handle TypeScript files
   preset: 'ts-jest',
   testEnvironment: 'node',
 
-  // Path alias support (matches your tsconfig.json)
-  moduleNameMapper: {
-    '^@src/(.*)$': '<rootDir>/src/$1',
-    '^pact-data-model$': '<rootDir>/../../packages/pact-data-model/src/index.ts',
-    '^pact-data-model/(.*)$': '<rootDir>/../../packages/pact-data-model/src/$1',
-    '^pact-api-client$': '<rootDir>/../../packages/pact-api-client/src/index.ts',
-    '^pact-api-client/(.*)$': '<rootDir>/../../packages/pact-api-client/src/$1',
-  },
+  // Automatically derived from tsconfig.json paths
+  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' }),
 
-  testMatch: [
-    '**/__tests__/**/*.test.ts?(x)',
-    '**/?(*.)+(spec|test).ts?(x)',
-  ],
-
+  // Specify the root directory for Jest to look for tests and modules
   roots: ['<rootDir>/src'],
-
-  // ✅ NEW way: configure ts-jest directly under "transform"
-  transform: {
-    '^.+\\.tsx?$': [
-      'ts-jest',
-      {
-        tsconfig: 'tsconfig.test.json',
-      },
-    ],
-  },
 };

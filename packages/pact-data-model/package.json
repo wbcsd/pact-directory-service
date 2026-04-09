@@ -18,7 +18,7 @@
     "./v2_3": { "require": "./dist/v2_3/index.js", "types": "./dist/v2_3/index.d.ts" },
     "./v2_3/*": { "require": "./dist/v2_3/*.js", "types": "./dist/v2_3/*.d.ts" },
     "./v3_0": { "require": "./dist/v3_0/index.js", "types": "./dist/v3_0/index.d.ts" },
-    "./v3_0/*": { "require": "./dist/v3_0/*.js", "types": "./dist/v3_0/*.d.ts" }
+    "./v3_0/*": { "require": "./dist/v3_0/*.js", "types": "./dist/v3_0/*.d.ts" }  
   },
   "typesVersions": {
     "*": {
@@ -37,15 +37,20 @@
     }
   },
   "scripts": {
-    "build": "tsc --build",
+    "clean": "rimraf dist",
+    "build": "tsc --build tsconfig.prod.json",
     "generate-schemas": "tsx scripts/generate-schemas.ts",
     "generate-types": "tsx scripts/generate-types.ts"
   },
   "dependencies": {
-    "@types/js-yaml": "^4.0.9",
     "ajv": "^8.17.1",
     "ajv-errors": "^3.0.0",
-    "ajv-formats": "^3.0.1",
-    "js-yaml": "^4.1.1"
+    "ajv-formats": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.15",
+    "@types/js-yaml": "^4.0.9",
+    "js-yaml": "^4.1.1",
+    "rimraf": "^6.1.3"
   }
 }

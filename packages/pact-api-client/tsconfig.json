@@ -8,10 +8,11 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "declaration": true,
-    "rootDir": "src",
-    "outDir": "dist"
+    "types": ["jest", "node"],
+    "paths": {
+      "pact-data-model": ["../pact-data-model/src/index.ts"],
+      "pact-data-model/*": ["../pact-data-model/src/*"]
+    }
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"],
-  "references": [{ "path": "../pact-data-model" }]
+  "include": ["src/**/*.ts"]
 }
