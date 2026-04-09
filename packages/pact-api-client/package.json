@@ -8,7 +8,8 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "tsc --build tsconfig.prod.json",
-    "test": "jest"
+    "test": "jest",
+    "run-client": "tsx scripts/run-client.ts"
   },
   "dependencies": {
     "pact-data-model": "*"
