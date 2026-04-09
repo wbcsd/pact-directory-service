@@ -19,6 +19,11 @@ export interface NodeData {
   name: string;
   type: NodeType;
   apiUrl?: string;
+  authBaseUrl?: string | null;
+  scope?: string | null;
+  audience?: string | null;
+  resource?: string | null;
+  specVersion?: string | null;
   status: NodeStatus;
   createdAt: Date;
   updatedAt: Date;
@@ -32,11 +37,21 @@ export interface CreateNodeData {
   name: string;
   type: NodeType;
   apiUrl?: string; // Optional for internal nodes, required for external
+  authBaseUrl?: string;
+  scope?: string;
+  audience?: string;
+  resource?: string;
+  specVersion?: string;
 }
 
 export interface UpdateNodeData {
   name?: string;
   apiUrl?: string; // Only editable for external nodes
+  authBaseUrl?: string;
+  scope?: string;
+  audience?: string;
+  resource?: string;
+  specVersion?: string;
   status?: 'active' | 'inactive' | 'pending';
 }
 
@@ -56,6 +71,11 @@ export class NodeService {
         'nodes.name',
         'nodes.type',
         'nodes.apiUrl',
+        'nodes.authBaseUrl',
+        'nodes.scope',
+        'nodes.audience',
+        'nodes.resource',
+        'nodes.specVersion',
         'nodes.status',
         'nodes.createdAt',
         'nodes.updatedAt',
@@ -140,6 +160,11 @@ export class NodeService {
         type: data.type,
         apiUrl: apiUrl,
         status: 'active',
+        authBaseUrl: data.type === 'external' ? (data.authBaseUrl?.trim() ?? null) : null,
+        scope: data.type === 'external' ? (data.scope?.trim() ?? null) : null,
+        audience: data.type === 'external' ? (data.audience?.trim() ?? null) : null,
+        resource: data.type === 'external' ? (data.resource?.trim() ?? null) : null,
+        specVersion: data.type === 'external' ? (data.specVersion?.trim() ?? null) : null,
         createdAt: new Date(),
         updatedAt: new Date(),
       })
@@ -214,6 +239,15 @@ export class NodeService {
       updates.apiUrl = data.apiUrl.trim();
     }
 
+    // Auth fields are only applicable to external nodes
+    if (existingNode.type === 'external') {
+      if (data.authBaseUrl !== undefined) updates.authBaseUrl = data.authBaseUrl?.trim() || null;
+      if (data.scope !== undefined) updates.scope = data.scope?.trim() || null;
+      if (data.audience !== undefined) updates.audience = data.audience?.trim() || null;
+      if (data.resource !== undefined) updates.resource = data.resource?.trim() || null;
+      if (data.specVersion !== undefined) updates.specVersion = data.specVersion?.trim() || null;
+    }
+
     // Perform the update
     const updated = await this.db
       .updateTable('nodes')
@@ -284,6 +318,11 @@ export class NodeService {
         'nodes.name',
         'nodes.type',
         'nodes.apiUrl',
+        'nodes.authBaseUrl',
+        'nodes.scope',
+        'nodes.audience',
+        'nodes.resource',
+        'nodes.specVersion',
         'nodes.status',
         'nodes.createdAt',
         'nodes.updatedAt',

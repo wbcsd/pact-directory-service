@@ -63,6 +63,11 @@ export interface NodesTable {
   type: 'internal' | 'external';
   apiUrl: string;
   status: 'active' | 'inactive' | 'pending';
+  authBaseUrl: string | null;
+  scope: string | null;
+  audience: string | null;
+  resource: string | null;
+  specVersion: string | null;
   createdAt: Generated<Date>;
   updatedAt: Generated<Date>;
 }

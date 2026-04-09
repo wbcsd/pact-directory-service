@@ -192,6 +192,43 @@ describe('NodeService', () => {
       expect(result.apiUrl).toBe('https://external.example.com/api');
     });
 
+    it('should create external node with auth fields', async () => {
+      const mockNode = {
+        id: 3,
+        organizationId: 1,
+        name: 'External Node',
+        type: 'external',
+        apiUrl: 'https://external.example.com/api',
+        authBaseUrl: 'https://auth.example.com',
+        scope: 'openid',
+        audience: 'https://api.example.com',
+        resource: 'https://api.example.com',
+        specVersion: 'V3.0',
+        status: 'active',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce(mockNode);
+
+      const result = await nodeService.create(adminUserContext, 1, {
+        name: 'External Node',
+        type: 'external',
+        apiUrl: 'https://external.example.com/api',
+        authBaseUrl: 'https://auth.example.com',
+        scope: 'openid',
+        audience: 'https://api.example.com',
+        resource: 'https://api.example.com',
+        specVersion: 'V3.0',
+      });
+
+      expect(result.authBaseUrl).toBe('https://auth.example.com');
+      expect(result.scope).toBe('openid');
+      expect(result.audience).toBe('https://api.example.com');
+      expect(result.resource).toBe('https://api.example.com');
+      expect(result.specVersion).toBe('V3.0');
+    });
+
     it('should allow root user to create node for any organization', async () => {
       const mockNode = {
         id: 3,
@@ -335,6 +372,78 @@ describe('NodeService', () => {
       const result = await nodeService.update(adminUserContext, 1, { apiUrl: 'http://new.com' });
 
       expect(result.apiUrl).toBe('http://new.com');
+    });
+
+    it('should update auth fields on an external node', async () => {
+      const mockNode = {
+        id: 1,
+        organizationId: 1,
+        name: 'External Node',
+        type: 'external' as const,
+        apiUrl: 'http://external.com',
+        authBaseUrl: null,
+        scope: null,
+        audience: null,
+        resource: null,
+        specVersion: null,
+        status: 'active' as const,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({
+        ...mockNode,
+        authBaseUrl: 'https://auth.example.com',
+        scope: 'openid',
+        audience: 'https://api.example.com',
+        resource: 'https://api.example.com',
+        specVersion: 'V3.0',
+      });
+
+      const result = await nodeService.update(adminUserContext, 1, {
+        authBaseUrl: 'https://auth.example.com',
+        scope: 'openid',
+        audience: 'https://api.example.com',
+        resource: 'https://api.example.com',
+        specVersion: 'V3.0',
+      });
+
+      expect(result.authBaseUrl).toBe('https://auth.example.com');
+      expect(result.scope).toBe('openid');
+      expect(result.audience).toBe('https://api.example.com');
+      expect(result.resource).toBe('https://api.example.com');
+      expect(result.specVersion).toBe('V3.0');
+    });
+
+    it('should ignore auth fields when updating an internal node', async () => {
+      const mockNode = {
+        id: 1,
+        organizationId: 1,
+        name: 'Internal Node',
+        type: 'internal' as const,
+        apiUrl: 'http://internal.com',
+        authBaseUrl: null,
+        scope: null,
+        audience: null,
+        resource: null,
+        specVersion: null,
+        status: 'active' as const,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce(mockNode);
+
+      const result = await nodeService.update(adminUserContext, 1, {
+        authBaseUrl: 'https://auth.example.com',
+        specVersion: 'V3.0',
+      });
+
+      // Auth fields should not be set on internal nodes
+      expect(result.authBaseUrl).toBeNull();
+      expect(result.specVersion).toBeNull();
     });
   });
 
