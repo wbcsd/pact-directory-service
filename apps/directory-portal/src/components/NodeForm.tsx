@@ -15,17 +15,30 @@ import {
 } from "@radix-ui/react-icons";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import { useAuth } from "../contexts/AuthContext";
-import { FormField, TextField } from "../components/ui";
+import { FormField, TextField, SelectField } from "../components/ui";
 
 enum NodeType {
   INTERNAL = "internal",
   EXTERNAL = "external",
 }
 
+const VERSION_OPTIONS = [
+  { value: "V2.0", label: "2.0 (beta)" },
+  { value: "V2.1", label: "2.1 (beta)" },
+  { value: "V2.2", label: "2.2 (beta)" },
+  { value: "V2.3", label: "2.3 (beta)" },
+  { value: "V3.0", label: "3.0 (beta)" },
+];
+
 export interface NodeFormData {
   name: string;
   type: NodeType;
   apiUrl?: string;
+  authBaseUrl?: string;
+  scope?: string;
+  audience?: string;
+  resource?: string;
+  specVersion?: string;
 }
 
 interface NodeFormProps {
@@ -45,6 +58,11 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
     name: "",
     type: NodeType.INTERNAL,
     apiUrl: "",
+    authBaseUrl: "",
+    scope: "",
+    audience: "",
+    resource: "",
+    specVersion: "V3.0",
   });
   const [readOnlyOrganization, setReadOnlyOrganization] = useState("");
   const [status, setStatus] = useState<null | "success" | "error">(null);
@@ -63,6 +81,11 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
           name: node.name,
           type: node.type,
           apiUrl: node.apiUrl || "",
+          authBaseUrl: node.authBaseUrl || "",
+          scope: node.scope || "",
+          audience: node.audience || "",
+          resource: node.resource || "",
+          specVersion: node.specVersion || "",
         });
         setReadOnlyOrganization(node.organizationName || "");
       } else {
@@ -94,6 +117,13 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
       };
       if (formData.type === NodeType.EXTERNAL && formData.apiUrl) {
         dataToSend.apiUrl = formData.apiUrl;
+      }
+      if (formData.type === NodeType.EXTERNAL) {
+        if (formData.authBaseUrl) dataToSend.authBaseUrl = formData.authBaseUrl;
+        if (formData.scope) dataToSend.scope = formData.scope;
+        if (formData.audience) dataToSend.audience = formData.audience;
+        if (formData.resource) dataToSend.resource = formData.resource;
+        if (formData.specVersion) dataToSend.specVersion = formData.specVersion;
       }
 
       const url = isEditMode
@@ -139,6 +169,11 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
       ...prev,
       type: value as NodeType,
       apiUrl: value === NodeType.INTERNAL ? "" : prev.apiUrl,
+      authBaseUrl: value === NodeType.INTERNAL ? "" : prev.authBaseUrl,
+      scope: value === NodeType.INTERNAL ? "" : prev.scope,
+      audience: value === NodeType.INTERNAL ? "" : prev.audience,
+      resource: value === NodeType.INTERNAL ? "" : prev.resource,
+      specVersion: value === NodeType.INTERNAL ? "" : prev.specVersion,
     }));
   };
 
@@ -220,6 +255,63 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
             Please enter a valid URL.
           </Form.Message>
         </FormField>
+      )}
+
+      {/* Auth fields (external only) */}
+      {isExternalNode && (
+        <>
+          <FormField name="authBaseUrl" label="Auth Base URL">
+            <TextField
+              value={formData.authBaseUrl || ""}
+              type="url"
+              placeholder="e.g. https://auth.example.com"
+              tooltip="The base URL of the OAuth2 authorization server"
+              onChange={handleChange}
+            />
+            <Form.Message match="typeMismatch" className="validation-message">
+              Please enter a valid URL.
+            </Form.Message>
+          </FormField>
+          <FormField name="scope" label="Scope">
+            <TextField
+              value={formData.scope || ""}
+              placeholder="e.g. openid"
+              tooltip="OAuth2 scope to request when authenticating"
+              onChange={handleChange}
+            />
+          </FormField>
+          <FormField name="audience" label="Audience">
+            <TextField
+              value={formData.audience || ""}
+              placeholder="e.g. https://api.example.com"
+              tooltip="OAuth2 audience parameter"
+              onChange={handleChange}
+            />
+          </FormField>
+          <FormField name="resource" label="Resource">
+            <TextField
+              value={formData.resource || ""}
+              placeholder="e.g. https://api.example.com"
+              tooltip="OAuth2 resource parameter"
+              onChange={handleChange}
+            />
+          </FormField>
+          <FormField
+            name="specVersion"
+            label="Spec Version"
+            description={
+              <>The PACT Technical Specifications describe the PCF data model and API requirements. Select the version that this node implements. A given version is in beta if the testing suite has not yet been tested by a sufficient number of organizations; it can nevertheless still be used to grant PACT Conformance status, but organizations may be subject to mandatory retesting.</>
+            }
+          >
+            <SelectField
+              value={formData.specVersion || "V3.0"}
+              options={VERSION_OPTIONS}
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, specVersion: value }))
+              }
+            />
+          </FormField>
+        </>
       )}
 
       {/* Organization (read-only) */}        
