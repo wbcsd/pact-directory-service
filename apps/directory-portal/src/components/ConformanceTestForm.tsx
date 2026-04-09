@@ -22,11 +22,11 @@ interface ConformanceTestFormProps {
 }
 
 const VERSION_OPTIONS = [
-  { value: "V2.0", label: "2.0 (beta)" },
-  { value: "V2.1", label: "2.1 (beta)" },
-  { value: "V2.2", label: "2.2 (beta)" },
-  { value: "V2.3", label: "2.3 (beta)" },
-  { value: "V3.0", label: "3.0 (beta)" },
+  { value: "V2.0", label: "2.0" },
+  { value: "V2.1", label: "2.1" },
+  { value: "V2.2", label: "2.2" },
+  { value: "V2.3", label: "2.3" },
+  { value: "V3.0", label: "3.0" },
 ];
 
 const ConformanceTestForm: React.FC<ConformanceTestFormProps> = ({
