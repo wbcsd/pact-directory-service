@@ -18,8 +18,15 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "paths": {
+      "pact-data-model": ["../../packages/pact-data-model/src/index.ts"],
+      "pact-data-model/*": ["../../packages/pact-data-model/src/*"]
+    }
   },
   "include": ["vite.config.ts"],
-  "exclude": ["**/*.test.ts"]
+  "exclude": ["**/*.test.ts"],
+  "references": [
+    { "path": "../../packages/pact-data-model/tsconfig.prod.json" }
+  ]
 }

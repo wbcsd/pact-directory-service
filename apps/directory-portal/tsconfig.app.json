@@ -27,5 +27,8 @@
     }
   },
   "include": ["src"],
-  "exclude": ["**/*.test.tsx"]
+  "exclude": ["**/*.test.tsx"],
+  "references": [
+    { "path": "../../packages/pact-data-model/tsconfig.prod.json" }
+  ]
 }
