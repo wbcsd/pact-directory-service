@@ -64,12 +64,28 @@ export interface PagedResponse<T> {
 
 export type PactApiListResponse<T> = PagedResponse<T>;
 
+/**
+ * Options for OpenID Connect authentication flow
+ */
+export interface ConnectOptions {
+  /** Custom base URL for auth discovery and token endpoint (defaults to baseUrl) */
+  authBaseUrl?: string;
+  /** OAuth2 scope to request */
+  scope?: string;
+  /** OAuth2 audience */
+  audience?: string;
+  /** OAuth2 resource */
+  resource?: string;
+}
+
 export class PactApiClient {
   private readonly baseUrl: string;
   private readonly clientId: string;
   private readonly clientSecret: string;
   private readonly source: string;
+  private readonly options: ConnectOptions;
   private tokenCache: { token: string; expiresAt: number } | null = null;
+  private tokenEndpoint: string | undefined = undefined;
 
   /**
    * Create a PACT API client
@@ -92,31 +108,67 @@ export class PactApiClient {
     baseUrl: string,
     clientId: string,
     clientSecret: string,
-    source?: string
+    source?: string,
+    options?: ConnectOptions
   ) {
     this.baseUrl = baseUrl.replace(/\/$/, '');
     this.clientId = clientId;
     this.clientSecret = clientSecret;
     this.source = source ?? this.baseUrl;
+    this.options = options ?? {};
   }
 
   /**
-   * Authenticate with the PACT node using OAuth2 Client Credentials flow
-   * and cache the resulting token.
+   * Resolve the token endpoint URL using OpenID Connect discovery.
+   * Tries /.well-known/openid-configuration first; falls back to {authBaseUrl}/auth/token.
+   * Result is cached so discovery only happens once per client instance.
+   */
+  private async resolveTokenEndpoint(): Promise<string> {
+    if (this.tokenEndpoint !== undefined) {
+      return this.tokenEndpoint;
+    }
+
+    const authBaseUrl = (this.options.authBaseUrl ?? this.baseUrl).replace(/\/$/, '');
+
+    try {
+      const discoveryResponse = await fetch(`${authBaseUrl}/.well-known/openid-configuration`);
+      if (discoveryResponse.ok) {
+        const discoveryData = await discoveryResponse.json();
+        if (discoveryData.token_endpoint) {
+          this.tokenEndpoint = discoveryData.token_endpoint as string;
+          return this.tokenEndpoint;
+        }
+      }
+    } catch {
+      // Discovery endpoint not available, fall through to default
+    }
+
+    this.tokenEndpoint = `${authBaseUrl}/auth/token`;
+    return this.tokenEndpoint;
+  }
+
+  /**
+   * Authenticate with the PACT node using the OpenID Connect Client Credentials flow.
+   * Discovers the token endpoint via .well-known/openid-configuration when available,
+   * and authenticates using HTTP Basic Auth per the PACT Data Exchange Protocol spec.
+   * Caches the resulting token.
    */
   private async authenticate(): Promise<void> {
-    const url = `${this.baseUrl}/auth/token`;
-    
-    const body = new URLSearchParams({
-      grant_type: 'client_credentials',
-      client_id: this.clientId,
-      client_secret: this.clientSecret,
-    });
+    const url = await this.resolveTokenEndpoint();
+
+    const body = new URLSearchParams({ grant_type: 'client_credentials' });
+    if (this.options.scope) body.set('scope', this.options.scope);
+    if (this.options.audience) body.set('audience', this.options.audience);
+    if (this.options.resource) body.set('resource', this.options.resource);
+
+    const encodedCredentials = Buffer.from(`${this.clientId}:${this.clientSecret}`).toString('base64');
 
     const response = await fetch(url, {
       method: 'POST',
       headers: {
+        'Accept': 'application/json',
         'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Basic ${encodedCredentials}`,
       },
       body: body.toString(),
     });
