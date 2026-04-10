@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import PaginatedDataTable, { PaginationInfo } from "./PaginatedDataTable";
 import { Column } from "./DataTable";
-import { Box, Button, Callout, Flex, Text, Separator } from "@radix-ui/themes";
-import { CheckIcon, Cross2Icon, ExclamationTriangleIcon, PlusIcon, TrashIcon } from "@radix-ui/react-icons";
+import { Box, Button, Callout, Text } from "@radix-ui/themes";
+import { CheckIcon, Cross2Icon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import "./NodeForm.css";
 
 export interface NodeConnection {
@@ -43,42 +43,12 @@ interface ConnectionCredentials {
 interface NodeConnectionsManagerProps {
   nodeId: number | string;
   onClose?: () => void;
-  onCreateConnection?: () => void;
 }
 
-const NodeConnectionsManager: React.FC<NodeConnectionsManagerProps> = ({ nodeId, onCreateConnection }) => {
-  const [connectionsRefreshKey, setConnectionsRefreshKey] = useState(0);
+const NodeConnectionsManager: React.FC<NodeConnectionsManagerProps> = ({ nodeId }) => {
   const [invitationsRefreshKey, setInvitationsRefreshKey] = useState(0);
-  const [hasPendingInvitations, setHasPendingInvitations] = useState<boolean | null>(null);
   const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error', message: string } | null>(null);
   const [showCredentials, setShowCredentials] = useState<ConnectionCredentials | null>(null);
-
-  // Fetch connections
-  const fetchConnections = async (params: {
-    page: number;
-    pageSize: number;
-    search?: string;
-  }): Promise<{ data: NodeConnection[]; pagination: PaginationInfo }> => {
-    const queryParams = new URLSearchParams({
-      page: params.page.toString(),
-      pageSize: params.pageSize.toString(),
-    });
-
-    if (params.search) {
-      queryParams.append("search", params.search);
-    }
-
-    const response = await fetchWithAuth(
-      `/nodes/${nodeId}/connections?${queryParams.toString()}`
-    );
-    
-    if (!response || !response.ok) {
-      throw new Error("Failed to fetch connections");
-    }
-
-    const result = await response.json();
-    return result;
-  };
 
   // Fetch invitations
   const fetchInvitations = async (params: {
@@ -107,42 +77,6 @@ const NodeConnectionsManager: React.FC<NodeConnectionsManagerProps> = ({ nodeId,
     return result;
   };
 
-  const handleRemoveConnection = async (connectionId: number) => {
-    if (!confirm("Are you sure you want to remove this connection? This action cannot be undone.")) {
-      return;
-    }
-
-    try {
-      setActionMessage(null);
-      const response = await fetchWithAuth(
-        `/node-invitations/${connectionId}`,
-        { method: "DELETE" }
-      );
-
-      if (!response || !response.ok) {
-        const error = await response?.json();
-        setActionMessage({ 
-          type: 'error', 
-          message: error?.message || 'Failed to remove connection' 
-        });
-        return;
-      }
-
-      setActionMessage({ 
-        type: 'success', 
-        message: 'Connection removed successfully' 
-      });
-      
-      setConnectionsRefreshKey(prev => prev + 1);
-    } catch (error) {
-      console.error("Error removing connection:", error);
-      setActionMessage({ 
-        type: 'error', 
-        message: 'An error occurred while removing the connection' 
-      });
-    }
-  };
-
   const handleAcceptInvitation = async (invitationId: number) => {
     try {
       setActionMessage(null);
@@ -168,7 +102,6 @@ const NodeConnectionsManager: React.FC<NodeConnectionsManagerProps> = ({ nodeId,
       });
       
       setInvitationsRefreshKey(prev => prev + 1);
-      setConnectionsRefreshKey(prev => prev + 1);
     } catch (error) {
       console.error("Error accepting invitation:", error);
       setActionMessage({ 
@@ -213,86 +146,6 @@ const NodeConnectionsManager: React.FC<NodeConnectionsManagerProps> = ({ nodeId,
       });
     }
   };
-
-  const connectionColumns: Column<NodeConnection>[] = [
-    {
-      key: "id",
-      header: "ID",
-      sortable: true,
-      sortValue: (row: NodeConnection) => row.id,
-      render: (row: NodeConnection) => `#${row.id}`,
-    },
-    {
-      key: "fromNodeId",
-      header: "From Node",
-      sortable: true,
-      sortValue: (row: NodeConnection) => row.fromNodeName ?? row.fromNodeId,
-      render: (row: NodeConnection) => {
-        const isOutgoing = row.fromNodeId === Number(nodeId);
-        const label = row.fromNodeName ?? `Node #${row.fromNodeId}`;
-        return (
-          <span style={{ fontWeight: isOutgoing ? '600' : 'normal' }}>
-            {label} {isOutgoing && '(This Node)'}
-          </span>
-        );
-      },
-    },
-    {
-      key: "targetNodeId",
-      header: "Target Node",
-      sortable: true,
-      sortValue: (row: NodeConnection) => row.targetNodeName ?? row.targetNodeId,
-      render: (row: NodeConnection) => {
-        const isIncoming = row.targetNodeId === Number(nodeId);
-        const label = row.targetNodeName ?? `Node #${row.targetNodeId}`;
-        return (
-          <span style={{ fontWeight: isIncoming ? '600' : 'normal' }}>
-            {label} {isIncoming && '(This Node)'}
-          </span>
-        );
-      },
-    },
-    {
-      key: "status",
-      header: "Status",
-      sortable: true,
-      sortValue: (row: NodeConnection) => row.status,
-      render: (row: NodeConnection) => {
-        const statusColors = {
-          accepted: '#16a34a',
-          pending: '#ea580c',
-          rejected: '#dc2626',
-        };
-        return (
-          <span 
-            style={{ 
-              textTransform: 'capitalize',
-              color: statusColors[row.status],
-              fontWeight: '600',
-            }}
-          >
-            {row.status}
-          </span>
-        );
-      },
-    },
-    {
-      key: "actions",
-      header: "Actions",
-      extendedStyle: { textAlign: 'right' },
-      render: (row: NodeConnection) => (
-        <Button
-          size="1"
-          variant="soft"
-          color="red"
-          onClick={() => handleRemoveConnection(row.id)}
-        >
-          <TrashIcon style={{ marginRight: '4px' }} />
-          Remove
-        </Button>
-      ),
-    },
-  ];
 
   const invitationColumns: Column<NodeInvitation>[] = [
     {
@@ -408,50 +261,20 @@ const NodeConnectionsManager: React.FC<NodeConnectionsManagerProps> = ({ nodeId,
         </Callout.Root>
       )}
 
-      {/* Pending Invitations Section — only shown when invitations exist */}
-      {hasPendingInvitations !== false && (
-        <Box mb="6">
-          <Text size="4" weight="bold" mb="3" style={{ display: 'block' }}>
-            Pending Invitations
-          </Text>
-          <PaginatedDataTable<NodeInvitation>
-            refreshTrigger={invitationsRefreshKey}
-            isSearchable={false}
-            fetchData={fetchInvitations}
-            columns={invitationColumns}
-            idColumnName="id"
-            onDataLoaded={(data) => setHasPendingInvitations(data.length > 0)}
-            emptyState={{
-              title: "No pending invitations",
-              description: "You don't have any pending connection invitations for this node.",
-            }}
-          />
-        </Box>
-      )}
-
-      {hasPendingInvitations && <Separator size="4" mb="6" />}
-
-      {/* Active Connections Section */}
+      {/* Pending Invitations Section */}
       <Box mb="6">
-        <Flex align="center" mb="3">
-          <Text size="4" weight="bold" style={{ flex: 1 }}>
-            Active Connections
-          </Text>
-          {onCreateConnection && (
-            <Button size="2" onClick={onCreateConnection}>
-              <PlusIcon /> Create Connection
-            </Button>
-          )}
-        </Flex>
-        <PaginatedDataTable<NodeConnection>
-          refreshTrigger={connectionsRefreshKey}
+        <Text size="4" weight="bold" mb="3" style={{ display: 'block' }}>
+          Pending Invitations
+        </Text>
+        <PaginatedDataTable<NodeInvitation>
+          refreshTrigger={invitationsRefreshKey}
           isSearchable={false}
-          fetchData={fetchConnections}
-          columns={connectionColumns}
+          fetchData={fetchInvitations}
+          columns={invitationColumns}
           idColumnName="id"
           emptyState={{
-            title: "No connections found",
-            description: "This node doesn't have any active connections yet.",
+            title: "No pending invitations",
+            description: "You don't have any pending connection invitations for this node.",
           }}
         />
       </Box>
