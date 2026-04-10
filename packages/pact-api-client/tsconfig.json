@@ -14,5 +14,7 @@
       "pact-data-model/*": ["../pact-data-model/src/*"]
     }
   },
-  "include": ["src/**/*.ts"]
+  "references": [
+    { "path": "../../packages/pact-data-model" }
+  ]
 }

@@ -57,6 +57,8 @@ describe('PactApiClientImpl', () => {
   describe('listFootprints', () => {
     beforeEach(() => {
       client = new PactApiClient('https://partner.com/pact', 'client-id', 'client-secret');
+      // Discovery returns no OIDC config — consumed before auth
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 404 } as Response);
       // Queue the auth response — consumed automatically on the first API call
       mockFetch.mockResolvedValueOnce(createMockResponse({
         access_token: 'test-token',
@@ -88,9 +90,9 @@ describe('PactApiClientImpl', () => {
       const result = await client.listFootprints();
 
       expect(result.data).toEqual(mockFootprints);
-      // First call is auth, second is the actual request
+      // First call is discovery, second is auth, third is the actual request
       expect(mockFetch).toHaveBeenNthCalledWith(
-        2,
+        3,
         'https://partner.com/pact/2/footprints',
         expect.objectContaining({
           method: 'GET',
@@ -109,7 +111,7 @@ describe('PactApiClientImpl', () => {
       await client.listFootprints(undefined, pagination);
 
       expect(mockFetch).toHaveBeenNthCalledWith(
-        2,
+        3,
         'https://partner.com/pact/2/footprints?limit=20&offset=10',
         expect.any(Object)
       );
@@ -127,7 +129,7 @@ describe('PactApiClientImpl', () => {
 
       await client.listFootprints(filters);
 
-      const callUrl = mockFetch.mock.calls[1][0] as string;
+      const callUrl = mockFetch.mock.calls[2][0] as string;
       expect(callUrl).toContain('productId=prod-1');
       expect(callUrl).toContain('productId=prod-2');
       expect(callUrl).toContain('companyId=comp-1');
@@ -148,8 +150,8 @@ describe('PactApiClientImpl', () => {
 
       await client.listFootprints(filters);
 
-      // Call index 1 is auth, index 2 (index 1 in mock.calls) is the actual request
-      const callUrl = mockFetch.mock.calls[1][0] as string;
+      // Call index 2 (0-based) is the actual request
+      const callUrl = mockFetch.mock.calls[2][0] as string;
       expect(callUrl).toContain('status=Active');
       expect(callUrl).toContain('validOn=2024-01-01');
       expect(callUrl).toContain('validAfter=2023-01-01');
@@ -178,8 +180,9 @@ describe('PactApiClientImpl', () => {
     });
 
     it('should throw error on authentication failure', async () => {
-      // Override both mock slots: auth first (error), then the actual call won't happen
+      // Override all mock slots
       mockFetch.mockReset();
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 404 } as Response); // discovery fails
       mockFetch.mockResolvedValueOnce(createMockErrorResponse(401, 'Unauthorized', 'Invalid credentials'));
 
       await expect(client.listFootprints()).rejects.toThrow(
@@ -199,6 +202,8 @@ describe('PactApiClientImpl', () => {
   describe('getFootprint', () => {
     beforeEach(() => {
       client = new PactApiClient('https://partner.com/pact', 'client-id', 'client-secret');
+      // Discovery returns no OIDC config — consumed before auth
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 404 } as Response);
       // Queue auth response — consumed automatically on the first API call
       mockFetch.mockResolvedValueOnce(createMockResponse({ access_token: 'test-token', expires_in: 3600 }));
     });
@@ -223,7 +228,7 @@ describe('PactApiClientImpl', () => {
 
       expect(result.data).toEqual(mockFootprint);
       expect(mockFetch).toHaveBeenNthCalledWith(
-        2,
+        3,
         'https://partner.com/pact/2/footprints/fp-123',
         expect.objectContaining({
           method: 'GET',
@@ -240,12 +245,13 @@ describe('PactApiClientImpl', () => {
 
       await client.getFootprint('fp/with/slashes');
 
-      const callUrl = mockFetch.mock.calls[1][0] as string;
+      const callUrl = mockFetch.mock.calls[2][0] as string;
       expect(callUrl).toContain('fp%2Fwith%2Fslashes');
     });
 
     it('should throw error on authentication failure', async () => {
       mockFetch.mockReset();
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 404 } as Response); // discovery fails
       mockFetch.mockResolvedValueOnce(createMockErrorResponse(401, 'Unauthorized', 'Invalid credentials'));
 
       await expect(client.getFootprint('fp-123')).rejects.toThrow(
@@ -270,6 +276,8 @@ describe('PactApiClientImpl', () => {
         'client-secret',
         'https://my-node.example.com'
       );
+      // Discovery returns no OIDC config — consumed before auth
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 404 } as Response);
       // Queue auth response — consumed automatically on first event call
       mockFetch.mockResolvedValueOnce(createMockResponse({ access_token: 'test-token', expires_in: 3600 }));
     });
@@ -287,7 +295,7 @@ describe('PactApiClientImpl', () => {
 
       await client.requestFootprint(['prod-1', 'prod-2'], 'please send');
 
-      const [url, init] = mockFetch.mock.calls[1] as [string, RequestInit];
+      const [url, init] = mockFetch.mock.calls[2] as [string, RequestInit];
       expect(url).toBe('https://partner.com/pact/2/events');
       const body = JSON.parse(init.body as string);
       expect(body.type).toBe(EventTypes.RequestCreated);
@@ -303,7 +311,7 @@ describe('PactApiClientImpl', () => {
 
       await client.requestFootprint(['prod-1']);
 
-      const body = JSON.parse((mockFetch.mock.calls[1][1] as RequestInit).body as string);
+      const body = JSON.parse((mockFetch.mock.calls[2][1] as RequestInit).body as string);
       expect(body.data).toEqual({ productId: ['prod-1'] });
       expect(body.data.comment).toBeUndefined();
     });
@@ -314,7 +322,7 @@ describe('PactApiClientImpl', () => {
 
       await client.fulfillFootprint('req-event-id', footprints);
 
-      const body = JSON.parse((mockFetch.mock.calls[1][1] as RequestInit).body as string);
+      const body = JSON.parse((mockFetch.mock.calls[2][1] as RequestInit).body as string);
       expect(body.type).toBe(EventTypes.RequestFulfilled);
       expect(body.data).toEqual({ requestEventId: 'req-event-id', pfs: footprints });
     });
@@ -324,7 +332,7 @@ describe('PactApiClientImpl', () => {
 
       await client.rejectFootprint('req-event-id', { code: 'AccessDenied', message: 'Not allowed' });
 
-      const body = JSON.parse((mockFetch.mock.calls[1][1] as RequestInit).body as string);
+      const body = JSON.parse((mockFetch.mock.calls[2][1] as RequestInit).body as string);
       expect(body.type).toBe(EventTypes.RequestRejected);
       expect(body.data).toEqual({
         requestEventId: 'req-event-id',
@@ -337,7 +345,7 @@ describe('PactApiClientImpl', () => {
 
       await client.publishFootprint(['fp-1', 'fp-2']);
 
-      const body = JSON.parse((mockFetch.mock.calls[1][1] as RequestInit).body as string);
+      const body = JSON.parse((mockFetch.mock.calls[2][1] as RequestInit).body as string);
       expect(body.type).toBe(EventTypes.Published);
       expect(body.data).toEqual({ pfIds: ['fp-1', 'fp-2'] });
     });
@@ -356,12 +364,15 @@ describe('PactApiClientImpl', () => {
         'client-id',
         'client-secret'
       );
+      // Reset beforeEach mocks since this test uses a separate client instance
+      mockFetch.mockReset();
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 404 } as Response); // discovery
       mockFetch.mockResolvedValueOnce(createMockResponse({ access_token: 'token', expires_in: 3600 }));
       mockEventResponse();
 
       await clientWithoutSource.publishFootprint(['fp-1']);
 
-      const body = JSON.parse((mockFetch.mock.calls[1][1] as RequestInit).body as string);
+      const body = JSON.parse((mockFetch.mock.calls[2][1] as RequestInit).body as string);
       expect(body.source).toBe('https://partner.com/pact');
     });
   });
@@ -377,6 +388,7 @@ describe('PactApiClientImpl', () => {
     });
 
     it('should authenticate once and cache token for subsequent calls', async () => {
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 404 } as Response); // discovery
       mockFetch.mockResolvedValueOnce(createMockResponse({ access_token: 'token-1', expires_in: 3600 }));
       mockFetch.mockResolvedValueOnce(createMockResponse({ data: [] }));
       mockFetch.mockResolvedValueOnce(createMockResponse({ data: [] }));
@@ -384,14 +396,15 @@ describe('PactApiClientImpl', () => {
       await client.listFootprints();
       await client.listFootprints();
 
-      // Only 3 calls: 1 auth + 2 listFootprints (no re-auth)
-      expect(mockFetch).toHaveBeenCalledTimes(3);
+      // Only 4 calls: 1 discovery + 1 auth + 2 listFootprints (no re-auth or re-discovery)
+      expect(mockFetch).toHaveBeenCalledTimes(4);
     });
 
     it('should re-authenticate automatically when token expires', async () => {
       const now = 1000000;
 
-      // First auth, short-lived token
+      // First discovery + auth, short-lived token
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 404 } as Response); // discovery
       mockFetch.mockResolvedValueOnce(createMockResponse({ access_token: 'token-1', expires_in: 1 }));
       mockFetch.mockResolvedValueOnce(createMockResponse({ data: [] }));
 
@@ -400,16 +413,16 @@ describe('PactApiClientImpl', () => {
       // Advance time past expiration (expires_in=1, buffer=300 → expiry = now + (1-300)*1000 which is already past)
       jest.spyOn(Date, 'now').mockReturnValue(now + 2000);
 
-      // Second auth + second list
+      // Second auth (no re-discovery — endpoint cached) + second list
       mockFetch.mockResolvedValueOnce(createMockResponse({ access_token: 'token-2', expires_in: 3600 }));
       mockFetch.mockResolvedValueOnce(createMockResponse({ data: [] }));
 
       await client.listFootprints();
 
-      // Total: 2 auths + 2 lists = 4 calls
-      expect(mockFetch).toHaveBeenCalledTimes(4);
+      // Total: 1 discovery + 2 auths + 2 lists = 5 calls
+      expect(mockFetch).toHaveBeenCalledTimes(5);
       expect(mockFetch).toHaveBeenNthCalledWith(
-        3,
+        4,
         'https://partner.com/pact/auth/token',
         expect.any(Object)
       );
@@ -419,6 +432,7 @@ describe('PactApiClientImpl', () => {
       const now = 1000000;
       jest.spyOn(Date, 'now').mockReturnValue(now);
 
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 404 } as Response); // discovery
       mockFetch.mockResolvedValueOnce(createMockResponse({ access_token: 'token-1', expires_in: 3600 }));
       mockFetch.mockResolvedValueOnce(createMockResponse({ data: [] }));
 
@@ -431,14 +445,14 @@ describe('PactApiClientImpl', () => {
       jest.spyOn(Date, 'now').mockReturnValue(expectedExpiry - 1000);
       mockFetch.mockResolvedValueOnce(createMockResponse({ data: [] }));
       await client.listFootprints();
-      expect(mockFetch).toHaveBeenCalledTimes(3); // 1 auth + 2 list
+      expect(mockFetch).toHaveBeenCalledTimes(4); // 1 discovery + 1 auth + 2 list
 
-      // After expiry — should trigger re-auth
+      // After expiry — should trigger re-auth (discovery endpoint already cached)
       jest.spyOn(Date, 'now').mockReturnValue(expectedExpiry + 1000);
       mockFetch.mockResolvedValueOnce(createMockResponse({ access_token: 'token-2', expires_in: 3600 }));
       mockFetch.mockResolvedValueOnce(createMockResponse({ data: [] }));
       await client.listFootprints();
-      expect(mockFetch).toHaveBeenCalledTimes(5); // + 1 re-auth + 1 list
+      expect(mockFetch).toHaveBeenCalledTimes(6); // + 1 re-auth + 1 list
     });
   });
 
@@ -450,13 +464,14 @@ describe('PactApiClientImpl', () => {
         'client-secret'
       );
 
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 404 } as Response); // discovery
       mockFetch.mockResolvedValueOnce(createMockResponse({ access_token: 'test-token', expires_in: 3600 }));
       mockFetch.mockResolvedValueOnce(createMockResponse({ data: [] }));
 
       await client.listFootprints();
 
       expect(mockFetch).toHaveBeenNthCalledWith(
-        1,
+        2,
         'http://localhost:3010/api/nodes/42/auth/token',
         expect.any(Object)
       );
@@ -469,6 +484,115 @@ describe('PactApiClientImpl', () => {
         'client-secret'
       );
 
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 404 } as Response); // discovery
+      mockFetch.mockResolvedValueOnce(createMockResponse({ access_token: 'test-token', expires_in: 3600 }));
+      mockFetch.mockResolvedValueOnce(createMockResponse({ data: [] }));
+
+      await client.listFootprints();
+
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        2,
+        'https://external-partner.com/api/pact/auth/token',
+        expect.any(Object)
+      );
+    });
+  });
+
+  describe('OpenID Connect discovery', () => {
+    it('should use discovered token_endpoint when .well-known/openid-configuration is available', async () => {
+      client = new PactApiClient('https://partner.com/pact', 'client-id', 'client-secret');
+
+      // Discovery succeeds with a custom token endpoint
+      mockFetch.mockResolvedValueOnce(createMockResponse({
+        token_endpoint: 'https://auth.partner.com/oauth2/token',
+      }));
+      mockFetch.mockResolvedValueOnce(createMockResponse({ access_token: 'test-token', expires_in: 3600 }));
+      mockFetch.mockResolvedValueOnce(createMockResponse({ data: [] }));
+
+      await client.listFootprints();
+
+      // 1st call: discovery, 2nd call: auth at discovered endpoint
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        1,
+        'https://partner.com/pact/.well-known/openid-configuration'
+      );
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        2,
+        'https://auth.partner.com/oauth2/token',
+        expect.any(Object)
+      );
+    });
+
+    it('should fall back to default token endpoint when discovery returns non-ok response', async () => {
+      client = new PactApiClient('https://partner.com/pact', 'client-id', 'client-secret');
+
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 404 } as Response); // discovery fails
+      mockFetch.mockResolvedValueOnce(createMockResponse({ access_token: 'test-token', expires_in: 3600 }));
+      mockFetch.mockResolvedValueOnce(createMockResponse({ data: [] }));
+
+      await client.listFootprints();
+
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        2,
+        'https://partner.com/pact/auth/token',
+        expect.any(Object)
+      );
+    });
+
+    it('should fall back to default token endpoint when discovery throws a network error', async () => {
+      client = new PactApiClient('https://partner.com/pact', 'client-id', 'client-secret');
+
+      mockFetch.mockRejectedValueOnce(new Error('Network error')); // discovery throws
+      mockFetch.mockResolvedValueOnce(createMockResponse({ access_token: 'test-token', expires_in: 3600 }));
+      mockFetch.mockResolvedValueOnce(createMockResponse({ data: [] }));
+
+      await client.listFootprints();
+
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        2,
+        'https://partner.com/pact/auth/token',
+        expect.any(Object)
+      );
+    });
+
+    it('should cache the token endpoint and not re-discover on re-authentication', async () => {
+      client = new PactApiClient('https://partner.com/pact', 'client-id', 'client-secret');
+
+      jest.spyOn(Date, 'now').mockReturnValue(1000000);
+
+      // First call: discovery + auth (short-lived) + list
+      mockFetch.mockResolvedValueOnce(createMockResponse({ token_endpoint: 'https://auth.partner.com/token' }));
+      mockFetch.mockResolvedValueOnce(createMockResponse({ access_token: 'token-1', expires_in: 1 }));
+      mockFetch.mockResolvedValueOnce(createMockResponse({ data: [] }));
+
+      await client.listFootprints();
+
+      // Advance past token expiry — re-auth should NOT re-discover
+      jest.spyOn(Date, 'now').mockReturnValue(1000000 + 2000);
+      mockFetch.mockResolvedValueOnce(createMockResponse({ access_token: 'token-2', expires_in: 3600 }));
+      mockFetch.mockResolvedValueOnce(createMockResponse({ data: [] }));
+
+      await client.listFootprints();
+
+      // 1 discovery + 2 auth + 2 list = 5 calls (no second discovery)
+      expect(mockFetch).toHaveBeenCalledTimes(5);
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        4,
+        'https://auth.partner.com/token',
+        expect.any(Object)
+      );
+    });
+
+    it('should use custom authBaseUrl for discovery', async () => {
+      client = new PactApiClient(
+        'https://partner.com/pact',
+        'client-id',
+        'client-secret',
+        undefined,
+        { authBaseUrl: 'https://auth.partner.com' }
+      );
+
+      mockFetch.mockResolvedValueOnce(createMockResponse({ token_endpoint: 'https://auth.partner.com/oauth2/token' }));
       mockFetch.mockResolvedValueOnce(createMockResponse({ access_token: 'test-token', expires_in: 3600 }));
       mockFetch.mockResolvedValueOnce(createMockResponse({ data: [] }));
 
@@ -476,9 +600,69 @@ describe('PactApiClientImpl', () => {
 
       expect(mockFetch).toHaveBeenNthCalledWith(
         1,
-        'https://external-partner.com/api/pact/auth/token',
-        expect.any(Object)
+        'https://auth.partner.com/.well-known/openid-configuration'
       );
+    });
+
+    it('should use HTTP Basic Auth credentials in the auth request', async () => {
+      client = new PactApiClient('https://partner.com/pact', 'my-client', 'my-secret');
+
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 404 } as Response);
+      mockFetch.mockResolvedValueOnce(createMockResponse({ access_token: 'test-token', expires_in: 3600 }));
+      mockFetch.mockResolvedValueOnce(createMockResponse({ data: [] }));
+
+      await client.listFootprints();
+
+      const expectedEncoded = Buffer.from('my-client:my-secret').toString('base64');
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        2,
+        expect.any(String),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: `Basic ${expectedEncoded}`,
+          }),
+        })
+      );
+    });
+
+    it('should include scope, audience, and resource in auth request body when provided', async () => {
+      client = new PactApiClient(
+        'https://partner.com/pact',
+        'client-id',
+        'client-secret',
+        undefined,
+        { scope: 'openid footprints', audience: 'api://pact', resource: 'https://partner.com/pact' }
+      );
+
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 404 } as Response);
+      mockFetch.mockResolvedValueOnce(createMockResponse({ access_token: 'test-token', expires_in: 3600 }));
+      mockFetch.mockResolvedValueOnce(createMockResponse({ data: [] }));
+
+      await client.listFootprints();
+
+      const [, authInit] = mockFetch.mock.calls[1] as [string, RequestInit];
+      const authBody = new URLSearchParams(authInit.body as string);
+      expect(authBody.get('grant_type')).toBe('client_credentials');
+      expect(authBody.get('scope')).toBe('openid footprints');
+      expect(authBody.get('audience')).toBe('api://pact');
+      expect(authBody.get('resource')).toBe('https://partner.com/pact');
+    });
+
+    it('should not include scope/audience/resource in auth body when not provided', async () => {
+      client = new PactApiClient('https://partner.com/pact', 'client-id', 'client-secret');
+
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 404 } as Response);
+      mockFetch.mockResolvedValueOnce(createMockResponse({ access_token: 'test-token', expires_in: 3600 }));
+      mockFetch.mockResolvedValueOnce(createMockResponse({ data: [] }));
+
+      await client.listFootprints();
+
+      const [, authInit] = mockFetch.mock.calls[1] as [string, RequestInit];
+      const authBody = new URLSearchParams(authInit.body as string);
+      expect(authBody.get('grant_type')).toBe('client_credentials');
+      expect(authBody.has('scope')).toBe(false);
+      expect(authBody.has('audience')).toBe(false);
+      expect(authBody.has('resource')).toBe(false);
     });
   });
 });
