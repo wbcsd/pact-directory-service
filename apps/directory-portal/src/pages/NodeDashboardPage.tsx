@@ -27,7 +27,7 @@ import PaginatedDataTable, { PaginationInfo } from "../components/PaginatedDataT
 import { Column } from "../components/DataTable";
 import SlideOverPanel from "../components/SlideOverPanel";
 import NodeForm from "../components/NodeForm";
-import NodeConnectionsManager from "../components/NodeConnectionsManager";
+import NodeConnectionsManager, { NodeConnection } from "../components/NodeConnectionsManager";
 import CreateNodeConnectionForm from "../components/CreateNodeConnectionForm";
 import "./NodeDashboardPage.css";
 
@@ -115,6 +115,7 @@ const NodeDashboardPage: React.FC = () => {
 
   const [panel, setPanel] = useState<PanelState>({ mode: "closed" });
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [connectionsRefreshTrigger, setConnectionsRefreshTrigger] = useState(0);
   const [pendingInvitationsCount, setPendingInvitationsCount] = useState(0);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
@@ -163,6 +164,7 @@ const NodeDashboardPage: React.FC = () => {
   const handlePanelClose = useCallback(() => {
     closePanel();
     fetchPendingCount();
+    setConnectionsRefreshTrigger(prev => prev + 1);
   }, [closePanel, fetchPendingCount]);
 
   const handleDelete = async () => {
@@ -223,6 +225,31 @@ const NodeDashboardPage: React.FC = () => {
     return response.json();
   }, [nodeId]);
 
+  const fetchConnections = useCallback(async (params: {
+    page: number;
+    pageSize: number;
+  }): Promise<{ data: NodeConnection[]; pagination: PaginationInfo }> => {
+    const queryParams = new URLSearchParams({
+      page: params.page.toString(),
+      pageSize: params.pageSize.toString(),
+    });
+    const response = await fetchWithAuth(`/nodes/${nodeId}/connections?${queryParams}`);
+    if (!response?.ok) throw new Error("Failed to fetch connections");
+    return response.json();
+  }, [nodeId]);
+
+  const handleRemoveConnection = useCallback(async (connectionId: number) => {
+    if (!confirm("Are you sure you want to remove this connection? This action cannot be undone.")) return;
+    try {
+      const response = await fetchWithAuth(`/node-invitations/${connectionId}`, { method: "DELETE" });
+      if (response?.ok) {
+        setConnectionsRefreshTrigger(prev => prev + 1);
+      }
+    } catch {
+      // silently ignore — table will retain current state
+    }
+  }, []);
+
   const footprintColumns: Column<Footprint>[] = [
     {
       key: "data.productNameCompany",
@@ -261,6 +288,86 @@ const NodeDashboardPage: React.FC = () => {
       key: "createdAt",
       header: "Created",
       render: (row) => <Text size="2">{formatDate(row.createdAt)}</Text>,
+    },
+  ];
+
+  const connectionColumns: Column<NodeConnection>[] = [
+    {
+      key: "id",
+      header: "ID",
+      sortable: true,
+      sortValue: (row: NodeConnection) => row.id,
+      render: (row: NodeConnection) => `#${row.id}`,
+    },
+    {
+      key: "fromNodeId",
+      header: "From Node",
+      sortable: true,
+      sortValue: (row: NodeConnection) => row.fromNodeName ?? row.fromNodeId,
+      render: (row: NodeConnection) => {
+        const isOutgoing = row.fromNodeId === Number(nodeId);
+        const label = row.fromNodeName ?? `Node #${row.fromNodeId}`;
+        return (
+          <span style={{ fontWeight: isOutgoing ? "600" : "normal" }}>
+            {label} {isOutgoing && "(This Node)"}
+          </span>
+        );
+      },
+    },
+    {
+      key: "targetNodeId",
+      header: "Target Node",
+      sortable: true,
+      sortValue: (row: NodeConnection) => row.targetNodeName ?? row.targetNodeId,
+      render: (row: NodeConnection) => {
+        const isIncoming = row.targetNodeId === Number(nodeId);
+        const label = row.targetNodeName ?? `Node #${row.targetNodeId}`;
+        return (
+          <span style={{ fontWeight: isIncoming ? "600" : "normal" }}>
+            {label} {isIncoming && "(This Node)"}
+          </span>
+        );
+      },
+    },
+    {
+      key: "status",
+      header: "Status",
+      sortable: true,
+      sortValue: (row: NodeConnection) => row.status,
+      render: (row: NodeConnection) => {
+        const statusColors: Record<string, string> = {
+          accepted: "#16a34a",
+          pending: "#ea580c",
+          rejected: "#dc2626",
+        };
+        return (
+          <span
+            style={{
+              textTransform: "capitalize",
+              color: statusColors[row.status],
+              fontWeight: "600",
+            }}
+          >
+            {row.status}
+          </span>
+        );
+      },
+    },
+    {
+      key: "actions",
+      header: "Actions",
+      extendedStyle: { textAlign: "right" },
+      render: (row: NodeConnection) => (
+        <Button
+          size="1"
+          variant="soft"
+          color="red"
+          onClick={() => handleRemoveConnection(row.id)}
+        >
+          <TrashIcon style={{ marginRight: "4px" }} />
+          Remove
+        </Button>
+      ),
     },
   ];
 
@@ -306,7 +413,7 @@ const NodeDashboardPage: React.FC = () => {
 
   const panelTitle =
     panel.mode === "edit" ? "Edit Node" :
-    panel.mode === "connections" ? "Connections & Invitations" :
+    panel.mode === "connections" ? "Manage Invites" :
     panel.mode === "createConnection" ? "Create Connection" :
     "";
 
@@ -335,13 +442,10 @@ const NodeDashboardPage: React.FC = () => {
                 <InputIcon /> Edit Node
               </DropdownMenu.Item>
               <DropdownMenu.Item onSelect={() => setPanel({ mode: "connections" })}>
-                <Link2Icon /> Manage Connections
+                <Link2Icon /> Manage Invites
                 {pendingInvitationsCount > 0 && (
                   <Badge size="1" ml="2">{pendingInvitationsCount}</Badge>
                 )}
-              </DropdownMenu.Item>
-              <DropdownMenu.Item onSelect={() => setPanel({ mode: "createConnection" })}>
-                <PlusIcon /> Create Connection
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
               <DropdownMenu.Item color="red" disabled={deleting} onSelect={handleDelete}>
@@ -416,6 +520,32 @@ const NodeDashboardPage: React.FC = () => {
 
           <Separator size="4" my="4" />
 
+          {/* Connections Section */}
+          <section className="node-dashboard-section">
+            <Flex mb="3" gap="2">
+              <Box flexGrow="1">
+                <Heading size="4">Connections</Heading>
+              </Box>
+              <Button onClick={() => setPanel({ mode: "createConnection" })}>
+                <PlusIcon /> Create Connection
+              </Button>
+            </Flex>
+            <PaginatedDataTable<NodeConnection>
+              isSearchable={false}
+              fetchData={fetchConnections}
+              columns={connectionColumns}
+              idColumnName="id"
+              defaultPageSize={10}
+              refreshTrigger={connectionsRefreshTrigger}
+              emptyState={{
+                title: "No connections found",
+                description: "This node doesn't have any active connections yet.",
+              }}
+            />
+          </section>
+
+          <Separator size="4" my="4" />
+
           {/* Activity Logs Section */}
           <section className="node-dashboard-section">
             <Heading size="4" mb="3">Activity Logs</Heading>
@@ -456,7 +586,6 @@ const NodeDashboardPage: React.FC = () => {
             key={nodeId}
             nodeId={nodeId}
             onClose={closePanel}
-            onCreateConnection={() => setPanel({ mode: "createConnection" })}
           />
         )}
         {panel.mode === "createConnection" && nodeId && (
