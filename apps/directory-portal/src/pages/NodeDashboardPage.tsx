@@ -13,6 +13,8 @@ import {
 } from "@radix-ui/themes";
 import {
   ArrowLeftIcon,
+  CheckIcon,
+  Cross2Icon,
   DotsHorizontalIcon,
   ExclamationTriangleIcon,
   InputIcon,
@@ -250,6 +252,31 @@ const NodeDashboardPage: React.FC = () => {
     }
   }, []);
 
+  const handleAcceptInvitation = useCallback(async (invitationId: number) => {
+    try {
+      const response = await fetchWithAuth(`/node-invitations/${invitationId}/accept`, { method: "POST" });
+      if (response?.ok) {
+        setConnectionsRefreshTrigger(prev => prev + 1);
+        fetchPendingCount();
+      }
+    } catch {
+      // silently ignore
+    }
+  }, [fetchPendingCount]);
+
+  const handleRejectInvitation = useCallback(async (invitationId: number) => {
+    if (!confirm("Are you sure you want to reject this invitation?")) return;
+    try {
+      const response = await fetchWithAuth(`/node-invitations/${invitationId}/reject`, { method: "POST" });
+      if (response?.ok) {
+        setConnectionsRefreshTrigger(prev => prev + 1);
+        fetchPendingCount();
+      }
+    } catch {
+      // silently ignore
+    }
+  }, [fetchPendingCount]);
+
   const footprintColumns: Column<Footprint>[] = [
     {
       key: "data.productNameCompany",
@@ -357,17 +384,42 @@ const NodeDashboardPage: React.FC = () => {
       key: "actions",
       header: "Actions",
       extendedStyle: { textAlign: "right" },
-      render: (row: NodeConnection) => (
-        <Button
-          size="1"
-          variant="soft"
-          color="red"
-          onClick={() => handleRemoveConnection(row.id)}
-        >
-          <TrashIcon style={{ marginRight: "4px" }} />
-          Remove
-        </Button>
-      ),
+      render: (row: NodeConnection) => {
+        const isIncomingPending = row.status === "pending" && row.targetNodeId === Number(nodeId);
+        const isOutgoingPending = row.status === "pending" && row.fromNodeId === Number(nodeId);
+        if (isIncomingPending) {
+          return (
+            <Flex gap="2" justify="end">
+              <Button size="1" variant="soft" color="green" onClick={() => handleAcceptInvitation(row.id)}>
+                <CheckIcon />
+                Accept
+              </Button>
+              <Button size="1" variant="soft" color="red" onClick={() => handleRejectInvitation(row.id)}>
+                <Cross2Icon />
+                Reject
+              </Button>
+            </Flex>
+          );
+        }
+        if (isOutgoingPending) {
+          return (
+            <Flex gap="2" justify="end">
+              <Button size="1" variant="soft" color="red" onClick={() => handleRemoveConnection(row.id)}>
+                <TrashIcon />
+                Cancel
+              </Button>
+            </Flex>
+          );
+        }
+        return (
+          <Flex gap="2" justify="end">
+            <Button size="1" variant="soft" color="red" onClick={() => handleRemoveConnection(row.id)}>
+              <TrashIcon />
+              Remove
+            </Button>
+          </Flex>
+        );
+      },
     },
   ];
 

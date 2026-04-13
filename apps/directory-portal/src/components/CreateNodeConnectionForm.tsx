@@ -343,23 +343,27 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
         </Form.Field>
 
         <Flex justify="end" gap="3" mt="6">
-          <Button 
-            type="button" 
-            color="jade"
-            onClick={onCancel}
-            disabled={creating}
-          >
-            Cancel
-          </Button>
-          <Form.Submit asChild>
-            <Button 
-              type="submit"
-              disabled={creating || availableNodes.length === 0}
-            >
-              {creating && <Spinner loading />}
-              {creating ? "Creating..." : "Create Invitation"}
-            </Button>
-          </Form.Submit>
+          {status !== "success" && (
+            <>
+              <Button
+                type="button"
+                color="jade"
+                onClick={onCancel}
+                disabled={creating}
+              >
+                Cancel
+              </Button>
+              <Form.Submit asChild>
+                <Button
+                  type="submit"
+                  disabled={creating || availableNodes.length === 0}
+                >
+                  {creating && <Spinner loading />}
+                  {creating ? "Creating..." : "Create Invitation"}
+                </Button>
+              </Form.Submit>
+            </>
+          )}
         </Flex>
       </Form.Root>
 

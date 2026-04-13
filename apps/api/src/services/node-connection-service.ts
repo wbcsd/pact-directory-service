@@ -419,7 +419,7 @@ export class NodeConnectionService {
       .where((eb) =>
         eb.or([eb('connections.fromNodeId', '=', nodeId), eb('connections.targetNodeId', '=', nodeId)])
       )
-      .where('connections.status', '=', 'accepted');
+      .where('connections.status', 'in', ['accepted', 'pending']);
 
     // Get total count
     const total = (
@@ -429,7 +429,7 @@ export class NodeConnectionService {
         .where((eb) =>
           eb.or([eb('fromNodeId', '=', nodeId), eb('targetNodeId', '=', nodeId)])
         )
-        .where('status', '=', 'accepted')
+        .where('status', 'in', ['accepted', 'pending'])
         .executeTakeFirstOrThrow()
     ).total as number;
 
