@@ -12,6 +12,7 @@ export interface Database {
   password_tokens: PasswordTokenTable;
   activity_logs: ActivityLogsTable;
   product_footprints: ProductFootprintsTable;
+  pcf_requests: PcfRequestsTable;
 }
 
 export interface OrganizationsTable {
@@ -110,6 +111,19 @@ export interface ProductFootprintsTable {
   id: Generated<string>; // UUID, auto-generated
   nodeId: number;
   data: Record<string, any>; // JSONB
+  createdAt: Generated<Date>;
+  updatedAt: Generated<Date>;
+}
+
+export interface PcfRequestsTable {
+  id: Generated<number>;
+  fromNodeId: number;
+  targetNodeId: number;
+  connectionId: number;
+  requestEventId: string; // UUID of the sent CloudEvent
+  filters: Record<string, unknown>; // JSONB — FootprintFilters
+  status: 'pending' | 'fulfilled' | 'rejected';
+  resultCount: number | null;
   createdAt: Generated<Date>;
   updatedAt: Generated<Date>;
 }

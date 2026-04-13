@@ -354,6 +354,24 @@ export class PactApiClient {
   }
 
   /**
+   * Send a RequestCreatedEvent with the full set of FootprintFilters as defined
+   * in the PACT v3 spec. Returns the generated event ID so callers can track
+   * the request and correlate the eventual RequestFulfilled/RequestRejected callback.
+   */
+  async sendRequestCreated(filters: FootprintFilters): Promise<string> {
+    const eventId = crypto.randomUUID();
+    await this.sendEvent({
+      type: EventTypes.RequestCreated,
+      specversion: '1.0',
+      id: eventId,
+      source: this.source,
+      time: new Date().toISOString(),
+      data: filters as unknown as Record<string, unknown>,
+    } as RequestCreatedEvent);
+    return eventId;
+  }
+
+  /**
    * Notify a data recipient that their footprint request has been fulfilled.
    */
   async fulfillFootprint(requestEventId: string, footprints: ProductFootprint[]): Promise<void> {

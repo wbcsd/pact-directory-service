@@ -139,6 +139,21 @@ export class InternalNodePactService {
           { nodeId, eventId: id },
           'Received RequestFulfilledEvent for internal node'
         );
+        // Update the matching outgoing PCF request record
+        const requestEventId = data?.requestEventId as string | undefined;
+        const pfs = data?.pfs as unknown[] | undefined;
+        if (requestEventId) {
+          await this.db
+            .updateTable('pcf_requests')
+            .set({
+              status: 'fulfilled',
+              resultCount: pfs?.length ?? 0,
+              updatedAt: new Date(),
+            })
+            .where('requestEventId', '=', requestEventId)
+            .where('targetNodeId', '=', nodeId)
+            .execute();
+        }
         break;
       }
 
@@ -147,6 +162,19 @@ export class InternalNodePactService {
           { nodeId, eventId: id },
           'Received RequestRejectedEvent for internal node'
         );
+        // Update the matching outgoing PCF request record
+        const rejectedRequestEventId = data?.requestEventId as string | undefined;
+        if (rejectedRequestEventId) {
+          await this.db
+            .updateTable('pcf_requests')
+            .set({
+              status: 'rejected',
+              updatedAt: new Date(),
+            })
+            .where('requestEventId', '=', rejectedRequestEventId)
+            .where('targetNodeId', '=', nodeId)
+            .execute();
+        }
         break;
       }
 

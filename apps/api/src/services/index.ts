@@ -12,6 +12,7 @@ import { InternalNodePactService } from './internal-node-pact-service';
 import { InternalNodeAuthService } from './internal-node-auth-service';
 import { ActivityLogService } from './activity-log-service';
 import { FootprintService } from './footprint-service';
+import { PcfRequestService } from './pcf-request-service';
 import config from '../common/config';
 
 // Export individual service classes for direct usage if needed
@@ -25,6 +26,7 @@ export { InternalNodePactService } from './internal-node-pact-service';
 export { InternalNodeAuthService } from './internal-node-auth-service';
 export { ActivityLogService } from './activity-log-service';
 export { FootprintService } from './footprint-service';
+export { PcfRequestService } from './pcf-request-service';
 
 export interface Services {
   auth: AuthService;
@@ -39,6 +41,7 @@ export interface Services {
   internalNodeAuth: InternalNodeAuthService;
   activityLog: ActivityLogService;
   footprint: FootprintService;
+  pcfRequest: PcfRequestService;
 }
 
 export class ServiceContainer implements Services {
@@ -54,6 +57,7 @@ export class ServiceContainer implements Services {
   internalNodeAuth: InternalNodeAuthService;
   activityLog: ActivityLogService;
   footprint: FootprintService;
+  pcfRequest: PcfRequestService;
 
   constructor(db: Kysely<Database>) {
     this.email = new EmailService();
@@ -73,6 +77,7 @@ export class ServiceContainer implements Services {
     this.internalNodeAuth = new InternalNodeAuthService(this.node, this.nodeConnection);
     this.activityLog = new ActivityLogService(db);
     this.footprint = new FootprintService(db, this.node);
+    this.pcfRequest = new PcfRequestService(db, this.node, this.nodeConnection, config.INTERNAL_API_BASE_URL);
     // this.environment = new EnvironmentService(db);
   }
 }
