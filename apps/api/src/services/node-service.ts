@@ -173,7 +173,7 @@ export class NodeService {
 
     // If internal node, update API URL with the node ID
     if (data.type === 'internal') {
-      const baseUrl = config.INTERNAL_API_BASE_URL;
+      const baseUrl = config.DIRECTORY_API;
       const generatedApiUrl = `${baseUrl}/api/nodes/${result.id}`;
       
       await this.db

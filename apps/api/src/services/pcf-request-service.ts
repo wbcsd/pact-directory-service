@@ -32,7 +32,7 @@ export class PcfRequestService {
     private db: Kysely<Database>,
     private nodeService: NodeService,
     private nodeConnectionService: NodeConnectionService,
-    private internalApiBaseUrl: string
+    private directoryApiBaseUrl: string
   ) {}
 
   async create(
@@ -95,9 +95,9 @@ export class PcfRequestService {
     // Build PactApiClient — mirrors requestFootprints() in node-connection-service.ts
     const baseUrl = targetNode.apiUrl
       ? targetNode.apiUrl.replace(/\/$/, '')
-      : `${this.internalApiBaseUrl}/api/nodes/${targetNode.id}`;
+      : `${this.directoryApiBaseUrl}/api/nodes/${targetNode.id}`;
 
-    const source = `${this.internalApiBaseUrl}/api/nodes/${nodeId}`;
+    const source = `${this.directoryApiBaseUrl}/api/nodes/${nodeId}`;
 
     const client = new PactApiClient(
       baseUrl,

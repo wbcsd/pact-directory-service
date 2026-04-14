@@ -101,7 +101,7 @@ export class PactApiClient {
    * 
    * @example
    * // Internal node — construct the URL before passing it in
-   * const baseUrl = `${internalApiBaseUrl}/api/nodes/${nodeId}`;
+   * const baseUrl = `${directoryApiBaseUrl}/api/nodes/${nodeId}`;
    * const client = new PactApiClientImpl(baseUrl, clientId, clientSecret);
    */
   constructor(

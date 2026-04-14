@@ -45,5 +45,6 @@ export default {
   MAIL_FROM_EMAIL: process.env.MAIL_FROM_EMAIL ?? 'info@carbon-transparency.org',
   MAIL_FROM_NAME: process.env.MAIL_FROM_NAME ?? 'PACT Network',
   ENABLE_OPENAPI_VALIDATION: bool('ENABLE_OPENAPI_VALIDATION'),
-  INTERNAL_API_BASE_URL: process.env.INTERNAL_API_BASE_URL ?? 'http://localhost:3010',
+  DIRECTORY_API: required('DIRECTORY_API'),
+  DIRECTORY_API_INTERNAL: process.env.DIRECTORY_API_INTERNAL ?? required('DIRECTORY_API'),
 };

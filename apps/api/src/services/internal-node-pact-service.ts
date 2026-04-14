@@ -233,7 +233,7 @@ export class InternalNodePactService {
           type: EventTypes.RequestFulfilled,
           specversion: '1.0',
           id: crypto.randomUUID(),
-          source: `${config.INTERNAL_API_BASE_URL}/api/nodes/${nodeId}`,
+          source: `${config.DIRECTORY_API}/api/nodes/${nodeId}`,
           time: new Date().toISOString(),
           data: {
             requestEventId,
@@ -253,7 +253,7 @@ export class InternalNodePactService {
           type: EventTypes.RequestRejected,
           specversion: '1.0',
           id: crypto.randomUUID(),
-          source: `${config.INTERNAL_API_BASE_URL}/api/nodes/${nodeId}`,
+          source: `${config.DIRECTORY_API}/api/nodes/${nodeId}`,
           time: new Date().toISOString(),
           data: {
             requestEventId,

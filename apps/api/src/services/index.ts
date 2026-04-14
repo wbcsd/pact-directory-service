@@ -71,13 +71,13 @@ export class ServiceContainer implements Services {
       db,
       this.node,
       this.email,
-      config.INTERNAL_API_BASE_URL
+      config.DIRECTORY_API
     );
     this.internalNodePact = new InternalNodePactService(db);
     this.internalNodeAuth = new InternalNodeAuthService(this.node, this.nodeConnection);
     this.activityLog = new ActivityLogService(db);
     this.footprint = new FootprintService(db, this.node);
-    this.pcfRequest = new PcfRequestService(db, this.node, this.nodeConnection, config.INTERNAL_API_BASE_URL);
+    this.pcfRequest = new PcfRequestService(db, this.node, this.nodeConnection, config.DIRECTORY_API);
     // this.environment = new EnvironmentService(db);
   }
 }
