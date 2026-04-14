@@ -173,7 +173,7 @@ export class NodeService {
 
     // If internal node, update API URL with the node ID
     if (data.type === 'internal') {
-      const baseUrl = config.FRONTEND_URL || 'https://directory.carbon-transparency.org';
+      const baseUrl = config.INTERNAL_API_BASE_URL;
       const generatedApiUrl = `${baseUrl}/api/nodes/${result.id}`;
       
       await this.db
