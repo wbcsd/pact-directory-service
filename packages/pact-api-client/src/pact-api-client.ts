@@ -84,6 +84,8 @@ export class PactApiClient {
   private readonly clientSecret: string;
   private readonly source: string;
   private readonly options: ConnectOptions;
+  private readonly specVersion: string = "3.0";
+  private readonly majorVersion: string;
   private tokenCache: { token: string; expiresAt: number } | null = null;
   private tokenEndpoint: string | undefined = undefined;
 
@@ -112,6 +114,7 @@ export class PactApiClient {
     options?: ConnectOptions
   ) {
     this.baseUrl = baseUrl.replace(/\/$/, '');
+    this.majorVersion = this.specVersion.split('.')[0]; // Extract major version for URL paths
     this.clientId = clientId;
     this.clientSecret = clientSecret;
     this.source = source ?? this.baseUrl;
@@ -248,7 +251,7 @@ export class PactApiClient {
     }
     
     const queryString = queryParams.toString();
-    const url = `${this.baseUrl}/2/footprints${queryString ? `?${queryString}` : ''}`;
+    const url = `${this.baseUrl}/${this.majorVersion}/footprints${queryString ? `?${queryString}` : ''}`;
 
     const response = await fetch(url, {
       method: 'GET',
@@ -294,7 +297,7 @@ export class PactApiClient {
    */
   async getFootprint(id: string): Promise<{ data: ProductFootprint }> {
     const token = await this.ensureAuthenticated();
-    const url = `${this.baseUrl}/2/footprints/${encodeURIComponent(id)}`;
+    const url = `${this.baseUrl}/${this.majorVersion}/footprints/${encodeURIComponent(id)}`;
 
     const response = await fetch(url, {
       method: 'GET',
@@ -320,7 +323,7 @@ export class PactApiClient {
    */
   private async sendEvent(event: BaseEvent): Promise<void> {
     const token = await this.ensureAuthenticated();
-    const url = `${this.baseUrl}/2/events`;
+    const url = `${this.baseUrl}/${this.majorVersion}/events`;
 
     const response = await fetch(url, {
       method: 'POST',
