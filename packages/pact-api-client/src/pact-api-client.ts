@@ -248,7 +248,7 @@ export class PactApiClient {
     }
     
     const queryString = queryParams.toString();
-    const url = `${this.baseUrl}/2/footprints${queryString ? `?${queryString}` : ''}`;
+    const url = `${this.baseUrl}/3/footprints${queryString ? `?${queryString}` : ''}`;
 
     const response = await fetch(url, {
       method: 'GET',
@@ -294,7 +294,7 @@ export class PactApiClient {
    */
   async getFootprint(id: string): Promise<{ data: ProductFootprint }> {
     const token = await this.ensureAuthenticated();
-    const url = `${this.baseUrl}/2/footprints/${encodeURIComponent(id)}`;
+    const url = `${this.baseUrl}/3/footprints/${encodeURIComponent(id)}`;
 
     const response = await fetch(url, {
       method: 'GET',
@@ -320,7 +320,9 @@ export class PactApiClient {
    */
   private async sendEvent(event: BaseEvent): Promise<void> {
     const token = await this.ensureAuthenticated();
-    const url = `${this.baseUrl}/2/events`;
+    const url = `${this.baseUrl}/3/events`;
+
+    console.log('URL', url);
 
     const response = await fetch(url, {
       method: 'POST',
