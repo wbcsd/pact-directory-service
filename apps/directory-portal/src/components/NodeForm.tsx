@@ -6,6 +6,7 @@ import {
   Text,
   Callout,
   Flex,
+  Grid,
   Spinner,
   Select
 } from "@radix-ui/themes";
@@ -193,6 +194,15 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
   return (
     <Form.Root autoComplete="off" onSubmit={handleSubmit}>
 
+      {/* Intro text */}
+      <Box mb="4">
+        <Text as="p" size="2">
+          A Node represents a PACT-compatible solution endpoint in the PACT Network.
+          An <strong>internal</strong> node belongs to your own organization and is hosted within the PACT Directory.
+          An <strong>external</strong> node is a PACT-compatible endpoint hosted outside this system that you register for network connectivity.
+        </Text>
+      </Box>
+
       {status === "success" && (
         <Callout.Root color="green" highContrast variant="surface" mt="4">
           <Callout.Icon>
@@ -272,33 +282,35 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
               Please enter a valid URL.
             </Form.Message>
           </FormField>
-          <FormField name="scope" label="Scope">
-            <TextField
-              value={formData.scope || ""}
-              placeholder="e.g. openid"
-              tooltip="OAuth2 scope to request when authenticating"
-              onChange={handleChange}
-            />
-          </FormField>
-          <FormField name="audience" label="Audience">
-            <TextField
-              value={formData.audience || ""}
-              placeholder="e.g. https://api.example.com"
-              tooltip="OAuth2 audience parameter"
-              onChange={handleChange}
-            />
-          </FormField>
-          <FormField name="resource" label="Resource">
-            <TextField
-              value={formData.resource || ""}
-              placeholder="e.g. https://api.example.com"
-              tooltip="OAuth2 resource parameter"
-              onChange={handleChange}
-            />
-          </FormField>
+          <Grid columns={{ initial: "1", sm: "3" }} gap="3">
+            <FormField name="scope" label="Scope">
+              <TextField
+                value={formData.scope || ""}
+                placeholder="all:read"
+                tooltip="OAuth2 scope to request when authenticating"
+                onChange={handleChange}
+              />
+            </FormField>
+            <FormField name="audience" label="Audience">
+              <TextField
+                value={formData.audience || ""}
+                placeholder="https://api.example.com"
+                tooltip="OAuth2 audience parameter"
+                onChange={handleChange}
+              />
+            </FormField>
+            <FormField name="resource" label="Resource">
+              <TextField
+                value={formData.resource || ""}
+                placeholder="https://api.example.com"
+                tooltip="OAuth2 resource parameter"
+                onChange={handleChange}
+              />
+            </FormField>
+          </Grid>
           <FormField
             name="specVersion"
-            label="Spec Version">
+            label="Supported Version">
             <SelectField
               value={formData.specVersion || "V3.0"}
               options={VERSION_OPTIONS}
@@ -310,12 +322,16 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
         </>
       )}
 
-      {/* Organization (read-only) */}        
-      <TextField
-        name="organization"
-        value={organizationName}
-        disabled
-      />
+      {/* Organization (read-only, visible to root users only) */}
+      {profileData?.role === "root" && (
+        <FormField name="organization" label="Organization">
+          <TextField
+            name="organization"
+            value={organizationName}
+            disabled
+          />
+        </FormField>
+      )}
 
       {/* Actions */}
       <Flex gap="3" mt="2" justify="end">
