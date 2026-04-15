@@ -181,4 +181,72 @@ export class FootprintService {
 
     return { success: true, footprintId };
   }
+
+  /**
+   * Import multiple footprints from a JSON array for a node.
+   * Each item is validated against the PACT v3.0 schema before insertion.
+   * Returns a summary of how many succeeded and any per-item validation failures.
+   */
+  async import(
+    context: UserContext,
+    nodeId: number,
+    items: unknown[]
+  ): Promise<{
+    imported: number;
+    failed: number;
+    errors: Array<{ index: number; errors: string[] }>;
+  }> {
+    // Verify the node exists and user has write access
+    const node = await this.nodeService.get(context, nodeId);
+
+    const allowed =
+      context.policies.includes('manage-footprints-all-organizations') ||
+      (context.policies.includes('manage-footprints-own-organization') &&
+        context.organizationId === node.organizationId);
+
+    if (!allowed) {
+      throw new ForbiddenError('You are not allowed to import footprints for this node');
+    }
+
+    if (!Array.isArray(items) || items.length === 0) {
+      throw new BadRequestError('Import payload must be a non-empty array of footprint objects');
+    }
+
+    const errors: Array<{ index: number; errors: string[] }> = [];
+    const validItems: Record<string, any>[] = [];
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      if (!item || typeof item !== 'object') {
+        errors.push({ index: i, errors: ['Item is not a valid object'] });
+        continue;
+      }
+      const validation = validate(schema.ProductFootprint, item);
+      if (!validation.valid) {
+        errors.push({ index: i, errors: validation.errors });
+      } else {
+        validItems.push(item as Record<string, any>);
+      }
+    }
+
+    if (validItems.length > 0) {
+      await this.db
+        .insertInto('product_footprints')
+        .values(
+          validItems.map((data) => ({
+            nodeId,
+            data,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          }))
+        )
+        .execute();
+    }
+
+    return {
+      imported: validItems.length,
+      failed: errors.length,
+      errors,
+    };
+  }
 }
