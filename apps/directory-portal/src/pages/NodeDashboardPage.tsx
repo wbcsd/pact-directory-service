@@ -29,6 +29,7 @@ import SlideOverPanel from "../components/SlideOverPanel";
 import NodeForm from "../components/NodeForm";
 import NodeConnectionsManager, { NodeConnection } from "../components/NodeConnectionsManager";
 import CreateNodeConnectionForm from "../components/CreateNodeConnectionForm";
+import RequestPcfForm from "../components/RequestPcfForm";
 import "./NodeDashboardPage.css";
 
 interface NodeData {
@@ -60,11 +61,26 @@ interface Footprint {
   updatedAt: string;
 }
 
+interface PcfRequest {
+  id: number;
+  fromNodeId: number;
+  targetNodeId: number;
+  targetNodeName?: string;
+  connectionId: number;
+  requestEventId: string;
+  filters: Record<string, unknown>;
+  status: "pending" | "fulfilled" | "rejected";
+  resultCount: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 type PanelState =
   | { mode: "closed" }
   | { mode: "edit" }
   | { mode: "connections" }
-  | { mode: "createConnection" };
+  | { mode: "createConnection" }
+  | { mode: "requestPcf" };
 
 const getLevelColor = (
   level: string
@@ -116,6 +132,7 @@ const NodeDashboardPage: React.FC = () => {
   const [panel, setPanel] = useState<PanelState>({ mode: "closed" });
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [connectionsRefreshTrigger, setConnectionsRefreshTrigger] = useState(0);
+  const [pcfRequestsRefreshTrigger, setPcfRequestsRefreshTrigger] = useState(0);
   const [pendingInvitationsCount, setPendingInvitationsCount] = useState(0);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
@@ -165,6 +182,7 @@ const NodeDashboardPage: React.FC = () => {
     closePanel();
     fetchPendingCount();
     setConnectionsRefreshTrigger(prev => prev + 1);
+    setPcfRequestsRefreshTrigger(prev => prev + 1);
   }, [closePanel, fetchPendingCount]);
 
   const handleDelete = async () => {
@@ -249,6 +267,19 @@ const NodeDashboardPage: React.FC = () => {
       // silently ignore — table will retain current state
     }
   }, []);
+
+  const fetchPcfRequests = useCallback(async (params: {
+    page: number;
+    pageSize: number;
+  }): Promise<{ data: PcfRequest[]; pagination: PaginationInfo }> => {
+    const queryParams = new URLSearchParams({
+      page: params.page.toString(),
+      pageSize: params.pageSize.toString(),
+    });
+    const response = await fetchWithAuth(`/nodes/${nodeId}/pcf-requests?${queryParams}`);
+    if (!response?.ok) throw new Error("Failed to fetch PCF requests");
+    return response.json();
+  }, [nodeId]);
 
   const footprintColumns: Column<Footprint>[] = [
     {
@@ -371,6 +402,50 @@ const NodeDashboardPage: React.FC = () => {
     },
   ];
 
+  const getPcfRequestStatusColor = (
+    status: string
+  ): "green" | "orange" | "red" | "gray" => {
+    switch (status) {
+      case "fulfilled": return "green";
+      case "pending": return "orange";
+      case "rejected": return "red";
+      default: return "gray";
+    }
+  };
+
+  const pcfRequestColumns: Column<PcfRequest>[] = [
+    {
+      key: "targetNodeId",
+      header: "Target Node",
+      render: (row) => (
+        <Text size="2">{row.targetNodeName ?? `Node #${row.targetNodeId}`}</Text>
+      ),
+    },
+    {
+      key: "status",
+      header: "Status",
+      render: (row) => (
+        <Badge color={getPcfRequestStatusColor(row.status)} style={{ textTransform: "capitalize" }}>
+          {row.status}
+        </Badge>
+      ),
+    },
+    {
+      key: "resultCount",
+      header: "Results",
+      render: (row) => (
+        <Text size="2">
+          {row.status === "fulfilled" ? (row.resultCount ?? 0) : "—"}
+        </Text>
+      ),
+    },
+    {
+      key: "createdAt",
+      header: "Sent",
+      render: (row) => <Text size="2">{formatDate(row.createdAt)}</Text>,
+    },
+  ];
+
   const logColumns: Column<ActivityLog>[] = [
     {
       key: "path",
@@ -415,6 +490,7 @@ const NodeDashboardPage: React.FC = () => {
     panel.mode === "edit" ? "Edit Node" :
     panel.mode === "connections" ? "Manage Invites" :
     panel.mode === "createConnection" ? "Create Connection" :
+    panel.mode === "requestPcf" ? "Request PCF" :
     "";
 
   const panelSubtitle = nodeData?.name;
@@ -446,6 +522,9 @@ const NodeDashboardPage: React.FC = () => {
                 {pendingInvitationsCount > 0 && (
                   <Badge size="1" ml="2">{pendingInvitationsCount}</Badge>
                 )}
+              </DropdownMenu.Item>
+              <DropdownMenu.Item onSelect={() => setPanel({ mode: "requestPcf" })}>
+                <PlusIcon /> Request PCF
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
               <DropdownMenu.Item color="red" disabled={deleting} onSelect={handleDelete}>
@@ -546,6 +625,32 @@ const NodeDashboardPage: React.FC = () => {
 
           <Separator size="4" my="4" />
 
+          {/* PCF Requests Section */}
+          <section className="node-dashboard-section">
+            <Flex mb="3" gap="2">
+              <Box flexGrow="1">
+                <Heading size="4">PCF Requests</Heading>
+              </Box>
+              <Button onClick={() => setPanel({ mode: "requestPcf" })}>
+                <PlusIcon /> Request PCF
+              </Button>
+            </Flex>
+            <PaginatedDataTable<PcfRequest>
+              isSearchable={false}
+              fetchData={fetchPcfRequests}
+              columns={pcfRequestColumns}
+              idColumnName="id"
+              defaultPageSize={5}
+              refreshTrigger={pcfRequestsRefreshTrigger}
+              emptyState={{
+                title: "No PCF requests sent",
+                description: "PCF requests sent to connected nodes will appear here.",
+              }}
+            />
+          </section>
+
+          <Separator size="4" my="4" />
+
           {/* Activity Logs Section */}
           <section className="node-dashboard-section">
             <Heading size="4" mb="3">Activity Logs</Heading>
@@ -593,6 +698,17 @@ const NodeDashboardPage: React.FC = () => {
             key={nodeId}
             fromNodeId={Number(nodeId)}
             onCancel={handlePanelClose}
+          />
+        )}
+        {panel.mode === "requestPcf" && nodeId && (
+          <RequestPcfForm
+            key={nodeId}
+            fromNodeId={Number(nodeId)}
+            onCancel={handlePanelClose}
+            onSent={() => {
+              setPcfRequestsRefreshTrigger(prev => prev + 1);
+              handlePanelClose();
+            }}
           />
         )}
       </SlideOverPanel>

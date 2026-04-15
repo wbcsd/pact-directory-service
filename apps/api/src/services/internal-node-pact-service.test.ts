@@ -13,7 +13,7 @@ jest.mock('@src/common/logger', () => ({
 
 jest.mock('@src/common/config', () => ({
   JWT_SECRET: 'test-secret',
-  INTERNAL_API_BASE_URL: 'http://localhost:3010',
+  DIRECTORY_API: 'http://localhost:3010',
   CONFORMANCE_API_INTERNAL: 'https://conformance.example.com',
 }));
 

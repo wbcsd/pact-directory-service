@@ -137,18 +137,9 @@ export class NodeService {
       throw new BadRequestError('Node type must be either "internal" or "external"');
     }
 
-    // Determine API URL
-    let apiUrl: string;
-    if (data.type === 'internal') {
-      // For internal nodes, generate API URL based on configuration
-      // This will be set after we know the node ID, so we use a placeholder for now
-      apiUrl = ''; // Will be updated after insert
-    } else {
-      // For external nodes, API URL is required
-      if (!data.apiUrl || data.apiUrl.trim().length === 0) {
+    // API URL required for external nodes, will be generated for internal nodes
+    if (data.type !== 'internal' && (!data.apiUrl || data.apiUrl.trim().length === 0)) {
         throw new BadRequestError('API URL is required for external nodes');
-      }
-      apiUrl = data.apiUrl.trim();
     }
 
     // Insert the node
@@ -158,7 +149,7 @@ export class NodeService {
         organizationId,
         name: data.name.trim(),
         type: data.type,
-        apiUrl: apiUrl,
+        apiUrl: data.apiUrl?.trim() || '', // Set API URL for external nodes, null for internal (will update later)
         status: 'active',
         authBaseUrl: data.type === 'external' ? (data.authBaseUrl?.trim() ?? null) : null,
         scope: data.type === 'external' ? (data.scope?.trim() ?? null) : null,
@@ -173,8 +164,7 @@ export class NodeService {
 
     // If internal node, update API URL with the node ID
     if (data.type === 'internal') {
-      const baseUrl = config.FRONTEND_URL || 'https://directory.carbon-transparency.org';
-      const generatedApiUrl = `${baseUrl}/api/nodes/${result.id}`;
+      const generatedApiUrl = `${config.DIRECTORY_API}/api/nodes/${result.id}`;
       
       await this.db
         .updateTable('nodes')
