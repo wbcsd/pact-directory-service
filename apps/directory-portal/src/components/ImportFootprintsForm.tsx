@@ -1,5 +1,5 @@
-// SIMPLE
-import React, { useRef, useState } from "react";
+
+import React, { useRef, useState, useCallback } from "react";
 import {
   Box,
   Button,
@@ -7,6 +7,7 @@ import {
   Flex,
   Spinner,
   Text,
+  TextField,
 } from "@radix-ui/themes";
 import {
   CheckCircledIcon,
@@ -45,36 +46,99 @@ const ImportFootprintsForm: React.FC<ImportFootprintsFormProps> = ({
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<ImportResult | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const [urlValue, setUrlValue] = useState("");
+  const [loadingUrl, setLoadingUrl] = useState(false);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setFileName(file.name);
+  const resetState = useCallback(() => {
     setParseError(null);
     setParsedItems(null);
     setResult(null);
     setSubmitError(null);
+  }, []);
 
+  const parseJson = useCallback((text: string, source: string) => {
+    try {
+      const json = JSON.parse(text);
+      const items = Array.isArray(json) ? json : json?.data ?? json?.footprints;
+      if (!Array.isArray(items)) {
+        setParseError(
+          "JSON must be an array of footprint objects, or an object with a \"data\" or \"footprints\" array."
+        );
+        return;
+      }
+      setParsedItems(items);
+      setFileName(source);
+    } catch {
+      setParseError("Invalid JSON. Please provide a valid JSON file or URL.");
+    }
+  }, []);
+
+  const handleFile = useCallback((file: File) => {
+    resetState();
     const reader = new FileReader();
     reader.onload = (event) => {
-      try {
-        const text = event.target?.result as string;
-        const json = JSON.parse(text);
-        const items = Array.isArray(json) ? json : json?.data ?? json?.footprints;
-        if (!Array.isArray(items)) {
-          setParseError(
-            "JSON must be an array of footprint objects, or an object with a \"data\" or \"footprints\" array."
-          );
-          return;
-        }
-        setParsedItems(items);
-      } catch {
-        setParseError("Invalid JSON file. Please upload a valid JSON file.");
-      }
+      parseJson(event.target?.result as string, file.name);
     };
     reader.readAsText(file);
+  }, [resetState, parseJson]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    handleFile(file);
   };
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      handleFile(file);
+      return;
+    }
+    const text = e.dataTransfer.getData("text/plain");
+    if (text) {
+      setUrlValue(text);
+    }
+  }, [handleFile]);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+  }, []);
+
+  const handleLoadUrl = useCallback(async () => {
+    const trimmed = urlValue.trim();
+    if (!trimmed) return;
+    try {
+      new URL(trimmed);
+    } catch {
+      setParseError("Please enter a valid URL.");
+      return;
+    }
+
+    resetState();
+    setLoadingUrl(true);
+    try {
+      const response = await fetch(trimmed);
+      if (!response.ok) {
+        setParseError(`Failed to fetch URL: ${response.status} ${response.statusText}`);
+        return;
+      }
+      const text = await response.text();
+      parseJson(text, trimmed);
+    } catch {
+      setParseError("Failed to fetch the URL. Check the URL and try again.");
+    } finally {
+      setLoadingUrl(false);
+    }
+  }, [urlValue, resetState, parseJson]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -117,13 +181,14 @@ const ImportFootprintsForm: React.FC<ImportFootprintsFormProps> = ({
     <form onSubmit={handleSubmit}>
       <Box className="node-form">
         <Text as="p" size="2" color="gray" mb="4">
-          Upload a JSON file containing PACT-conformant Product Carbon Footprint
-          records. The file should be an array of PCF objects (or an object with
-          a <code>data</code> or <code>footprints</code> array). Each record is
-          validated against the PACT v3.0 schema before import.
+          Drop a JSON file or paste a URL containing PACT-conformant Product
+          Carbon Footprint records. The source should be an array of PCF objects
+          (or an object with a <code>data</code> or <code>footprints</code>{" "}
+          array). Each record is validated against the PACT v3.0 schema before
+          import.
         </Text>
 
-        {/* File picker */}
+        {/* Drop area + URL input */}
         <Box mb="4">
           <input
             ref={fileInputRef}
@@ -132,19 +197,51 @@ const ImportFootprintsForm: React.FC<ImportFootprintsFormProps> = ({
             style={{ display: "none" }}
             onChange={handleFileChange}
           />
-          <Flex gap="3" align="center">
+          <Box
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onClick={() => fileInputRef.current?.click()}
+            style={{
+              border: `2px dashed ${dragging ? "var(--accent-9)" : "var(--gray-6)"}`,
+              borderRadius: "var(--radius-2)",
+              padding: "var(--space-5)",
+              textAlign: "center",
+              cursor: "pointer",
+              background: dragging ? "var(--accent-2)" : "var(--gray-2)",
+              transition: "border-color 0.15s, background 0.15s",
+            }}
+          >
+            <UploadIcon width="24" height="24" style={{ marginBottom: 4, color: "var(--gray-9)" }} />
+            <Text as="p" size="2" color="gray">
+              {fileName
+                ? fileName
+                : "Drag & drop a JSON file here, or click to browse"}
+            </Text>
+          </Box>
+
+          <Flex gap="2" align="center" mt="3">
+            <Box style={{ flex: 1 }}>
+              <TextField.Root
+                placeholder="Or paste a URL to a JSON file…"
+                value={urlValue}
+                onChange={(e) => setUrlValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleLoadUrl();
+                  }
+                }}
+              />
+            </Box>
             <Button
               type="button"
               variant="soft"
-              onClick={() => fileInputRef.current?.click()}
+              disabled={!urlValue.trim() || loadingUrl}
+              onClick={handleLoadUrl}
             >
-              <UploadIcon /> Choose JSON file
+              {loadingUrl ? <Spinner /> : "Load"}
             </Button>
-            {fileName && (
-              <Text size="2" color="gray">
-                {fileName}
-              </Text>
-            )}
           </Flex>
         </Box>
 
