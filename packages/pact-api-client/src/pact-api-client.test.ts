@@ -93,7 +93,7 @@ describe('PactApiClientImpl', () => {
       // First call is discovery, second is auth, third is the actual request
       expect(mockFetch).toHaveBeenNthCalledWith(
         3,
-        'https://partner.com/pact/2/footprints',
+        'https://partner.com/pact/3/footprints',
         expect.objectContaining({
           method: 'GET',
           headers: {
@@ -112,7 +112,7 @@ describe('PactApiClientImpl', () => {
 
       expect(mockFetch).toHaveBeenNthCalledWith(
         3,
-        'https://partner.com/pact/2/footprints?limit=20&offset=10',
+        'https://partner.com/pact/3/footprints?limit=20&offset=10',
         expect.any(Object)
       );
     });
@@ -160,9 +160,9 @@ describe('PactApiClientImpl', () => {
 
     it('should parse pagination links from response', async () => {
       const linkHeader = [
-        '</2/footprints?limit=10&offset=0>; rel="first"',
-        '</2/footprints?limit=10&offset=10>; rel="next"',
-        '</2/footprints?limit=10&offset=90>; rel="last"',
+        '</3/footprints?limit=10&offset=0>; rel="first"',
+        '</3/footprints?limit=10&offset=10>; rel="next"',
+        '</3/footprints?limit=10&offset=90>; rel="last"',
       ].join(', ');
 
       mockFetch.mockResolvedValueOnce(createMockResponse(
@@ -173,9 +173,9 @@ describe('PactApiClientImpl', () => {
       const result = await client.listFootprints();
 
       expect(result.links).toEqual({
-        first: '/2/footprints?limit=10&offset=0',
-        next: '/2/footprints?limit=10&offset=10',
-        last: '/2/footprints?limit=10&offset=90',
+        first: '/3/footprints?limit=10&offset=0',
+        next: '/3/footprints?limit=10&offset=10',
+        last: '/3/footprints?limit=10&offset=90',
       });
     });
 
@@ -229,7 +229,7 @@ describe('PactApiClientImpl', () => {
       expect(result.data).toEqual(mockFootprint);
       expect(mockFetch).toHaveBeenNthCalledWith(
         3,
-        'https://partner.com/pact/2/footprints/fp-123',
+        'https://partner.com/pact/3/footprints/fp-123',
         expect.objectContaining({
           method: 'GET',
           headers: {
@@ -296,7 +296,7 @@ describe('PactApiClientImpl', () => {
       await client.requestFootprint(['prod-1', 'prod-2'], 'please send');
 
       const [url, init] = mockFetch.mock.calls[2] as [string, RequestInit];
-      expect(url).toBe('https://partner.com/pact/2/events');
+      expect(url).toBe('https://partner.com/pact/3/events');
       const body = JSON.parse(init.body as string);
       expect(body.type).toBe(EventTypes.RequestCreated);
       expect(body.source).toBe('https://my-node.example.com');

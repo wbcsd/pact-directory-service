@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "clean": "rimraf dist",
-    "build": "tsc --build tsconfig.prod.json && tsc-alias",
+    "build": "tsc --build tsconfig.prod.json && tsc-alias --project tsconfig.prod.json",
     "dev": "tsx watch ./src",
     "lint": "eslint ./src",
     "lint:tests": "eslint ./spec",

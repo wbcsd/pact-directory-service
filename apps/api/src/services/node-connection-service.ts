@@ -48,7 +48,7 @@ export class NodeConnectionService {
     private db: Kysely<Database>,
     private nodeService: NodeService,
     private emailService: EmailService,
-    private internalApiBaseUrl: string
+    private directoryApiBaseUrl: string
   ) {}
 
   /**
@@ -692,7 +692,7 @@ export class NodeConnectionService {
     // Create client with credentials — authentication happens automatically
     const baseUrl = targetNode.apiUrl
       ? targetNode.apiUrl.replace(/\/$/, '')
-      : `${this.internalApiBaseUrl}/api/nodes/${targetNode.id}`;
+      : `${this.directoryApiBaseUrl}/api/nodes/${targetNode.id}`;
 
     const client = new PactApiClient(
       baseUrl,

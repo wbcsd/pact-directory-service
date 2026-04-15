@@ -350,6 +350,28 @@ router.delete('/directory/footprints/:id', authenticate, context(async (req) => 
   );
 }));
 
+/////////////////// PCF Requests (outgoing)
+
+// Send a PCF request to a connected node
+router.post('/directory/nodes/:id/pcf-requests', authenticate, context(async (req, res) => {
+  const result = await req.services.pcfRequest.create(
+    req.context,
+    parseInt(req.params.id as string),
+    req.body
+  );
+  res.status(201);
+  return result;
+}));
+
+// List outgoing PCF requests for a node
+router.get('/directory/nodes/:id/pcf-requests', authenticate, context(async (req) => {
+  return req.services.pcfRequest.list(
+    req.context,
+    parseInt(req.params.id as string),
+    ListQuery.parse(req.query)
+  );
+}));
+
 
 //////////////// Organization connections
 
