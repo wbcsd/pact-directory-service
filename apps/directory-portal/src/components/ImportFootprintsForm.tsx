@@ -113,8 +113,8 @@ const ImportFootprintsForm: React.FC<ImportFootprintsFormProps> = ({
     setDragging(false);
   }, []);
 
-  const handleLoadUrl = useCallback(async () => {
-    const trimmed = urlValue.trim();
+  const handleLoadUrl = useCallback(async (url?: string) => {
+    const trimmed = (url ?? urlValue).trim();
     if (!trimmed) return;
     try {
       new URL(trimmed);
@@ -238,11 +238,36 @@ const ImportFootprintsForm: React.FC<ImportFootprintsFormProps> = ({
               type="button"
               variant="soft"
               disabled={!urlValue.trim() || loadingUrl}
-              onClick={handleLoadUrl}
+              onClick={() => handleLoadUrl()}
             >
               {loadingUrl ? <Spinner /> : "Load"}
             </Button>
           </Flex>
+
+          {/* Sample data sets */}
+          <Box mt="3">
+            <Text as="p" size="2" color="gray" mb="2">
+              Or load a sample data set:
+            </Text>
+            <Flex gap="2" wrap="wrap">
+              {[
+                { label: "Electronics", url: "https://raw.githubusercontent.com/wbcsd/pact-directory-service/refs/heads/feat/251-sample-data-sets/packages/pact-data-model/samples/electronics_sample.json" },
+                { label: "Cosmetics", url: "https://raw.githubusercontent.com/wbcsd/pact-directory-service/refs/heads/feat/251-sample-data-sets/packages/pact-data-model/samples/cosmetics_sample.json" },
+                { label: "Textile", url: "https://raw.githubusercontent.com/wbcsd/pact-directory-service/refs/heads/feat/251-sample-data-sets/packages/pact-data-model/samples/textile_sample.json" },
+              ].map((sample) => (
+                <Button
+                  key={sample.label}
+                  type="button"
+                  variant="outline"
+                  size="1"
+                  disabled={loadingUrl}
+                  onClick={() => handleLoadUrl(sample.url)}
+                >
+                  {sample.label}
+                </Button>
+              ))}
+            </Flex>
+          </Box>
         </Box>
 
         {/* Parse error */}
