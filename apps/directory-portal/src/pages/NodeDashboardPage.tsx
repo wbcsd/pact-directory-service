@@ -3,6 +3,7 @@ import {
   Badge,
   Button,
   Callout,
+  Dialog,
   DropdownMenu,
   Heading,
   IconButton,
@@ -13,10 +14,11 @@ import {
 } from "@radix-ui/themes";
 import {
   ArrowLeftIcon,
+  CheckIcon,
+  Cross2Icon,
   DotsHorizontalIcon,
   ExclamationTriangleIcon,
   InputIcon,
-  Link2Icon,
   PlusIcon,
   TrashIcon,
 } from "@radix-ui/react-icons";
@@ -27,7 +29,7 @@ import PaginatedDataTable, { PaginationInfo } from "../components/PaginatedDataT
 import { Column } from "../components/DataTable";
 import SlideOverPanel from "../components/SlideOverPanel";
 import NodeForm from "../components/NodeForm";
-import NodeConnectionsManager, { NodeConnection } from "../components/NodeConnectionsManager";
+import { NodeConnection } from "../components/NodeConnectionsManager";
 import CreateNodeConnectionForm from "../components/CreateNodeConnectionForm";
 import RequestPcfForm from "../components/RequestPcfForm";
 import "./NodeDashboardPage.css";
@@ -59,6 +61,12 @@ interface Footprint {
   data: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
+}
+
+interface ConnectionCredentials {
+  connectionId: number;
+  clientId: string;
+  clientSecret: string;
 }
 
 interface PcfRequest {
@@ -132,8 +140,8 @@ const NodeDashboardPage: React.FC = () => {
   const [panel, setPanel] = useState<PanelState>({ mode: "closed" });
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [connectionsRefreshTrigger, setConnectionsRefreshTrigger] = useState(0);
+  const [acceptedCredentials, setAcceptedCredentials] = useState<ConnectionCredentials | null>(null);
   const [pcfRequestsRefreshTrigger, setPcfRequestsRefreshTrigger] = useState(0);
-  const [pendingInvitationsCount, setPendingInvitationsCount] = useState(0);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
 
@@ -142,18 +150,6 @@ const NodeDashboardPage: React.FC = () => {
     closePanel();
     setRefreshTrigger((prev) => prev + 1);
   }, [closePanel]);
-
-  const fetchPendingCount = useCallback(async () => {
-    if (!nodeId) return;
-    try {
-      const res = await fetchWithAuth(`/nodes/${nodeId}/invitations?pageSize=1`);
-      if (!res?.ok) return;
-      const result = await res.json();
-      setPendingInvitationsCount(result.pagination?.total ?? 0);
-    } catch {
-      // silently ignore — badge is non-critical
-    }
-  }, [nodeId]);
 
   useEffect(() => {
     const fetchNodeData = async () => {      try {
@@ -173,17 +169,10 @@ const NodeDashboardPage: React.FC = () => {
     fetchNodeData();
   }, [nodeId, refreshTrigger]);
 
-  // Fetch pending invitations count on load and whenever the panel closes
-  useEffect(() => {
-    fetchPendingCount();
-  }, [fetchPendingCount, refreshTrigger]);
-
   const handlePanelClose = useCallback(() => {
     closePanel();
-    fetchPendingCount();
     setConnectionsRefreshTrigger(prev => prev + 1);
-    setPcfRequestsRefreshTrigger(prev => prev + 1);
-  }, [closePanel, fetchPendingCount]);
+  }, [closePanel]);
 
   const handleDelete = async () => {
     if (!window.confirm(`Are you sure you want to delete "${nodeData?.name}"? This action cannot be undone.`)) return;
@@ -268,6 +257,30 @@ const NodeDashboardPage: React.FC = () => {
     }
   }, []);
 
+  const handleAcceptInvitation = useCallback(async (invitationId: number) => {
+    try {
+      const response = await fetchWithAuth(`/node-invitations/${invitationId}/accept`, { method: "POST" });
+      if (response?.ok) {
+        const credentials: ConnectionCredentials = await response.json();
+        setAcceptedCredentials(credentials);
+        setConnectionsRefreshTrigger(prev => prev + 1);
+      }
+    } catch {
+      // silently ignore
+    }
+  }, []);
+
+  const handleRejectInvitation = useCallback(async (invitationId: number) => {
+    if (!confirm("Are you sure you want to reject this invitation?")) return;
+    try {
+      const response = await fetchWithAuth(`/node-invitations/${invitationId}/reject`, { method: "POST" });
+      if (response?.ok) {
+        setConnectionsRefreshTrigger(prev => prev + 1);
+      }
+    } catch {
+      // silently ignore
+    }
+  }, []);
   const fetchPcfRequests = useCallback(async (params: {
     page: number;
     pageSize: number;
@@ -324,39 +337,34 @@ const NodeDashboardPage: React.FC = () => {
 
   const connectionColumns: Column<NodeConnection>[] = [
     {
-      key: "id",
-      header: "ID",
+      key: "connectedNode",
+      header: "Connected Node",
       sortable: true,
-      sortValue: (row: NodeConnection) => row.id,
-      render: (row: NodeConnection) => `#${row.id}`,
-    },
-    {
-      key: "fromNodeId",
-      header: "From Node",
-      sortable: true,
-      sortValue: (row: NodeConnection) => row.fromNodeName ?? row.fromNodeId,
+      sortValue: (row: NodeConnection) => {
+        const isOutgoing = row.fromNodeId === Number(nodeId);
+        return isOutgoing
+          ? (row.targetNodeName ?? row.targetNodeId)
+          : (row.fromNodeName ?? row.fromNodeId);
+      },
       render: (row: NodeConnection) => {
         const isOutgoing = row.fromNodeId === Number(nodeId);
-        const label = row.fromNodeName ?? `Node #${row.fromNodeId}`;
+        const otherNodeId = isOutgoing ? row.targetNodeId : row.fromNodeId;
+        const otherName = isOutgoing
+          ? (row.targetNodeName ?? `Node #${row.targetNodeId}`)
+          : (row.fromNodeName ?? `Node #${row.fromNodeId}`);
         return (
-          <span style={{ fontWeight: isOutgoing ? "600" : "normal" }}>
-            {label} {isOutgoing && "(This Node)"}
-          </span>
-        );
-      },
-    },
-    {
-      key: "targetNodeId",
-      header: "Target Node",
-      sortable: true,
-      sortValue: (row: NodeConnection) => row.targetNodeName ?? row.targetNodeId,
-      render: (row: NodeConnection) => {
-        const isIncoming = row.targetNodeId === Number(nodeId);
-        const label = row.targetNodeName ?? `Node #${row.targetNodeId}`;
-        return (
-          <span style={{ fontWeight: isIncoming ? "600" : "normal" }}>
-            {label} {isIncoming && "(This Node)"}
-          </span>
+          <Flex align="center" gap="2">
+            <a
+              href={`/nodes/${otherNodeId}`}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate(`/nodes/${otherNodeId}`); }}
+              style={{ color: 'var(--accent-11)', textDecoration: 'none', fontWeight: 500 }}
+            >
+              {otherName}
+            </a>
+            <Badge size="1" color="gray" variant="soft">
+              {isOutgoing ? "Outgoing" : "Incoming"}
+            </Badge>
+          </Flex>
         );
       },
     },
@@ -366,21 +374,15 @@ const NodeDashboardPage: React.FC = () => {
       sortable: true,
       sortValue: (row: NodeConnection) => row.status,
       render: (row: NodeConnection) => {
-        const statusColors: Record<string, string> = {
-          accepted: "#16a34a",
-          pending: "#ea580c",
-          rejected: "#dc2626",
+        const statusColors: Record<string, "green" | "yellow" | "red"> = {
+          accepted: "green",
+          pending: "yellow",
+          rejected: "red",
         };
         return (
-          <span
-            style={{
-              textTransform: "capitalize",
-              color: statusColors[row.status],
-              fontWeight: "600",
-            }}
-          >
+          <Badge color={statusColors[row.status] ?? "gray"} style={{ textTransform: "capitalize" }}>
             {row.status}
-          </span>
+          </Badge>
         );
       },
     },
@@ -388,17 +390,42 @@ const NodeDashboardPage: React.FC = () => {
       key: "actions",
       header: "Actions",
       extendedStyle: { textAlign: "right" },
-      render: (row: NodeConnection) => (
-        <Button
-          size="1"
-          variant="soft"
-          color="red"
-          onClick={() => handleRemoveConnection(row.id)}
-        >
-          <TrashIcon style={{ marginRight: "4px" }} />
-          Remove
-        </Button>
-      ),
+      render: (row: NodeConnection) => {
+        const isIncomingPending = row.status === "pending" && row.targetNodeId === Number(nodeId);
+        const isOutgoingPending = row.status === "pending" && row.fromNodeId === Number(nodeId);
+        if (isIncomingPending) {
+          return (
+            <Flex gap="2" justify="end">
+              <Button size="1" variant="soft" color="green" onClick={() => handleAcceptInvitation(row.id)}>
+                <CheckIcon />
+                Accept
+              </Button>
+              <Button size="1" variant="soft" color="red" onClick={() => handleRejectInvitation(row.id)}>
+                <Cross2Icon />
+                Reject
+              </Button>
+            </Flex>
+          );
+        }
+        if (isOutgoingPending) {
+          return (
+            <Flex gap="2" justify="end">
+              <Button size="1" variant="soft" color="red" onClick={() => handleRemoveConnection(row.id)}>
+                <TrashIcon />
+                Cancel
+              </Button>
+            </Flex>
+          );
+        }
+        return (
+          <Flex gap="2" justify="end">
+            <Button size="1" variant="soft" color="red" onClick={() => handleRemoveConnection(row.id)}>
+              <TrashIcon />
+              Remove
+            </Button>
+          </Flex>
+        );
+      },
     },
   ];
 
@@ -488,7 +515,6 @@ const NodeDashboardPage: React.FC = () => {
 
   const panelTitle =
     panel.mode === "edit" ? "Edit Node" :
-    panel.mode === "connections" ? "Manage Invites" :
     panel.mode === "createConnection" ? "Create Connection" :
     panel.mode === "requestPcf" ? "Request PCF" :
     "";
@@ -516,12 +542,6 @@ const NodeDashboardPage: React.FC = () => {
             <DropdownMenu.Content align="end">
               <DropdownMenu.Item onSelect={() => setPanel({ mode: "edit" })}>
                 <InputIcon /> Edit Node
-              </DropdownMenu.Item>
-              <DropdownMenu.Item onSelect={() => setPanel({ mode: "connections" })}>
-                <Link2Icon /> Manage Invites
-                {pendingInvitationsCount > 0 && (
-                  <Badge size="1" ml="2">{pendingInvitationsCount}</Badge>
-                )}
               </DropdownMenu.Item>
               <DropdownMenu.Item onSelect={() => setPanel({ mode: "requestPcf" })}>
                 <PlusIcon /> Request PCF
@@ -671,6 +691,34 @@ const NodeDashboardPage: React.FC = () => {
             />
           </section>
 
+      {/* Credentials dialog after accepting invitation */}
+      <Dialog.Root open={acceptedCredentials !== null} onOpenChange={(open) => { if (!open) setAcceptedCredentials(null); }}>
+        <Dialog.Content maxWidth="480px">
+          <Dialog.Title>Connection Accepted</Dialog.Title>
+          <Dialog.Description size="2" color="gray" mb="4">
+            Save these credentials securely. You will need them to configure the connection on your node.
+          </Dialog.Description>
+          {acceptedCredentials && (
+            <>
+              <Box mb="4" p="3" style={{ background: 'var(--gray-a3)', borderRadius: 'var(--radius-2)', fontFamily: 'monospace', fontSize: '13px', lineHeight: '1.8' }}>
+                <div><strong>Connection ID:</strong> {acceptedCredentials.connectionId}</div>
+                <div><strong>Client ID:</strong> {acceptedCredentials.clientId}</div>
+                <div><strong>Client Secret:</strong> {acceptedCredentials.clientSecret}</div>
+              </Box>
+              <Callout.Root color="yellow" mb="4">
+                <Callout.Icon><ExclamationTriangleIcon /></Callout.Icon>
+                <Callout.Text>The client secret will only be shown once. Make sure to copy and store it securely before closing this dialog.</Callout.Text>
+              </Callout.Root>
+            </>
+          )}
+          <Flex justify="end">
+            <Dialog.Close>
+              <Button variant="soft">Close</Button>
+            </Dialog.Close>
+          </Flex>
+        </Dialog.Content>
+      </Dialog.Root>
+
       {/* Slide-over panels */}
       <SlideOverPanel
         open={panel.mode !== "closed"}
@@ -684,13 +732,6 @@ const NodeDashboardPage: React.FC = () => {
             nodeId={Number(nodeId)}
             onCancel={closePanel}
             onSaved={handleSaved}
-          />
-        )}
-        {panel.mode === "connections" && nodeId && (
-          <NodeConnectionsManager
-            key={nodeId}
-            nodeId={nodeId}
-            onClose={closePanel}
           />
         )}
         {panel.mode === "createConnection" && nodeId && (

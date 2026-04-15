@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { InternalNodeAuthService } from './internal-node-auth-service';
 import { UnauthorizedError, NotFoundError, BadRequestError } from '@src/common/errors';
-import config from '@src/common/config';
 import { NodeService } from './node-service';
 import { NodeConnectionService } from './node-connection-service';
 
