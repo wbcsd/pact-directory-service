@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Callout,
+  Checkbox,
   Flex,
   Select,
   Spinner,
@@ -71,10 +72,9 @@ const RequestPcfForm: React.FC<RequestPcfFormProps> = ({
   const [companyId, setCompanyId] = useState("");
   const [geography, setGeography] = useState("");
   const [classification, setClassification] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
-  const [validOn, setValidOn] = useState("");
-  const [validAfter, setValidAfter] = useState("");
-  const [validBefore, setValidBefore] = useState("");
+  const [includeDeprecated, setIncludeDeprecated] = useState(false);
+  const [validDate, setValidDate] = useState("");
+  const [validOperand, setValidOperand] = useState<"on" | "after" | "before">("on");
 
   const fetchConnections = useCallback(async () => {
     try {
@@ -102,10 +102,8 @@ const RequestPcfForm: React.FC<RequestPcfFormProps> = ({
     parseArray(companyId) ||
     parseArray(geography) ||
     parseArray(classification) ||
-    filterStatus ||
-    validOn ||
-    validAfter ||
-    validBefore;
+    includeDeprecated ||
+    validDate;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -131,10 +129,12 @@ const RequestPcfForm: React.FC<RequestPcfFormProps> = ({
     if (parsedGeography) filters.geography = parsedGeography;
     const parsedClassification = parseArray(classification);
     if (parsedClassification) filters.classification = parsedClassification;
-    if (filterStatus) filters.status = filterStatus;
-    if (validOn) filters.validOn = validOn;
-    if (validAfter) filters.validAfter = validAfter;
-    if (validBefore) filters.validBefore = validBefore;
+    if (!includeDeprecated) filters.status = "Active";
+    if (validDate) {
+      if (validOperand === "on") filters.validOn = validDate;
+      else if (validOperand === "after") filters.validAfter = validDate;
+      else filters.validBefore = validDate;
+    }
 
     try {
       setSubmitting(true);
@@ -249,25 +249,28 @@ const RequestPcfForm: React.FC<RequestPcfFormProps> = ({
           Filters — at least one required
         </Text>
 
-        <Form.Field name="productId" className="form-field">
-          <Form.Label className="field-label">Product ID(s)</Form.Label>
-          <TextField.Root
-            placeholder="e.g. urn:uuid:abc, urn:uuid:def"
-            value={productId}
-            onChange={(e) => setProductId(e.target.value)}
-          />
-          <Text size="1" color="gray">Comma-separated product identifier URNs</Text>
-        </Form.Field>
+        {/* Product ID + Company ID side by side */}
+        <Flex gap="3">
+          <Form.Field name="productId" className="form-field" style={{ flex: 1 }}>
+            <Form.Label className="field-label">Product ID(s)</Form.Label>
+            <TextField.Root
+              placeholder="e.g. urn:uuid:abc, urn:uuid:def"
+              value={productId}
+              onChange={(e) => setProductId(e.target.value)}
+            />
+            <Text size="1" color="gray">Comma-separated URNs</Text>
+          </Form.Field>
 
-        <Form.Field name="companyId" className="form-field">
-          <Form.Label className="field-label">Company ID(s)</Form.Label>
-          <TextField.Root
-            placeholder="e.g. urn:uuid:org1"
-            value={companyId}
-            onChange={(e) => setCompanyId(e.target.value)}
-          />
-          <Text size="1" color="gray">Comma-separated company identifier URNs</Text>
-        </Form.Field>
+          <Form.Field name="companyId" className="form-field" style={{ flex: 1 }}>
+            <Form.Label className="field-label">Company ID(s)</Form.Label>
+            <TextField.Root
+              placeholder="e.g. urn:uuid:org1"
+              value={companyId}
+              onChange={(e) => setCompanyId(e.target.value)}
+            />
+            <Text size="1" color="gray">Comma-separated URNs</Text>
+          </Form.Field>
+        </Flex>
 
         <Form.Field name="geography" className="form-field">
           <Form.Label className="field-label">Geography</Form.Label>
@@ -289,47 +292,42 @@ const RequestPcfForm: React.FC<RequestPcfFormProps> = ({
           <Text size="1" color="gray">Comma-separated product classification URNs</Text>
         </Form.Field>
 
-        <Form.Field name="filterStatus" className="form-field">
-          <Form.Label className="field-label">Status</Form.Label>
-          <Select.Root
-            value={filterStatus}
-            onValueChange={(v) => setFilterStatus(v === "any" ? "" : v)}
-          >
-            <Select.Trigger placeholder="Any" style={{ width: "100%" }} />
-            <Select.Content>
-              <Select.Item value="any">Any</Select.Item>
-              <Select.Item value="Active">Active</Select.Item>
-              <Select.Item value="Deprecated">Deprecated</Select.Item>
-            </Select.Content>
-          </Select.Root>
+        {/* Valid date with operand selector */}
+        <Form.Field name="validDate" className="form-field">
+          <Form.Label className="field-label">Valid Date</Form.Label>
+          <Flex gap="2">
+            <Select.Root
+              value={validOperand}
+              onValueChange={(v) => setValidOperand(v as "on" | "after" | "before")}
+            >
+              <Select.Trigger style={{ width: "120px" }} />
+              <Select.Content>
+                <Select.Item value="on">On</Select.Item>
+                <Select.Item value="after">After</Select.Item>
+                <Select.Item value="before">Before</Select.Item>
+              </Select.Content>
+            </Select.Root>
+            <TextField.Root
+              type="date"
+              value={validDate}
+              onChange={(e) => setValidDate(e.target.value)}
+              style={{ flex: 1 }}
+            />
+          </Flex>
         </Form.Field>
 
-        <Form.Field name="validOn" className="form-field">
-          <Form.Label className="field-label">Valid On</Form.Label>
-          <TextField.Root
-            type="date"
-            value={validOn}
-            onChange={(e) => setValidOn(e.target.value)}
-          />
-        </Form.Field>
-
-        <Form.Field name="validAfter" className="form-field">
-          <Form.Label className="field-label">Valid After</Form.Label>
-          <TextField.Root
-            type="date"
-            value={validAfter}
-            onChange={(e) => setValidAfter(e.target.value)}
-          />
-        </Form.Field>
-
-        <Form.Field name="validBefore" className="form-field">
-          <Form.Label className="field-label">Valid Before</Form.Label>
-          <TextField.Root
-            type="date"
-            value={validBefore}
-            onChange={(e) => setValidBefore(e.target.value)}
-          />
-        </Form.Field>
+        {/* Include deprecated checkbox */}
+        <Box className="form-field">
+          <Text as="label" size="2">
+            <Flex gap="2" align="center">
+              <Checkbox
+                checked={includeDeprecated}
+                onCheckedChange={(checked) => setIncludeDeprecated(checked === true)}
+              />
+              Include deprecated PCFs?
+            </Flex>
+          </Text>
+        </Box>
 
         <Flex gap="3" mt="5">
           <Button type="submit" disabled={submitting || connections.length === 0}>
