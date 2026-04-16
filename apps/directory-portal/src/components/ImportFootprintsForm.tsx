@@ -290,7 +290,7 @@ const ImportFootprintsForm: React.FC<ImportFootprintsFormProps> = ({
                         disabled={loadingUrl}
                         onClick={() =>
                           handleLoadUrl(
-                            `https://github.com/wbcsd/pact-directory-service/raw/refs/heads/develop/packages/pact-data-model/samples/${tier.file}`
+                            `https://raw.githubusercontent.com/wbcsd/pact-directory-service/refs/heads/develop/packages/pact-data-model/samples/${tier.file}`
                           )
                         }
                       >
