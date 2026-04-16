@@ -249,22 +249,56 @@ const ImportFootprintsForm: React.FC<ImportFootprintsFormProps> = ({
             <Text as="p" size="2" color="gray" mb="2">
               Or load a sample data set:
             </Text>
-            <Flex gap="2" wrap="wrap">
+            <Flex direction="column" gap="2">
               {[
-                { label: "Electronics", url: "https://raw.githubusercontent.com/wbcsd/pact-directory-service/refs/heads/feat/251-sample-data-sets/packages/pact-data-model/samples/electronics_sample.json" },
-                { label: "Cosmetics", url: "https://raw.githubusercontent.com/wbcsd/pact-directory-service/refs/heads/feat/251-sample-data-sets/packages/pact-data-model/samples/cosmetics_sample.json" },
-                { label: "Textile", url: "https://raw.githubusercontent.com/wbcsd/pact-directory-service/refs/heads/feat/251-sample-data-sets/packages/pact-data-model/samples/textile_sample.json" },
-              ].map((sample) => (
-                <Button
-                  key={sample.label}
-                  type="button"
-                  variant="outline"
-                  size="1"
-                  disabled={loadingUrl}
-                  onClick={() => handleLoadUrl(sample.url)}
-                >
-                  {sample.label}
-                </Button>
+                {
+                  sector: "Electronics",
+                  tiers: [
+                    { label: "Tier 1 – End Products", file: "electronics_tier_1_sample.json" },
+                    { label: "Tier 2 – Components", file: "electronics_tier_2_sample.json" },
+                    { label: "Tier 3 – Raw Materials", file: "electronics_tier_3_sample.json" },
+                  ],
+                },
+                {
+                  sector: "Cosmetics",
+                  tiers: [
+                    { label: "Tier 1 – End Products", file: "cosmetics_tier_1_sample.json" },
+                    { label: "Tier 2 – Components", file: "cosmetics_tier_2_sample.json" },
+                    { label: "Tier 3 – Raw Materials", file: "cosmetics_tier_3_sample.json" },
+                  ],
+                },
+                {
+                  sector: "Textile",
+                  tiers: [
+                    { label: "Tier 1 – End Products", file: "textile_tier_1_sample.json" },
+                    { label: "Tier 2 – Components", file: "textile_tier_2_sample.json" },
+                    { label: "Tier 3 – Raw Materials", file: "textile_tier_3_sample.json" },
+                  ],
+                },
+              ].map((group) => (
+                <Box key={group.sector}>
+                  <Text as="p" size="1" weight="medium" mb="1">
+                    {group.sector}
+                  </Text>
+                  <Flex gap="2" wrap="wrap">
+                    {group.tiers.map((tier) => (
+                      <Button
+                        key={tier.file}
+                        type="button"
+                        variant="outline"
+                        size="1"
+                        disabled={loadingUrl}
+                        onClick={() =>
+                          handleLoadUrl(
+                            `https://raw.githubusercontent.com/wbcsd/pact-directory-service/refs/heads/feat/251-sample-data-sets/packages/pact-data-model/samples/${tier.file}`
+                          )
+                        }
+                      >
+                        {tier.label}
+                      </Button>
+                    ))}
+                  </Flex>
+                </Box>
               ))}
             </Flex>
           </Box>

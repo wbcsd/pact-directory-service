@@ -1,0 +1,521 @@
+[
+  {
+    "id": "f9a433b0-d6cc-49bd-8649-cbeed1df15dd",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Foxconn Industrial",
+    "companyIds": [
+      "urn:pact:company:foxconn-ind"
+    ],
+    "productDescription": "10-layer HDI PCB with SMT components mounted (SoC, PMIC, RF transceiver, memory), fully tested. Main board for flagship smartphone.",
+    "productIds": [
+      "urn:pact:product:foxconn-pcba-main-001"
+    ],
+    "productNameCompany": "Smartphone Main PCB Assembly",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47210"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.032",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "5.80",
+      "pcfIncludingBiogenicUptake": "5.80",
+      "fossilGhgEmissions": "5.60",
+      "fossilCarbonContent": "0.04",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "PCB fabrication, solder paste printing, SMT pick-and-place, reflow soldering, AOI/ICT testing.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CN",
+      "packagingGhgEmissions": "0.03",
+      "primaryDataShare": "0.55",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "1.5",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "b6ebedb0-89cc-411f-8c3e-41da79285885",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Samsung SDI",
+    "companyIds": [
+      "urn:pact:company:samsung-sdi"
+    ],
+    "productDescription": "Pouch-type Li-ion battery cell, NMC811 cathode, 5000mAh, 3.87V nominal. For use in smartphones, tablets, and wearables.",
+    "productIds": [
+      "urn:pact:product:samsung-sdi-cell-5000-001"
+    ],
+    "productNameCompany": "Lithium-Ion Battery Cell 5000mAh",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:46410"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.058",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "6.20",
+      "pcfIncludingBiogenicUptake": "6.20",
+      "fossilGhgEmissions": "6.05",
+      "fossilCarbonContent": "0.02",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Cathode/anode slurry mixing, electrode coating, calendering, slitting, stacking, electrolyte filling, formation, aging, testing.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "KR",
+      "packagingGhgEmissions": "0.04",
+      "primaryDataShare": "0.68",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "GaBi",
+          "version": "2024.1"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.0"
+      }
+    }
+  },
+  {
+    "id": "384fbd39-e2bd-4462-85c0-e68f990154e2",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "BOE Technology",
+    "companyIds": [
+      "urn:pact:company:boe-tech"
+    ],
+    "productDescription": "6.7-inch flexible AMOLED display module, 2400x1080 resolution, LTPO backplane, integrated touch digitizer and driver IC.",
+    "productIds": [
+      "urn:pact:product:boe-amoled-67-001"
+    ],
+    "productNameCompany": "6.7\" AMOLED Display Module",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47310"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.035",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "7.50",
+      "pcfIncludingBiogenicUptake": "7.50",
+      "fossilGhgEmissions": "7.30",
+      "fossilCarbonContent": "0.03",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "LTPO TFT backplane fabrication, OLED deposition (FMM evaporation), encapsulation, touch sensor lamination, driver IC bonding, module assembly.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CN",
+      "packagingGhgEmissions": "0.05",
+      "primaryDataShare": "0.60",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "1.5",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "9cb7bef1-91a3-4ab2-bb09-8a5e4f432a86",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Qualcomm Technologies",
+    "companyIds": [
+      "urn:pact:company:qualcomm-tech"
+    ],
+    "productDescription": "Advanced mobile system-on-chip, 4nm process node, packaged in FOWLP. Integrates CPU, GPU, NPU, 5G modem, ISP.",
+    "productIds": [
+      "urn:pact:product:qualcomm-soc-snap-001"
+    ],
+    "productNameCompany": "Snapdragon Mobile SoC (Packaged)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47130"
+    ],
+    "comment": "SAMPLE: Wafer fabrication outsourced to TSMC. Primary data covers packaging and test; secondary data for foundry processes.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.004",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "1.80",
+      "pcfIncludingBiogenicUptake": "1.80",
+      "fossilGhgEmissions": "1.75",
+      "fossilCarbonContent": "0.002",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Wafer fabrication (TSMC foundry), wafer probe, FOWLP packaging, final test, marking.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "TW",
+      "packagingGhgEmissions": "0.01",
+      "primaryDataShare": "0.50",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        },
+        {
+          "name": "TSMC ESG Report",
+          "version": "2024"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.5",
+        "geographicalDQR": "1.5",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "10014f4c-f281-4ced-a3fe-0808b1f4efbb",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Amphenol Corporation",
+    "companyIds": [
+      "urn:pact:company:amphenol-corp"
+    ],
+    "productDescription": "USB Type-C receptacle connector, 24-pin, SMT mount, with EMI shielding and waterproof gasket (IP68).",
+    "productIds": [
+      "urn:pact:product:amphenol-usbc-001"
+    ],
+    "productNameCompany": "USB-C Connector Assembly",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47120"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "100",
+      "productMassPerDeclaredUnit": "0.15",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "0.85",
+      "pcfIncludingBiogenicUptake": "0.85",
+      "fossilGhgEmissions": "0.82",
+      "fossilCarbonContent": "0.005",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Contact stamping, insert molding, plating (Ni/Au), assembly, gasket insertion, electrical testing, tape-and-reel.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CN",
+      "packagingGhgEmissions": "0.02",
+      "primaryDataShare": "0.65",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "1c72354b-64fd-4bb2-a923-1a3e18f8ef80",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "AAC Technologies",
+    "companyIds": [
+      "urn:pact:company:aac-tech"
+    ],
+    "productDescription": "48MP rear camera module with OIS, f/1.8 aperture, 1/1.56\" sensor, 6P lens assembly, voice coil motor, and flex cable.",
+    "productIds": [
+      "urn:pact:product:aac-camera-mod-001"
+    ],
+    "productNameCompany": "Smartphone Camera Module",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47310"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.008",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "1.20",
+      "pcfIncludingBiogenicUptake": "1.20",
+      "fossilGhgEmissions": "1.15",
+      "fossilCarbonContent": "0.003",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Lens element molding, barrel assembly, VCM assembly, sensor die attach, wire bonding, module assembly, active alignment, testing.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CN",
+      "packagingGhgEmissions": "0.01",
+      "primaryDataShare": "0.58",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "dff46ad9-a8e0-4567-adfb-be777f52e976",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Delta Electronics",
+    "companyIds": [
+      "urn:pact:company:delta-electronics"
+    ],
+    "productDescription": "Assembled PCB for 65W GaN fast charger, including GaN FETs, transformer, control IC, and output USB-C port. Requires enclosure for final product.",
+    "productIds": [
+      "urn:pact:product:delta-charger-pcb-001"
+    ],
+    "productNameCompany": "65W GaN USB-C Charger PCB",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47210"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.045",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "2.10",
+      "pcfIncludingBiogenicUptake": "2.10",
+      "fossilGhgEmissions": "2.00",
+      "fossilCarbonContent": "0.015",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "PCB fabrication, SMT assembly, selective soldering for through-hole components, transformer winding, ICT/FCT testing.",
+      "packagingEmissionsIncluded": false,
+      "geographyCountry": "TW",
+      "primaryDataShare": "0.62",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "GaBi",
+          "version": "2024.1"
+        }
+      ]
+    }
+  },
+  {
+    "id": "a370950a-d229-489d-9f29-7a72bdd4713b",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Luxshare Precision",
+    "companyIds": [
+      "urn:pact:company:luxshare-prec"
+    ],
+    "productDescription": "6mm balanced armature + dynamic driver hybrid unit for true wireless stereo earbuds, including diaphragm, voice coil, and magnet assembly.",
+    "productIds": [
+      "urn:pact:product:luxshare-driver-001"
+    ],
+    "productNameCompany": "TWS Earbuds Driver Unit",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47310"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.003",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "0.35",
+      "pcfIncludingBiogenicUptake": "0.35",
+      "fossilGhgEmissions": "0.33",
+      "fossilCarbonContent": "0.002",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Magnet sintering, voice coil winding, diaphragm forming, driver assembly, acoustic testing.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CN",
+      "packagingGhgEmissions": "0.005",
+      "primaryDataShare": "0.55",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "9ce9f44d-9f80-448a-b34e-0455313c4d62",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Sunwoda Electronic",
+    "companyIds": [
+      "urn:pact:company:sunwoda-elec"
+    ],
+    "productDescription": "4-cell lithium polymer battery pack, 56Wh, with BMS, protection circuitry, and connector. For 14-inch ultrabook laptops.",
+    "productIds": [
+      "urn:pact:product:sunwoda-laptop-batt-001"
+    ],
+    "productNameCompany": "Laptop Battery Pack 56Wh",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:46410"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.310",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "32.50",
+      "pcfIncludingBiogenicUptake": "32.50",
+      "fossilGhgEmissions": "31.80",
+      "fossilCarbonContent": "0.10",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Cell assembly, BMS PCB manufacturing, spot welding, enclosure assembly, charge/discharge testing, pack-level safety testing.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CN",
+      "packagingGhgEmissions": "0.15",
+      "primaryDataShare": "0.60",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "1.5",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "43bb0c3b-83aa-444b-92aa-1b675468d52d",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Pegatron Corporation",
+    "companyIds": [
+      "urn:pact:company:pegatron-corp"
+    ],
+    "productDescription": "Backlit scissor-switch keyboard module with aluminum frame, 78-key layout, integrated trackpad flex cable, for 14-inch ultrabook.",
+    "productIds": [
+      "urn:pact:product:pegatron-keyboard-001"
+    ],
+    "productNameCompany": "Laptop Keyboard Module",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47290"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.095",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "3.20",
+      "pcfIncludingBiogenicUptake": "3.20",
+      "fossilGhgEmissions": "3.10",
+      "fossilCarbonContent": "0.02",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Key cap injection molding, scissor mechanism stamping, membrane circuit printing, LED backlighting, aluminum frame CNC, assembly, key force testing.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CN",
+      "packagingGhgEmissions": "0.03",
+      "primaryDataShare": "0.50",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ]
+    }
+  }
+]

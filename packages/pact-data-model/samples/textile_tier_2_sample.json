@@ -1,0 +1,508 @@
+[
+  {
+    "id": "5ad62ca5-4d5e-4268-92dc-cd1a880970ab",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Lu Thai Textile",
+    "companyIds": [
+      "urn:pact:company:lu-thai-textile"
+    ],
+    "productDescription": "100% combed cotton poplin fabric, 120 GSM, yarn-dyed, wrinkle-free finish. For dress shirts and blouses.",
+    "productIds": [
+      "urn:pact:product:luthai-poplin-001"
+    ],
+    "productNameCompany": "Cotton Poplin Fabric (Woven)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:26710"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "square meter",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.120",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "4.80",
+      "pcfIncludingBiogenicUptake": "3.50",
+      "fossilGhgEmissions": "3.20",
+      "fossilCarbonContent": "0.01",
+      "biogenicCarbonContent": "0.05",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Yarn spinning, warping, sizing, weaving, desizing, scouring, bleaching, yarn dyeing, finishing (wrinkle-free resin), inspection.",
+      "packagingEmissionsIncluded": false,
+      "geographyCountry": "CN",
+      "biogenicCO2Uptake": "-1.30",
+      "primaryDataShare": "0.68",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "8922d2d3-c4c2-47f1-b600-aebd979cba01",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Pratibha Syntex",
+    "companyIds": [
+      "urn:pact:company:pratibha-syntex"
+    ],
+    "productDescription": "GOTS-certified organic cotton single jersey fabric, 160 GSM, tubular knit, garment-dyed compatible. For T-shirts and casual wear.",
+    "productIds": [
+      "urn:pact:product:pratibha-org-jersey-001"
+    ],
+    "productNameCompany": "Organic Cotton Jersey Knit",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:26710"
+    ],
+    "comment": "SAMPLE: GOTS certified. No synthetic pesticides in cultivation. Bio-polishing replaces conventional singeing.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "kilogram",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "8.50",
+      "pcfIncludingBiogenicUptake": "6.80",
+      "fossilGhgEmissions": "6.10",
+      "fossilCarbonContent": "0.02",
+      "biogenicCarbonContent": "0.42",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Organic cotton spinning, circular knitting, scouring (enzyme), bleaching (peroxide), bio-polishing, compacting.",
+      "packagingEmissionsIncluded": false,
+      "geographyCountry": "IN",
+      "biogenicCO2Uptake": "-1.70",
+      "primaryDataShare": "0.72",
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      }
+    }
+  },
+  {
+    "id": "a17c5469-9bea-4fbe-824e-29905a408bbf",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Toray Textiles Europe",
+    "companyIds": [
+      "urn:pact:company:toray-txt-eu"
+    ],
+    "productDescription": "Nylon 6,6 ripstop fabric, 70 denier, DWR (C0 fluorine-free) treated, calendered. For outdoor jackets and backpacks.",
+    "productIds": [
+      "urn:pact:product:toray-ripstop-nylon-001"
+    ],
+    "productNameCompany": "Ripstop Nylon Fabric (DWR-treated)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:26710"
+    ],
+    "comment": "SAMPLE: Fluorine-free C0 DWR treatment. PFC-free since 2023.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "square meter",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.085",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "8.20",
+      "pcfIncludingBiogenicUptake": "8.20",
+      "fossilGhgEmissions": "8.00",
+      "fossilCarbonContent": "0.37",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Nylon yarn warping, weaving (ripstop pattern), scouring, heat setting, DWR application (padding), calendering, inspection.",
+      "packagingEmissionsIncluded": false,
+      "geographyCountry": "FR",
+      "primaryDataShare": "0.60",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      }
+    }
+  },
+  {
+    "id": "155e4fa7-b75f-4d7f-bada-3074bb80019d",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Arvind Limited",
+    "companyIds": [
+      "urn:pact:company:arvind-ltd"
+    ],
+    "productDescription": "Cotton/elastane (98/2) stretch denim, 10oz, indigo rope-dyed, right-hand twill. For jeans and denim jackets.",
+    "productIds": [
+      "urn:pact:product:arvind-stretch-denim-001"
+    ],
+    "productNameCompany": "Stretch Denim Fabric",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:26710"
+    ],
+    "comment": "SAMPLE: Foam-dyeing technology reduces water consumption by 70% vs conventional indigo dyeing.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "square meter",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.340",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "12.50",
+      "pcfIncludingBiogenicUptake": "10.80",
+      "fossilGhgEmissions": "10.00",
+      "fossilCarbonContent": "0.03",
+      "biogenicCarbonContent": "0.12",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Cotton/elastane yarn spinning, indigo rope dyeing, weaving (twill), sanforizing, brushing, inspection.",
+      "packagingEmissionsIncluded": false,
+      "geographyCountry": "IN",
+      "biogenicCO2Uptake": "-1.70",
+      "primaryDataShare": "0.70",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      }
+    }
+  },
+  {
+    "id": "d6874070-f8e1-4b98-be32-14afc47042eb",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Schoeller Textil",
+    "companyIds": [
+      "urn:pact:company:schoeller-txt"
+    ],
+    "productDescription": "3-layer bonded softshell fabric: woven nylon face, TPU membrane, fleece backing. Windproof, water-resistant, breathable.",
+    "productIds": [
+      "urn:pact:product:schoeller-softshell-001"
+    ],
+    "productNameCompany": "4-Way Stretch Softshell Fabric",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:26720"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "square meter",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.280",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "18.50",
+      "pcfIncludingBiogenicUptake": "18.50",
+      "fossilGhgEmissions": "18.00",
+      "fossilCarbonContent": "0.52",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Nylon face weaving, TPU membrane extrusion, fleece knitting, lamination (hot-melt adhesive), DWR treatment, calendering.",
+      "packagingEmissionsIncluded": false,
+      "geographyCountry": "CH",
+      "primaryDataShare": "0.65",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "1.0",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      }
+    }
+  },
+  {
+    "id": "6555b467-c8af-4d86-9bf4-8d4aedae3d36",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Albini Group",
+    "companyIds": [
+      "urn:pact:company:albini-grp"
+    ],
+    "productDescription": "Cotton/silk blend (80/20) shirting fabric, 100 GSM, jacquard woven, piece-dyed. For premium dress shirts.",
+    "productIds": [
+      "urn:pact:product:albini-shirting-silk-001"
+    ],
+    "productNameCompany": "Luxury Cotton/Silk Shirting Fabric",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:26710"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "square meter",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.100",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "9.50",
+      "pcfIncludingBiogenicUptake": "7.80",
+      "fossilGhgEmissions": "7.20",
+      "fossilCarbonContent": "0.01",
+      "biogenicCarbonContent": "0.08",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Cotton/silk yarn preparation, jacquard weaving, desizing, scouring, piece dyeing, finishing (easy-care), stentering, inspection.",
+      "packagingEmissionsIncluded": false,
+      "geographyCountry": "IT",
+      "biogenicCO2Uptake": "-1.70",
+      "primaryDataShare": "0.70",
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      }
+    }
+  },
+  {
+    "id": "e73f42ab-6294-42eb-8a57-a0d475c870e0",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Polartec LLC",
+    "companyIds": [
+      "urn:pact:company:polartec-llc"
+    ],
+    "productDescription": "100% recycled polyester microfleece, 200 GSM, brushed both sides, anti-pill finish. Made from post-consumer PET bottles.",
+    "productIds": [
+      "urn:pact:product:polartec-recfleece-200-001"
+    ],
+    "productNameCompany": "Recycled Fleece Fabric (200 GSM)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:26720"
+    ],
+    "comment": "SAMPLE: Uses 100% certified post-consumer PET. 50% less energy than virgin polyester fleece production.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "square meter",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.200",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "4.20",
+      "pcfIncludingBiogenicUptake": "4.20",
+      "fossilGhgEmissions": "4.00",
+      "fossilCarbonContent": "0.12",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "rPET fiber extrusion, yarn spinning, circular knitting, napping/brushing (both sides), anti-pill treatment, heat setting.",
+      "packagingEmissionsIncluded": false,
+      "geographyCountry": "US",
+      "primaryDataShare": "0.70",
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.0"
+      }
+    }
+  },
+  {
+    "id": "58b2f58b-c08f-46a7-a3b9-e059a493cd4d",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Cone Denim",
+    "companyIds": [
+      "urn:pact:company:cone-denim"
+    ],
+    "productDescription": "100% cotton selvedge denim, 14oz, shuttle-loom woven, natural indigo dyed, raw/unwashed. For premium jeans.",
+    "productIds": [
+      "urn:pact:product:cone-selvedge-raw-001"
+    ],
+    "productNameCompany": "Selvedge Denim Fabric (Raw)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:26710"
+    ],
+    "comment": "SAMPLE: Shuttle-loom selvedge weaving. Natural indigo sourced from plant-based extraction.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "square meter",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.475",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "14.80",
+      "pcfIncludingBiogenicUptake": "12.90",
+      "fossilGhgEmissions": "12.20",
+      "fossilCarbonContent": "0.02",
+      "biogenicCarbonContent": "0.20",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "US-grown cotton yarn spinning, natural indigo preparation, rope dyeing, shuttle-loom weaving, raw finishing (no wash), inspection.",
+      "packagingEmissionsIncluded": false,
+      "geographyCountry": "US",
+      "biogenicCO2Uptake": "-1.90",
+      "primaryDataShare": "0.75",
+      "dqi": {
+        "technologicalDQR": "1.0",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.0"
+      }
+    }
+  },
+  {
+    "id": "bed343e6-149c-4397-9d00-d073816ae32f",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Pontoglio 1883",
+    "companyIds": [
+      "urn:pact:company:pontoglio-1883"
+    ],
+    "productDescription": "Cotton/viscose (60/40) cut-pile velvet, 350 GSM, piece-dyed, flame-retardant (FR) treated. For furniture upholstery.",
+    "productIds": [
+      "urn:pact:product:pontoglio-velvet-001"
+    ],
+    "productNameCompany": "Velvet Upholstery Fabric",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:26720"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "square meter",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.350",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "11.20",
+      "pcfIncludingBiogenicUptake": "9.50",
+      "fossilGhgEmissions": "9.00",
+      "fossilCarbonContent": "0.01",
+      "biogenicCarbonContent": "0.15",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Yarn spinning (cotton/viscose blend), pile weaving, pile cutting, piece dyeing, FR treatment, finishing, inspection.",
+      "packagingEmissionsIncluded": false,
+      "geographyCountry": "IT",
+      "biogenicCO2Uptake": "-1.70",
+      "primaryDataShare": "0.60",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "61a3b531-acb1-4b0d-9b5c-c51339db405e",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Milliken & Company",
+    "companyIds": [
+      "urn:pact:company:milliken-co"
+    ],
+    "productDescription": "3D spacer knit fabric, polyester/spandex (92/8), 300 GSM, moisture-wicking, for athletic footwear uppers.",
+    "productIds": [
+      "urn:pact:product:milliken-spacer-knit-001"
+    ],
+    "productNameCompany": "Performance Knit Spacer Fabric",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:26720"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "square meter",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.300",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "10.80",
+      "pcfIncludingBiogenicUptake": "10.80",
+      "fossilGhgEmissions": "10.50",
+      "fossilCarbonContent": "0.38",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Yarn preparation, 3D warp knitting, heat setting, moisture management finish application, calendering.",
+      "packagingEmissionsIncluded": false,
+      "geographyCountry": "US",
+      "primaryDataShare": "0.65",
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      }
+    }
+  }
+]
