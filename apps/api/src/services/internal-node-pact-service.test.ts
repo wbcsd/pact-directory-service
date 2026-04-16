@@ -485,17 +485,109 @@ describe('InternalNodePactService', () => {
     });
 
     describe('RequestFulfilledEvent', () => {
-      it('should acknowledge a RequestFulfilledEvent', async () => {
+      it('acknowledges the event and updates the outgoing pcf_requests row', async () => {
+        // executeTakeFirst = null → insert path (no existing row)
+        dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(null);
+
         await expect(
           service.handleEvent(nodeId, {
             ...baseEvent,
             type: EventTypes.RequestFulfilled,
             data: {
               requestEventId: 'original-request-id',
-              pfs: [mockFootprintData],
+              pfs: [laptopData],
             },
           })
         ).resolves.toBeUndefined();
+
+        // pcf_requests row updated to fulfilled
+        expect(dbMocks.db.updateTable).toHaveBeenCalledWith('pcf_requests');
+        const setCalls = dbMocks.queryChain.set.mock.calls;
+        expect(setCalls.some((c) => c[0]?.status === 'fulfilled')).toBe(true);
+      });
+
+      it('inserts received PCFs into product_footprints when they do not already exist', async () => {
+        // No existing row for each PCF → insert path
+        dbMocks.executors.executeTakeFirst
+          .mockResolvedValueOnce(null)  // PCF 1: no existing row
+          .mockResolvedValueOnce(null); // PCF 2: no existing row
+
+        await service.handleEvent(nodeId, {
+          ...baseEvent,
+          type: EventTypes.RequestFulfilled,
+          data: {
+            requestEventId: 'req-001',
+            pfs: [laptopData, steelData],
+          },
+        });
+
+        // Two inserts into product_footprints
+        const insertCalls = dbMocks.db.insertInto.mock.calls.filter(
+          (c) => c[0] === 'product_footprints'
+        );
+        expect(insertCalls).toHaveLength(2);
+      });
+
+      it('updates an existing product_footprint row when the PACT ID already exists', async () => {
+        // Existing row found → update path
+        dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({ id: 'existing-db-uuid' });
+
+        await service.handleEvent(nodeId, {
+          ...baseEvent,
+          type: EventTypes.RequestFulfilled,
+          data: {
+            requestEventId: 'req-002',
+            pfs: [laptopData],
+          },
+        });
+
+        // updateTable called for product_footprints (as well as pcf_requests)
+        const updateCalls = dbMocks.db.updateTable.mock.calls.map((c) => c[0]);
+        expect(updateCalls).toContain('product_footprints');
+        // No insert for product_footprints
+        const insertCalls = dbMocks.db.insertInto.mock.calls.filter(
+          (c) => c[0] === 'product_footprints'
+        );
+        expect(insertCalls).toHaveLength(0);
+      });
+
+      it('still updates pcf_requests when pfs array is empty', async () => {
+        await service.handleEvent(nodeId, {
+          ...baseEvent,
+          type: EventTypes.RequestFulfilled,
+          data: {
+            requestEventId: 'req-003',
+            pfs: [],
+          },
+        });
+
+        expect(dbMocks.db.updateTable).toHaveBeenCalledWith('pcf_requests');
+        // No product_footprints insert attempted
+        const insertCalls = dbMocks.db.insertInto.mock.calls.filter(
+          (c) => c[0] === 'product_footprints'
+        );
+        expect(insertCalls).toHaveLength(0);
+      });
+
+      it('skips PCF entries that have no id field', async () => {
+        const pfWithoutId = { ...laptopData, id: undefined };
+
+        await expect(
+          service.handleEvent(nodeId, {
+            ...baseEvent,
+            type: EventTypes.RequestFulfilled,
+            data: {
+              requestEventId: 'req-004',
+              pfs: [pfWithoutId],
+            },
+          })
+        ).resolves.toBeUndefined();
+
+        // No product_footprints insert/update for the bad entry
+        const insertCalls = dbMocks.db.insertInto.mock.calls.filter(
+          (c) => c[0] === 'product_footprints'
+        );
+        expect(insertCalls).toHaveLength(0);
       });
     });
 
