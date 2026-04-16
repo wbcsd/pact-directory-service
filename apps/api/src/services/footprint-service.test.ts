@@ -322,4 +322,119 @@ describe('FootprintService', () => {
       expect(result).toEqual({ success: true, footprintId: otherOrgFootprint.id });
     });
   });
+
+  describe('import', () => {
+    it('should import valid footprints for a node the user has access to', async () => {
+      // Mock nodeService.get
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
+      // Mock bulk insert
+      dbMocks.executors.execute.mockResolvedValueOnce(undefined);
+
+      const result = await footprintService.import(adminUserContext, 1, [
+        mockFootprint,
+        mockFootprint,
+      ]);
+
+      expect(result.imported).toBe(2);
+      expect(result.failed).toBe(0);
+      expect(result.errors).toHaveLength(0);
+      expect(dbMocks.db.insertInto).toHaveBeenCalledWith('product_footprints');
+    });
+
+    it('should return validation errors for invalid items and still import valid ones', async () => {
+      // Mock nodeService.get
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
+      // Mock bulk insert (for the 1 valid item)
+      dbMocks.executors.execute.mockResolvedValueOnce(undefined);
+
+      const invalidItem = { status: 'Active' }; // Missing required fields
+
+      const result = await footprintService.import(adminUserContext, 1, [
+        mockFootprint,
+        invalidItem,
+      ]);
+
+      expect(result.imported).toBe(1);
+      expect(result.failed).toBe(1);
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors[0].index).toBe(1);
+      expect(result.errors[0].errors.length).toBeGreaterThan(0);
+    });
+
+    it('should reject non-object items with a descriptive error', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
+
+      const result = await footprintService.import(adminUserContext, 1, [
+        null as any,
+        'not-an-object' as any,
+        mockFootprint,
+      ]);
+
+      // null and string are rejected; mockFootprint is valid but insert still called
+      dbMocks.executors.execute.mockResolvedValueOnce(undefined);
+
+      expect(result.failed).toBe(2);
+      expect(result.errors[0]).toEqual({ index: 0, errors: ['Item is not a valid object'] });
+      expect(result.errors[1]).toEqual({ index: 1, errors: ['Item is not a valid object'] });
+    });
+
+    it('should throw BadRequestError for an empty array', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
+
+      await expect(
+        footprintService.import(adminUserContext, 1, [])
+      ).rejects.toThrow(BadRequestError);
+    });
+
+    it('should throw BadRequestError for a non-array payload', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
+
+      await expect(
+        footprintService.import(adminUserContext, 1, 'not-an-array' as any)
+      ).rejects.toThrow(BadRequestError);
+    });
+
+    it('should throw ForbiddenError if user does not have access to the node', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
+        ...mockNode,
+        organizationId: 999,
+      });
+
+      await expect(
+        footprintService.import(adminUserContext, 1, [mockFootprint])
+      ).rejects.toThrow(ForbiddenError);
+    });
+
+    it('should throw ForbiddenError if user has no footprint policies', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
+
+      await expect(
+        footprintService.import(regularUserContext, 1, [mockFootprint])
+      ).rejects.toThrow(ForbiddenError);
+    });
+
+    it('should allow root user to import footprints for any node', async () => {
+      const otherOrgNode = { ...mockNode, organizationId: 999 };
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(otherOrgNode);
+      dbMocks.executors.execute.mockResolvedValueOnce(undefined);
+
+      const result = await footprintService.import(rootUserContext, 1, [mockFootprint]);
+
+      expect(result.imported).toBe(1);
+      expect(result.failed).toBe(0);
+    });
+
+    it('should not call insert when all items fail validation', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
+
+      const result = await footprintService.import(adminUserContext, 1, [
+        { status: 'Active' },
+        { invalid: true },
+      ]);
+
+      expect(result.imported).toBe(0);
+      expect(result.failed).toBe(2);
+      expect(dbMocks.db.insertInto).not.toHaveBeenCalled();
+    });
+  });
 });
