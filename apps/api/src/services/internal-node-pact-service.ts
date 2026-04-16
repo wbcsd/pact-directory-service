@@ -1,9 +1,8 @@
 import { Kysely, sql } from 'kysely';
 import { Database } from '@src/database/types';
 import { BadRequestError } from '@src/common/errors';
-import { FootprintFilters, PaginationParams, PagedResponse, ProductFootprint, EventTypes, RequestCreatedEvent, BaseEvent, RequestFulfilledEvent, RequestRejectedEvent } from 'pact-data-model/v3_0';
+import { FootprintFilters, PaginationParams, PagedResponse, ProductFootprint, EventTypes, RequestCreatedEvent, BaseEvent } from 'pact-data-model/v3_0';
 import logger from '@src/common/logger';
-import config from '@src/common/config';
 
 /**
  * Service for handling Internal Node PACT API operations
@@ -122,15 +121,9 @@ export class InternalNodePactService {
       case EventTypes.RequestCreated: {
         logger.info(
           { nodeId, eventId: id, source, productId: data?.productId },
-          'Received RequestCreatedEvent for internal node'
+          'Received RequestCreatedEvent for internal node — saving to inbox'
         );
-        // Fire-and-forget: look up footprints and send callback
-        this.handleRequestCreatedEvent(nodeId, id, source, event as RequestCreatedEvent).catch((err) =>
-          logger.error(
-            { nodeId, eventId: id, error: (err as Error).message },
-            'Failed to handle RequestCreatedEvent callback'
-          )
-        );
+        await this.handleRequestCreatedEvent(nodeId, id, source, event as RequestCreatedEvent);
         break;
       }
 
@@ -140,6 +133,7 @@ export class InternalNodePactService {
           'Received RequestFulfilledEvent for internal node'
         );
         // Update the matching outgoing PCF request record
+        // The outgoing row has fromNodeId = this node (the one that sent the request)
         const requestEventId = data?.requestEventId as string | undefined;
         const pfs = data?.pfs as unknown[] | undefined;
         if (requestEventId) {
@@ -151,7 +145,7 @@ export class InternalNodePactService {
               updatedAt: new Date(),
             })
             .where('requestEventId', '=', requestEventId)
-            .where('targetNodeId', '=', nodeId)
+            .where('fromNodeId', '=', nodeId)
             .execute();
         }
         break;
@@ -172,7 +166,7 @@ export class InternalNodePactService {
               updatedAt: new Date(),
             })
             .where('requestEventId', '=', rejectedRequestEventId)
-            .where('targetNodeId', '=', nodeId)
+            .where('fromNodeId', '=', nodeId)
             .execute();
         }
         break;
@@ -187,13 +181,9 @@ export class InternalNodePactService {
 
   /**
    * Handle the async callback flow for a RequestCreatedEvent.
-   *
-   * 1. Search the node's footprints by the requested productId(s).
-   * 2. If found → POST a RequestFulfilledEvent to the source.
-   * 3. If not found → POST a RequestRejectedEvent to the source.
-   *
-   * The `source` field of the incoming event is used as the callback URL's
-   * base, with `/3/events` appended.
+   * Save an incoming RequestCreatedEvent to the pcf_requests table as a pending
+   * inbox item. The supplier (nodeId) will fulfill or reject it manually via the
+   * dashboard. Idempotent on requestEventId.
    */
   private async handleRequestCreatedEvent(
     nodeId: number,
@@ -201,131 +191,31 @@ export class InternalNodePactService {
     source: string,
     event: RequestCreatedEvent
   ): Promise<void> {
-
-    // Use the same filters as ListFootprints
     const filters = event.data as FootprintFilters;
 
-    let query = this.db
-      .selectFrom('product_footprints')
-      .select(['data'])
-      .where('nodeId', '=', nodeId);
+    // Parse fromNodeId from source URL if it's a directory-internal node
+    // e.g. "http://localhost:3010/api/nodes/14" → 14
+    const fromNodeMatch = source.match(/\/api\/nodes\/(\d+)/);
+    const fromNodeId = fromNodeMatch ? parseInt(fromNodeMatch[1], 10) : null;
 
-    query = this.applyFilters(query, filters);
+    await this.db
+      .insertInto('pcf_requests')
+      .values({
+        targetNodeId: nodeId,
+        fromNodeId,
+        connectionId: null,
+        source,
+        requestEventId,
+        filters: filters as unknown as Record<string, unknown>,
+        status: 'pending',
+        resultCount: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .onConflict((oc) => oc.column('requestEventId').doNothing())
+      .execute();
 
-    // Execute the query to get matching footprints
-    const rows = await query.execute();
-    const footprints = rows.map((r) => r.data as unknown as ProductFootprint);
-    
-    // Determine callback URL — the conformance test service or the event source
-    const callbackUrl = source.endsWith('/3/events')
-      ? source
-      : `${source.replace(/\/+$/, '')}/3/events`;
-
-    // Obtain auth token for the callback
-    const authToken = await this.getCallbackToken(nodeId);
-
-    // If matching footprints are found, send RequestFulfilledEvent
-    // with the footprint data; otherwise send RequestRejectedEvent.
-    if (footprints.length > 0) {
-
-      await this.postEvent(
-        callbackUrl, {
-          type: EventTypes.RequestFulfilled,
-          specversion: '1.0',
-          id: crypto.randomUUID(),
-          source: `${config.DIRECTORY_API}/api/nodes/${nodeId}`,
-          time: new Date().toISOString(),
-          data: {
-            requestEventId,
-            pfs: footprints,
-          },
-        } as RequestFulfilledEvent, 
-        authToken
-      );
-      logger.info(
-        { nodeId, requestEventId, matchCount: footprints.length },
-        'Sent RequestFulfilledEvent callback'
-      );
-    } else {
-      
-      await this.postEvent(
-        callbackUrl, {
-          type: EventTypes.RequestRejected,
-          specversion: '1.0',
-          id: crypto.randomUUID(),
-          source: `${config.DIRECTORY_API}/api/nodes/${nodeId}`,
-          time: new Date().toISOString(),
-          data: {
-            requestEventId,
-            error: {
-              code: 'NotFound',
-              message: 'The requested footprint could not be found.',
-            },
-          },
-        } as RequestRejectedEvent, 
-        authToken 
-      );
-      logger.info(
-        { nodeId, requestEventId },
-        'Sent RequestRejectedEvent callback'
-      );
-    }
-  }
-
-  /**
-   * Obtain an auth token for making callbacks to the conformance service.
-   * Uses the first outgoing accepted connection's credentials from this node.
-   */
-  private async getCallbackToken(nodeId: number): Promise<string> {
-    try {
-      const connection = await this.db
-        .selectFrom('connections')
-        .select(['clientId', 'clientSecret'])
-        .where('fromNodeId', '=', nodeId)
-        .where('status', '=', 'accepted')
-        .limit(1)
-        .executeTakeFirst();
-
-      if (!connection) {
-        logger.warn({ nodeId }, 'No outgoing connection found for callback auth');
-        return '';
-      }
-
-      // Decrypt the client secret (base64-encoded)
-      const clientSecret = Buffer.from(connection.clientSecret, 'base64').toString('utf-8');
-
-      // Authenticate against the conformance service auth endpoint
-      const authUrl = `${config.CONFORMANCE_API_INTERNAL}/auth/token`;
-      const basicAuth = Buffer.from(
-        `${connection.clientId}:${clientSecret}`
-      ).toString('base64');
-
-      const authResponse = await fetch(authUrl, {
-        method: 'POST',
-        headers: {
-          Authorization: `Basic ${basicAuth}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: 'grant_type=client_credentials',
-      });
-
-      if (authResponse.ok) {
-        const tokenData = (await authResponse.json()) as { access_token: string };
-        return tokenData.access_token;
-      }
-
-      logger.warn(
-        { nodeId, status: authResponse.status },
-        'Failed to obtain callback auth token'
-      );
-      return '';
-    } catch (err) {
-      logger.warn(
-        { nodeId, error: (err as Error).message },
-        'Error obtaining callback auth token'
-      );
-      return '';
-    }
+    logger.info({ nodeId, requestEventId, fromNodeId }, 'Incoming PCF request saved to inbox');
   }
 
   /**

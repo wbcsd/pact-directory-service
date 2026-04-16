@@ -84,7 +84,10 @@ const RequestPcfForm: React.FC<RequestPcfFormProps> = ({
       );
       if (!res?.ok) throw new Error("Failed to fetch connections");
       const result = await res.json();
-      setConnections(result.data ?? []);
+      // Only show outgoing connections (where this node is the initiator) — those are
+      // the ones with valid credentials to call the target's PACT API.
+      const all: NodeConnection[] = result.data ?? [];
+      setConnections(all.filter((c) => c.fromNodeId === fromNodeId));
     } catch {
       setErrorMessage("Failed to load connections. Please try again.");
       setStatus("error");

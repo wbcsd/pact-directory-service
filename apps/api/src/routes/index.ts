@@ -374,13 +374,34 @@ router.post('/directory/nodes/:id/pcf-requests', authenticate, context(async (re
   return result;
 }));
 
-// List outgoing PCF requests for a node
+// List all PCF requests for a node (outgoing + incoming, unified)
 router.get('/directory/nodes/:id/pcf-requests', authenticate, context(async (req) => {
   return req.services.pcfRequest.list(
     req.context,
     parseInt(req.params.id as string),
     ListQuery.parse(req.query)
   );
+}));
+
+// Fulfill an incoming PCF request
+router.post('/directory/nodes/:id/pcf-requests/:requestId/fulfill', authenticate, context(async (req) => {
+  await req.services.pcfRequest.fulfill(
+    req.context,
+    parseInt(req.params.id as string),
+    parseInt(req.params.requestId as string),
+    req.body.footprintIds
+  );
+  return { success: true };
+}));
+
+// Reject an incoming PCF request
+router.post('/directory/nodes/:id/pcf-requests/:requestId/reject', authenticate, context(async (req) => {
+  await req.services.pcfRequest.reject(
+    req.context,
+    parseInt(req.params.id as string),
+    parseInt(req.params.requestId as string)
+  );
+  return { success: true };
 }));
 
 

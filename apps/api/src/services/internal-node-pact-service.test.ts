@@ -27,49 +27,111 @@ describe('InternalNodePactService', () => {
 
   const nodeId = 1;
 
-  const mockFootprintData = {
-    id: 'b1f8c0d2-7c4e-4e67-9a9c-2e4c12345678',
+  // ── Real silversurfer23 PCF fixtures (from production DB) ────────────────
+  // Three distinct footprints: US laptop, DE steel, NL compostable container.
+  // Used across all filter tests to get realistic coverage.
+
+  const laptopData = {
+    id: 'd9be4477-e351-45b3-acd9-e1da05e6f633',
     specVersion: '3.0.0',
     version: 1,
-    created: '2023-01-15T10:15:30Z',
+    created: '2023-07-01T00:00:00Z',
     status: 'Active',
     validityPeriodStart: '2023-01-15T10:15:30Z',
     validityPeriodEnd: '2025-12-31T00:00:00Z',
-    companyName: 'Acme Corp',
-    companyIds: ['urn:uuid:abc12345-6789-4def-0123-456789abcdef'],
-    productDescription: 'Renewable Diesel',
-    productIds: ['urn:gtin:1234567890123'],
-    productClassifications: ['urn:eclass:0173-1#01-AAA123#005'],
-    productNameCompany: 'Renewable Diesel',
+    companyName: 'Example Company Inc.',
+    companyIds: ['urn:uuid:12345678-1234-1234-1234-123456789012'],
+    productDescription: 'Exemplary Laptop Model X',
+    productIds: ['urn:gtin:12345678'],
+    productNameCompany: 'Laptop Model X',
+    productClassifications: ['urn:pact:productclassification:un-cpc:452'],
     pcf: {
-      declaredUnitOfMeasurement: 'liter',
-      declaredUnitAmount: '1',
-      geographyCountry: 'DE',
-      referencePeriodStart: '2024-02-28T00:00:00+00:00',
-      referencePeriodEnd: '2024-09-30T00:00:00+00:00',
-      boundaryProcessesDescription: 'Cradle-to-gate',
-      pcfExcludingBiogenicUptake: '77.0',
-      pcfIncludingBiogenicUptake: '77.0',
-      fossilCarbonContent: '11.72',
+      geographyCountry: 'US',
+      declaredUnitOfMeasurement: 'kilogram',
+      declaredUnitAmount: '1.0',
+      referencePeriodStart: '2022-01-01T00:00:00Z',
+      referencePeriodEnd: '2022-12-31T23:59:59Z',
+      pcfExcludingBiogenicUptake: '120.5',
+      pcfIncludingBiogenicUptake: '120.5',
+      fossilGhgEmissions: '115.2',
+      fossilCarbonContent: '5.3',
+      boundaryProcessesDescription: 'Cradle-to-gate assessment',
       ipccCharacterizationFactors: ['AR6'],
+      crossSectoralStandards: ['GHGP-Product', 'ISO14067'],
+      exemptedEmissionsPercent: '2.5',
+      packagingEmissionsIncluded: true,
+      packagingGhgEmissions: '8.3',
     },
   };
 
-  const mockFootprintRow = {
-    data: mockFootprintData,
-  };
-
-  const mockFootprintData2 = {
-    ...mockFootprintData,
-    id: 'c2e9d1f3-8d5f-5f78-0b0d-3f5e23456789',
-    productDescription: 'Bio-Ethanol',
-    productIds: ['urn:gtin:1234567890456'],
-    companyIds: ['urn:uuid:other-company-id'],
+  const steelData = {
+    id: 'f8c3d912-7b4e-4a2c-b567-8e9f0a1b2c3d',
+    specVersion: '3.0.0',
+    version: 2,
+    created: '2023-08-15T00:00:00Z',
+    status: 'Active',
+    validityPeriodStart: '2023-01-15T10:15:30Z',
+    validityPeriodEnd: '2025-12-31T00:00:00Z',
+    companyName: 'Green Materials Corp',
+    companyIds: ['urn:uuid:87654321-4321-4321-4321-210987654321'],
+    productDescription: 'Sustainable Steel Beam Grade A',
+    productIds: ['urn:gtin:87654321', 'urn:ean:9876543210123'],
+    productNameCompany: 'EcoSteel Beam A500',
+    productClassifications: ['urn:pact:productclassification:un-cpc:412'],
     pcf: {
-      ...mockFootprintData.pcf,
-      geographyCountry: 'NL',
+      geographyCountry: 'DE',
+      declaredUnitOfMeasurement: 'kilogram',
+      declaredUnitAmount: '1000.0',
+      referencePeriodStart: '2023-01-01T00:00:00Z',
+      referencePeriodEnd: '2023-06-30T23:59:59Z',
+      pcfExcludingBiogenicUptake: '450.8',
+      pcfIncludingBiogenicUptake: '420.5',
+      fossilGhgEmissions: '440.2',
+      fossilCarbonContent: '10.6',
+      boundaryProcessesDescription: 'Cradle-to-gate including iron ore mining',
+      ipccCharacterizationFactors: ['AR6'],
+      crossSectoralStandards: ['ISO14067', 'ISO14040-44'],
+      exemptedEmissionsPercent: '1.8',
     },
   };
+
+  const containerData = {
+    id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+    specVersion: '3.0.0',
+    version: 1,
+    created: '2023-09-20T00:00:00Z',
+    status: 'Active',
+    validityPeriodStart: '2023-09-01T00:00:00Z',
+    validityPeriodEnd: '2024-08-31T23:59:59Z',
+    companyName: 'BioPack Solutions',
+    companyIds: ['urn:uuid:abcdef12-3456-7890-abcd-ef1234567890'],
+    productDescription: 'Compostable Food Container 500ml',
+    productIds: ['urn:gtin:55667788'],
+    productNameCompany: 'EcoContainer 500',
+    productClassifications: ['urn:pact:productclassification:un-cpc:893'],
+    pcf: {
+      geographyCountry: 'NL',
+      declaredUnitOfMeasurement: 'kilogram',
+      declaredUnitAmount: '0.025',
+      referencePeriodStart: '2023-01-01T00:00:00Z',
+      referencePeriodEnd: '2023-08-31T23:59:59Z',
+      pcfExcludingBiogenicUptake: '0.85',
+      pcfIncludingBiogenicUptake: '-0.15',
+      fossilGhgEmissions: '0.75',
+      fossilCarbonContent: '0.10',
+      boundaryProcessesDescription: 'Cradle-to-gate',
+      ipccCharacterizationFactors: ['AR5'],
+      crossSectoralStandards: ['GHGP-Product'],
+      exemptedEmissionsPercent: '3.2',
+    },
+  };
+
+  // Keep a generic fixture for non-filter tests (avoids updating every mock setup)
+  const mockFootprintData = laptopData;
+  const mockFootprintData2 = steelData;
+
+  const mockFootprintRow = { data: mockFootprintData };
+  const mockFootprintRow2 = { data: mockFootprintData2 };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -133,54 +195,93 @@ describe('InternalNodePactService', () => {
       const result = await service.getFootprints(
         nodeId,
         {
-          productId: ['urn:gtin:1234567890123'],
+          productId: ['urn:gtin:12345678'],   // matches laptopData
           status: 'Active',
         }
       );
 
       expect(result.data).toHaveLength(1);
+      expect(result.data[0].id).toBe(laptopData.id);
     });
 
-    it('should handle geography filter', async () => {
+    it('should handle geography filter — matching country returns results', async () => {
       dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 1 });
-      dbMocks.executors.execute.mockResolvedValueOnce([mockFootprintRow]);
+      dbMocks.executors.execute.mockResolvedValueOnce([{ data: steelData }]);
 
       const result = await service.getFootprints(nodeId, { geography: ['DE'] });
 
       expect(result.data).toHaveLength(1);
+      expect(result.data[0].pcf.geographyCountry).toBe('DE');
     });
 
-    it('should handle classification filter', async () => {
+    it('should handle geography filter — no match returns empty', async () => {
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 0 });
+      dbMocks.executors.execute.mockResolvedValueOnce([]);
+
+      const result = await service.getFootprints(nodeId, { geography: ['JP'] });
+
+      expect(result.data).toEqual([]);
+    });
+
+    it('should handle classification filter — urn:pact:productclassification:un-cpc:452 matches laptop', async () => {
       dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 1 });
       dbMocks.executors.execute.mockResolvedValueOnce([mockFootprintRow]);
 
       const result = await service.getFootprints(
         nodeId,
-        { classification: ['urn:eclass:0173-1#01-AAA123#005'] }
+        { classification: ['urn:pact:productclassification:un-cpc:452'] }
+      );
+
+      expect(result.data).toHaveLength(1);
+      expect(result.data[0].productClassifications).toContain('urn:pact:productclassification:un-cpc:452');
+    });
+
+    it('should handle classification filter — no match returns empty', async () => {
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 0 });
+      dbMocks.executors.execute.mockResolvedValueOnce([]);
+
+      const result = await service.getFootprints(
+        nodeId,
+        { classification: ['urn:pact:productclassification:un-cpc:999'] }
+      );
+
+      expect(result.data).toEqual([]);
+    });
+
+    it('should handle validOn filter — date within validity window', async () => {
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 1 });
+      dbMocks.executors.execute.mockResolvedValueOnce([mockFootprintRow]);
+
+      // laptopData validityPeriodStart='2023-01-15', validityPeriodEnd='2025-12-31'
+      const result = await service.getFootprints(
+        nodeId,
+        { validOn: '2024-06-01T00:00:00Z' }
       );
 
       expect(result.data).toHaveLength(1);
     });
 
-    it('should handle validOn filter', async () => {
-      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 1 });
-      dbMocks.executors.execute.mockResolvedValueOnce([mockFootprintRow]);
+    it('should handle validOn filter — expired container returns empty', async () => {
+      // containerData validityPeriodEnd='2024-08-31' — expired before 2025
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 0 });
+      dbMocks.executors.execute.mockResolvedValueOnce([]);
 
       const result = await service.getFootprints(
         nodeId,
-        { validOn: '2023-01-15T10:15:30Z' }
+        { validOn: '2025-01-01T00:00:00Z' }
       );
 
-      expect(result.data).toHaveLength(1);
+      expect(result.data).toEqual([]);
     });
 
     it('should handle validAfter filter', async () => {
       dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 1 });
       dbMocks.executors.execute.mockResolvedValueOnce([mockFootprintRow]);
 
+      // laptopData validityPeriodStart='2023-01-15', after 2023-01-14
       const result = await service.getFootprints(
         nodeId,
-        { validAfter: '2023-01-14T10:15:30Z' }
+        { validAfter: '2023-01-14T00:00:00Z' }
       );
 
       expect(result.data).toHaveLength(1);
@@ -190,6 +291,7 @@ describe('InternalNodePactService', () => {
       dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 1 });
       dbMocks.executors.execute.mockResolvedValueOnce([mockFootprintRow]);
 
+      // laptopData validityPeriodEnd='2025-12-31', before 2026-01-01
       const result = await service.getFootprints(
         nodeId,
         { validBefore: '2026-01-01T00:00:00Z' }
@@ -198,25 +300,37 @@ describe('InternalNodePactService', () => {
       expect(result.data).toHaveLength(1);
     });
 
-    it('should handle companyId filter with OR logic (Test Case #29)', async () => {
+    it('should handle companyId filter — matches laptop with urn:uuid:12345678-1234-1234-1234-123456789012', async () => {
       dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 1 });
       dbMocks.executors.execute.mockResolvedValueOnce([mockFootprintRow]);
 
       const result = await service.getFootprints(
         nodeId,
+        { companyId: ['urn:uuid:12345678-1234-1234-1234-123456789012'] }
+      );
+
+      expect(result.data).toHaveLength(1);
+      expect(result.data[0].companyIds).toContain('urn:uuid:12345678-1234-1234-1234-123456789012');
+    });
+
+    it('should handle companyId filter — OR logic: multiple IDs, any match suffices', async () => {
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 2 });
+      dbMocks.executors.execute.mockResolvedValueOnce([mockFootprintRow, mockFootprintRow2]);
+
+      const result = await service.getFootprints(
+        nodeId,
         {
           companyId: [
-            'urn:uuid:abc12345-6789-4def-0123-456789abcdef',
-            'urn:uuid:other-company',
-            'urn:uuid:another-company',
+            'urn:uuid:12345678-1234-1234-1234-123456789012',  // laptop
+            'urn:uuid:87654321-4321-4321-4321-210987654321',  // steel
           ],
         }
       );
 
-      expect(result.data).toHaveLength(1);
+      expect(result.data).toHaveLength(2);
     });
 
-    it('should handle combined status and productId filter (Test Case #28)', async () => {
+    it('should handle combined status and productId filter', async () => {
       dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 1 });
       dbMocks.executors.execute.mockResolvedValueOnce([mockFootprintRow]);
 
@@ -224,14 +338,27 @@ describe('InternalNodePactService', () => {
         nodeId,
         {
           status: 'Active',
-          productId: ['urn:gtin:1234567890123'],
+          productId: ['urn:gtin:12345678'],
         }
       );
 
       expect(result.data).toHaveLength(1);
     });
 
-    it('should return empty data for non-matching negative filter (Test Case #30-39)', async () => {
+    it('should handle productId filter — steel has two IDs, either match', async () => {
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 1 });
+      dbMocks.executors.execute.mockResolvedValueOnce([{ data: steelData }]);
+
+      const result = await service.getFootprints(
+        nodeId,
+        { productId: ['urn:ean:9876543210123'] }  // second ID of steelData
+      );
+
+      expect(result.data).toHaveLength(1);
+      expect(result.data[0].productIds).toContain('urn:ean:9876543210123');
+    });
+
+    it('should return empty data for non-matching productId filter', async () => {
       dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 0 });
       dbMocks.executors.execute.mockResolvedValueOnce([]);
 
@@ -328,79 +455,32 @@ describe('InternalNodePactService', () => {
         await new Promise((resolve) => setTimeout(resolve, 50));
       });
 
-      it('should send RequestFulfilledEvent when matching footprints are found (Test Case #13)', async () => {
-        // Mock: matching footprint found
-        dbMocks.executors.execute.mockResolvedValueOnce([mockFootprintRow]);
-        // Mock: outgoing connection for callback auth
-        dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
-          clientId: 'test-client',
-          clientSecret: Buffer.from('test-secret').toString('base64'),
-        });
-        // Mock: auth token response
-        mockFetch.mockResolvedValueOnce({
-          ok: true,
-          json: async () => ({ access_token: 'callback-token' }),
-        });
-        // Mock: callback POST
-        mockFetch.mockResolvedValueOnce({ ok: true });
+      it('should save incoming request to inbox regardless of footprint matches (Test Case #13)', async () => {
+        // New behavior: always save to inbox, never auto-respond
+        await expect(
+          service.handleEvent(nodeId, {
+            ...baseEvent,
+            type: EventTypes.RequestCreated,
+            data: { productId: ['urn:gtin:1234567890123'] },
+          })
+        ).resolves.toBeUndefined();
 
-        await service.handleEvent(nodeId, {
-          ...baseEvent,
-          type: EventTypes.RequestCreated,
-          data: { productId: ['urn:gtin:1234567890123'] },
-        });
-
-        // Give the fire-and-forget promise time to resolve
-        await new Promise((resolve) => setTimeout(resolve, 100));
-
-        // Verify the callback was made
-        const callbackCall = mockFetch.mock.calls.find(
-          (call) => call[0].includes('/3/events')
-        );
-        expect(callbackCall).toBeDefined();
-        if (callbackCall && callbackCall[1]) {
-          const body = JSON.parse(callbackCall[1].body);
-          expect(body.type).toBe(EventTypes.RequestFulfilled);
-          expect(body.data.requestEventId).toBe('test-event-123');
-          expect(body.data.pfs).toHaveLength(1);
-        }
+        // No callback should be made — supplier fulfills manually via dashboard
+        expect(mockFetch).not.toHaveBeenCalled();
       });
 
-      it('should send RequestRejectedEvent for non-existent productId (Test Case #14)', async () => {
-        // Mock: no matching footprints
-        dbMocks.executors.execute.mockResolvedValueOnce([]);
-        // Mock: outgoing connection for callback auth
-        dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
-          clientId: 'test-client',
-          clientSecret: Buffer.from('test-secret').toString('base64'),
-        });
-        // Mock: auth token response
-        mockFetch.mockResolvedValueOnce({
-          ok: true,
-          json: async () => ({ access_token: 'callback-token' }),
-        });
-        // Mock: callback POST
-        mockFetch.mockResolvedValueOnce({ ok: true });
+      it('should save incoming request to inbox for any productId (Test Case #14)', async () => {
+        // New behavior: always save to inbox, no auto-rejection
+        await expect(
+          service.handleEvent(nodeId, {
+            ...baseEvent,
+            type: EventTypes.RequestCreated,
+            data: { productId: ['urn:null'] },
+          })
+        ).resolves.toBeUndefined();
 
-        await service.handleEvent(nodeId, {
-          ...baseEvent,
-          type: EventTypes.RequestCreated,
-          data: { productId: ['urn:null'] },
-        });
-
-        // Give the fire-and-forget promise time to resolve
-        await new Promise((resolve) => setTimeout(resolve, 100));
-
-        const callbackCall = mockFetch.mock.calls.find(
-          (call) => call[0].includes('/3/events')
-        );
-        expect(callbackCall).toBeDefined();
-        if (callbackCall && callbackCall[1]) {
-          const body = JSON.parse(callbackCall[1].body);
-          expect(body.type).toBe(EventTypes.RequestRejected);
-          expect(body.data.requestEventId).toBe('test-event-123');
-          expect(body.data.error.code).toBe('NotFound');
-        }
+        // No callback should be made — supplier fulfills or rejects manually via dashboard
+        expect(mockFetch).not.toHaveBeenCalled();
       });
     });
 
