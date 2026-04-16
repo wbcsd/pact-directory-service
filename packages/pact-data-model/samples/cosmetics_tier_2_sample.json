@@ -1,0 +1,519 @@
+[
+  {
+    "id": "eef32092-d76b-4707-82ff-65dc5377b4cd",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Givaudan Active Beauty",
+    "companyIds": [
+      "urn:pact:company:givaudan-ab"
+    ],
+    "productDescription": "Proprietary peptide active complex (palmitoyl tripeptide-1 + palmitoyl tetrapeptide-7) in butylene glycol carrier, 100ppm active. For anti-aging serums.",
+    "productIds": [
+      "urn:pact:product:givaudan-peptide-complex-001"
+    ],
+    "productNameCompany": "Anti-Aging Peptide Complex",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:35490"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "kilogram",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1.02",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "45.00",
+      "pcfIncludingBiogenicUptake": "45.00",
+      "fossilGhgEmissions": "43.50",
+      "fossilCarbonContent": "0.15",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Solid-phase peptide synthesis, HPLC purification, lyophilization, reconstitution in carrier solvent, sterile filtration, filling.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "FR",
+      "packagingGhgEmissions": "0.20",
+      "primaryDataShare": "0.70",
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      }
+    }
+  },
+  {
+    "id": "49e12975-f04d-4572-a772-3be12bbf6886",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Gattefoss\u00e9 SAS",
+    "companyIds": [
+      "urn:pact:company:gattefosse-sas"
+    ],
+    "productDescription": "Pre-formulated self-emulsifying wax base (cetearyl alcohol, PEG-20 stearate, glyceryl stearate), for O/W cream formulations. Simplifies manufacturing.",
+    "productIds": [
+      "urn:pact:product:gattefosse-emulwax-001"
+    ],
+    "productNameCompany": "Self-Emulsifying Wax Base",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:35490"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "kilogram",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "4.50",
+      "pcfIncludingBiogenicUptake": "3.20",
+      "fossilGhgEmissions": "4.00",
+      "fossilCarbonContent": "0.48",
+      "biogenicCarbonContent": "0.55",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Fatty alcohol procurement, PEG stearate synthesis, blending at controlled temperature, flaking/prilling, packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "FR",
+      "packagingGhgEmissions": "0.06",
+      "biogenicCO2Uptake": "-1.30",
+      "primaryDataShare": "0.65",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      }
+    }
+  },
+  {
+    "id": "943aaca7-8392-469e-9d67-5aa71d8d7ae4",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Sensient Cosmetic Technologies",
+    "companyIds": [
+      "urn:pact:company:sensient-cosm"
+    ],
+    "productDescription": "Pre-dispersed mineral color blend (iron oxides, TiO2, mica) in isododecane/dimethicone carrier. Ready-to-use for foundation manufacturing.",
+    "productIds": [
+      "urn:pact:product:sensient-mineral-premix-001"
+    ],
+    "productNameCompany": "Mineral Foundation Premix",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:35490"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "kilogram",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "14.00",
+      "pcfIncludingBiogenicUptake": "14.00",
+      "fossilGhgEmissions": "13.50",
+      "fossilCarbonContent": "0.10",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Pigment procurement, bead milling/dispersion, quality control (color matching, particle size), filling.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "US",
+      "packagingGhgEmissions": "0.12",
+      "primaryDataShare": "0.55",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "1.5",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "3f7abb70-d9cf-43ea-9d18-6edb81c5ce02",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Firmenich SA",
+    "companyIds": [
+      "urn:pact:company:firmenich-sa"
+    ],
+    "productDescription": "Alcohol-free fragrance concentrate, floral bouquet profile (rose, jasmine, ylang ylang notes), for eau de parfum dilution. IFRA 51st Amendment compliant.",
+    "productIds": [
+      "urn:pact:product:firmenich-floral-conc-001"
+    ],
+    "productNameCompany": "Fine Fragrance Concentrate (Floral)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:35490"
+    ],
+    "comment": "SAMPLE: Contains naturals from responsible sourcing programs. Synthetic musks are biodegradable alternatives.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "kilogram",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.95",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "35.00",
+      "pcfIncludingBiogenicUptake": "33.50",
+      "fossilGhgEmissions": "33.00",
+      "fossilCarbonContent": "0.25",
+      "biogenicCarbonContent": "0.20",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Natural essential oil extraction (steam distillation, solvent extraction), aroma chemical synthesis, precision blending, maturation, QC (GC-MS, olfactory panel), filling.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CH",
+      "packagingGhgEmissions": "0.15",
+      "biogenicCO2Uptake": "-1.50",
+      "primaryDataShare": "0.50",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.5",
+        "geographicalDQR": "2.0",
+        "temporalDQR": "2.5"
+      }
+    }
+  },
+  {
+    "id": "084f67a9-e61d-4bf0-afa2-d6959a4be1a6",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Cosmetic Group Italia",
+    "companyIds": [
+      "urn:pact:company:cosm-grp-italia"
+    ],
+    "productDescription": "Semi-finished lipstick bullet (wax/oil/pigment), classic bullet shape, ready for assembly into packaging. Various shades available.",
+    "productIds": [
+      "urn:pact:product:cgi-lipstick-bullet-001"
+    ],
+    "productNameCompany": "Lipstick Bullet (Semi-finished)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:35490"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1000",
+      "productMassPerDeclaredUnit": "3.50",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "22.00",
+      "pcfIncludingBiogenicUptake": "20.50",
+      "fossilGhgEmissions": "20.00",
+      "fossilCarbonContent": "0.15",
+      "biogenicCarbonContent": "0.30",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Wax/oil melting, pigment dispersion (triple roller milling), mass compounding, molding into bullet shape, flame treatment, visual inspection.",
+      "packagingEmissionsIncluded": false,
+      "geographyCountry": "IT",
+      "biogenicCO2Uptake": "-1.50",
+      "primaryDataShare": "0.65",
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      }
+    }
+  },
+  {
+    "id": "3c90a09f-2b65-418f-867f-a28f52465539",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Schwan Cosmetics",
+    "companyIds": [
+      "urn:pact:company:schwan-cosm"
+    ],
+    "productDescription": "Extruded cosmetic pencil core, kohl/eyeliner formula (waxes, iron oxide, carbon black), waterproof. Ready for encasing in wood barrel.",
+    "productIds": [
+      "urn:pact:product:schwan-kohl-core-001"
+    ],
+    "productNameCompany": "Cosmetic Pencil Core (Kohl/Eyeliner)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:35490"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1000",
+      "productMassPerDeclaredUnit": "2.80",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "8.50",
+      "pcfIncludingBiogenicUptake": "7.80",
+      "fossilGhgEmissions": "7.50",
+      "fossilCarbonContent": "0.05",
+      "biogenicCarbonContent": "0.15",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Wax/binder melting, pigment dispersion, hot-melt extrusion, cooling, cutting to length, inspection.",
+      "packagingEmissionsIncluded": false,
+      "geographyCountry": "DE",
+      "biogenicCO2Uptake": "-0.70",
+      "primaryDataShare": "0.70",
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      }
+    }
+  },
+  {
+    "id": "03ab81cb-3631-4bbd-ab6e-fe1bb13709c3",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Aptar Group",
+    "companyIds": [
+      "urn:pact:company:aptar-grp"
+    ],
+    "productDescription": "Airless pump dispenser, 50mL capacity, PP/PE materials, for serum and cream products. Includes pump, collar, and base.",
+    "productIds": [
+      "urn:pact:product:aptar-airless-50ml-001"
+    ],
+    "productNameCompany": "Airless Pump Dispenser (50mL)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:36990"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1000",
+      "productMassPerDeclaredUnit": "12.0",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "42.00",
+      "pcfIncludingBiogenicUptake": "42.00",
+      "fossilGhgEmissions": "41.00",
+      "fossilCarbonContent": "0.48",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "PP/PE injection molding (pump, piston, bottle, base), spring insertion, assembly, leak testing, bulk packaging.",
+      "packagingEmissionsIncluded": false,
+      "geographyCountry": "FR",
+      "primaryDataShare": "0.75",
+      "dqi": {
+        "technologicalDQR": "1.0",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.0"
+      }
+    }
+  },
+  {
+    "id": "0d5dd120-4f1f-4ae6-9223-509d03493a97",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Verescence (formerly SGD)",
+    "companyIds": [
+      "urn:pact:company:verescence-sas"
+    ],
+    "productDescription": "Premium glass perfume bottle, 100mL, extra-flint glass, automated blow-molding, fire-polished. Ready for filling and crimping.",
+    "productIds": [
+      "urn:pact:product:verescence-perf-bottle-100-001"
+    ],
+    "productNameCompany": "Glass Perfume Bottle (100mL)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:37110"
+    ],
+    "comment": "SAMPLE: Oxy-fuel furnace with waste heat recovery. 40% recycled cullet content.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.180",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "0.65",
+      "pcfIncludingBiogenicUptake": "0.65",
+      "fossilGhgEmissions": "0.62",
+      "fossilCarbonContent": "0.0",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Glass batch mixing, furnace melting (oxy-fuel), gob forming, blow molding, annealing, fire polishing, inspection, palletizing.",
+      "packagingEmissionsIncluded": false,
+      "geographyCountry": "FR",
+      "primaryDataShare": "0.80",
+      "dqi": {
+        "technologicalDQR": "1.0",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.0"
+      },
+      "verification": {
+        "coverage": "PCF calculation model",
+        "providerName": "Bureau Veritas",
+        "completedAt": "2026-02-01T00:00:00Z",
+        "standardName": "ISO 14067"
+      }
+    }
+  },
+  {
+    "id": "6acef4cf-474a-41e6-9c9c-a8cdeba4184c",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Alb\u00e9a Group",
+    "companyIds": [
+      "urn:pact:company:albea-grp"
+    ],
+    "productDescription": "Squeezable cosmetic tube, 75mL, 50% post-consumer recycled PE, offset-printed, with flip-top cap. For creams, lotions, and cleansers.",
+    "productIds": [
+      "urn:pact:product:albea-tube-75ml-pcr-001"
+    ],
+    "productNameCompany": "Cosmetic Tube (75mL, PCR PE)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:36990"
+    ],
+    "comment": "SAMPLE: 50% post-consumer recycled PE content. SuPR-certified recycling compatibility.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1000",
+      "productMassPerDeclaredUnit": "18.0",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "28.00",
+      "pcfIncludingBiogenicUptake": "28.00",
+      "fossilGhgEmissions": "27.00",
+      "fossilCarbonContent": "0.42",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "PCR-PE compounding, tube extrusion, offset printing (up to 8 colors), cap injection molding, assembly, leak testing, shrink-wrapping.",
+      "packagingEmissionsIncluded": false,
+      "geographyCountry": "FR",
+      "primaryDataShare": "0.70",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      }
+    }
+  },
+  {
+    "id": "1c1d329d-34e1-4bfb-9d8c-22a36becc2b5",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Intercos Group",
+    "companyIds": [
+      "urn:pact:company:intercos-grp"
+    ],
+    "productDescription": "Semi-finished pressed powder compact (talc, mica, silica, pigments), wet-pressed into standard 59mm pan. For face powder and bronzer products.",
+    "productIds": [
+      "urn:pact:product:intercos-pressed-powder-001"
+    ],
+    "productNameCompany": "Pressed Powder Compact (Semi-finished)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:35490"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1000",
+      "productMassPerDeclaredUnit": "8.0",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "18.00",
+      "pcfIncludingBiogenicUptake": "18.00",
+      "fossilGhgEmissions": "17.50",
+      "fossilCarbonContent": "0.08",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Dry ingredient blending, binder solution preparation, wet blending, pressing into metal pans, drying, surface inspection.",
+      "packagingEmissionsIncluded": false,
+      "geographyCountry": "IT",
+      "primaryDataShare": "0.65",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      }
+    }
+  }
+]

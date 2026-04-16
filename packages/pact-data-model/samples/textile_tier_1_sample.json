@@ -1,0 +1,575 @@
+[
+  {
+    "id": "a33fc781-155d-4a51-859b-7ace8b675465",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Patagonia Inc.",
+    "companyIds": [
+      "urn:pact:company:patagonia-inc"
+    ],
+    "productDescription": "Men's full-zip fleece jacket, 100% recycled polyester, Fair Trade Certified sewn. Sizes S-XXL. 415g average weight.",
+    "productIds": [
+      "urn:pact:product:patagonia-better-sweater-001"
+    ],
+    "productNameCompany": "Better Sweater\u00ae Fleece Jacket",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:28220"
+    ],
+    "comment": "SAMPLE: 100% recycled polyester. Fair Trade Certified factory in Sri Lanka. Polybag is 100% recycled PE.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.415",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "12.80",
+      "pcfIncludingBiogenicUptake": "12.80",
+      "fossilGhgEmissions": "12.20",
+      "fossilCarbonContent": "0.10",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "rPET fiber spinning, yarn texturing, knitting, dyeing, cutting, sewing (Fair Trade factory), finishing, QC, hang-tag, polybag.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "US",
+      "packagingGhgEmissions": "0.25",
+      "primaryDataShare": "0.60",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "2.0",
+        "temporalDQR": "2.0"
+      },
+      "verification": {
+        "coverage": "product level",
+        "providerName": "Bureau Veritas",
+        "completedAt": "2026-02-10T00:00:00Z",
+        "standardName": "ISO 14067"
+      }
+    }
+  },
+  {
+    "id": "264ee63e-8128-4e42-aed5-df36432cc65e",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Levi Strauss & Co.",
+    "companyIds": [
+      "urn:pact:company:levis-co"
+    ],
+    "productDescription": "Iconic straight-fit jeans, 99% cotton / 1% elastane stretch denim, button fly, 5-pocket styling. Water<Less\u00ae finish. 860g average.",
+    "productIds": [
+      "urn:pact:product:levis-501-original-001"
+    ],
+    "productNameCompany": "501\u00ae Original Fit Jeans",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:28220"
+    ],
+    "comment": "SAMPLE: Water<Less\u00ae finishing uses up to 96% less water than conventional finishing. Denim sourced from certified sustainable cotton.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.860",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "28.50",
+      "pcfIncludingBiogenicUptake": "25.20",
+      "fossilGhgEmissions": "23.80",
+      "fossilCarbonContent": "0.05",
+      "biogenicCarbonContent": "0.36",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Cotton/elastane denim weaving, indigo dyeing, cutting, sewing, stone-wash finishing (Water<Less\u00ae), labeling, packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "US",
+      "packagingGhgEmissions": "0.35",
+      "biogenicCO2Uptake": "-3.30",
+      "primaryDataShare": "0.55",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "2.0",
+        "temporalDQR": "2.0"
+      },
+      "verification": {
+        "coverage": "product level",
+        "providerName": "SGS",
+        "completedAt": "2026-01-30T00:00:00Z",
+        "standardName": "ISO 14067"
+      }
+    }
+  },
+  {
+    "id": "739513b7-9511-4aa1-9159-50fb01b7117f",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Arc'teryx Equipment",
+    "companyIds": [
+      "urn:pact:company:arcteryx-equip"
+    ],
+    "productDescription": "Gore-Tex Pro 3L hardshell mountaineering jacket, fully seam-taped, helmet-compatible hood, pit zips. 490g. For alpine climbing.",
+    "productIds": [
+      "urn:pact:product:arcteryx-alpha-sv-001"
+    ],
+    "productNameCompany": "Alpha SV Hardshell Jacket",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:28220"
+    ],
+    "comment": "SAMPLE: Gore-Tex Pro 3-layer laminate. Made in own factory in Vancouver. PFC-free DWR treatment.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.490",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "42.00",
+      "pcfIncludingBiogenicUptake": "42.00",
+      "fossilGhgEmissions": "40.80",
+      "fossilCarbonContent": "0.65",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Gore-Tex Pro laminate procurement, laser cutting, GRS sewing, seam taping, DWR application, zipper/hardware assembly, QC, retail packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CA",
+      "packagingGhgEmissions": "0.40",
+      "primaryDataShare": "0.50",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        },
+        {
+          "name": "GaBi",
+          "version": "2024.1"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "1.5",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "b71013fc-e6c1-4e78-9f11-0861df58cf02",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Ermenegildo Zegna",
+    "companyIds": [
+      "urn:pact:company:zegna-group"
+    ],
+    "productDescription": "Men's two-piece suit (jacket + trousers), 100% superfine merino wool (15.5\u00b5m), half-canvassed construction. Made in Italy.",
+    "productIds": [
+      "urn:pact:product:zegna-wool-suit-001"
+    ],
+    "productNameCompany": "Wool Two-Piece Suit",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:28220"
+    ],
+    "comment": "SAMPLE: Wool from Zegna-owned farm in Australia. Tailored in Trivero, Italy. Enteric methane from sheep farming allocated by economic value.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1.350",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "68.00",
+      "pcfIncludingBiogenicUptake": "58.50",
+      "fossilGhgEmissions": "55.00",
+      "fossilCarbonContent": "0.02",
+      "biogenicCarbonContent": "0.58",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Superfine wool yarn procurement, fabric weaving, piece dyeing, cutting, half-canvas tailoring, lining assembly, pressing, finishing, garment bags.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "IT",
+      "packagingGhgEmissions": "0.80",
+      "biogenicCO2Uptake": "-9.50",
+      "primaryDataShare": "0.55",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "1.5",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "085810c4-6c69-4419-ba6c-3e16b30b18e0",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Nike Inc.",
+    "companyIds": [
+      "urn:pact:company:nike-inc"
+    ],
+    "productDescription": "Men's running shoe, engineered mesh upper (recycled polyester), Air Max sole unit, rubber outsole. 310g per shoe (size US10).",
+    "productIds": [
+      "urn:pact:product:nike-air-max-run-001"
+    ],
+    "productNameCompany": "Air Max Running Shoe",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:29420"
+    ],
+    "comment": "SAMPLE: Upper contains minimum 50% recycled polyester content. Shoebox is 100% recycled cardboard.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "2",
+      "productMassPerDeclaredUnit": "0.620",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "14.20",
+      "pcfIncludingBiogenicUptake": "14.20",
+      "fossilGhgEmissions": "13.80",
+      "fossilCarbonContent": "0.28",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Knit upper manufacturing, sole unit injection molding, Air bag production, outsole rubber compounding/molding, lasting/assembly, QC, shoebox packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "VN",
+      "packagingGhgEmissions": "0.50",
+      "primaryDataShare": "0.52",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "2.0",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "542da0e6-1c22-40d3-9b1b-a8493243b984",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "H&M Group",
+    "companyIds": [
+      "urn:pact:company:hm-group"
+    ],
+    "productDescription": "Unisex regular-fit T-shirt, 100% organic cotton, 160 GSM jersey, crew neck, single color (garment-dyed). 180g average.",
+    "productIds": [
+      "urn:pact:product:hm-organic-tshirt-001"
+    ],
+    "productNameCompany": "Organic Cotton Basic T-Shirt",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:28220"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.180",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "5.50",
+      "pcfIncludingBiogenicUptake": "4.10",
+      "fossilGhgEmissions": "3.70",
+      "fossilCarbonContent": "0.01",
+      "biogenicCarbonContent": "0.08",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Organic cotton yarn spinning, circular knitting, pre-treatment, garment dyeing (reactive dyes), softening, cutting, sewing, pressing, folding, polybag.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "BD",
+      "packagingGhgEmissions": "0.10",
+      "biogenicCO2Uptake": "-1.40",
+      "primaryDataShare": "0.50",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.5",
+        "geographicalDQR": "2.0",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "21c2edfc-f272-4474-b131-86bc3b8e2ae5",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Adidas AG",
+    "companyIds": [
+      "urn:pact:company:adidas-ag"
+    ],
+    "productDescription": "Performance running shoe, Primeknit upper from Parley Ocean Plastic (recycled marine waste), Boost midsole, Continental rubber outsole. 330g (US10).",
+    "productIds": [
+      "urn:pact:product:adidas-ultraboost-parley-001"
+    ],
+    "productNameCompany": "Ultraboost Running Shoe (Parley)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:29420"
+    ],
+    "comment": "SAMPLE: Upper yarn contains 50% Parley Ocean Plastic from intercepted marine waste. Boost midsole from expanded TPU beads.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "2",
+      "productMassPerDeclaredUnit": "0.660",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "15.80",
+      "pcfIncludingBiogenicUptake": "15.80",
+      "fossilGhgEmissions": "15.20",
+      "fossilCarbonContent": "0.32",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Parley yarn extrusion, Primeknit upper knitting, TPU Boost midsole molding, Continental rubber outsole vulcanization, lasting/assembly, QC, packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "VN",
+      "packagingGhgEmissions": "0.55",
+      "primaryDataShare": "0.48",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "2.0",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "2e1a36e6-725d-4f59-bcaf-0ca8c368262e",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Burberry Group",
+    "companyIds": [
+      "urn:pact:company:burberry-grp"
+    ],
+    "productDescription": "Iconic mid-length trench coat, cotton gabardine (weatherproof), 100% cotton, double-breasted, belted. Made in Castleford, England. 1.2kg.",
+    "productIds": [
+      "urn:pact:product:burberry-trench-001"
+    ],
+    "productNameCompany": "Heritage Trench Coat",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:28220"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1.200",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "35.00",
+      "pcfIncludingBiogenicUptake": "31.50",
+      "fossilGhgEmissions": "29.80",
+      "fossilCarbonContent": "0.02",
+      "biogenicCarbonContent": "0.50",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Cotton gabardine weaving, proofing treatment, cutting, sewing (Castleford factory), button/buckle assembly, pressing, inspection, garment bag, retail packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "GB",
+      "packagingGhgEmissions": "0.95",
+      "biogenicCO2Uptake": "-3.50",
+      "primaryDataShare": "0.65",
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      },
+      "verification": {
+        "coverage": "product level",
+        "providerName": "LRQA",
+        "completedAt": "2026-02-20T00:00:00Z",
+        "standardName": "ISO 14067"
+      }
+    }
+  },
+  {
+    "id": "5aaa3df7-04f7-4335-abb8-4991b3486f7a",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Canada Goose Holdings",
+    "companyIds": [
+      "urn:pact:company:canada-goose"
+    ],
+    "productDescription": "Extreme-weather down parka, Arctic Tech shell, 625-fill white duck down insulation, fur-free, adjustable hood. 1.8kg.",
+    "productIds": [
+      "urn:pact:product:canada-goose-expedition-001"
+    ],
+    "productNameCompany": "Expedition Parka",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:28220"
+    ],
+    "comment": "SAMPLE: Fur-free since 2022. Duck down from certified responsible supply chain (RDS). Made in Canada.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1.800",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "52.00",
+      "pcfIncludingBiogenicUptake": "48.50",
+      "fossilGhgEmissions": "46.00",
+      "fossilCarbonContent": "0.05",
+      "biogenicCarbonContent": "0.35",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Shell fabric weaving/coating, down processing (washing, sorting, sanitizing), cutting, sewing, down filling, zipper/snap assembly, QC, retail packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CA",
+      "packagingGhgEmissions": "1.20",
+      "biogenicCO2Uptake": "-3.50",
+      "primaryDataShare": "0.55",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "1.5",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "4c24da84-f848-40c8-8111-66dfeee86ecd",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "UNIQLO (Fast Retailing)",
+    "companyIds": [
+      "urn:pact:company:uniqlo-fr"
+    ],
+    "productDescription": "Lightweight packable down jacket, nylon ripstop shell, 90% duck down / 10% feather, water-repellent DWR. 230g. Packs into included pouch.",
+    "productIds": [
+      "urn:pact:product:uniqlo-uld-jacket-001"
+    ],
+    "productNameCompany": "Ultra Light Down Jacket",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:28220"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.230",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "15.50",
+      "pcfIncludingBiogenicUptake": "13.80",
+      "fossilGhgEmissions": "13.20",
+      "fossilCarbonContent": "0.18",
+      "biogenicCarbonContent": "0.12",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Nylon shell weaving, DWR coating, down processing, cutting, sewing, down injection, QC, compact packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "VN",
+      "packagingGhgEmissions": "0.20",
+      "biogenicCO2Uptake": "-1.70",
+      "primaryDataShare": "0.45",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        },
+        {
+          "name": "GaBi",
+          "version": "2024.1"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.5",
+        "geographicalDQR": "2.5",
+        "temporalDQR": "2.0"
+      }
+    }
+  }
+]

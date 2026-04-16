@@ -314,6 +314,17 @@ router.post('/directory/node-connections/:id/credentials/rotate', authenticate, 
 
 /////////////////// Footprints (Product Footprints)
 
+// Import multiple footprints for a node
+router.post('/directory/nodes/:id/footprints/import', authenticate, context(async (req, res) => {
+  const result = await req.services.footprint.import(
+    req.context,
+    parseInt(req.params.id as string),
+    req.body
+  );
+  res.status(result.failed === 0 ? 200 : 207);
+  return result;
+}));
+
 // Create a footprint for a node
 router.post('/directory/nodes/:id/footprints', authenticate, context(async (req, res) => {
   const result = await req.services.footprint.create(

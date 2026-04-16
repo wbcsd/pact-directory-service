@@ -1,0 +1,577 @@
+[
+  {
+    "id": "af85e3e4-6b19-478e-bce4-737962b5aac4",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "L'Or\u00e9al S.A.",
+    "companyIds": [
+      "urn:pact:company:loreal-sa"
+    ],
+    "productDescription": "Anti-aging facial serum with 1.5% hyaluronic acid in lightweight aqueous gel. 30mL glass dropper bottle with FSC-certified carton.",
+    "productIds": [
+      "urn:pact:product:loreal-revitalift-ha-serum-001"
+    ],
+    "productNameCompany": "Revitalift Hyaluronic Acid Serum (30mL)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:35410"
+    ],
+    "comment": "SAMPLE: Glass dropper bottle with 30% recycled glass. FSC-certified paperboard carton. Waterless formula concept reduces water footprint.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.085",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "0.95",
+      "pcfIncludingBiogenicUptake": "0.92",
+      "fossilGhgEmissions": "0.88",
+      "fossilCarbonContent": "0.005",
+      "biogenicCarbonContent": "0.01",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Ingredient batching, aqueous gel compounding, homogenization, filling into glass dropper bottle, cartoning, case packing.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "FR",
+      "packagingGhgEmissions": "0.18",
+      "biogenicCO2Uptake": "-0.03",
+      "primaryDataShare": "0.60",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      },
+      "verification": {
+        "coverage": "product level",
+        "providerName": "EY",
+        "completedAt": "2026-02-15T00:00:00Z",
+        "standardName": "ISO 14067"
+      }
+    }
+  },
+  {
+    "id": "ffd70eec-2693-4da0-8619-6e60ebc213a6",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Est\u00e9e Lauder Companies",
+    "companyIds": [
+      "urn:pact:company:estee-lauder"
+    ],
+    "productDescription": "Full-coverage, long-wear liquid foundation, 30mL glass bottle with pump. SPF10. Oil-free formula. 40 shades.",
+    "productIds": [
+      "urn:pact:product:estee-lauder-dw-found-001"
+    ],
+    "productNameCompany": "Double Wear Foundation (30mL)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:35410"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.090",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "1.15",
+      "pcfIncludingBiogenicUptake": "1.15",
+      "fossilGhgEmissions": "1.08",
+      "fossilCarbonContent": "0.008",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Pigment dispersion, emulsion compounding, high-shear mixing, deaeration, filling, pump assembly, cartoning.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "US",
+      "packagingGhgEmissions": "0.22",
+      "primaryDataShare": "0.52",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "1.5",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "30b8e147-9cd6-49a4-9904-5fd08ac8f620",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Chanel S.A.",
+    "companyIds": [
+      "urn:pact:company:chanel-sa"
+    ],
+    "productDescription": "Iconic floral-aldehyde eau de parfum, 100mL. Luxury glass bottle with beveled edges, stopper cap, and gift-quality outer carton.",
+    "productIds": [
+      "urn:pact:product:chanel-no5-edp-100-001"
+    ],
+    "productNameCompany": "N\u00b05 Eau de Parfum (100mL)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:35410"
+    ],
+    "comment": "SAMPLE: Bottle produced at dedicated Chanel glass facility. Packaging includes luxury carton with embossed finish.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.320",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "2.80",
+      "pcfIncludingBiogenicUptake": "2.60",
+      "fossilGhgEmissions": "2.50",
+      "fossilCarbonContent": "0.05",
+      "biogenicCarbonContent": "0.08",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Fragrance concentrate preparation, alcohol purification, maceration, chilling filtration, filling, crimping, labeling, cellophane wrapping, luxury cartoning.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "FR",
+      "packagingGhgEmissions": "0.55",
+      "biogenicCO2Uptake": "-0.20",
+      "primaryDataShare": "0.55",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "1f048d06-8368-4d0f-b259-5bd88a963969",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Shiseido Company",
+    "companyIds": [
+      "urn:pact:company:shiseido-co"
+    ],
+    "productDescription": "High-protection sunscreen lotion, SPF50+ PA++++, WetForce technology, lightweight texture. 50mL plastic tube.",
+    "productIds": [
+      "urn:pact:product:shiseido-sunprotect-spf50-001"
+    ],
+    "productNameCompany": "Ultimate Sun Protector Lotion SPF50+ (50mL)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:35410"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.072",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "0.85",
+      "pcfIncludingBiogenicUptake": "0.85",
+      "fossilGhgEmissions": "0.80",
+      "fossilCarbonContent": "0.006",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "UV filter dispersion, emulsion compounding, homogenization, tube filling, cap assembly, cartoning.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "JP",
+      "packagingGhgEmissions": "0.15",
+      "primaryDataShare": "0.58",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "aa7823d7-b3fc-44d3-94c7-433073e42d94",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "The Ordinary (DECIEM)",
+    "companyIds": [
+      "urn:pact:company:deciem-ord"
+    ],
+    "productDescription": "Concentrated vitamin B3 serum with zinc PCA for blemish-prone skin. 30mL glass dropper bottle, minimalist packaging.",
+    "productIds": [
+      "urn:pact:product:ordinary-niacinamide-10-001"
+    ],
+    "productNameCompany": "Niacinamide 10% + Zinc 1% Serum (30mL)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:35410"
+    ],
+    "comment": "SAMPLE: Minimalist packaging design. Glass bottle is infinitely recyclable. Simple aqueous formulation with low energy compounding.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.078",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "0.52",
+      "pcfIncludingBiogenicUptake": "0.52",
+      "fossilGhgEmissions": "0.48",
+      "fossilCarbonContent": "0.003",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Active ingredient dissolution, pH adjustment, filtration, filling into glass dropper bottle, labeling, cartoning.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CA",
+      "packagingGhgEmissions": "0.10",
+      "primaryDataShare": "0.55",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "1.5",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "dcc1104d-215e-4d93-acd1-fd9441ccff03",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "MAC Cosmetics (ELC)",
+    "companyIds": [
+      "urn:pact:company:mac-cosmetics"
+    ],
+    "productDescription": "Creamy matte lipstick, 3g net weight, full-coverage, in signature black bullet case with magnetic closure.",
+    "productIds": [
+      "urn:pact:product:mac-matte-lipstick-001"
+    ],
+    "productNameCompany": "Matte Lipstick (3g)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:35410"
+    ],
+    "comment": "SAMPLE: Back to MAC recycling program. Case contains recycled aluminum components.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.028",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "0.48",
+      "pcfIncludingBiogenicUptake": "0.44",
+      "fossilGhgEmissions": "0.42",
+      "fossilCarbonContent": "0.003",
+      "biogenicCarbonContent": "0.01",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Wax/oil/pigment compounding, triple roller milling, molding, flame treatment, case assembly, labeling, cartoning.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "US",
+      "packagingGhgEmissions": "0.12",
+      "biogenicCO2Uptake": "-0.04",
+      "primaryDataShare": "0.55",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "1.5",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "59c60f57-a2b2-4a7e-8982-64081094ccee",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Dove (Unilever)",
+    "companyIds": [
+      "urn:pact:company:dove-unilever"
+    ],
+    "productDescription": "Moisturizing beauty bar, 100g, 1/4 moisturizing cream, mild cleansing. Wrapped in recycled paperboard.",
+    "productIds": [
+      "urn:pact:product:dove-beauty-bar-100g-001"
+    ],
+    "productNameCompany": "Beauty Bar Soap (100g)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:35410"
+    ],
+    "comment": "SAMPLE: Palm oil RSPO certified. Wrapper is 100% recycled paperboard. Unilever Clean Future program compliant.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.112",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "0.38",
+      "pcfIncludingBiogenicUptake": "0.22",
+      "fossilGhgEmissions": "0.30",
+      "fossilCarbonContent": "0.02",
+      "biogenicCarbonContent": "0.04",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Fat/oil saponification, neutralization, amalgamation, milling, plodding, stamping, wrapping, case packing.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "NL",
+      "packagingGhgEmissions": "0.03",
+      "biogenicCO2Uptake": "-0.16",
+      "primaryDataShare": "0.65",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      },
+      "verification": {
+        "coverage": "product level",
+        "providerName": "PwC",
+        "completedAt": "2026-01-25T00:00:00Z",
+        "standardName": "ISO 14067"
+      }
+    }
+  },
+  {
+    "id": "2ea057be-10cb-4e4a-b0f0-b7f69866b6ed",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "K\u00e9rastase (L'Or\u00e9al)",
+    "companyIds": [
+      "urn:pact:company:kerastase-loreal"
+    ],
+    "productDescription": "Nourishing shampoo for dry hair, 250mL, sulfate-free formula. PET bottle with 50% PCR content, flip-top cap.",
+    "productIds": [
+      "urn:pact:product:kerastase-nutritive-shampoo-001"
+    ],
+    "productNameCompany": "Nutritive Shampoo (250mL)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:35410"
+    ],
+    "comment": "SAMPLE: 50% PCR-PET bottle. Sulfate-free surfactant system. L'Or\u00e9al waterloop manufacturing (closed-loop water recycling).",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.285",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "0.72",
+      "pcfIncludingBiogenicUptake": "0.68",
+      "fossilGhgEmissions": "0.65",
+      "fossilCarbonContent": "0.02",
+      "biogenicCarbonContent": "0.01",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Surfactant blending, active ingredient addition, fragrance dosing, homogenization, filling, capping, labeling, shrink-banding, case packing.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "FR",
+      "packagingGhgEmissions": "0.12",
+      "biogenicCO2Uptake": "-0.04",
+      "primaryDataShare": "0.58",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      }
+    }
+  },
+  {
+    "id": "1475f648-b37b-46c9-88b5-3f30ef995055",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Charlotte Tilbury Beauty",
+    "companyIds": [
+      "urn:pact:company:charlotte-tilbury"
+    ],
+    "productDescription": "Luxury anti-aging moisturizer, 50mL, with peptides, hyaluronic acid, and rosehip oil. Airless pump jar, luxury outer carton.",
+    "productIds": [
+      "urn:pact:product:ct-magic-cream-50ml-001"
+    ],
+    "productNameCompany": "Magic Cream Moisturizer (50mL)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:35410"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.095",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "1.35",
+      "pcfIncludingBiogenicUptake": "1.30",
+      "fossilGhgEmissions": "1.25",
+      "fossilCarbonContent": "0.008",
+      "biogenicCarbonContent": "0.01",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Oil-phase and water-phase preparation, emulsification, cooling, active ingredient addition, deaeration, filling into airless jar, assembly, luxury cartoning.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "GB",
+      "packagingGhgEmissions": "0.28",
+      "biogenicCO2Uptake": "-0.05",
+      "primaryDataShare": "0.48",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        },
+        {
+          "name": "GaBi",
+          "version": "2024.1"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.5",
+        "geographicalDQR": "2.0",
+        "temporalDQR": "2.5"
+      }
+    }
+  },
+  {
+    "id": "a3ce2030-0ea7-48ed-ad31-33b435c0803e",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "La Roche-Posay (L'Or\u00e9al)",
+    "companyIds": [
+      "urn:pact:company:laroche-posay"
+    ],
+    "productDescription": "Very high protection sunscreen fluid, SPF50+, with Mexoryl 400 filter. 50mL recyclable tube. Dermatologist recommended.",
+    "productIds": [
+      "urn:pact:product:lrp-anthelios-uvmune-50ml-001"
+    ],
+    "productNameCompany": "Anthelios UV Mune 400 SPF50+ (50mL)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:35410"
+    ],
+    "comment": "SAMPLE: Mexoryl 400 provides superior UVA protection. Eco-designed packaging (recyclable tube, reduced carton size).",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.068",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "0.78",
+      "pcfIncludingBiogenicUptake": "0.78",
+      "fossilGhgEmissions": "0.72",
+      "fossilCarbonContent": "0.005",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "UV filter predispersion, emulsification, homogenization, deaeration, tube filling, cap assembly, cartoning, case packing.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "FR",
+      "packagingGhgEmissions": "0.14",
+      "primaryDataShare": "0.60",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      },
+      "verification": {
+        "coverage": "product level",
+        "providerName": "EY",
+        "completedAt": "2026-03-01T00:00:00Z",
+        "standardName": "ISO 14067"
+      }
+    }
+  }
+]

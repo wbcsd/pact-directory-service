@@ -21,6 +21,7 @@ import {
   InputIcon,
   PlusIcon,
   TrashIcon,
+  UploadIcon,
 } from "@radix-ui/react-icons";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import { useNavigate, useParams } from "react-router-dom";
@@ -32,6 +33,7 @@ import NodeForm from "../components/NodeForm";
 import { NodeConnection } from "../components/NodeConnectionsManager";
 import CreateNodeConnectionForm from "../components/CreateNodeConnectionForm";
 import RequestPcfForm from "../components/RequestPcfForm";
+import ImportFootprintsForm from "../components/ImportFootprintsForm";
 import "./NodeDashboardPage.css";
 
 interface NodeData {
@@ -88,7 +90,8 @@ type PanelState =
   | { mode: "edit" }
   | { mode: "connections" }
   | { mode: "createConnection" }
-  | { mode: "requestPcf" };
+  | { mode: "requestPcf" }
+  | { mode: "importPcf" };
 
 const getLevelColor = (
   level: string
@@ -517,6 +520,7 @@ const NodeDashboardPage: React.FC = () => {
     panel.mode === "edit" ? "Edit Node" :
     panel.mode === "createConnection" ? "Create Connection" :
     panel.mode === "requestPcf" ? "Request PCF" :
+    panel.mode === "importPcf" ? "Import PCFs" :
     "";
 
   const panelSubtitle = nodeData?.name;
@@ -598,6 +602,9 @@ const NodeDashboardPage: React.FC = () => {
               <Box flexGrow="1">
                 <Heading size="4">PCF Records</Heading>
               </Box>
+              <Button variant="soft" onClick={() => setPanel({ mode: "importPcf" })}>
+                <UploadIcon /> Import PCFs
+              </Button>
               <Button onClick={() => navigate(`/nodes/${nodeId}/footprints/new`)}>
                 <PlusIcon /> Add PCF
               </Button>
@@ -750,6 +757,14 @@ const NodeDashboardPage: React.FC = () => {
               setPcfRequestsRefreshTrigger(prev => prev + 1);
               handlePanelClose();
             }}
+          />
+        )}
+        {panel.mode === "importPcf" && nodeId && (
+          <ImportFootprintsForm
+            key={nodeId}
+            nodeId={Number(nodeId)}
+            onCancel={handlePanelClose}
+            onImported={() => setRefreshTrigger((prev) => prev + 1)}
           />
         )}
       </SlideOverPanel>

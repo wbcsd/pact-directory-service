@@ -40,7 +40,8 @@
     "clean": "rimraf dist",
     "build": "tsc --build tsconfig.prod.json",
     "generate-schemas": "tsx scripts/generate-schemas.ts",
-    "generate-types": "tsx scripts/generate-types.ts"
+    "generate-types": "tsx scripts/generate-types.ts",
+    "validate": "tsx scripts/validate-pcf.ts"
   },
   "dependencies": {
     "ajv": "^8.17.1",
