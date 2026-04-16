@@ -79,6 +79,9 @@ export const createMockDatabase = () => {
     updateTable: jest.fn().mockReturnValue(queryChain),
     withRecursive: jest.fn().mockReturnValue(queryChain),
     
+    // Raw SQL execution — used by sql`` template tag
+    executeQuery: jest.fn().mockResolvedValue({ rows: [] }),
+
     // Transaction support
     transaction: mockTransaction,
   };

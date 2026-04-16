@@ -135,7 +135,7 @@ export class InternalNodePactService {
         // Update the matching outgoing PCF request record
         // The outgoing row has fromNodeId = this node (the one that sent the request)
         const requestEventId = data?.requestEventId as string | undefined;
-        const pfs = data?.pfs as unknown[] | undefined;
+        const pfs = data?.pfs as ProductFootprint[] | undefined;
         if (requestEventId) {
           await this.db
             .updateTable('pcf_requests')
@@ -147,6 +147,40 @@ export class InternalNodePactService {
             .where('requestEventId', '=', requestEventId)
             .where('fromNodeId', '=', nodeId)
             .execute();
+        }
+        // Persist the received PCFs into this node's product_footprints so they
+        // appear in the node's PCF records. Select first to decide insert vs update,
+        // matching on (node_id, data->>'id') — the unique index
+        // product_footprints_node_pact_id_key enforces no duplicate PACT IDs per node.
+        if (pfs && pfs.length > 0) {
+          for (const pf of pfs) {
+            if (!pf?.id) continue;
+            const existing = await this.db
+              .selectFrom('product_footprints')
+              .select('id')
+              .where('nodeId', '=', nodeId)
+              .where(sql`data->>'id'`, '=', pf.id)
+              .executeTakeFirst();
+
+            if (existing) {
+              await this.db
+                .updateTable('product_footprints')
+                .set({ data: pf as unknown as Record<string, unknown>, updatedAt: new Date() })
+                .where('id', '=', existing.id)
+                .execute();
+            } else {
+              await this.db
+                .insertInto('product_footprints')
+                .values({
+                  nodeId,
+                  data: pf as unknown as Record<string, unknown>,
+                  createdAt: new Date(),
+                  updatedAt: new Date(),
+                })
+                .execute();
+            }
+          }
+          logger.info({ nodeId, requestEventId, count: pfs.length }, 'PCFs from fulfilled request saved to node records');
         }
         break;
       }

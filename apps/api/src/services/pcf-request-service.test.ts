@@ -503,9 +503,11 @@ describe('PcfRequestService', () => {
   // fulfill()
   // ──────────────────────────────────────────────────
   describe('fulfill()', () => {
+    // fromNodeId=null skips the local-node direct-write path, keeping most tests isolated.
+    // Tests that cover the direct-write path use a separate fixture with a known fromNodeId.
     const mockIncomingRequest = {
       id: 10,
-      fromNodeId: 888,
+      fromNodeId: null,
       targetNodeId: nodeId,
       requestEventId: 'req-ev-001',
       source: `${DIRECTORY_API}/api/nodes/888`,
@@ -699,6 +701,88 @@ describe('PcfRequestService', () => {
       await expect(
         service.fulfill(otherOrgContext, nodeId, 10, [ss23LaptopDbId])
       ).rejects.toThrow(ForbiddenError);
+    });
+
+    it('writes PCFs directly into the requester node product_footprints when fromNodeId is a local node (new insert)', async () => {
+      // Reproduces the real scenario:
+      // silversurfer23 fulfills a request from galactus. HTTP callback fails because
+      // no reverse connection exists for auth. The fix: detect that galactus is a local
+      // node and insert directly into its product_footprints.
+      const localFromNodeId = 14; // galactus
+      const localRequest = { ...mockIncomingRequest, fromNodeId: localFromNodeId };
+      jest.clearAllMocks();
+      mockFetch
+        .mockResolvedValueOnce({ ok: true, json: async () => ({ access_token: 'token' }) })
+        .mockResolvedValueOnce({ ok: true, text: async () => '' });
+
+      nodeService.get.mockResolvedValueOnce(mockFromNode as any);
+      dbMocks.executors.executeTakeFirst
+        .mockResolvedValueOnce(localRequest)          // load pcf_request
+        .mockResolvedValueOnce(mockReverseConnection) // getCallbackToken: reverse connection
+        .mockResolvedValueOnce({ id: localFromNodeId }) // node existence check
+        .mockResolvedValueOnce(null);                 // no existing product_footprints row
+      dbMocks.executors.execute
+        .mockResolvedValueOnce([mockFootprintRow])    // footprint lookup
+        .mockResolvedValueOnce(undefined)             // UPDATE pcf_requests
+        .mockResolvedValueOnce(undefined);            // INSERT product_footprints
+
+      await service.fulfill(adminContext, nodeId, 10, [ss23LaptopDbId]);
+
+      // INSERT into product_footprints for the requester node
+      const insertCalls = dbMocks.db.insertInto.mock.calls.filter(
+        (c) => c[0] === 'product_footprints'
+      );
+      expect(insertCalls).toHaveLength(1);
+      const insertValues = dbMocks.queryChain.values.mock.calls.find(
+        () => true
+      );
+      expect(insertValues).toBeDefined();
+      expect(insertValues![0].nodeId).toBe(localFromNodeId);
+    });
+
+    it('updates existing product_footprints row for requester node when PCF already present', async () => {
+      const localFromNodeId = 14;
+      const localRequest = { ...mockIncomingRequest, fromNodeId: localFromNodeId };
+      jest.clearAllMocks();
+      mockFetch
+        .mockResolvedValueOnce({ ok: true, json: async () => ({ access_token: 'token' }) })
+        .mockResolvedValueOnce({ ok: true, text: async () => '' });
+
+      nodeService.get.mockResolvedValueOnce(mockFromNode as any);
+      dbMocks.executors.executeTakeFirst
+        .mockResolvedValueOnce(localRequest)
+        .mockResolvedValueOnce(mockReverseConnection)
+        .mockResolvedValueOnce({ id: localFromNodeId })      // node exists
+        .mockResolvedValueOnce({ id: 'existing-fp-uuid' });  // existing footprint row
+      dbMocks.executors.execute
+        .mockResolvedValueOnce([mockFootprintRow])
+        .mockResolvedValueOnce(undefined)
+        .mockResolvedValueOnce(undefined);
+
+      await service.fulfill(adminContext, nodeId, 10, [ss23LaptopDbId]);
+
+      // updateTable called for product_footprints
+      const updateCalls = dbMocks.db.updateTable.mock.calls.map((c) => c[0]);
+      expect(updateCalls).toContain('product_footprints');
+    });
+
+    it('skips direct-write when fromNodeId is null (external requester)', async () => {
+      // mockIncomingRequest already has fromNodeId=null
+      nodeService.get.mockResolvedValueOnce(mockFromNode as any);
+      dbMocks.executors.executeTakeFirst
+        .mockResolvedValueOnce(mockIncomingRequest)
+        .mockResolvedValueOnce(mockReverseConnection);
+      dbMocks.executors.execute
+        .mockResolvedValueOnce([mockFootprintRow])
+        .mockResolvedValueOnce(undefined);
+
+      await service.fulfill(adminContext, nodeId, 10, [ss23LaptopDbId]);
+
+      // No insert into product_footprints
+      const insertCalls = dbMocks.db.insertInto.mock.calls.filter(
+        (c) => c[0] === 'product_footprints'
+      );
+      expect(insertCalls).toHaveLength(0);
     });
   });
 

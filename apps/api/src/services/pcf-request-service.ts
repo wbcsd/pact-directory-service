@@ -359,6 +359,50 @@ export class PcfRequestService {
       .where('id', '=', requestId)
       .execute();
 
+    // When the requesting node is local (shares this database), write the PCFs
+    // directly into its product_footprints. This is required because the HTTP
+    // callback path (above) may fail if no reverse connection exists for auth.
+    if (request.fromNodeId !== null) {
+      const requesterNodeExists = await this.db
+        .selectFrom('nodes')
+        .select('id')
+        .where('id', '=', request.fromNodeId)
+        .executeTakeFirst();
+
+      if (requesterNodeExists) {
+        for (const pf of footprints) {
+          const pfData = pf as Record<string, unknown>;
+          if (!pfData?.id) continue;
+
+          const existing = await this.db
+            .selectFrom('product_footprints')
+            .select('id')
+            .where('nodeId', '=', request.fromNodeId)
+            .where(sql`data->>'id'`, '=', pfData.id as string)
+            .executeTakeFirst();
+
+          if (existing) {
+            await this.db
+              .updateTable('product_footprints')
+              .set({ data: pfData, updatedAt: new Date() })
+              .where('id', '=', existing.id)
+              .execute();
+          } else {
+            await this.db
+              .insertInto('product_footprints')
+              .values({
+                nodeId: request.fromNodeId,
+                data: pfData,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              })
+              .execute();
+          }
+        }
+        logger.info({ nodeId, requestId, fromNodeId: request.fromNodeId, count: footprints.length }, 'PCFs written directly to requester node records (local node)');
+      }
+    }
+
     logger.info({ nodeId, requestId, footprintCount: footprints.length }, 'PCF request fulfilled');
   }
 
