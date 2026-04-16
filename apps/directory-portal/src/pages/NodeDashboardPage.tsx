@@ -34,6 +34,7 @@ import { NodeConnection } from "../components/NodeConnectionsManager";
 import CreateNodeConnectionForm from "../components/CreateNodeConnectionForm";
 import RequestPcfForm from "../components/RequestPcfForm";
 import ImportFootprintsForm from "../components/ImportFootprintsForm";
+import FulfillPcfRequestForm from "../components/FulfillPcfRequestForm";
 import "./NodeDashboardPage.css";
 
 interface NodeData {
@@ -73,14 +74,19 @@ interface ConnectionCredentials {
 
 interface PcfRequest {
   id: number;
-  fromNodeId: number;
+  fromNodeId: number | null;
+  fromNodeName?: string;
   targetNodeId: number;
   targetNodeName?: string;
-  connectionId: number;
+  connectionId: number | null;
   requestEventId: string;
+  source: string | null;
   filters: Record<string, unknown>;
   status: "pending" | "fulfilled" | "rejected";
   resultCount: number | null;
+  fulfilledFootprintIds: unknown[] | null;
+  direction: "outgoing" | "incoming";
+  fulfillable?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -91,7 +97,8 @@ type PanelState =
   | { mode: "connections" }
   | { mode: "createConnection" }
   | { mode: "requestPcf" }
-  | { mode: "importPcf" };
+  | { mode: "importPcf" }
+  | { mode: "fulfillPcfRequest"; request: PcfRequest };
 
 const getLevelColor = (
   level: string
@@ -147,6 +154,7 @@ const NodeDashboardPage: React.FC = () => {
   const [pcfRequestsRefreshTrigger, setPcfRequestsRefreshTrigger] = useState(0);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
+  const [rejectingId, setRejectingId] = useState<number | null>(null);
 
   const closePanel = useCallback(() => setPanel({ mode: "closed" }), []);
   const handleSaved = useCallback(() => {
@@ -284,6 +292,19 @@ const NodeDashboardPage: React.FC = () => {
       // silently ignore
     }
   }, []);
+  const handleRejectPcfRequest = useCallback(async (request: PcfRequest) => {
+    if (!confirm(`Reject PCF request from ${request.fromNodeName ?? `Node #${request.fromNodeId}`}? A rejection event will be sent.`)) return;
+    setRejectingId(request.id);
+    try {
+      await fetchWithAuth(`/nodes/${nodeId}/pcf-requests/${request.id}/reject`, { method: "POST" });
+      setPcfRequestsRefreshTrigger((prev) => prev + 1);
+    } catch {
+      // silently ignore
+    } finally {
+      setRejectingId(null);
+    }
+  }, [nodeId]);
+
   const fetchPcfRequests = useCallback(async (params: {
     page: number;
     pageSize: number;
@@ -445,11 +466,24 @@ const NodeDashboardPage: React.FC = () => {
 
   const pcfRequestColumns: Column<PcfRequest>[] = [
     {
-      key: "targetNodeId",
-      header: "Target Node",
+      key: "direction",
+      header: "Direction",
       render: (row) => (
-        <Text size="2">{row.targetNodeName ?? `Node #${row.targetNodeId}`}</Text>
+        <Badge color={row.direction === "incoming" ? "jade" : "gray"} variant="soft" style={{ textTransform: "capitalize" }}>
+          {row.direction === "incoming" ? "Received" : "Sent"}
+        </Badge>
       ),
+    },
+    {
+      key: "node",
+      header: "Node",
+      render: (row) => {
+        if (row.direction === "incoming") {
+          const name = row.fromNodeName ?? (row.fromNodeId ? `Node #${row.fromNodeId}` : "External");
+          return <Text size="2">{name}</Text>;
+        }
+        return <Text size="2">{row.targetNodeName ?? `Node #${row.targetNodeId}`}</Text>;
+      },
     },
     {
       key: "status",
@@ -461,18 +495,57 @@ const NodeDashboardPage: React.FC = () => {
       ),
     },
     {
-      key: "resultCount",
-      header: "Results",
-      render: (row) => (
-        <Text size="2">
-          {row.status === "fulfilled" ? (row.resultCount ?? 0) : "—"}
-        </Text>
-      ),
+      key: "fulfillable",
+      header: "Fulfillable",
+      render: (row) => {
+        if (row.direction !== "incoming" || row.status !== "pending") return <Text size="2" color="gray">—</Text>;
+        return (
+          <Badge color={row.fulfillable ? "green" : "gray"} variant="soft">
+            {row.fulfillable ? "Yes" : "No"}
+          </Badge>
+        );
+      },
     },
     {
       key: "createdAt",
-      header: "Sent",
+      header: "Date",
       render: (row) => <Text size="2">{formatDate(row.createdAt)}</Text>,
+    },
+    {
+      key: "actions",
+      header: "",
+      extendedStyle: { textAlign: "right", whiteSpace: "nowrap" },
+      render: (row) => {
+        if (row.direction !== "incoming" || row.status !== "pending") return null;
+        return (
+          <Flex gap="2" justify="end">
+            <Button
+              size="1"
+              variant="soft"
+              color="green"
+              onClick={(e) => { e.stopPropagation(); setPanel({ mode: "fulfillPcfRequest", request: row }); }}
+            >
+              <CheckIcon /> Fulfill
+            </Button>
+            <Button
+              size="1"
+              variant="soft"
+              onClick={(e) => { e.stopPropagation(); navigate(`/nodes/${nodeId}/footprints/new`); }}
+            >
+              <PlusIcon /> Create &amp; Fulfill
+            </Button>
+            <Button
+              size="1"
+              variant="soft"
+              color="red"
+              disabled={rejectingId === row.id}
+              onClick={(e) => { e.stopPropagation(); handleRejectPcfRequest(row); }}
+            >
+              <Cross2Icon /> Reject
+            </Button>
+          </Flex>
+        );
+      },
     },
   ];
 
@@ -521,6 +594,7 @@ const NodeDashboardPage: React.FC = () => {
     panel.mode === "createConnection" ? "Create Connection" :
     panel.mode === "requestPcf" ? "Request PCF" :
     panel.mode === "importPcf" ? "Import PCFs" :
+    panel.mode === "fulfillPcfRequest" ? "Fulfill PCF Request" :
     "";
 
   const panelSubtitle = nodeData?.name;
@@ -670,8 +744,8 @@ const NodeDashboardPage: React.FC = () => {
               defaultPageSize={5}
               refreshTrigger={pcfRequestsRefreshTrigger}
               emptyState={{
-                title: "No PCF requests sent",
-                description: "PCF requests sent to connected nodes will appear here.",
+                title: "No PCF requests",
+                description: "Sent and received PCF requests will appear here.",
               }}
             />
           </section>
@@ -765,6 +839,18 @@ const NodeDashboardPage: React.FC = () => {
             nodeId={Number(nodeId)}
             onCancel={handlePanelClose}
             onImported={() => setRefreshTrigger((prev) => prev + 1)}
+          />
+        )}
+        {panel.mode === "fulfillPcfRequest" && nodeId && (
+          <FulfillPcfRequestForm
+            key={panel.request.id}
+            nodeId={Number(nodeId)}
+            request={panel.request}
+            onCancel={handlePanelClose}
+            onFulfilled={() => {
+              setPcfRequestsRefreshTrigger((prev) => prev + 1);
+              handlePanelClose();
+            }}
           />
         )}
       </SlideOverPanel>

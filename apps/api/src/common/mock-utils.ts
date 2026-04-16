@@ -35,6 +35,7 @@ export const createMockQueryChain = (executors = createMockExecutors()) => ({
   values: jest.fn().mockReturnThis(),
   set: jest.fn().mockReturnThis(),
   returningAll: jest.fn().mockReturnThis(),
+  onConflict: jest.fn().mockReturnThis(),
   
   // Pagination
   offset: jest.fn().mockReturnThis(),
