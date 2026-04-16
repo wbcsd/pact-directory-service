@@ -19,6 +19,7 @@ export interface ProfileData {
 // Define the context shape
 interface AuthContextType {
   isAuthenticated: boolean;
+  isLoading: boolean;
   profileData: ProfileData | null;
   login: (token: string) => Promise<void>;
   logout: () => void;
@@ -28,6 +29,7 @@ interface AuthContextType {
 // Create context with default values
 const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
+  isLoading: false,
   profileData: null,
   login: async () => {},
   logout: () => {},
@@ -37,55 +39,36 @@ const AuthContext = createContext<AuthContextType>({
 // Create a hook for easy access to the context
 export const useAuth = () => useContext(AuthContext);
 
-// Default empty profile data
-const emptyProfileData: ProfileData = {
-  id: 0,
-  organizationName: "",
-  organizationIdentifier: "",
-  organizationId: 0,
-  fullName: "",
-  email: "",
-  role: "user",
-  status: "enabled",
-  organizationDescription: "",
-  solutionApiUrl: "",
-  policies: [],
-};
 
 // Create the provider component
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(
     !!localStorage.getItem("jwt")
   );
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
 
-  // Fetch profile data from the API
+  // Fetch profile data from the API — throws on failure so callers can handle it
   const fetchProfileData = async (): Promise<ProfileData> => {
-    try {
-      const response = await fetchWithAuth("/users/me");
-
-      if (!response || !response.ok) {
-        throw new Error("Failed to fetch profile data");
-      }
-
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error("Error fetching profile data:", error);
-      return emptyProfileData;
+    const response = await fetchWithAuth("/users/me");
+    if (!response || !response.ok) {
+      throw new Error("Failed to fetch profile data");
     }
+    return response.json();
   };
 
   // Login function - stores token and fetches profile data
   const login = async (token: string): Promise<void> => {
     localStorage.setItem("jwt", token);
     setIsAuthenticated(true);
-
-    // Fetch profile data immediately after login
-    const userData = await fetchProfileData();
-    setProfileData(userData);
+    try {
+      const userData = await fetchProfileData();
+      setProfileData(userData);
+    } catch (error) {
+      console.error("Error fetching profile data after login:", error);
+    }
   };
 
   // Logout function
@@ -98,19 +81,31 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   // Function to refresh profile data when needed
   const refreshProfileData = async (): Promise<void> => {
     if (isAuthenticated) {
-      const userData = await fetchProfileData();
-      setProfileData(userData);
+      try {
+        const userData = await fetchProfileData();
+        setProfileData(userData);
+      } catch (error) {
+        console.error("Error refreshing profile data:", error);
+      }
     }
   };
 
-  // Check for token and load profile data on initial render
+  // Check for token and load profile data on initial render.
+  // isLoading starts true when a token exists; we validate it here before
+  // marking the user as authenticated so pages never render with expired credentials.
   React.useEffect(() => {
     const loadInitialData = async () => {
       const token = localStorage.getItem("jwt");
-      if (token) {
-        setIsAuthenticated(true);
+      if (!token) return;
+      try {
         const userData = await fetchProfileData();
+        setIsAuthenticated(true);
         setProfileData(userData);
+      } catch {
+        // Token invalid or expired — clear state and let auth-fetch redirect to /login
+        logout();
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -121,6 +116,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     <AuthContext.Provider
       value={{
         isAuthenticated,
+        isLoading,
         profileData,
         login,
         logout,
