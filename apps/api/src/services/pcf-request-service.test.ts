@@ -740,7 +740,7 @@ describe('PcfRequestService', () => {
       expect(insertValues![0].nodeId).toBe(localFromNodeId);
     });
 
-    it('updates existing product_footprints row for requester node when PCF already present', async () => {
+    it('upserts product_footprints for requester node when PCF already present', async () => {
       const localFromNodeId = 14;
       const localRequest = { ...mockIncomingRequest, fromNodeId: localFromNodeId };
       jest.clearAllMocks();
@@ -752,8 +752,7 @@ describe('PcfRequestService', () => {
       dbMocks.executors.executeTakeFirst
         .mockResolvedValueOnce(localRequest)
         .mockResolvedValueOnce(mockReverseConnection)
-        .mockResolvedValueOnce({ id: localFromNodeId })      // node exists
-        .mockResolvedValueOnce({ id: 'existing-fp-uuid' });  // existing footprint row
+        .mockResolvedValueOnce({ id: localFromNodeId });      // node exists
       dbMocks.executors.execute
         .mockResolvedValueOnce([mockFootprintRow])
         .mockResolvedValueOnce(undefined)
@@ -761,9 +760,11 @@ describe('PcfRequestService', () => {
 
       await service.fulfill(adminContext, nodeId, 10, [ss23LaptopDbId]);
 
-      // updateTable called for product_footprints
-      const updateCalls = dbMocks.db.updateTable.mock.calls.map((c) => c[0]);
-      expect(updateCalls).toContain('product_footprints');
+      // Uses INSERT...ON CONFLICT (upsert) for product_footprints
+      const insertCalls = dbMocks.db.insertInto.mock.calls.filter(
+        (c) => c[0] === 'product_footprints'
+      );
+      expect(insertCalls).toHaveLength(1);
     });
 
     it('skips direct-write when fromNodeId is null (external requester)', async () => {

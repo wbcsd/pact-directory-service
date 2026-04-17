@@ -149,36 +149,27 @@ export class InternalNodePactService {
             .execute();
         }
         // Persist the received PCFs into this node's product_footprints so they
-        // appear in the node's PCF records. Select first to decide insert vs update,
-        // matching on (node_id, data->>'id') — the unique index
-        // product_footprints_node_pact_id_key enforces no duplicate PACT IDs per node.
+        // appear in the node's PCF records. The composite PK (id, node_id) prevents
+        // duplicates — use ON CONFLICT to upsert.
         if (pfs && pfs.length > 0) {
           for (const pf of pfs) {
             if (!pf?.id) continue;
-            const existing = await this.db
-              .selectFrom('product_footprints')
-              .select('id')
-              .where('nodeId', '=', nodeId)
-              .where(sql`data->>'id'`, '=', pf.id)
-              .executeTakeFirst();
-
-            if (existing) {
-              await this.db
-                .updateTable('product_footprints')
-                .set({ data: pf as unknown as Record<string, unknown>, updatedAt: new Date() })
-                .where('id', '=', existing.id)
-                .execute();
-            } else {
-              await this.db
-                .insertInto('product_footprints')
-                .values({
-                  nodeId,
+            await this.db
+              .insertInto('product_footprints')
+              .values({
+                id: pf.id,
+                nodeId,
+                data: pf as unknown as Record<string, unknown>,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              })
+              .onConflict((oc) =>
+                oc.columns(['id', 'nodeId']).doUpdateSet({
                   data: pf as unknown as Record<string, unknown>,
-                  createdAt: new Date(),
                   updatedAt: new Date(),
                 })
-                .execute();
-            }
+              )
+              .execute();
           }
           logger.info({ nodeId, requestEventId, count: pfs.length }, 'PCFs from fulfilled request saved to node records');
         }

@@ -20,19 +20,11 @@ export async function up(db: Kysely<unknown>): Promise<void> {
   await sql`ALTER TABLE pcf_requests ALTER COLUMN from_node_id DROP NOT NULL`.execute(db);
 
   // Drop the FK constraint on from_node_id so NULL values are valid
-  await sql`
-    DO $$
-    BEGIN
-      IF EXISTS (
-        SELECT 1 FROM information_schema.table_constraints
-        WHERE table_name = 'pcf_requests'
-          AND constraint_name = 'pcf_requests_from_node_id_fkey'
-      ) THEN
-        ALTER TABLE pcf_requests DROP CONSTRAINT pcf_requests_from_node_id_fkey;
-      END IF;
-    END
-    $$
-  `.execute(db);
+  await db.schema
+    .alterTable('pcf_requests')
+    .dropConstraint('pcf_requests_from_node_id_fkey')
+    .ifExists()
+    .execute();
 
   // Index on target_node_id for inbox queries
   await db.schema

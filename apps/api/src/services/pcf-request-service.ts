@@ -374,30 +374,22 @@ export class PcfRequestService {
           const pfData = pf as Record<string, unknown>;
           if (!pfData?.id) continue;
 
-          const existing = await this.db
-            .selectFrom('product_footprints')
-            .select('id')
-            .where('nodeId', '=', request.fromNodeId)
-            .where(sql`data->>'id'`, '=', pfData.id as string)
-            .executeTakeFirst();
-
-          if (existing) {
-            await this.db
-              .updateTable('product_footprints')
-              .set({ data: pfData, updatedAt: new Date() })
-              .where('id', '=', existing.id)
-              .execute();
-          } else {
-            await this.db
-              .insertInto('product_footprints')
-              .values({
-                nodeId: request.fromNodeId,
+          await this.db
+            .insertInto('product_footprints')
+            .values({
+              id: pfData.id as string,
+              nodeId: request.fromNodeId,
+              data: pfData,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            })
+            .onConflict((oc) =>
+              oc.columns(['id', 'nodeId']).doUpdateSet({
                 data: pfData,
-                createdAt: new Date(),
                 updatedAt: new Date(),
               })
-              .execute();
-          }
+            )
+            .execute();
         }
         logger.info({ nodeId, requestId, fromNodeId: request.fromNodeId, count: footprints.length }, 'PCFs written directly to requester node records (local node)');
       }

@@ -108,7 +108,7 @@ export interface ActivityLogsTable {
 }
 
 export interface ProductFootprintsTable {
-  id: Generated<string>; // UUID, auto-generated
+  id: string; // UUID — must equal data.id (the PACT footprint ID)
   nodeId: number;
   data: Record<string, any>; // JSONB
   createdAt: Generated<Date>;
