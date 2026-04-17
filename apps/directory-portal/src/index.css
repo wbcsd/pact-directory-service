@@ -105,6 +105,14 @@
   color: white;
 }
 
+.data-table .rt-TableRow:nth-child(even) {
+  background-color: var(--indigo-a1);
+}
+
+.data-table .rt-TableHeader .rt-TableCell {
+  font-variant: all-small-caps;
+}
+
 /* ===== Badge: small caps ===== */
 .rt-Badge {
   font-variant: all-small-caps;

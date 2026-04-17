@@ -153,32 +153,6 @@ function DataTable<T extends object>({
     );
   }
 
-  // Render empty state
-  if (data.length === 0) {
-    if (emptyState) {
-      return (
-        <Flex direction="column" align="center" justify="center" p="6" minHeight="200px">
-          <Text size="5" weight="medium">
-            {emptyState.title}
-          </Text>
-          {emptyState.description && (
-            <Text size="2" color="gray" mt="2" mb="4">
-              {emptyState.description}
-            </Text>
-          )}
-          {emptyState.action && <Box mt="4">{emptyState.action}</Box>}
-        </Flex>
-      );
-    }
-    return (
-      <Flex direction="column" align="center" justify="center" p="6" minHeight="200px">
-        <Text size="3" color="gray">
-          No data available
-        </Text>
-      </Flex>
-    );
-  }
-
   return (
     <Table.Root variant="surface" className="data-table">
       <Table.Header>
@@ -224,7 +198,32 @@ function DataTable<T extends object>({
       </Table.Header>
 
       <Table.Body>
-        {sortedData.map((row) => {
+        { data.length === 0 ? (
+          <Table.Row>
+            <Table.Cell colSpan={columns.length + (selectable ? 1 : 0)}>
+              <Flex direction="column" align="center" justify="center">
+                {emptyState ? (
+                  <>
+                    <Text size="2">
+                      {emptyState.title}
+                    </Text>
+                    {emptyState.description && (
+                      <Text size="2">
+                        {emptyState.description}
+                      </Text>
+                    )}
+                    {emptyState.action && <Box mt="4">{emptyState.action}</Box>}
+                  </>
+                ) : (
+                  <Text size="2">
+                    No data available
+                  </Text>
+                )}
+              </Flex>
+            </Table.Cell>
+          </Table.Row>
+        ) : ( 
+        sortedData.map((row) => {
           const rowId = row[idColumnName] as string | number;
           const isSelected = selectedIds.includes(rowId);
           const isDisabled = disabledRowIds.includes(rowId);
@@ -263,7 +262,7 @@ function DataTable<T extends object>({
               ))}
             </Table.Row>
           );
-        })}
+        }))}
       </Table.Body>
     </Table.Root>
   );

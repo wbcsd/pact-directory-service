@@ -39,7 +39,7 @@ const FunctionalPageLayout: React.FC<FunctionalPageLayoutProps> = ({
         <div className="logo">
           <picture>
             <source srcSet={pactLogoDark} media="(prefers-color-scheme: dark)" />
-            <img width={153} src={pactLogo} alt="PACT Logo" />
+            <img height={32} src={pactLogo} alt="PACT Logo" />
           </picture>
         </div>
         <div className="top-bar-right">
