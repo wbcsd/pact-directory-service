@@ -135,11 +135,6 @@ const getStatusColor = (
   }
 };
 
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  return date.toLocaleString();
-};
-
 const NodeDashboardPage: React.FC = () => {
   const { id: nodeId } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -354,9 +349,54 @@ const NodeDashboardPage: React.FC = () => {
       ),
     },
     {
+      key: "data.productIds",
+      header: "ProductIDs",
+      render: (row) => {
+        const ids = row.data.productIds as string[] | undefined;
+        if (!ids?.length) return <Text size="2" color="gray">—</Text>;
+        return <Text size="2">{ids.join(", ")}</Text>;
+      },
+    },
+    {
+      key: "data.pcf.geographyCountry",
+      header: "Geography",
+      render: (row) => {
+        const pcf = row.data.pcf as Record<string, unknown> | undefined;
+        const value = (pcf?.geographyCountrySubdivision ?? pcf?.geographyCountry ?? pcf?.geographyRegion) as string | undefined;
+        return <Text size="2">{value || "—"}</Text>;
+      },
+    },
+    {
+      key: "data.pcf.pcfIncludingBiogenicUptake",
+      header: "PCF",
+      render: (row) => {
+        const pcf = row.data.pcf as Record<string, unknown> | undefined;
+        const value = (pcf?.pcfIncludingBiogenicUptake ?? pcf?.pCfIncludingBiogenic) as string | undefined;
+        return <Text size="2">{value ||  "—"}</Text>;
+      },
+    },
+    {
+      key: "data.pcf.fossilGhgEmissions",
+      header: "Fossil Emissions",
+      render: (row) => {
+        const pcf = row.data.pcf as Record<string, unknown> | undefined;
+        const value = pcf?.fossilGhgEmissions as string | undefined;
+        return <Text size="2">{value || "—"}</Text>;
+      },
+    },
+    {
+      key: "data.pcf.primaryDataShare",
+      header: "Primary Data Share",
+      render: (row) => {
+        const pcf = row.data.pcf as Record<string, unknown> | undefined;
+        const value = pcf?.primaryDataShare as string | undefined;
+        return <Text size="2">{value != null ? `${value}%` : "—"}</Text>;
+      },
+    },
+    {
       key: "createdAt",
       header: "Created",
-      render: (row) => <Text size="2">{formatDate(row.createdAt)}</Text>,
+      render: (row) => <Text size="2">{new Date(row.createdAt).toLocaleDateString()}</Text>,
     },
   ];
 
@@ -504,7 +544,7 @@ const NodeDashboardPage: React.FC = () => {
     {
       key: "createdAt",
       header: "Date",
-      render: (row) => <Text size="2">{formatDate(row.createdAt)}</Text>,
+      render: (row) => <Text size="2">{new Date(row.createdAt).toLocaleString()}</Text>,
     },
     {
       key: "actions",
@@ -562,7 +602,7 @@ const NodeDashboardPage: React.FC = () => {
     {
       key: "createdAt",
       header: "Time",
-      render: (log) => <Text size="2">{formatDate(log.createdAt)}</Text>,
+      render: (log) => <Text size="2">{new Date(log.createdAt).toLocaleString()}</Text>,
     },
     {
       key: "message",
