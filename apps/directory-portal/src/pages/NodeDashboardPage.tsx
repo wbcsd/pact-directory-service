@@ -587,9 +587,9 @@ const NodeDashboardPage: React.FC = () => {
   const panelTitle =
     panel.mode === "edit" ? "Edit Node" :
     panel.mode === "createConnection" ? "Create Connection" :
-    panel.mode === "requestPcf" ? "Request PCF" :
-    panel.mode === "importPcf" ? "Import PCFs" :
-    panel.mode === "fulfillPcfRequest" ? "Fulfill PCF Request" :
+    panel.mode === "requestPcf" ? "Request Footprint" :
+    panel.mode === "importPcf" ? "Import Footprints" :
+    panel.mode === "fulfillPcfRequest" ? "Fulfill Footprint Request" :
     "";
 
   const panelSubtitle = nodeData?.name;
@@ -665,17 +665,17 @@ const NodeDashboardPage: React.FC = () => {
 
           <Separator size="4" my="4" />
 
-          {/* PCF Records Section */}
+          {/* Footprints Section */}
           <section className="node-dashboard-section">
             <Flex mb="3" gap="2">
               <Box flexGrow="1">
-                <Heading size="4">PCF Records</Heading>
+                <Heading size="4">Footprints</Heading>
               </Box>
               <Button variant="soft" onClick={() => setPanel({ mode: "importPcf" })}>
-                <UploadIcon /> Import PCFs
+                <UploadIcon /> Import
               </Button>
               <Button onClick={() => navigate(`/nodes/${nodeId}/footprints/new`)}>
-                <PlusIcon /> Add PCF
+                <PlusIcon /> Add Footprint
               </Button>
             </Flex>
             <PaginatedDataTable<Footprint>
@@ -721,14 +721,14 @@ const NodeDashboardPage: React.FC = () => {
 
           <Separator size="4" my="4" />
 
-          {/* PCF Requests Section */}
+          {/* Footprint Requests Section */}
           <section className="node-dashboard-section">
             <Flex mb="3" gap="2">
               <Box flexGrow="1">
-                <Heading size="4">PCF Requests</Heading>
+                <Heading size="4">Footprint Requests</Heading>
               </Box>
               <Button onClick={() => setPanel({ mode: "requestPcf" })}>
-                <PlusIcon /> Request PCF
+                <PlusIcon /> Request Footprint
               </Button>
             </Flex>
             <PaginatedDataTable<PcfRequest>
