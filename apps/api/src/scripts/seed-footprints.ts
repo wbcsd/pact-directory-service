@@ -45,6 +45,7 @@ async function main() {
       .insertInto('product_footprints')
       .values({
         nodeId,
+        id: footprint.id, // Use the PACT footprint ID as the primary key
         data: footprint as unknown as Record<string, any>,
         createdAt: now,
         updatedAt: now,
