@@ -35,6 +35,7 @@ import CreateNodeConnectionForm from "../components/CreateNodeConnectionForm";
 import RequestPcfForm from "../components/RequestPcfForm";
 import ImportFootprintsForm from "../components/ImportFootprintsForm";
 import FulfillPcfRequestForm from "../components/FulfillPcfRequestForm";
+import NodeLink from "../components/NodeLink";
 import "./NodeDashboardPage.css";
 
 interface NodeData {
@@ -378,13 +379,7 @@ const NodeDashboardPage: React.FC = () => {
           : (row.fromNodeName ?? `Node #${row.fromNodeId}`);
         return (
           <Flex align="center" gap="2">
-            <a
-              href={`/nodes/${otherNodeId}`}
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate(`/nodes/${otherNodeId}`); }}
-              style={{ color: 'var(--accent-11)', textDecoration: 'none', fontWeight: 500 }}
-            >
-              {otherName}
-            </a>
+            <NodeLink id={otherNodeId} name={otherName} />
             <Badge size="1" color="gray" variant="soft">
               {isOutgoing ? "Outgoing" : "Incoming"}
             </Badge>
@@ -479,10 +474,10 @@ const NodeDashboardPage: React.FC = () => {
       header: "Node",
       render: (row) => {
         if (row.direction === "incoming") {
-          const name = row.fromNodeName ?? (row.fromNodeId ? `Node #${row.fromNodeId}` : "External");
-          return <Text size="2">{name}</Text>;
+          if (!row.fromNodeId) return <Text size="2">External</Text>;
+          return <NodeLink id={row.fromNodeId} name={row.fromNodeName ?? `Node #${row.fromNodeId}`} />;
         }
-        return <Text size="2">{row.targetNodeName ?? `Node #${row.targetNodeId}`}</Text>;
+        return <NodeLink id={row.targetNodeId} name={row.targetNodeName ?? `Node #${row.targetNodeId}`} />;
       },
     },
     {
