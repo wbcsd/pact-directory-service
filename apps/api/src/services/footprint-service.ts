@@ -62,6 +62,7 @@ export class FootprintService {
     const result = await this.db
       .insertInto('product_footprints')
       .values({
+        id: input.data.id as string,
         nodeId,
         data: input.data,
         createdAt: new Date(),
@@ -234,6 +235,7 @@ export class FootprintService {
         .insertInto('product_footprints')
         .values(
           validItems.map((data) => ({
+            id: data.id as string,
             nodeId,
             data,
             createdAt: new Date(),

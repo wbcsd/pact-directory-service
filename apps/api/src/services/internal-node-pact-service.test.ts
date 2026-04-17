@@ -507,11 +507,6 @@ describe('InternalNodePactService', () => {
       });
 
       it('inserts received PCFs into product_footprints when they do not already exist', async () => {
-        // No existing row for each PCF → insert path
-        dbMocks.executors.executeTakeFirst
-          .mockResolvedValueOnce(null)  // PCF 1: no existing row
-          .mockResolvedValueOnce(null); // PCF 2: no existing row
-
         await service.handleEvent(nodeId, {
           ...baseEvent,
           type: EventTypes.RequestFulfilled,
@@ -521,17 +516,14 @@ describe('InternalNodePactService', () => {
           },
         });
 
-        // Two inserts into product_footprints
+        // Two upserts (INSERT...ON CONFLICT) into product_footprints
         const insertCalls = dbMocks.db.insertInto.mock.calls.filter(
           (c) => c[0] === 'product_footprints'
         );
         expect(insertCalls).toHaveLength(2);
       });
 
-      it('updates an existing product_footprint row when the PACT ID already exists', async () => {
-        // Existing row found → update path
-        dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({ id: 'existing-db-uuid' });
-
+      it('upserts an existing product_footprint row when the PACT ID already exists', async () => {
         await service.handleEvent(nodeId, {
           ...baseEvent,
           type: EventTypes.RequestFulfilled,
@@ -541,14 +533,11 @@ describe('InternalNodePactService', () => {
           },
         });
 
-        // updateTable called for product_footprints (as well as pcf_requests)
-        const updateCalls = dbMocks.db.updateTable.mock.calls.map((c) => c[0]);
-        expect(updateCalls).toContain('product_footprints');
-        // No insert for product_footprints
+        // Uses INSERT...ON CONFLICT (upsert) for product_footprints
         const insertCalls = dbMocks.db.insertInto.mock.calls.filter(
           (c) => c[0] === 'product_footprints'
         );
-        expect(insertCalls).toHaveLength(0);
+        expect(insertCalls).toHaveLength(1);
       });
 
       it('still updates pcf_requests when pfs array is empty', async () => {
