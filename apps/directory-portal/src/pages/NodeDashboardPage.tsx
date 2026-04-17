@@ -354,7 +354,7 @@ const NodeDashboardPage: React.FC = () => {
       render: (row) => {
         const ids = row.data.productIds as string[] | undefined;
         if (!ids?.length) return <Text size="2" color="gray">—</Text>;
-        return <Text size="2">{ids.join(", ")}</Text>;
+        return <Text size="2">{ids?.join(", ")}</Text>;
       },
     },
     {
