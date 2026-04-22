@@ -36,7 +36,8 @@
 
 /* Dashboard content sections */
 .node-dashboard-section {
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
 }
 
 /* PCF placeholder */
