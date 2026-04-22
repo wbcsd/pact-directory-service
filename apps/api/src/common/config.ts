@@ -44,6 +44,7 @@ export default {
   MAIL_API_SECRET: process.env.MAIL_API_SECRET ?? '',
   MAIL_FROM_EMAIL: process.env.MAIL_FROM_EMAIL ?? 'info@carbon-transparency.org',
   MAIL_FROM_NAME: process.env.MAIL_FROM_NAME ?? 'PACT Network',
+  FEEDBACK_TO_EMAIL: process.env.FEEDBACK_TO_EMAIL ?? 'pact-support@wbcsd.org',
   ENABLE_OPENAPI_VALIDATION: bool('ENABLE_OPENAPI_VALIDATION'),
   DIRECTORY_API: required('DIRECTORY_API'),
   DIRECTORY_API_INTERNAL: process.env.DIRECTORY_API_INTERNAL ?? required('DIRECTORY_API'),
