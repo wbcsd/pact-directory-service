@@ -71,6 +71,13 @@ components:
       properties:
         email: { type: string, format: email }
       required: [email]
+    FeedbackRequest:
+      type: object
+      properties:
+        message: { type: string, minLength: 1 }
+        pagePath: { type: string, minLength: 1 }
+        pageTitle: { type: string }
+      required: [message, pagePath]
     GenericMessage:
       type: object
       properties:
@@ -486,6 +493,25 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/MyProfileResponse" }
         "401": { $ref: "#/components/responses/Unauthorized" }
+  /directory/feedback:
+    post:
+      summary: Submit authenticated feedback for the current portal page
+      tags: [Users]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/FeedbackRequest" }
+      responses:
+        "202":
+          description: Feedback accepted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/GenericMessage" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "503": { $ref: "#/components/responses/InternalError" }
   /directory/users/verify-email:
     post:
       tags:

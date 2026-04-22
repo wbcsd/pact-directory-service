@@ -4,6 +4,7 @@ import { HamburgerMenuIcon, Cross2Icon } from "@radix-ui/react-icons";
 import SideNav from "../components/SideNav";
 import LoadingSpinner from "../components/LoadingSpinner";
 import SignUp from "../components/SignUp";
+import FeedbackWidget from "../components/FeedbackWidget";
 import pactLogo from "../assets/pact-logo.svg";
 import pactLogoDark from "../assets/pact-logo-dark.svg";
 
@@ -72,6 +73,8 @@ const FunctionalPageLayout: React.FC<FunctionalPageLayoutProps> = ({
           </main>
         )}
       </div>
+
+      <FeedbackWidget />
     </div>
   );
 };

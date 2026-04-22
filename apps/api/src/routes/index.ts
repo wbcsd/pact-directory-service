@@ -85,6 +85,12 @@ router.get('/directory/users/me', authenticate, context(async (req) => {
   return user;
 }));
 
+router.post('/directory/feedback', authenticate, context(async (req, res) => {
+  const result = await req.services.feedback.submit(req.context, req.body);
+  res.status(202);
+  return result;
+}));
+
 // Password reset
 router.post('/directory/users/forgot-password', context(async (req) => {
   const result = await req.services.user.forgotPassword(req.body);
