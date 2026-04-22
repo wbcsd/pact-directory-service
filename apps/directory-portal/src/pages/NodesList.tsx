@@ -138,7 +138,7 @@ const NodesList: React.FC = () => {
   return (
     <GridPageLayout
       title="Nodes"
-      subtitle="Manage and view all nodes in your organization"
+      subtitle="A Node represents a PACT-compliant system endpoint that can exchange Product Carbon Footprint data with other nodes. Each node in your organization can hold PCF records, connect to other nodes, and send or receive PCF requests."
       actions={
         <Button onClick={() => setPanel({ mode: "add" })}>
           <PlusIcon /> Add Node

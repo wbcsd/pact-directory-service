@@ -636,7 +636,7 @@ const NodeDashboardPage: React.FC = () => {
 
   return (
     <FormPageLayout 
-      title={`Node ${nodeData?.name ?? ""}`}
+      title={nodeData?.name ? `Node : ${nodeData.name}` : "Node"}
       subtitle={nodeData?.organizationName}
       loading={nodeLoading}
       loadingMessage="loading node..."
@@ -705,6 +705,32 @@ const NodeDashboardPage: React.FC = () => {
 
           <Separator size="4" my="4" />
 
+          {/* Connections Section */}
+          <section className="node-dashboard-section">
+            <Flex mb="3" gap="2">
+              <Box flexGrow="1">
+                <Heading size="4">Connections</Heading>
+              </Box>
+              <Button onClick={() => setPanel({ mode: "createConnection" })}>
+                <PlusIcon /> Create Connection
+              </Button>
+            </Flex>
+            <PaginatedDataTable<NodeConnection>
+              isSearchable={false}
+              fetchData={fetchConnections}
+              columns={connectionColumns}
+              idColumnName="id"
+              defaultPageSize={10}
+              refreshTrigger={connectionsRefreshTrigger}
+              emptyState={{
+                title: "No connections found",
+                description: "This node doesn't have any active connections yet.",
+              }}
+            />
+          </section>
+
+          <Separator size="4" my="4" />
+
           {/* Footprints Section */}
           <section className="node-dashboard-section">
             <Flex mb="3" gap="2">
@@ -730,32 +756,6 @@ const NodeDashboardPage: React.FC = () => {
                 description: "Product Carbon Footprint records for this node will appear here.",
               }}
               onRowClick={(footprint) => navigate(`/nodes/${nodeId}/footprints/${footprint.id}`)}
-            />
-          </section>
-
-          <Separator size="4" my="4" />
-
-          {/* Connections Section */}
-          <section className="node-dashboard-section">
-            <Flex mb="3" gap="2">
-              <Box flexGrow="1">
-                <Heading size="4">Connections</Heading>
-              </Box>
-              <Button onClick={() => setPanel({ mode: "createConnection" })}>
-                <PlusIcon /> Create Connection
-              </Button>
-            </Flex>
-            <PaginatedDataTable<NodeConnection>
-              isSearchable={false}
-              fetchData={fetchConnections}
-              columns={connectionColumns}
-              idColumnName="id"
-              defaultPageSize={10}
-              refreshTrigger={connectionsRefreshTrigger}
-              emptyState={{
-                title: "No connections found",
-                description: "This node doesn't have any active connections yet.",
-              }}
             />
           </section>
 
