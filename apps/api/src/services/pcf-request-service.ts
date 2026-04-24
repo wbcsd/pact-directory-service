@@ -54,6 +54,8 @@ export class PcfRequestService {
       (filters.companyId?.length ?? 0) > 0 ||
       (filters.geography?.length ?? 0) > 0 ||
       (filters.classification?.length ?? 0) > 0 ||
+      typeof (filters as Record<string, unknown>).requestComment === 'string' &&
+        ((filters as Record<string, unknown>).requestComment as string).trim().length > 0 ||
       !!filters.status ||
       !!filters.validOn ||
       !!filters.validAfter ||

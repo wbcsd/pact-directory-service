@@ -33,6 +33,7 @@ interface FootprintFilters {
   companyId?: string[];
   geography?: string[];
   classification?: string[];
+  requestComment?: string;
   status?: string;
   validOn?: string;
   validAfter?: string;
@@ -72,6 +73,7 @@ const RequestPcfForm: React.FC<RequestPcfFormProps> = ({
   const [companyId, setCompanyId] = useState("");
   const [geography, setGeography] = useState("");
   const [classification, setClassification] = useState("");
+  const [requestComment, setRequestComment] = useState("");
   const [includeDeprecated, setIncludeDeprecated] = useState(false);
   const [validDate, setValidDate] = useState("");
   const [validOperand, setValidOperand] = useState<"on" | "after" | "before">("on");
@@ -105,6 +107,7 @@ const RequestPcfForm: React.FC<RequestPcfFormProps> = ({
     parseArray(companyId) ||
     parseArray(geography) ||
     parseArray(classification) ||
+    requestComment.trim() ||
     includeDeprecated ||
     validDate;
 
@@ -132,6 +135,7 @@ const RequestPcfForm: React.FC<RequestPcfFormProps> = ({
     if (parsedGeography) filters.geography = parsedGeography;
     const parsedClassification = parseArray(classification);
     if (parsedClassification) filters.classification = parsedClassification;
+    if (requestComment.trim()) filters.requestComment = requestComment.trim();
     if (!includeDeprecated) filters.status = "Active";
     if (validDate) {
       if (validOperand === "on") filters.validOn = validDate;
@@ -293,6 +297,29 @@ const RequestPcfForm: React.FC<RequestPcfFormProps> = ({
             onChange={(e) => setClassification(e.target.value)}
           />
           <Text size="1" color="gray">Comma-separated product classification URNs</Text>
+        </Form.Field>
+
+        <Form.Field name="requestComment" className="form-field">
+          <Form.Label className="field-label">Request Context</Form.Label>
+          <textarea
+            style={{
+              width: "100%",
+              minHeight: "110px",
+              marginTop: "0.5rem",
+              resize: "vertical",
+              border: "1px solid var(--gray-7)",
+              borderRadius: "var(--radius-3)",
+              padding: "0.75rem 0.875rem",
+              font: "inherit",
+              color: "var(--gray-12)",
+              background: "var(--color-panel-solid)",
+            }}
+            placeholder="Describe the requested product when IDs are unknown (e.g. material, grade, supplier, destination use)."
+            value={requestComment}
+            onChange={(e) => setRequestComment(e.target.value)}
+            rows={4}
+          />
+          <Text size="1" color="gray">Optional, but strongly recommended when product identifiers are not known.</Text>
         </Form.Field>
 
         {/* Valid date with operand selector */}

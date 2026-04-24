@@ -135,11 +135,7 @@ export function TagInput({
       </div>
 
       <Text as="p" size="1" color="gray" mt="1">
-        Press{" "}
-        <kbd className="tag-input-kbd">Enter</kbd> or{" "}
-        <kbd className="tag-input-kbd">Tab</kbd> to add ·{" "}
-        <kbd className="tag-input-kbd">Backspace</kbd> on empty input removes last ·
-        paste multiple URNs separated by commas or newlines
+        Add one URN at a time and press <kbd className="tag-input-kbd">Enter</kbd>. You can also paste multiple URNs separated by commas or new lines.
       </Text>
 
       {hasInvalid && (

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Callout } from "@radix-ui/themes";
-import { ArrowLeftIcon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { Button, Callout, Flex, Text } from "@radix-ui/themes";
+import { ArrowLeftIcon, CheckIcon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { FormPageLayout } from "../layouts";
 import { ProductFootprint } from "pact-data-model/v3_0";
 import ProductFootprintForm from "../components/ProductFootprintForm";
@@ -12,6 +12,8 @@ const AddProductFootprintPage: React.FC = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [submittedPcfId, setSubmittedPcfId] = useState<string | null>(null);
+  const [submittedProductIds, setSubmittedProductIds] = useState<string[]>([]);
 
   const handleSubmit = async (data: ProductFootprint) => {
     try {
@@ -27,7 +29,8 @@ const AddProductFootprintPage: React.FC = () => {
         body: JSON.stringify(data),
       });
       if (response?.ok) {
-        navigate(`/nodes/${nodeId}`);
+        setSubmittedPcfId((data as any).id as string);
+        setSubmittedProductIds(data.productIds ?? []);
       } else {
         const body = await response?.json().catch(() => null);
         setError(body?.message ?? "Failed to save footprint. Please try again.");
@@ -48,10 +51,55 @@ const AddProductFootprintPage: React.FC = () => {
         </Button>
       }
     >
-      <ProductFootprintForm
-        onSubmit={handleSubmit}
-        isSubmitting={isSubmitting}
-      />
+      {submittedPcfId ? (
+        <Callout.Root color="green" variant="surface">
+          <Callout.Icon>
+            <CheckIcon />
+          </Callout.Icon>
+          <Callout.Text>
+            Product Carbon Footprint submitted successfully.
+            <Flex direction="column" gap="2" mt="3">
+              <Text size="2" weight="medium">Submitted record ID: {submittedPcfId}</Text>
+              {submittedProductIds.length > 0 && (
+                <Flex direction="column" gap="2">
+                  <Text size="2" weight="medium">Product IDs</Text>
+                  {submittedProductIds.map((id) => (
+                    <Flex key={id} align="center" gap="2">
+                      <Text size="2" style={{ fontFamily: "monospace" }}>{id}</Text>
+                      <Button
+                        size="1"
+                        variant="soft"
+                        onClick={async () => {
+                          try {
+                            await navigator.clipboard.writeText(id);
+                          } catch {
+                            // no-op
+                          }
+                        }}
+                      >
+                        Copy
+                      </Button>
+                    </Flex>
+                  ))}
+                </Flex>
+              )}
+              <Flex gap="2" mt="2">
+                <Button onClick={() => navigate(`/nodes/${nodeId}/footprints/${submittedPcfId}`)}>
+                  Open Submitted PCF
+                </Button>
+                <Button variant="soft" onClick={() => navigate(`/nodes/${nodeId}`)}>
+                  Back to Node
+                </Button>
+              </Flex>
+            </Flex>
+          </Callout.Text>
+        </Callout.Root>
+      ) : (
+        <ProductFootprintForm
+          onSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
+        />
+      )}
       {error && (
         <Callout.Root color="bronze" highContrast variant="surface" mt="4">
           <Callout.Icon>

@@ -59,6 +59,7 @@ const FulfillPcfRequestForm: React.FC<Props> = ({
     (request.fromNodeId ? `Node #${request.fromNodeId}` : "External node");
 
   const productIds = (request.filters.productId as string[] | undefined) ?? [];
+  const requestComment = (request.filters.requestComment as string | undefined)?.trim();
 
   useEffect(() => {
     const load = async () => {
@@ -129,6 +130,12 @@ const FulfillPcfRequestForm: React.FC<Props> = ({
             <>
               {" · "}
               <strong>Product IDs:</strong> {productIds.join(", ")}
+            </>
+          )}
+          {requestComment && (
+            <>
+              <br />
+              <strong>Requester context:</strong> {requestComment}
             </>
           )}
         </Callout.Text>

@@ -71,6 +71,8 @@ interface ConnectionCredentials {
   connectionId: number;
   clientId: string;
   clientSecret: string;
+  requestingNodeName?: string;
+  requestingNodeType?: "internal" | "external";
 }
 
 interface PcfRequest {
@@ -151,6 +153,19 @@ const NodeDashboardPage: React.FC = () => {
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
   const [rejectingId, setRejectingId] = useState<number | null>(null);
+
+  const copyToClipboard = useCallback(async (value: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
+    } catch {
+      // no-op if clipboard API is unavailable
+    }
+  }, []);
+
+  const truncateCredential = useCallback((value: string) => {
+    if (value.length <= 30) return value;
+    return `${value.slice(0, 30)}...`;
+  }, []);
 
   const closePanel = useCallback(() => setPanel({ mode: "closed" }), []);
   const handleSaved = useCallback(() => {
@@ -354,7 +369,25 @@ const NodeDashboardPage: React.FC = () => {
       render: (row) => {
         const ids = row.data.productIds as string[] | undefined;
         if (!ids?.length) return <Text size="2" color="gray">—</Text>;
-        return <Text size="2">{ids?.join(", ")}</Text>;
+        return (
+          <Flex direction="column" gap="1">
+            {ids.map((id: string) => (
+              <Flex key={id} align="center" gap="2">
+                <Text size="2" style={{ fontFamily: "monospace" }}>{id}</Text>
+                <Button
+                  size="1"
+                  variant="soft"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    copyToClipboard(id);
+                  }}
+                >
+                  Copy
+                </Button>
+              </Flex>
+            ))}
+          </Flex>
+        );
       },
     },
     {
@@ -656,8 +689,14 @@ const NodeDashboardPage: React.FC = () => {
               <DropdownMenu.Item onSelect={() => setPanel({ mode: "edit" })}>
                 <InputIcon /> Edit Node
               </DropdownMenu.Item>
+              <DropdownMenu.Item onSelect={() => setPanel({ mode: "createConnection" })}>
+                <PlusIcon /> Create Connection
+              </DropdownMenu.Item>
               <DropdownMenu.Item onSelect={() => setPanel({ mode: "requestPcf" })}>
-                <PlusIcon /> Request PCF
+                <PlusIcon /> Request Footprint
+              </DropdownMenu.Item>
+              <DropdownMenu.Item onSelect={() => setPanel({ mode: "importPcf" })}>
+                <UploadIcon /> Import Footprints
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
               <DropdownMenu.Item color="red" disabled={deleting} onSelect={handleDelete}>
@@ -812,18 +851,35 @@ const NodeDashboardPage: React.FC = () => {
         <Dialog.Content maxWidth="480px">
           <Dialog.Title>Connection Accepted</Dialog.Title>
           <Dialog.Description size="2" color="gray" mb="4">
-            Save these credentials securely. You will need them to configure the connection on your node.
+            Save these credentials securely. They are used by the requesting node to authenticate against this node.
           </Dialog.Description>
           {acceptedCredentials && (
             <>
               <Box mb="4" p="3" style={{ background: 'var(--gray-a3)', borderRadius: 'var(--radius-2)', fontFamily: 'monospace', fontSize: '13px', lineHeight: '1.8' }}>
                 <div><strong>Connection ID:</strong> {acceptedCredentials.connectionId}</div>
-                <div><strong>Client ID:</strong> {acceptedCredentials.clientId}</div>
-                <div><strong>Client Secret:</strong> {acceptedCredentials.clientSecret}</div>
+                <Flex align="center" gap="2">
+                  <strong>Client ID:</strong> {truncateCredential(acceptedCredentials.clientId)}
+                  <Button size="1" variant="soft" onClick={() => copyToClipboard(acceptedCredentials.clientId)}>
+                    Copy
+                  </Button>
+                </Flex>
+                <Flex align="center" gap="2">
+                  <strong>Client Secret:</strong> {truncateCredential(acceptedCredentials.clientSecret)}
+                  <Button size="1" variant="soft" onClick={() => copyToClipboard(acceptedCredentials.clientSecret)}>
+                    Copy
+                  </Button>
+                </Flex>
               </Box>
               <Callout.Root color="yellow" mb="4">
                 <Callout.Icon><ExclamationTriangleIcon /></Callout.Icon>
                 <Callout.Text>The client secret will only be shown once. Make sure to copy and store it securely before closing this dialog.</Callout.Text>
+              </Callout.Root>
+              <Callout.Root color="blue" mb="4">
+                <Callout.Icon><CheckIcon /></Callout.Icon>
+                <Callout.Text>
+                  Register this client ID and client secret in the <strong>{acceptedCredentials.requestingNodeName ?? "requesting"}</strong> node configuration.
+                  {acceptedCredentials.requestingNodeType === "external" && " If that node is managed in external software, open that software and add these credentials there."}
+                </Callout.Text>
               </Callout.Root>
             </>
           )}
