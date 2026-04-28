@@ -133,16 +133,7 @@ function DataTable<T extends object>({
   const isAllSelected = selectableRowIds.length > 0 && 
                         selectedIds.length === selectableRowIds.length;
 
-  // Render loading state
-  if (isLoading) {
-    return (
-      <Flex justify="center" p="5">
-        <Spinner size="3" />
-      </Flex>
-    );
-  }
-
-  // Render error state
+  // Render error state (outside table)
   if (error) {
     return (
       <Box p="5" maxWidth="800px">
@@ -198,7 +189,15 @@ function DataTable<T extends object>({
       </Table.Header>
 
       <Table.Body>
-        { data.length === 0 ? (
+        {isLoading ? (
+          <Table.Row>
+            <Table.Cell colSpan={columns.length + (selectable ? 1 : 0)}>
+              <Flex justify="center" align="center" p="5">
+                <Spinner size="3" />
+              </Flex>
+            </Table.Cell>
+          </Table.Row>
+        ) : data.length === 0 ? (
           <Table.Row>
             <Table.Cell colSpan={columns.length + (selectable ? 1 : 0)}>
               <Flex direction="column" align="center" justify="center">
