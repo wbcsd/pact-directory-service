@@ -28,6 +28,11 @@ app.use(express.urlencoded({ extended: true }));
 // Logging
 app.use(loggerMiddleware);
 
+// Simulate network latency in development
+if (config.DEV_REQUEST_DELAY > 0) {
+  app.use((_, __, next) => setTimeout(next, config.DEV_REQUEST_DELAY));
+}
+
 // OpenAPI Validator Middleware
 if (config.ENABLE_OPENAPI_VALIDATION) {
   app.use(OpenApiValidator.middleware({
