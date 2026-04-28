@@ -34,7 +34,8 @@ const ViewProductFootprintPage: React.FC = () => {
 
   return (
     <FormPageLayout
-      title="View Product Carbon Footprint"
+      title={footprint ? `Footprint : ${footprint.productNameCompany}` : "View Product Carbon Footprint"}
+      subtitle={footprint ? `${footprint.companyName} ${footprint.productIds[0]}` : "Detailed information about the product's carbon footprint"}
       loading={loading}
       loadingMessage="Loading PCF data..."
       actions={
