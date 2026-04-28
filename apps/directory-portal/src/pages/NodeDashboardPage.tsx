@@ -672,10 +672,8 @@ const NodeDashboardPage: React.FC = () => {
 
   return (
     <FormPageLayout 
-      title={nodeData?.name ? `Node : ${nodeData.name}` : "Node"}
-      subtitle={nodeData?.organizationName}
-      loading={nodeLoading}
-      loadingMessage="loading node..."
+      title={nodeLoading ? "Loading node..." : `Node ${nodeData?.name ?? ""}`}
+      subtitle={nodeLoading ? "\u00A0" : nodeData?.organizationName}
       actions={
         <>
           <Button onClick={() => navigate("/nodes")}>
@@ -724,7 +722,13 @@ const NodeDashboardPage: React.FC = () => {
             </Callout.Root>
           )}
 
-          {nodeData && (
+          {nodeLoading ? (
+            <div className="node-meta-row">
+              <span className="skeleton-block" style={{ width: 64, height: 24, borderRadius: 4 }} />
+              <span className="skeleton-block" style={{ width: 72, height: 24, borderRadius: 4 }} />
+              <span className="skeleton-block" style={{ width: 120, height: 16, borderRadius: 4 }} />
+            </div>
+          ) : nodeData ? (
             <div className="node-meta-row">
               <Badge color={getStatusColor(nodeData.status)} size="2" style={{ textTransform: "capitalize" }}>
                 {nodeData.status}
@@ -743,7 +747,7 @@ const NodeDashboardPage: React.FC = () => {
                 </Text>
               )}
             </div>
-          )}
+          ) : null}
 
           <Separator size="4" my="4" />
 
