@@ -90,7 +90,7 @@ function PaginatedDataTable<T extends object>({
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Keep stable refs for callback props to avoid re-triggering effects
@@ -115,7 +115,7 @@ function PaginatedDataTable<T extends object>({
     async (page: number, search?: string) => {
       setIsLoading(true);
       setError(null);
-      
+
       try {
         const result = await fetchDataRef.current({
           page,

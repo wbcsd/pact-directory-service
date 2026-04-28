@@ -49,6 +49,18 @@
   background: var(--gray-2);
 }
 
+/* Skeleton loading placeholders */
+.skeleton-block {
+  display: inline-block;
+  background: var(--gray-4);
+  animation: skeleton-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
 /* Quick action buttons */
 .node-quick-actions {
   display: flex;

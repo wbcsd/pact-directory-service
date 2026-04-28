@@ -41,6 +41,8 @@ export interface ConnectionCredentials {
   clientId: string;
   clientSecret: string;
   connectionId: number;
+  requestingNodeName?: string;
+  requestingNodeType?: 'internal' | 'external';
 }
 
 export class NodeConnectionService {
@@ -320,6 +322,8 @@ export class NodeConnectionService {
       connectionId: invitation.id,
       clientId: invitation.clientId,
       clientSecret: this.decryptSecret(invitation.clientSecret),
+      requestingNodeName: fromNode.name,
+      requestingNodeType: fromNode.type,
     };
   }
 
