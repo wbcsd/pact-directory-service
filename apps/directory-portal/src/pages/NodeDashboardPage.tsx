@@ -15,6 +15,7 @@ import {
 import {
   ArrowLeftIcon,
   CheckIcon,
+  CopyIcon,
   Cross2Icon,
   DotsHorizontalIcon,
   ExclamationTriangleIcon,
@@ -374,16 +375,18 @@ const NodeDashboardPage: React.FC = () => {
             {ids.map((id: string) => (
               <Flex key={id} align="center" gap="2">
                 <Text size="2" style={{ fontFamily: "monospace" }}>{id}</Text>
-                <Button
+                <IconButton
                   size="1"
-                  variant="soft"
+                  variant="ghost"
+                  color="gray"
+                  aria-label="Copy product ID"
                   onClick={(event) => {
                     event.stopPropagation();
                     copyToClipboard(id);
                   }}
                 >
-                  Copy
-                </Button>
+                  <CopyIcon />
+                </IconButton>
               </Flex>
             ))}
           </Flex>
