@@ -91,9 +91,7 @@ function PaginatedDataTable<T extends object>({
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [showSpinner, setShowSpinner] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const spinnerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Keep stable refs for callback props to avoid re-triggering effects
   const fetchDataRef = useRef(fetchData);
@@ -118,10 +116,6 @@ function PaginatedDataTable<T extends object>({
       setIsLoading(true);
       setError(null);
 
-      // Debounce the spinner: only show after 200ms to avoid flash for fast responses
-      if (spinnerTimerRef.current) clearTimeout(spinnerTimerRef.current);
-      spinnerTimerRef.current = setTimeout(() => setShowSpinner(true), 200);
-      
       try {
         const result = await fetchDataRef.current({
           page,
@@ -147,21 +141,11 @@ function PaginatedDataTable<T extends object>({
         setData([]);
         onDataLoadedRef.current?.([]);
       } finally {
-        if (spinnerTimerRef.current) clearTimeout(spinnerTimerRef.current);
-        spinnerTimerRef.current = null;
-        setShowSpinner(false);
         setIsLoading(false);
       }
     },
     [defaultPageSize]
   );
-
-  // Clean up spinner timer on unmount
-  useEffect(() => {
-    return () => {
-      if (spinnerTimerRef.current) clearTimeout(spinnerTimerRef.current);
-    };
-  }, []);
 
   // Load data when search or refreshTrigger changes
   useEffect(() => {
@@ -254,7 +238,7 @@ function PaginatedDataTable<T extends object>({
         idColumnName={idColumnName}
         data={data}
         columns={columns}
-        isLoading={showSpinner}
+        isLoading={isLoading}
         error={error}
         emptyState={emptyState}
         selectable={selectable}
