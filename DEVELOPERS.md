@@ -1,375 +1,373 @@
-# PACT Directory Service - Developer Setup Guide
+# PACT Network Services — Developer Setup Guide
 
-This guide provides comprehensive instructions for setting up a local development environment for the PACT Directory Service project.
+This guide walks through setting up a local development environment for the PACT Network Services platform. For a high-level overview of what the platform does, see [README.md](README.md).
 
-## Project Overview
+## Project structure
 
-The PACT Directory Service is a foundational service of the PACT Network that provides identity management capabilities, including:
+This is an npm workspaces monorepo with two applications and two supporting packages:
 
-- Organization registration to PACT Network
-- Directory search functionality
-- Authentication as a service for customers and suppliers
-- Secure credential management
-- Authentication as a service for PACT Network applications
+```
+apps/
+  api/                  Express.js + PostgreSQL backend serving the platform
+                        (Conformance proxy, organizations, nodes, footprints,
+                         PCF requests, internal node virtual PACT v3 API,
+                         activity logs)
+  directory-portal/     React + Vite frontend — the PACT Network Services
+                        portal UI
 
-The project consists of two main applications:
+packages/
+  pact-api-client/      HTTP client for PACT-conformant APIs. Used by the API
+                        to talk to internal and external nodes (OAuth2 client-
+                        credentials, footprints, events).
+  pact-data-model/      TypeScript types and JSON schemas for PACT data model
+                        versions v2.0, v2.1, v2.2, v2.3 and v3.0.
 
-- **API** (`apps/api`): Express.js backend with PostgreSQL database
-- **Directory Portal** (`apps/directory-portal`): React frontend built with Vite
+docs/                   Design notes, integration guide, diagrams.
+```
+
+`packages/*` are consumed by `apps/api` via npm workspace references (`"pact-api-client": "*"`, `"pact-data-model": "*"`).
 
 ## Prerequisites
 
-Before setting up the development environment, ensure you have the following tools installed:
+- **Node.js** ≥ 20.9.0 — [nodejs.org](https://nodejs.org/)
+- **npm** ≥ 9.0.0
+- **Docker** ≥ 20.0.0 with **Docker Compose** ≥ 2.0.0 — [docker.com](https://www.docker.com/get-started)
+- **Git**
 
-### Required Tools
-
-- **Node.js** (>= 20.9.0) - [Download here](https://nodejs.org/)
-- **npm** (>= 8.0.0) - Install with `npm install -g npm`
-- **Docker** (>= 20.0.0) - [Download here](https://www.docker.com/get-started)
-- **Docker Compose** (>= 2.0.0) - Usually included with Docker Desktop
-- **Git** - For version control
-
-### Verify Installation
+Verify:
 
 ```bash
-node --version    # Should be >= 20.9.0
-npm --version    # Should be >= 9.0.0
-docker --version  # Should be >= 20.0.0
-docker compose version  # Should be >= 2.0.0
+node --version
+npm --version
+docker --version
+docker compose version
 ```
 
-## Setup Development Environment
+## Setup
 
-### 1. Clone and Install Dependencies
+### 1. Clone and install
 
 ```bash
-# Clone the repository
 git clone https://github.com/wbcsd/pact-directory.git
 cd pact-directory
-
-# Install dependencies for all workspaces
 npm i
 ```
 
-### 2. Database Setup
+`npm i` at the root installs dependencies for all workspaces (`apps/*` and `packages/*`) and links the local packages into `apps/api`.
 
-The API uses PostgreSQL as its database. Start the database using Docker Compose:
+### 2. Start PostgreSQL
+
+The API uses PostgreSQL. A `docker-compose.yml` is provided in `apps/api/`:
 
 ```bash
-# Navigate to the API directory
 cd apps/api
-
-# Start PostgreSQL database
 docker compose up -d
-
-# Wait for the database to be ready (about 10-15 seconds)
-# You can check the status with:
-docker compose ps
+docker compose ps          # verify the container is healthy
 ```
 
-### 3. API Setup
+This starts a `postgres:15.2-alpine` container on `localhost:5432` with database `pact_directory_local`, user `postgres`, password `postgres`.
 
-#### Environment Configuration
+### 3. Configure the API
 
-The API uses environment-specific configuration files located in `apps/api/env/`:
-
-- `development.env` - Development environment (already configured)
-- `test.env` - Test environment
-- `production.env` - Production environment
-
-For local development, the default `development.env` should work out of the box.
-
-#### Database Migration and Setup
+The API loads its configuration from `apps/api/.env`. Copy the example and edit if needed:
 
 ```bash
-# Navigate to API directory (if not already there)
 cd apps/api
-
-# Run database migrations
-npm run db:migrate
-
-# Add a test user (required for authentication testing)
-npm run db:add-user test@example.com "Test User" "testpassword" "administrator" "TestCompany" "test-company-id"
-```
-
-#### Start the API Server
-
-```bash
-# Run in development mode with hot reloading
-npm run dev
-
-# Alternative: Run without hot reloading
-npm run dev:hot
-```
-
-The API will be available at `http://localhost:3010`
-
-### 4. Directory Portal Setup
-
-#### Environment Configuration
-
-```bash
-# Navigate to the directory portal
-cd apps/directory-portal
-
-# Copy the environment example file
 cp .env.example .env
 ```
 
-The default `.env` configuration should work for local development:
+The default values in `.env.example` are sufficient for local development. Notable variables:
 
-```bash
-VITE_DIRECTORY_API=http://localhost:3010/api
-VITE_ENABLE_IM=false
-```
+- `NODE_ENV` — `development` / `test` / `production`
+- `PORT` — API port (default `3010`)
+- `DB_CONNECTION_STRING` — Postgres connection string
+- `JWT_SECRET`, `COOKIE_SECRET` — set to non-empty values
+- `CONFORMANCE_API`, `CONFORMANCE_API_INTERNAL` — URL of the external [pact-conformance-test-service](https://github.com/wbcsd/pact-conformance-test-service); only needed if you want to drive conformance test runs locally
+- `DIRECTORY_API` — public base URL of this API (used when generating PACT v3 URLs for internal nodes)
+- `MAIL_API_KEY`, `MAIL_API_SECRET`, `MAIL_FROM_*` — Mailjet credentials for outbound email (optional locally; emails are no-ops without a key)
+- `DEV_REQUEST_DELAY` — artificial delay (ms) on every request, useful for testing UI loading states
+- `ENABLE_OPENAPI_VALIDATION` — when `true`, requests/responses are validated against `apps/api/openapi.yaml`
 
-#### Start the Frontend
-
-```bash
-# Run in development mode
-npm run dev
-```
-
-The frontend will be available at `http://localhost:5173`
-
-## Development Workflow
-
-### Starting Both Applications
-
-From the project root, you can start both applications simultaneously:
-
-```bash
-# This runs both API and frontend in development mode
-npm run dev
-```
-
-### Running Tests
-
-#### API Tests
+### 4. Run migrations
 
 ```bash
 cd apps/api
+npm run db:migrate                # migrate to latest
 
-# Run all tests
-npm test
-
-# Run tests with hot reloading
-npm run test:hot
-
-# Run specific test file
-npm test -- users
+# Other migration commands:
+npm run db:migrate:up             # one step up
+npm run db:migrate:down           # one step down
+npm run db:migrate:list           # list migrations and their status
 ```
 
-#### Frontend Tests
+### 5. Create a test user
+
+The `db:add-user` script creates an organization (if it doesn't exist) and a user inside it:
+
+```bash
+npm run db:add-user -- \
+  test@example.com "Test User" testpassword administrator \
+  test-company "Test Company"
+```
+
+Argument order: `<email> <fullName> <password> <role> <organizationIdentifier> <organizationName>`. Roles are `administrator` or `user`.
+
+### 6. Configure the portal
 
 ```bash
 cd apps/directory-portal
-
-# Run linting
-npm run lint
+cp .env.example .env
 ```
 
-## Database Management
+Default values:
 
-### Available Database Commands
+```bash
+VITE_DIRECTORY_API=http://localhost:3010/api
+VITE_ENABLE_IM=true                # Identity Management features (legacy)
+VITE_ENABLE_OM=true                # Organization Management features
+VITE_ENABLE_NM=true                # Node Management (Data Exchange Sandbox)
+```
+
+The three flags are read in [src/utils/feature-flags.ts](apps/directory-portal/src/utils/feature-flags.ts) and gate routes/components in the portal.
+
+### 7. Run everything
+
+From the project root:
+
+```bash
+npm run dev
+```
+
+This runs `npm run dev` in each workspace that defines it (the API in watch mode via `tsx watch`, the portal via `vite`). You can also run them individually from `apps/api` or `apps/directory-portal`.
+
+- API: <http://localhost:3010>
+- Portal: <http://localhost:5173>
+- Health check: <http://localhost:3010/health-check>
+
+## Common scripts
+
+From the repo root:
+
+| Command          | Effect                                                            |
+| ---------------- | ----------------------------------------------------------------- |
+| `npm run dev`    | Run all workspaces' dev scripts (API + portal in parallel)        |
+| `npm run build`  | Build every workspace that defines a `build` script               |
+| `npm test`       | Run every workspace's tests                                       |
+| `npm run clean`  | Remove `dist/` from every workspace                               |
+| `npm run pristine` | `clean` + delete every `node_modules`                           |
+
+From `apps/api`:
+
+| Command                  | Effect                                            |
+| ------------------------ | ------------------------------------------------- |
+| `npm run dev`            | `tsx watch ./src` — hot-reloading API server     |
+| `npm run build`          | Compile TypeScript to `dist/`                    |
+| `npm start`              | Run the production build (must build first)     |
+| `npm test`               | Run Jest unit tests (`NODE_ENV=test`)            |
+| `npm run lint`           | ESLint over `./src`                              |
+| `npm run db:migrate*`    | Kysely migrations (see above)                    |
+| `npm run db:add-user`    | Add a user (see above)                           |
+
+From `apps/directory-portal`:
+
+| Command          | Effect                                    |
+| ---------------- | ----------------------------------------- |
+| `npm run dev`    | Vite dev server                           |
+| `npm run build`  | Type-check + Vite production build        |
+| `npm run preview`| Preview the built portal                  |
+| `npm test`       | Vitest                                    |
+| `npm run lint`   | ESLint                                    |
+
+## Database
+
+### Schema
+
+Migrations live in [apps/api/src/database/migrations/](apps/api/src/database/migrations/) and are managed with [Kysely](https://kysely.dev/). Current core tables include:
+
+- `organizations` (renamed from `companies`) — registered organizations on the platform
+- `users` — user accounts with role and status
+- `password_reset_tokens` — password reset and email verification tokens
+- `connections`, `connection_requests` — organization-to-organization links
+- `nodes` — Data Exchange Sandbox nodes (PACT-conformant hosts inside the platform)
+- `product_footprints` — PCFs published on a node
+- `pcf_requests` — outgoing/incoming PCF data requests between nodes
+- `activity_logs` — request-level audit log for traffic flowing through internal nodes
+
+Run `npm run db:migrate:list` to see the authoritative list and migration status.
+
+### Connecting to the DB
+
+```bash
+docker exec -it api-pact-directory-local-db-1 \
+  psql -U postgres -d pact_directory_local
+
+# Inside psql:
+\dt                         # list tables
+\d organizations            # describe a table
+SELECT id, email FROM users;
+```
+
+### Seeding sample footprints
+
+To populate a node with the PACT v3 mock footprints (laptop, steel beam, bioplastic container) used by the virtual PACT API:
 
 ```bash
 cd apps/api
-
-# Run migrations to latest
-npm run db:migrate
-
-# Add a new user
-npm run db:add-user <email> <fullName> <password> <role> <companyName> <companyIdentifier>
-
-# Example:
-npm run db:add-user user@company.com "John Doe" "password123" "administrator" "ACME Corp" "acme-corp"
+npx tsx src/scripts/seed-footprints.ts <nodeId>
 ```
 
-### Database Schema
+## API surface
 
-The database schema is managed through Kysely migrations located in `apps/api/src/database/migrations/`. The schema includes:
+The API is mounted under `/api`. The OpenAPI spec is at [apps/api/openapi.yaml](apps/api/openapi.yaml) and full route wiring is in [apps/api/src/routes/index.ts](apps/api/src/routes/index.ts). Highlights:
 
-- `users` - User accounts
-- `companies` - Organization information
-- `connection_requests` - Organization connection requests
-- `credentials` - API credentials for organizations
-- `password_reset_tokens` - Password reset functionality
+### Auth & users
 
-### Accessing the Database
+- `POST /api/directory/users/signup`
+- `POST /api/directory/users/login`
+- `POST /api/directory/users/forgot-password`
+- `POST /api/directory/users/set-password`
+- `POST /api/directory/users/reset-password`
+- `GET  /api/directory/users/verify-reset-token/:token`
+- `POST /api/directory/users/verify-email`
+- `POST /api/directory/users/resend-verification`
+- `GET  /api/directory/users/me`
+
+### Organizations
+
+- `GET  /api/directory/organizations` — list/search
+- `GET  /api/directory/organizations/:id`
+- `POST /api/directory/organizations/:id` — update
+- `GET|POST /api/directory/organizations/:id/users`
+- `GET|POST /api/directory/organizations/:oid/users/:uid`
+- `GET  /api/directory/organizations/:id/connections`
+- `GET  /api/directory/organizations/:id/connection-requests`
+- `POST /api/directory/organizations/create-connection-request`
+- `POST /api/directory/organizations/connection-request-action`
+
+### Nodes (Data Exchange Sandbox)
+
+- `POST /api/directory/organizations/:id/nodes`
+- `GET  /api/directory/organizations/:id/nodes`
+- `GET|PUT|DELETE /api/directory/nodes/:id`
+- `GET  /api/directory/nodes/:id/connections`
+- `POST /api/directory/nodes/:id/invitations`
+- `GET  /api/directory/nodes/:id/invitations`
+- `POST /api/directory/node-invitations/:id/accept`
+- `POST /api/directory/node-invitations/:id/reject`
+- `DELETE /api/directory/node-invitations/:id`
+- `POST /api/directory/node-connections/:id/credentials/rotate`
+
+### Footprints & PCF requests
+
+- `POST /api/directory/nodes/:id/footprints`
+- `POST /api/directory/nodes/:id/footprints/import`
+- `GET  /api/directory/nodes/:id/footprints`
+- `GET|DELETE /api/directory/footprints/:id`
+- `POST /api/directory/nodes/:id/pcf-requests`
+- `GET  /api/directory/nodes/:id/pcf-requests`
+- `POST /api/directory/nodes/:id/pcf-requests/:requestId/fulfill`
+- `POST /api/directory/nodes/:id/pcf-requests/:requestId/reject`
+
+### Internal node virtual PACT v3 API
+
+These endpoints make every internal node look like an externally hosted PACT-conformant solution. Implementation: [docs/internal-node-virtual-pact-api.md](docs/internal-node-virtual-pact-api.md), [docs/pact-v3-conformance-implementation.md](docs/pact-v3-conformance-implementation.md).
+
+- `POST /api/nodes/:nodeId/auth/token` — OAuth2 client-credentials
+- `GET  /api/nodes/:nodeId/3/footprints`
+- `GET  /api/nodes/:nodeId/3/footprints/:id`
+- `POST /api/nodes/:nodeId/3/events` — CloudEvents 1.0
+
+### Conformance Service proxy
+
+Forwards authenticated requests to the external [pact-conformance-test-service](https://github.com/wbcsd/pact-conformance-test-service):
+
+- `POST /api/proxy/test`
+- `GET  /api/proxy/test-runs`
+- `GET  /api/proxy/test-results?testRunId=<id>`
+
+### Activity logs
+
+- `GET    /api/directory/activity-logs`
+- `GET    /api/directory/activity-logs/path?path=...`
+- `GET    /api/directory/activity-logs/nodes/:nodeId`
+- `DELETE /api/directory/activity-logs?olderThanDays=<n>`
+
+## Working on the packages
+
+### `packages/pact-api-client`
+
+A unified HTTP client for any PACT v3 node (internal or external). The API uses it to send PCF requests, fetch footprints from connected nodes, and emit CloudEvents. Tests:
 
 ```bash
-# Connect to the running PostgreSQL container
-docker exec -it api-pact-directory-local-db-1 psql -U postgres -d pact_directory_local
-
-# Common queries
-\dt  # List tables
-\d users  # Describe users table
-SELECT * FROM users;  # View all users
+cd packages/pact-api-client
+npm test
 ```
 
-## Environment Variables
+There is also a runnable script for ad-hoc calls:
 
-### API Environment Variables
+```bash
+npm run run-client
+```
 
-The API reads configuration from environment files in this order:
+### `packages/pact-data-model`
 
-1. `./.env`
-2. System environment variables
+Generated TypeScript types and JSON schemas, exported per PACT spec version (`v2_0`, `v2_1`, `v2_2`, `v2_3`, `v3_0`) plus a top-level convenience export aliased to v3. Useful scripts:
 
-Key variables include:
+```bash
+cd packages/pact-data-model
+npm run generate-schemas
+npm run generate-types
+npm run validate                # validate a PCF document against the schemas
+```
 
-#### Server Configuration
+After editing either package, rebuild it before the API picks up the changes:
 
-- `NODE_ENV` - Environment (development/test/production)
-- `PORT` - Server port (default: 3010)
-- `HOST` - Server host (default: localhost)
+```bash
+npm run build -w packages/pact-api-client
+npm run build -w packages/pact-data-model
+```
 
-#### Conformance API
-
-- `CONFORMANCE_API` - External service URL for running conformance test cases
-- `CONFORMANCE_API_INTERNAL` - Internal service URL for retrieving test results
-
-### Frontend Environment Variables
-
-- `VITE_DIRECTORY_API` - Directory API endpoint URL
-- `VITE_ENABLE_IM` - Enable identity management features
-
-#### Database Configuration
-
-- `DB_CONNECTION_STRING` - Database connection string
-
-#### Authentication Configuration
-
-- `JWT_SECRET` - Secret for JWT tokens
-- `COOKIE_SECRET` - Secret for cookie signing
-- `COOKIE_EXP` - Cookie expiration (milliseconds)
-
-#### Email Configuration (Optional)
-
-- `SENDGRID_API_KEY` - SendGrid API key for email sending
-- `SENDGRID_FROM_EMAIL` - From email address
-- `EMAIL_WELCOME_TEMPLATE` - Welcome email template ID
-- `EMAIL_RESET_TEMPLATE` - Password reset email template ID
+(Or run `npm run build` from the repo root to rebuild everything.)
 
 ## Troubleshooting
 
-### Common Issues
-
-#### Database Connection Errors
+### Database connection errors
 
 ```bash
-# Check if PostgreSQL container is running
+cd apps/api
 docker compose ps
-
-# View database logs
 docker compose logs pact-directory-local-db
-
-# Restart the database
 docker compose restart pact-directory-local-db
 ```
 
-#### Port Already in Use
+### Port already in use
 
 ```bash
-# Check what's using port 3010
-lsof -i :3010
-
-# Kill the process if needed
+lsof -i :3010                     # API
+lsof -i :5173                     # portal
 kill -9 <PID>
 ```
 
-#### Node.js Version Issues
+### bcrypt build issues on macOS
 
 ```bash
-# Check Node.js version
-node --version
-
-# If using nvm, switch to correct version
-nvm use 20.9.0
-```
-
-#### bcrypt Build Issues (macOS)
-
-```bash
-# If you encounter bcrypt build issues on macOS
 cd apps/api
 npm rebuild bcrypt --build-from-source
 ```
 
-### Reset Development Environment
+### Reset the local database
+
+This wipes all data:
 
 ```bash
-# Stop all services
-docker compose down
-
-# Remove database volume (this will delete all data)
-docker compose down -v
-
-# Restart fresh
-docker compose up -d
 cd apps/api
+docker compose down -v
+docker compose up -d
 npm run db:migrate
-npm run db:add-user test@example.com "Test User" "testpassword" "administrator" "TestCompany" "test-company"
+npm run db:add-user -- test@example.com "Test User" testpassword administrator test-company "Test Company"
 ```
 
-## API Endpoints
+## Related repositories
 
-### Authentication
-
-- `POST /api/directory/companies/signup` - Register organization
-- `POST /api/directory/companies/login` - User login
-- `POST /api/directory/companies/logout` - User logout
-- `POST /api/directory/companies/forgot-password` - Request password reset
-- `POST /api/directory/companies/reset-password` - Reset password
-
-### Directory
-
-- `GET /api/directory/companies` - List companies
-- `GET /api/directory/companies/:id` - Get company details
-- `POST /api/directory/companies/:id/connection-request` - Send connection request
-
-### User Management
-
-- `GET /api/directory/users/profile` - Get user profile
-- `PUT /api/directory/users/profile` - Update user profile
-
-### Proxy/Conformance
-
-- `POST /api/proxy/test` - Run conformance test cases against a PACT solution
-- `GET /api/proxy/test-results` - Get test results for a specific test run
-- `GET /api/proxy/test-runs` - Get recent test runs for the authenticated user
-
-## Conformance Testing Proxy Service
-
-The API includes a proxy service that forwards requests to an external PACT conformance testing service, allowing organizations to test their PACT-compliant solutions directly through the Directory portal.
-
-### Proxy Routes
-
-The conformance proxy routes are located at `/api/proxy/*` and require JWT authentication. They test whether solutions properly implement the [PACT Tech Specs](https://wbcsd.github.io/data-exchange-protocol/v2/).
-
-#### `POST /api/proxy/test`
-
-Initiates conformance testing by validating the authenticated user/company, enriching the request with company information, and forwarding it to the external conformance service. Returns test run information.
-
-#### `GET /api/proxy/test-results?testRunId=<id>`
-
-Retrieves detailed test results for a specific test run, including pass/fail status for each test case.
-
-#### `GET /api/proxy/test-runs`
-
-Gets recent test runs for the authenticated user based on their email address.
-
-### Security & Error Handling
-
-- All endpoints require JWT authentication and validate user/company relationships
-- Returns appropriate HTTP status codes (400/404/500) for various error scenarios
-- No sensitive credentials are logged or exposed
-
-### Frontend Integration
-
-The frontend uses these endpoints via `VITE_DIRECTORY_API`/proxy to initiate testing, display results, and show historical test runs. This proxy architecture centralizes authentication, authorization, and error handling while abstracting external service details from the frontend.
-
-```
-
-```
+- [wbcsd/pact-conformance-test-service](https://github.com/wbcsd/pact-conformance-test-service) — the external conformance test service this API proxies to.
+- [PACT Technical Specifications](https://docs.carbon-transparency.org/) — the spec the platform implements and tests against.
