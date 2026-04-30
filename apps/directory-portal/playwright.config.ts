@@ -1,5 +1,12 @@
 import { defineConfig, devices } from '@playwright/test';
 
+// Environment variables:
+//   API_BASE_URL     Override the API base for route interception (default: http://localhost:3010/api)
+//                   e.g. API_BASE_URL=https://staging.example.com/api npx playwright test
+//   PLAYWRIGHT_BASE_URL  Override the frontend base URL (default: http://localhost:5173)
+
+const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:5173';
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
@@ -9,7 +16,7 @@ export default defineConfig({
   reporter: 'html',
 
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL,
     trace: 'on-first-retry',
   },
 
@@ -30,7 +37,7 @@ export default defineConfig({
 
   webServer: {
     command: 'npm run dev',
-    url: 'http://localhost:5173',
+    url: baseURL,
     reuseExistingServer: !process.env.CI,
   },
 });
