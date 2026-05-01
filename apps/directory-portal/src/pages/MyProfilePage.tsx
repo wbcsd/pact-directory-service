@@ -1,23 +1,19 @@
 import React, { useEffect, useState } from "react";
 import * as Form from "@radix-ui/react-form";
 import {
-  Box,
   Button,
-  TextField,
-  Text,
+  Flex,
   Callout,
   Spinner,
 } from "@radix-ui/themes";
-import * as Tooltip from "@radix-ui/react-tooltip";
 import {
   ExclamationTriangleIcon,
-  InfoCircledIcon,
   CheckIcon,
 } from "@radix-ui/react-icons";
-import SideNav from "../components/SideNav";
 import { useAuth } from "../contexts/AuthContext";
 import { fetchWithAuth } from "../utils/auth-fetch";
-import "./MyProfilePage.css";
+import { FormField, TextField } from "../components/ui";
+import { FormPageLayout } from "../layouts";
 
 const MyProfilePage: React.FC = () => {
   const { profileData } = useAuth();
@@ -119,207 +115,71 @@ const MyProfilePage: React.FC = () => {
     }
   };
 
-  if (!profileData) {
-    return (
-      <Box className="loading-container">
-        <Spinner loading />
-        <Text className="loading-text">Loading profile data...</Text>
-      </Box>
-    );
-  }
-
   return (
-    <>
-      <aside className="sidebar">
-        <div className="marker-divider"></div>
-        <SideNav />
-      </aside>
-      <main className="main">
-        <div className="header">
-          <h2>My Profile</h2>
-        </div>
-
-        <Box className="form-container">
+    <FormPageLayout
+      title="My Profile"
+      loading={!profileData}
+      loadingMessage="Loading profile data..."
+    >
           <Form.Root onSubmit={handleSubmit}>
             {/* Read-only Email */}
-            <Box className="form-field">
-              <Text className="field-label">Email Address</Text>
-              <TextField.Root
-                value={profileData.email}
-                readOnly
+            <FormField name="email" label="Email Address">
+              <TextField
+                value={profileData?.email || ""}
                 disabled
-                className="readonly-field"
               />
-            </Box>
+            </FormField>
 
             {/* Editable Full Name */}
-            <Form.Field name="fullName">
-              <Form.Label className="field-label">
-                Full Name<span className="required-asterisk">*</span>
-              </Form.Label>
-              <Form.Control asChild>
-                <TextField.Root
-                  value={formData.fullName}
-                  required
-                  placeholder="Enter your full name"
-                  onChange={handleChange}
-                  className="editable-field"
-                >
-                  <TextField.Slot side="right">
-                    <Tooltip.Provider delayDuration={0}>
-                      <Tooltip.Root>
-                        <Tooltip.Trigger asChild>
-                          <InfoCircledIcon
-                            width={20}
-                            height={20}
-                            color="#0A0552"
-                            className="info-icon"
-                          />
-                        </Tooltip.Trigger>
-                        <Tooltip.Content
-                          className="TooltipContent"
-                          side="right"
-                          align="center"
-                          sideOffset={5}
-                        >
-                          Your full name as it appears in the system
-                        </Tooltip.Content>
-                      </Tooltip.Root>
-                    </Tooltip.Provider>
-                  </TextField.Slot>
-                </TextField.Root>
-              </Form.Control>
-              <Form.Message match="valueMissing" className="validation-message">
-                Full name is required.
-              </Form.Message>
-            </Form.Field>
+            <FormField name="fullName" label="Full Name" required>
+              <TextField
+                required
+                value={formData.fullName}
+                placeholder="Enter your full name"
+                tooltip="Your full name as it appears in the system"
+                onChange={handleChange}
+              />
+            </FormField>
 
             {/* Editable Organization Name */}
-            <Form.Field name="organizationName">
-              <Form.Label className="field-label">
-                Organization Name<span className="required-asterisk">*</span>
-              </Form.Label>
-              <Form.Control asChild>
-                <TextField.Root
-                  value={formData.organizationName}
-                  required
-                  placeholder="Enter Organization name"
-                  onChange={handleChange}
-                  className="editable-field"
-                >
-                  <TextField.Slot side="right">
-                    <Tooltip.Provider delayDuration={0}>
-                      <Tooltip.Root>
-                        <Tooltip.Trigger asChild>
-                          <InfoCircledIcon
-                            width={20}
-                            height={20}
-                            color="#0A0552"
-                            className="info-icon"
-                          />
-                        </Tooltip.Trigger>
-                        <Tooltip.Content
-                          className="TooltipContent"
-                          side="right"
-                          align="center"
-                          sideOffset={5}
-                        >
-                          Your organization name
-                        </Tooltip.Content>
-                      </Tooltip.Root>
-                    </Tooltip.Provider>
-                  </TextField.Slot>
-                </TextField.Root>
-              </Form.Control>
-              <Form.Message match="valueMissing" className="validation-message">
-                Organization name is required.
-              </Form.Message>
-            </Form.Field>
+            <FormField name="organizationName" label="Organization Name" required>
+              <TextField
+                required
+                value={formData.organizationName}
+                placeholder="Enter Organization name"
+                tooltip="Your organization name"
+                onChange={handleChange}
+              />
+            </FormField>
 
             {/* Editable Organization Description */}
-            <Form.Field name="organizationDescription">
-              <Form.Label className="field-label">
-                Organization Description
-              </Form.Label>
-              <Form.Control asChild>
-                <TextField.Root
-                  value={formData.organizationDescription}
-                  placeholder="Enter Organization Description"
-                  onChange={handleChange}
-                  className="editable-field"
-                >
-                  <TextField.Slot side="right">
-                    <Tooltip.Provider delayDuration={0}>
-                      <Tooltip.Root>
-                        <Tooltip.Trigger asChild>
-                          <InfoCircledIcon
-                            width={20}
-                            height={20}
-                            color="#0A0552"
-                            className="info-icon"
-                          />
-                        </Tooltip.Trigger>
-                        <Tooltip.Content
-                          className="TooltipContent"
-                          side="right"
-                          align="center"
-                          sideOffset={5}
-                        >
-                          The organization description
-                        </Tooltip.Content>
-                      </Tooltip.Root>
-                    </Tooltip.Provider>
-                  </TextField.Slot>
-                </TextField.Root>
-              </Form.Control>
-            </Form.Field>
+            <FormField name="organizationDescription" label="Organization Description">
+              <TextField
+                value={formData.organizationDescription}
+                placeholder="Enter Organization Description"
+                tooltip="The organization description"
+                onChange={handleChange}
+              />
+            </FormField>
 
             {/* Editable Solution API URL */}
-            <Form.Field name="solutionApiUrl">
-              <Form.Label className="field-label">
-                Organization Website
-              </Form.Label>
-              <Form.Control asChild>
-                <TextField.Root
-                  value={formData.solutionApiUrl}
-                  placeholder="Enter API URL"
-                  onChange={handleChange}
-                  className="editable-field"
-                >
-                  <TextField.Slot side="right">
-                    <Tooltip.Provider delayDuration={0}>
-                      <Tooltip.Root>
-                        <Tooltip.Trigger asChild>
-                          <InfoCircledIcon
-                            width={20}
-                            height={20}
-                            color="#0A0552"
-                            className="info-icon"
-                          />
-                        </Tooltip.Trigger>
-                        <Tooltip.Content
-                          className="TooltipContent"
-                          side="right"
-                          align="center"
-                          sideOffset={5}
-                        >
-                          The address of your organization's website
-                        </Tooltip.Content>
-                      </Tooltip.Root>
-                    </Tooltip.Provider>
-                  </TextField.Slot>
-                </TextField.Root>
-              </Form.Control>
-            </Form.Field>
+            <FormField name="solutionApiUrl" label="Organization Website">
+              <TextField
+                value={formData.solutionApiUrl}
+                placeholder="Enter API URL"
+                tooltip="The address of your organization's website"
+                onChange={handleChange}
+              />
+            </FormField>
 
-            <Box className="button-group">
+            <Flex justify="end" gap="3" mt="6">
               <Form.Submit asChild>
-                <Button disabled={updating} className="submit-button">
+                <Button disabled={updating}>
                   {updating && <Spinner loading />}
                   {updating ? "Updating..." : "Save Changes"}
                 </Button>
               </Form.Submit>
-            </Box>
+            </Flex>
           </Form.Root>
 
           {status === "success" && (
@@ -341,9 +201,7 @@ const MyProfilePage: React.FC = () => {
               </Callout.Text>
             </Callout.Root>
           )}
-        </Box>
-      </main>
-    </>
+    </FormPageLayout>
   );
 };
 

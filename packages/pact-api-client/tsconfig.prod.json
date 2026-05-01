@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
+    "sourceMap": false,
+    "removeComments": true,
+    "types": ["node"],
+    "paths": {}
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "src/**/*.test.ts"],
+  "references": [
+    { "path": "../../packages/pact-data-model/tsconfig.prod.json" }
+  ]
+}

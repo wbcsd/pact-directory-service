@@ -1,4 +1,4 @@
-import { Kysely } from 'kysely';
+import { Kysely, sql } from 'kysely';
 import { Database } from '@src/database/types';
 import { NotFoundError, ForbiddenError } from '@src/common/errors';
 import { registerPolicy, checkAccess, Role, hasAccess } from '@src/common/policies';
@@ -15,6 +15,7 @@ registerPolicy([Role.Root], 'view-connections-all-organizations');
 registerPolicy([Role.Root], 'edit-connections-all-organizations');
 registerPolicy([Role.Root], 'view-all-organizations');
 registerPolicy([Role.Root], 'edit-all-organizations');
+registerPolicy([Role.Root], 'assign-root-role');
 
 export interface OrganizationData {
   id: number;
@@ -386,9 +387,7 @@ export class OrganizationService {
     const allowed = 
       context.policies.includes('edit-all-organizations') ||
       context.policies.includes('edit-own-organizations') && context.organizationId === organizationId;
-    if (!allowed) {
-      throw new ForbiddenError('You are not allowed to edit members of this organization');
-    }
+
     if (!allowed) {
       throw new ForbiddenError('You are not allowed to edit members of this organization');
     }
@@ -402,6 +401,13 @@ export class OrganizationService {
 
     if (!user) {
       throw new NotFoundError('User not found');
+    }
+
+    if (update.role === Role.Root) {
+      // Only root users can assign root role
+      if (!hasAccess(context, 'assign-root-role')) {
+        throw new ForbiddenError('You are not allowed to assign root role');
+      }
     }
 
     // Can only enable a user that is currently disabled
@@ -466,5 +472,20 @@ export class OrganizationService {
     return {
       message: 'User updated successfully',
     };
+  }
+
+    /**
+   * Check if an organization exists by its name, using a case-insensitive match
+   */
+  async checkOrganizationExistsByName(
+    organizationName: string
+  ): Promise<{ organizationName: string; exists: boolean }> {
+    const organization = await this.db
+      .selectFrom('organizations')
+      .select('id')
+      .where(sql`lower(name)`, '=', organizationName.toLowerCase())
+      .executeTakeFirst();
+
+    return { organizationName, exists: Boolean(organization) };
   }
 }

@@ -264,11 +264,42 @@ describe('EmailService', () => {
       expect(logger.info).toHaveBeenCalledWith(`Password reset email sent to ${mockParams.to}`);
     });
 
-    it('should throw Mailjet errors', async () => {
+    it('should handle Mailjet errors', async () => {
       const error = new Error('Mailjet error');
       mockRequest.mockRejectedValueOnce(error);
 
       await expect(emailService.sendPasswordResetEmail(mockParams)).rejects.toThrow('Mailjet error');
+    });
+  });
+
+  describe('sendFeedbackEmail', () => {
+    const mockParams = {
+      to: 'pact-support@wbcsd.org',
+      senderName: 'Alice Brown',
+      senderEmail: 'alice@example.com',
+      organizationName: 'PACT Org',
+      role: 'administrator',
+      pagePath: '/nodes/12?tab=logs',
+      pageTitle: 'Node Dashboard',
+      message: 'The filters are hard to find.',
+    };
+
+    it('should send feedback email with correct metadata', async () => {
+      await emailService.sendFeedbackEmail(mockParams);
+
+      const message = mockRequest.mock.calls[0][0].Messages[0];
+      expect(message.To[0].Email).toBe(mockParams.to);
+      expect(message.Subject).toBe('PACT Directory feedback from Alice Brown');
+      expect(message.TextPart).toContain(mockParams.pagePath);
+      expect(message.TextPart).toContain(mockParams.message);
+      expect(message.HTMLPart).toContain(mockParams.senderEmail);
+      expect(message.HTMLPart).toContain(mockParams.pageTitle);
+    });
+
+    it('should log success after sending feedback email', async () => {
+      await emailService.sendFeedbackEmail(mockParams);
+
+      expect(logger.info).toHaveBeenCalledWith('Feedback email sent to pact-support@wbcsd.org');
     });
   });
 

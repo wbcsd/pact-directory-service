@@ -1,18 +1,15 @@
 import React, { useState } from "react";
 import * as Form from "@radix-ui/react-form";
-import { Box, Button, TextField, Callout } from "@radix-ui/themes";
+import { Box, Button, Callout } from "@radix-ui/themes";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
-import useBodyOverflow from "../utils/use-body-overflow";
-import "./SetPasswordPage.css";
 import { LandingPageLayout } from "../layouts";
+import { FormField, TextField } from "../components/ui";
 
 const SetPasswordPage: React.FC = () => {
   const params = useParams();
   const navigate = useNavigate();
   const token = params.token;
-
-  useBodyOverflow(false);
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -129,51 +126,35 @@ const SetPasswordPage: React.FC = () => {
                 </p>
 
                 <Form.Root onSubmit={handleSubmit}>
-                  <Form.Field name="password">
-                    <Form.Label className="form-label">
-                      New Password<span className="required-asterisk">*</span>
-                    </Form.Label>
-                    <Form.Control asChild>
-                      <TextField.Root
-                        type="password"
-                        value={password}
-                        required
-                        placeholder="Enter your new password"
-                        onChange={handlePasswordChange}
-                        disabled={status === "loading"}
-                        className="text-field"
-                      />
-                    </Form.Control>
-                    <Form.Message
-                      match="valueMissing"
-                      className="form-message"
-                    >
-                      Password is required.
-                    </Form.Message>
-                  </Form.Field>
+                  <FormField
+                    name="password"
+                    label="New Password"
+                    required
+                  >
+                    <TextField
+                      type="password"
+                      value={password}
+                      required
+                      placeholder="Enter your new password"
+                      onChange={handlePasswordChange}
+                      disabled={status === "loading"}
+                    />
+                  </FormField>
 
-                  <Form.Field name="confirmPassword" className="confirm-password-field">
-                    <Form.Label className="form-label">
-                      Confirm Password<span className="required-asterisk">*</span>
-                    </Form.Label>
-                    <Form.Control asChild>
-                      <TextField.Root
-                        type="password"
-                        value={confirmPassword}
-                        required
-                        placeholder="Confirm your new password"
-                        onChange={handleConfirmPasswordChange}
-                        disabled={status === "loading"}
-                        className="text-field"
-                      />
-                    </Form.Control>
-                    <Form.Message
-                      match="valueMissing"
-                      className="form-message"
-                    >
-                      Please confirm your password.
-                    </Form.Message>
-                  </Form.Field>
+                  <FormField
+                    name="confirmPassword"
+                    label="Confirm Password"
+                    required
+                  >
+                    <TextField
+                      type="password"
+                      value={confirmPassword}
+                      required
+                      placeholder="Confirm your new password"
+                      onChange={handleConfirmPasswordChange}
+                      disabled={status === "loading"}
+                    />
+                  </FormField>
 
                   <Box className="submit-button-container">
                     <Form.Submit asChild>

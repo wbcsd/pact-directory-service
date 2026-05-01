@@ -13,25 +13,24 @@ const SideNav: React.FC = () => {
           <NavLink to="/conformance-test-runs">
             <Text>Conformance Testing</Text>
           </NavLink>
-          <FeatureFlag flag="enableIdentityManagement">
-            <PolicyGuard policies={["view-connections-own-organization", "view-connections-all-organizations"]}>
-              <>
-                <a href="#">Identity Management</a>
-                <NavLink
-                  to="/search"
-                  style={{ textDecoration: "none", paddingLeft: "2em" }}
-                >
-                  <Text>Search</Text>
-                </NavLink>
-                <NavLink
-                  to="/manage-connections"
-                  style={{ textDecoration: "none", paddingLeft: "2em" }}
-                >
-                  <Text>Manage Connections</Text>
-                </NavLink>
-              </>
+        </nav>
+      </div>
+      <div className="nav-group">
+        <div className="nav-title">Exchange</div>
+        <nav>
+          <FeatureFlag flag="enableNodeManagement">
+            <PolicyGuard policies={["view-nodes-own-organization", "view-nodes-all-organizations"]}>
+              <NavLink
+                to="/nodes"
+                style={{ textDecoration: "none", flex: 1 }}
+              >
+                <Text>Nodes</Text>
+              </NavLink>
             </PolicyGuard>
-          </FeatureFlag>
+          </FeatureFlag>          
+          <NavLink to="/activity-logs">
+            <Text>Activity Logs</Text>
+          </NavLink>
         </nav>
       </div>
       <div className="nav-group">
@@ -59,10 +58,9 @@ const SideNav: React.FC = () => {
               </NavLink>
             </PolicyGuard>
             </>
-          </FeatureFlag>          
+          </FeatureFlag>
         </nav>
       </div>
-
       <div className="nav-group">
         <div style={{ fontSize: "0.8em" }}>
           <div className="nav-title">Support</div>

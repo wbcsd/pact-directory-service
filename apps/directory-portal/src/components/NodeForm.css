@@ -1,0 +1,92 @@
+.node-form-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 0;
+}
+
+.node-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Form Field Styles */
+.field-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--accent-12);
+}
+
+.required-asterisk {
+  color: var(--red-9);
+  margin-left: 2px;
+}
+
+.form-field {
+  margin-bottom: 20px;
+}
+
+.editable-field {
+  width: 100%;
+  border: 1px solid var(--gray-6);
+  border-radius: var(--radius-2);
+  transition: border-color 0.15s ease-in-out;
+}
+
+.editable-field:hover {
+  border-color: var(--gray-8);
+}
+
+.editable-field:focus-within {
+  border-color: var(--accent-9);
+  box-shadow: 0 0 0 3px var(--accent-a3);
+}
+
+.readonly-field {
+  opacity: 0.6;
+  cursor: not-allowed;
+  border: 1px solid var(--gray-5);
+  border-radius: var(--radius-2);
+}
+
+.info-icon {
+  cursor: help;
+}
+
+.validation-message {
+  color: var(--red-9);
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+/* Button Group */
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 32px;
+}
+
+.cancel-button,
+.submit-button {
+  flex: 1;
+}
+
+.node-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 32px;
+  color: var(--gray-1);
+}
+
+.node-form-actions .cancel-button,
+.node-form-actions .submit-button {
+  flex: 1;
+}
+

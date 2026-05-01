@@ -1,6 +1,7 @@
-import { defineConfig } from "vitest/config";
+import { defineConfig, mergeConfig } from "vitest/config";
+import viteConfig from "./vite.config";
 
-export default defineConfig({
+export default mergeConfig(viteConfig, defineConfig({
   test: {
     environment: "jsdom",
     setupFiles: ["./src/test/setupTests.js"],
@@ -9,4 +10,4 @@ export default defineConfig({
     // If you import images/fonts, this keeps Vitest from choking on them:
     // You can also use a Vite plugin, but this is usually enough with "css: true".
   },
-});
+}));

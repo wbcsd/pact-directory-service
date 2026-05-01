@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "apps/api"
+		},
+		{
+			"path": "apps/directory-portal"
+		},
+		{
+			"path": "docs"
+		},
+		{
+			"path": "packages/pact-api-client"
+		},
+		{
+			"path": "packages/pact-data-model"
+		}
+	],
+	"settings": {}
+}

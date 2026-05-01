@@ -22,11 +22,16 @@ app.locals.services = services;
 
 // Basic middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ type: ['application/json', 'application/cloudevents+json'] }));
 app.use(express.urlencoded({ extended: true }));
 
 // Logging
 app.use(loggerMiddleware);
+
+// Simulate network latency in development
+if (config.DEV_REQUEST_DELAY > 0) {
+  app.use((_, __, next) => setTimeout(next, config.DEV_REQUEST_DELAY));
+}
 
 // OpenAPI Validator Middleware
 if (config.ENABLE_OPENAPI_VALIDATION) {

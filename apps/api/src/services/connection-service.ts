@@ -1,14 +1,22 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Kysely } from 'kysely';
 import { Database } from '@src/database/types';
-import {
-  BadRequestError,
-  NotFoundError,
-  ForbiddenError,
-} from '@src/common/errors';
+import { BadRequestError } from '@src/common/errors';
 import { OrganizationService } from './organization-service';
 import { EmailService } from './email-service';
 import { UserContext } from './user-service';
 import { ListQuery, ListResult } from '@src/common/list-query';
+
+/**
+ * DEPRECATED: This service is being replaced by NodeService and NodeConnectionService
+ * as part of T#139 migration. The database schema has changed from
+ * organization-based connections to node-based connections.
+ * 
+ * See: MIGRATION_PACT_NODE_002.md for details
+ * 
+ * This stub implementation prevents build errors during migration.
+ * These interfaces and methods will be removed once NodeService is implemented (T#140/004).
+ */
 
 export interface ConnectionRequest {
   id: number;
@@ -34,228 +42,46 @@ export class ConnectionService {
       private organizationService: OrganizationService,
       private emailService: EmailService
   ) {} 
-
+ 
   async listConnections(
-    context: UserContext,
-    organizationId: number,
-    query: ListQuery = ListQuery.default()
+    _context: UserContext,
+    _organizationId: number,
+    _query: ListQuery = ListQuery.default()
   ): Promise<ListResult<Connection>> {
-    const allowed = 
-      context.policies.includes('view-connections-all-organizations') ||
-      context.policies.includes('view-connections-own-organization') && context.organizationId === organizationId;
-    if (!allowed) {
-      throw new ForbiddenError('You are not allowed to view connections of this organization');
-    }
-    let qb = this.db
-      .selectFrom('connections')
-      .selectAll()
-      .where((e) => e.or([
-        e('connectedCompanyOneId', '=', organizationId),
-        e('connectedCompanyTwoId', '=', organizationId)
-      ]));
-
-    // Get total count for pagination
-    const total = (
-      await qb.clearSelect().select((eb) => eb.fn.count('id').as('total')).executeTakeFirstOrThrow()
-    ).total as number;
-
-    // Apply sorting
-    if (query.sortBy! in ['createdAt', 'requestedAt']) {
-      qb = qb.orderBy(query.sortBy as any, query.sortOrder ?? 'desc');
-    } else {
-      // Default sorting by creation date
-      qb = qb.orderBy('createdAt', 'desc');
-    }
-
-    // Apply pagination and get data
-    const data = await qb.offset(query.offset).limit(query.limit).execute();
-
-    return {
-      data,
-      pagination: query.pagination(total)
-    };
+    // STUB: This method is deprecated and will be replaced by NodeConnectionService
+    // Temporarily returning empty results to prevent build errors
+    throw new BadRequestError('Connection API is being migrated to node-based system. Please use the new nodes API.');
   }
-
+   
   async listConnectionRequests(
-    context: UserContext,
-    organizationId: number,
-    query: ListQuery
+    _context: UserContext,
+    _organizationId: number,
+    _query: ListQuery
   ): Promise<ListResult<ConnectionRequest>> {
-
-    const allowed = 
-      context.policies.includes('view-connections-all-organizations') ||
-      context.policies.includes('view-connections-own-organization') && context.organizationId === organizationId;
-    if (!allowed) {
-      throw new ForbiddenError('You are not allowed to view connection requests of this organization');
-    }
-
-    let qb = this.db
-      .selectFrom('connection_requests')
-      .selectAll()
-      .where((e) => e.or([
-        e('requestingCompanyId', '=', organizationId),
-        e('requestedCompanyId', '=', organizationId)
-      ]));
-
-    // Get total count for pagination
-    const total = (await 
-      qb.clearSelect().select((eb) => eb.fn.count('id').as('total')).executeTakeFirstOrThrow()
-    ).total as number;
-
-    // Apply sorting
-    if (query.sortBy && query.sortBy in ['createdAt', 'status']) {
-      qb = qb.orderBy(query.sortBy as any, query.sortOrder ?? 'asc');
-    } else {
-      // Default sorting by creation date
-      qb = qb.orderBy('createdAt', 'desc');
-    }
-
-    // Apply pagination and get data
-    const data = await qb.offset(query.offset).limit(query.limit).execute();
-
-    // Return data with pagination info
-    return {
-      data,
-      pagination: query.pagination(total)
-    };
+    // STUB: This method is deprecated and will be replaced by NodeConnectionService
+    throw new BadRequestError('Connection API is being migrated to node-based system. Please use the new nodes API.');
   }
 
   /**
    * Create a connection request
    */
   async createConnectionRequest(
-    context: UserContext, 
-    requestingOrganizationId: number,
-    requestedOrganizationId: number,
+    _context: UserContext, 
+    _requestingOrganizationId: number,
+    _requestedOrganizationId: number,
   ): Promise<ConnectionRequest> {
-
-    if (!requestedOrganizationId) {
-      throw new BadRequestError('Requested organization ID is required');
-    }
-
-    if (requestingOrganizationId === requestedOrganizationId) {
-      throw new BadRequestError('You cannot connect with yourself');
-    }
-
-    const allowed = 
-      context.policies.includes('edit-connections-all-organizations') ||
-      context.policies.includes('edit-connections-own-organization') && context.organizationId === requestingOrganizationId;
-    if (!allowed) {
-      throw new ForbiddenError('You are not allowed to send connection requests');
-    }
-
-    const requesting = await this.organizationService.get(context, requestingOrganizationId);
-    const requested = await this.organizationService.get(context, requestedOrganizationId);
-
-    if (!requesting) {
-      throw new NotFoundError('Requesting organization not found');
-    }
-    if (!requested) {
-      throw new NotFoundError('Requested organization not found');
-    }
-
-    // Ensure the user is either an admin of the requesting organization or a member of a child organization
-    if (context.organizationId !== requestingOrganizationId) {
-      const subOrgs = await this.organizationService.listSubOrganizations(context, context.organizationId);
-      if (!subOrgs.find(o => o.id === requestingOrganizationId)) {
-        throw new ForbiddenError('Can only send an invitation from a child organization or your own organization');
-      }
-    }
-
-    const result = await this.db
-      .insertInto('connection_requests')
-      .values({
-        requestingCompanyId: requestingOrganizationId,
-        requestedCompanyId: requestedOrganizationId,
-        status: 'pending',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      })
-      .returningAll()
-      .executeTakeFirstOrThrow();
-
-    // Send email to requested organization
-    await this.emailService.sendConnectionRequestEmail({
-      to: context.email, // TODO: Add administrative email or primary contact of requested organization
-      name: requested.organizationName,
-      organizationName: requesting.organizationName,
-    });
-
-    return result;
+    // STUB: This method is deprecated and will be replaced by NodeConnectionService
+    throw new BadRequestError('Connection API is being migrated to node-based system. Please use the new nodes API.');
   }
 
-  async acceptConnectionRequest(requestId: number, currentOrganizationId: number): Promise<void> {
-
-    if (!requestId) {
-      throw new BadRequestError('Request ID is required');
-    }
-
-    const connectionRequest = await this.db
-      .selectFrom('connection_requests')
-      .selectAll()
-      .where('id', '=', requestId)
-      .executeTakeFirst();
-
-    if (!connectionRequest) {
-      throw new NotFoundError('Connection request not found');
-    }
-
-    if (connectionRequest.requestedCompanyId !== currentOrganizationId) {
-      throw new ForbiddenError(
-        'Only the requested organization can accept the request'
-      );
-    }
-
-    await this.db.transaction().execute(async (trx) => {
-      await trx
-        .insertInto('connections')
-        .values({
-          connectedCompanyOneId: connectionRequest.requestingCompanyId,
-          connectedCompanyTwoId: connectionRequest.requestedCompanyId,
-          createdAt: new Date(),
-          requestedAt: connectionRequest.createdAt,
-        })
-        .execute();
-
-      await this.db.transaction().execute(async (trx) => {
-        await trx
-          .updateTable('connection_requests')
-          .set({ status: 'accepted' })
-          .where('id', '=', requestId)
-          .execute();
-      });
-    });
-
+  async acceptConnectionRequest(_requestId: number, _currentOrganizationId: number): Promise<void> {
+    // STUB: This method is deprecated and will be replaced by NodeConnectionService
+    throw new BadRequestError('Connection API is being migrated to node-based system. Please use the new nodes API.');
   }
 
-  async rejectConnectionRequest(requestId: number, currentCompanyId: number): Promise<void> {
-    if (!requestId) {
-      throw new BadRequestError('Request ID is required');
-    }
-
-    const connectionRequest = await this.db
-      .selectFrom('connection_requests')
-      .selectAll()
-      .where('id', '=', requestId)
-      .executeTakeFirst();
-
-    if (!connectionRequest) {
-      throw new NotFoundError('Connection request not found');
-    }
-
-    if (connectionRequest.requestedCompanyId !== currentCompanyId) {
-      throw new ForbiddenError(
-        'Only the requested organization can reject the request'
-      );
-    }
-
-    await this.db.transaction().execute(async (trx) => {
-      await trx
-        .updateTable('connection_requests')
-        .set({ status: 'rejected' })
-        .where('id', '=', requestId)
-        .execute();
-    });
+  async rejectConnectionRequest(_requestId: number, _currentCompanyId: number): Promise<void> {
+    // STUB: This method is deprecated and will be replaced by NodeConnectionService
+    throw new BadRequestError('Connection API is being migrated to node-based system. Please use the new nodes API.');
   }
 
 }

@@ -1,0 +1,1589 @@
+[
+  {
+    "id": "74f64689-c9ce-40c8-91af-14e26551bbfa",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Jiangxi Copper Co.",
+    "companyIds": [
+      "urn:pact:company:jiangxi-copper"
+    ],
+    "productDescription": "High-purity electrolytic copper cathode (99.99% Cu), produced via pyrometallurgical smelting and electrolytic refining. Used as feedstock for wire drawing and PCB manufacturing.",
+    "productIds": [
+      "urn:pact:product:jiangxi-cu-cathode-001"
+    ],
+    "productNameCompany": "Electrolytic Copper Cathode",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:41321"
+    ],
+    "comment": "SAMPLE: Primary data from Jiangxi smelter operations. Secondary data used for upstream mining energy mix.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "kilogram",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "3.50",
+      "pcfIncludingBiogenicUptake": "3.50",
+      "fossilGhgEmissions": "3.42",
+      "fossilCarbonContent": "0.0",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.3",
+      "boundaryProcessesDescription": "Mining, ore beneficiation, smelting, electrolytic refining, and cathode casting.",
+      "packagingEmissionsIncluded": false,
+      "geographyCountry": "CN",
+      "primaryDataShare": "0.72",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      }
+    }
+  },
+  {
+    "id": "4478d67b-c48f-45e5-9f10-254c4b469b51",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Umicore N.V.",
+    "companyIds": [
+      "urn:pact:company:umicore-nv"
+    ],
+    "productDescription": "Fine gold wire stock (99.99% Au), 25\u00b5m diameter, for semiconductor wire bonding. Produced from recycled electronic scrap via hydrometallurgical refining.",
+    "productIds": [
+      "urn:pact:product:umicore-au-wire-001"
+    ],
+    "productNameCompany": "Gold Bonding Wire Stock",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:41322"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "kilogram",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "8200.00",
+      "pcfIncludingBiogenicUptake": "8200.00",
+      "fossilGhgEmissions": "8150.00",
+      "fossilCarbonContent": "0.0",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Collection, sorting, hydrometallurgical refining, wire drawing.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "BE",
+      "packagingGhgEmissions": "0.15",
+      "primaryDataShare": "0.65",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "03a0f3c8-0f60-441f-9d54-fcf9995729e4",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Shin-Etsu Chemical",
+    "companyIds": [
+      "urn:pact:company:shin-etsu"
+    ],
+    "productDescription": "Monocrystalline silicon wafer, 300mm diameter, p-type, CZ-grown. Used as substrate for semiconductor fabrication.",
+    "productIds": [
+      "urn:pact:product:shin-etsu-si-wafer-001"
+    ],
+    "productNameCompany": "Electronic-Grade Silicon Wafer",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:37130"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.125",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "2.80",
+      "pcfIncludingBiogenicUptake": "2.80",
+      "fossilGhgEmissions": "2.75",
+      "fossilCarbonContent": "0.0",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Silica reduction, Siemens process polysilicon production, CZ crystal growth, wafering, polishing.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "JP",
+      "packagingGhgEmissions": "0.02",
+      "primaryDataShare": "0.80",
+      "dqi": {
+        "technologicalDQR": "1.0",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      }
+    }
+  },
+  {
+    "id": "d455f9fc-0985-47e3-a526-f8f81396e95f",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Sumitomo Chemical",
+    "companyIds": [
+      "urn:pact:company:sumitomo-chem"
+    ],
+    "productDescription": "Epoxy molding compound (EMC) for semiconductor encapsulation, silica-filled, low-stress formulation.",
+    "productIds": [
+      "urn:pact:product:sumitomo-emc-001"
+    ],
+    "productNameCompany": "Epoxy Resin EMC Compound",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:34750"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "kilogram",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "4.10",
+      "pcfIncludingBiogenicUptake": "4.10",
+      "fossilGhgEmissions": "3.95",
+      "fossilCarbonContent": "0.12",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Epoxy resin synthesis, silica filler processing, compounding, pelletizing.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "JP",
+      "packagingGhgEmissions": "0.08",
+      "primaryDataShare": "0.55",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "GaBi",
+          "version": "2024.1"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "1.5",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "8bc137ac-78be-43ab-9ca6-270081c8e3dd",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Albemarle Corporation",
+    "companyIds": [
+      "urn:pact:company:albemarle"
+    ],
+    "productDescription": "Battery-grade lithium carbonate (Li2CO3, 99.5% purity), extracted from brine operations. Precursor for lithium-ion battery cathode materials.",
+    "productIds": [
+      "urn:pact:product:albemarle-li2co3-001"
+    ],
+    "productNameCompany": "Battery-Grade Lithium Carbonate",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:34690"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "kilogram",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "7.20",
+      "pcfIncludingBiogenicUptake": "7.20",
+      "fossilGhgEmissions": "7.10",
+      "fossilCarbonContent": "0.08",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Brine extraction, solar evaporation, chemical precipitation, purification, drying.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CL",
+      "packagingGhgEmissions": "0.05",
+      "primaryDataShare": "0.70",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.0"
+      }
+    }
+  },
+  {
+    "id": "cf1a37ef-6b03-444d-b0d4-ed457c0b26ac",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Indorama Ventures",
+    "companyIds": [
+      "urn:pact:company:indorama"
+    ],
+    "productDescription": "Bottle-grade PET resin pellets suitable for thermoforming electronic component trays and blister packaging.",
+    "productIds": [
+      "urn:pact:product:indorama-pet-resin-001"
+    ],
+    "productNameCompany": "PET Resin for Electronics Packaging",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:34710"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "kilogram",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "2.90",
+      "pcfIncludingBiogenicUptake": "2.90",
+      "fossilGhgEmissions": "2.85",
+      "fossilCarbonContent": "0.62",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "PTA production, ethylene glycol reaction, polymerization, pelletizing.",
+      "packagingEmissionsIncluded": false,
+      "geographyCountry": "TH",
+      "primaryDataShare": "0.60",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "47417f9f-2836-4e70-9800-4d6b11e41b20",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Tanaka Kikinzoku",
+    "companyIds": [
+      "urn:pact:company:tanaka-precious"
+    ],
+    "productDescription": "Palladium electrolyte solution for connector plating, concentration 10g Pd/L. Used in lead-free connector finishing.",
+    "productIds": [
+      "urn:pact:product:tanaka-pd-plating-001"
+    ],
+    "productNameCompany": "Palladium Plating Solution",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:41329"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "liter",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1.05",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "28.50",
+      "pcfIncludingBiogenicUptake": "28.50",
+      "fossilGhgEmissions": "28.00",
+      "fossilCarbonContent": "0.0",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Palladium refining from PGM ores, solution compounding, quality testing.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "JP",
+      "packagingGhgEmissions": "0.12",
+      "primaryDataShare": "0.50",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "bbef20f2-5dcc-4fdf-b654-1e2a1c194dc0",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Corning Incorporated",
+    "companyIds": [
+      "urn:pact:company:corning-inc"
+    ],
+    "productDescription": "Alkali-aluminosilicate glass sheet, 0.7mm thickness, chemically strengthened. Used as cover glass for smartphones and tablets.",
+    "productIds": [
+      "urn:pact:product:corning-glass-sub-001"
+    ],
+    "productNameCompany": "Gorilla Glass Substrate",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:37110"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "square meter",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1.75",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "8.50",
+      "pcfIncludingBiogenicUptake": "8.50",
+      "fossilGhgEmissions": "8.40",
+      "fossilCarbonContent": "0.0",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Batch mixing, glass melting in fusion draw furnace, annealing, chemical strengthening (ion exchange), cutting, edge finishing.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "US",
+      "packagingGhgEmissions": "0.20",
+      "primaryDataShare": "0.85",
+      "dqi": {
+        "technologicalDQR": "1.0",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.0"
+      }
+    }
+  },
+  {
+    "id": "7fab81a0-b988-48d7-817b-a6f57f11e0f2",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "SK Hynix",
+    "companyIds": [
+      "urn:pact:company:sk-hynix"
+    ],
+    "productDescription": "256Gb TLC 3D NAND flash memory die, 176-layer, bare die before packaging. Produced in advanced semiconductor fab.",
+    "productIds": [
+      "urn:pact:product:sk-hynix-nand-die-001"
+    ],
+    "productNameCompany": "NAND Flash Memory Die (Bare)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47130"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.002",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "0.95",
+      "pcfIncludingBiogenicUptake": "0.95",
+      "fossilGhgEmissions": "0.92",
+      "fossilCarbonContent": "0.001",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Wafer fab front-end (photolithography, etching, deposition, implantation), wafer test, die singulation.",
+      "packagingEmissionsIncluded": false,
+      "geographyCountry": "KR",
+      "primaryDataShare": "0.75",
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.0"
+      }
+    }
+  },
+  {
+    "id": "021ab2bd-eb18-4340-b959-3f8d95e7ed29",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Murata Manufacturing",
+    "companyIds": [
+      "urn:pact:company:murata-mfg"
+    ],
+    "productDescription": "0402-size MLCC, X7R dielectric, 100nF/16V. Produced via tape casting, printing, stacking, sintering, and termination.",
+    "productIds": [
+      "urn:pact:product:murata-mlcc-001"
+    ],
+    "productNameCompany": "Multilayer Ceramic Capacitor (MLCC)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47120"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1000",
+      "productMassPerDeclaredUnit": "0.008",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "0.42",
+      "pcfIncludingBiogenicUptake": "0.42",
+      "fossilGhgEmissions": "0.40",
+      "fossilCarbonContent": "0.001",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Barium titanate powder synthesis, tape casting, electrode printing, lamination, sintering, termination, testing, taping.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "JP",
+      "packagingGhgEmissions": "0.01",
+      "primaryDataShare": "0.70",
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      }
+    }
+  },
+  {
+    "id": "f9a433b0-d6cc-49bd-8649-cbeed1df15dd",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Foxconn Industrial",
+    "companyIds": [
+      "urn:pact:company:foxconn-ind"
+    ],
+    "productDescription": "10-layer HDI PCB with SMT components mounted (SoC, PMIC, RF transceiver, memory), fully tested. Main board for flagship smartphone.",
+    "productIds": [
+      "urn:pact:product:foxconn-pcba-main-001"
+    ],
+    "productNameCompany": "Smartphone Main PCB Assembly",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47210"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.032",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "5.80",
+      "pcfIncludingBiogenicUptake": "5.80",
+      "fossilGhgEmissions": "5.60",
+      "fossilCarbonContent": "0.04",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "PCB fabrication, solder paste printing, SMT pick-and-place, reflow soldering, AOI/ICT testing.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CN",
+      "packagingGhgEmissions": "0.03",
+      "primaryDataShare": "0.55",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "1.5",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "b6ebedb0-89cc-411f-8c3e-41da79285885",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Samsung SDI",
+    "companyIds": [
+      "urn:pact:company:samsung-sdi"
+    ],
+    "productDescription": "Pouch-type Li-ion battery cell, NMC811 cathode, 5000mAh, 3.87V nominal. For use in smartphones, tablets, and wearables.",
+    "productIds": [
+      "urn:pact:product:samsung-sdi-cell-5000-001"
+    ],
+    "productNameCompany": "Lithium-Ion Battery Cell 5000mAh",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:46410"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.058",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "6.20",
+      "pcfIncludingBiogenicUptake": "6.20",
+      "fossilGhgEmissions": "6.05",
+      "fossilCarbonContent": "0.02",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Cathode/anode slurry mixing, electrode coating, calendering, slitting, stacking, electrolyte filling, formation, aging, testing.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "KR",
+      "packagingGhgEmissions": "0.04",
+      "primaryDataShare": "0.68",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "GaBi",
+          "version": "2024.1"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.0"
+      }
+    }
+  },
+  {
+    "id": "384fbd39-e2bd-4462-85c0-e68f990154e2",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "BOE Technology",
+    "companyIds": [
+      "urn:pact:company:boe-tech"
+    ],
+    "productDescription": "6.7-inch flexible AMOLED display module, 2400x1080 resolution, LTPO backplane, integrated touch digitizer and driver IC.",
+    "productIds": [
+      "urn:pact:product:boe-amoled-67-001"
+    ],
+    "productNameCompany": "6.7\" AMOLED Display Module",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47310"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.035",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "7.50",
+      "pcfIncludingBiogenicUptake": "7.50",
+      "fossilGhgEmissions": "7.30",
+      "fossilCarbonContent": "0.03",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "LTPO TFT backplane fabrication, OLED deposition (FMM evaporation), encapsulation, touch sensor lamination, driver IC bonding, module assembly.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CN",
+      "packagingGhgEmissions": "0.05",
+      "primaryDataShare": "0.60",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "1.5",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "9cb7bef1-91a3-4ab2-bb09-8a5e4f432a86",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Qualcomm Technologies",
+    "companyIds": [
+      "urn:pact:company:qualcomm-tech"
+    ],
+    "productDescription": "Advanced mobile system-on-chip, 4nm process node, packaged in FOWLP. Integrates CPU, GPU, NPU, 5G modem, ISP.",
+    "productIds": [
+      "urn:pact:product:qualcomm-soc-snap-001"
+    ],
+    "productNameCompany": "Snapdragon Mobile SoC (Packaged)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47130"
+    ],
+    "comment": "SAMPLE: Wafer fabrication outsourced to TSMC. Primary data covers packaging and test; secondary data for foundry processes.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.004",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "1.80",
+      "pcfIncludingBiogenicUptake": "1.80",
+      "fossilGhgEmissions": "1.75",
+      "fossilCarbonContent": "0.002",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Wafer fabrication (TSMC foundry), wafer probe, FOWLP packaging, final test, marking.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "TW",
+      "packagingGhgEmissions": "0.01",
+      "primaryDataShare": "0.50",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        },
+        {
+          "name": "TSMC ESG Report",
+          "version": "2024"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.5",
+        "geographicalDQR": "1.5",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "10014f4c-f281-4ced-a3fe-0808b1f4efbb",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Amphenol Corporation",
+    "companyIds": [
+      "urn:pact:company:amphenol-corp"
+    ],
+    "productDescription": "USB Type-C receptacle connector, 24-pin, SMT mount, with EMI shielding and waterproof gasket (IP68).",
+    "productIds": [
+      "urn:pact:product:amphenol-usbc-001"
+    ],
+    "productNameCompany": "USB-C Connector Assembly",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47120"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "100",
+      "productMassPerDeclaredUnit": "0.15",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "0.85",
+      "pcfIncludingBiogenicUptake": "0.85",
+      "fossilGhgEmissions": "0.82",
+      "fossilCarbonContent": "0.005",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Contact stamping, insert molding, plating (Ni/Au), assembly, gasket insertion, electrical testing, tape-and-reel.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CN",
+      "packagingGhgEmissions": "0.02",
+      "primaryDataShare": "0.65",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "1c72354b-64fd-4bb2-a923-1a3e18f8ef80",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "AAC Technologies",
+    "companyIds": [
+      "urn:pact:company:aac-tech"
+    ],
+    "productDescription": "48MP rear camera module with OIS, f/1.8 aperture, 1/1.56\" sensor, 6P lens assembly, voice coil motor, and flex cable.",
+    "productIds": [
+      "urn:pact:product:aac-camera-mod-001"
+    ],
+    "productNameCompany": "Smartphone Camera Module",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47310"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.008",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "1.20",
+      "pcfIncludingBiogenicUptake": "1.20",
+      "fossilGhgEmissions": "1.15",
+      "fossilCarbonContent": "0.003",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Lens element molding, barrel assembly, VCM assembly, sensor die attach, wire bonding, module assembly, active alignment, testing.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CN",
+      "packagingGhgEmissions": "0.01",
+      "primaryDataShare": "0.58",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "dff46ad9-a8e0-4567-adfb-be777f52e976",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Delta Electronics",
+    "companyIds": [
+      "urn:pact:company:delta-electronics"
+    ],
+    "productDescription": "Assembled PCB for 65W GaN fast charger, including GaN FETs, transformer, control IC, and output USB-C port. Requires enclosure for final product.",
+    "productIds": [
+      "urn:pact:product:delta-charger-pcb-001"
+    ],
+    "productNameCompany": "65W GaN USB-C Charger PCB",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47210"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.045",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "2.10",
+      "pcfIncludingBiogenicUptake": "2.10",
+      "fossilGhgEmissions": "2.00",
+      "fossilCarbonContent": "0.015",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "PCB fabrication, SMT assembly, selective soldering for through-hole components, transformer winding, ICT/FCT testing.",
+      "packagingEmissionsIncluded": false,
+      "geographyCountry": "TW",
+      "primaryDataShare": "0.62",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "GaBi",
+          "version": "2024.1"
+        }
+      ]
+    }
+  },
+  {
+    "id": "a370950a-d229-489d-9f29-7a72bdd4713b",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Luxshare Precision",
+    "companyIds": [
+      "urn:pact:company:luxshare-prec"
+    ],
+    "productDescription": "6mm balanced armature + dynamic driver hybrid unit for true wireless stereo earbuds, including diaphragm, voice coil, and magnet assembly.",
+    "productIds": [
+      "urn:pact:product:luxshare-driver-001"
+    ],
+    "productNameCompany": "TWS Earbuds Driver Unit",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47310"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.003",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "0.35",
+      "pcfIncludingBiogenicUptake": "0.35",
+      "fossilGhgEmissions": "0.33",
+      "fossilCarbonContent": "0.002",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Magnet sintering, voice coil winding, diaphragm forming, driver assembly, acoustic testing.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CN",
+      "packagingGhgEmissions": "0.005",
+      "primaryDataShare": "0.55",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "9ce9f44d-9f80-448a-b34e-0455313c4d62",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Sunwoda Electronic",
+    "companyIds": [
+      "urn:pact:company:sunwoda-elec"
+    ],
+    "productDescription": "4-cell lithium polymer battery pack, 56Wh, with BMS, protection circuitry, and connector. For 14-inch ultrabook laptops.",
+    "productIds": [
+      "urn:pact:product:sunwoda-laptop-batt-001"
+    ],
+    "productNameCompany": "Laptop Battery Pack 56Wh",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:46410"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.310",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "32.50",
+      "pcfIncludingBiogenicUptake": "32.50",
+      "fossilGhgEmissions": "31.80",
+      "fossilCarbonContent": "0.10",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Cell assembly, BMS PCB manufacturing, spot welding, enclosure assembly, charge/discharge testing, pack-level safety testing.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CN",
+      "packagingGhgEmissions": "0.15",
+      "primaryDataShare": "0.60",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "1.5",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "43bb0c3b-83aa-444b-92aa-1b675468d52d",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Pegatron Corporation",
+    "companyIds": [
+      "urn:pact:company:pegatron-corp"
+    ],
+    "productDescription": "Backlit scissor-switch keyboard module with aluminum frame, 78-key layout, integrated trackpad flex cable, for 14-inch ultrabook.",
+    "productIds": [
+      "urn:pact:product:pegatron-keyboard-001"
+    ],
+    "productNameCompany": "Laptop Keyboard Module",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47290"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.095",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "3.20",
+      "pcfIncludingBiogenicUptake": "3.20",
+      "fossilGhgEmissions": "3.10",
+      "fossilCarbonContent": "0.02",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Key cap injection molding, scissor mechanism stamping, membrane circuit printing, LED backlighting, aluminum frame CNC, assembly, key force testing.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CN",
+      "packagingGhgEmissions": "0.03",
+      "primaryDataShare": "0.50",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "bf4202f4-d161-4496-8075-a7c72e39abab",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Samsung Electronics",
+    "companyIds": [
+      "urn:pact:company:samsung-elec"
+    ],
+    "productDescription": "Flagship smartphone, 6.7\" AMOLED, 256GB storage, 12GB RAM, 5000mAh battery, titanium frame, including retail packaging and accessories (charger cable, SIM tool).",
+    "productIds": [
+      "urn:pact:product:samsung-galaxy-s-001"
+    ],
+    "productNameCompany": "Galaxy Smartphone S-Series",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47210"
+    ],
+    "comment": "SAMPLE: Cradle-to-gate PCF. Includes Scope 1/2 from assembly plant and Scope 3 from tier-1 components. Use-phase and end-of-life excluded.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.227",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "55.00",
+      "pcfIncludingBiogenicUptake": "55.00",
+      "fossilGhgEmissions": "52.50",
+      "fossilCarbonContent": "0.18",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Component procurement, SMT assembly, display lamination, final assembly, firmware flashing, QC, retail packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "KR",
+      "packagingGhgEmissions": "1.20",
+      "primaryDataShare": "0.52",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        },
+        {
+          "name": "GaBi",
+          "version": "2024.1"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "2.0",
+        "temporalDQR": "2.0"
+      },
+      "verification": {
+        "coverage": "product level",
+        "providerName": "T\u00dcV Rheinland",
+        "completedAt": "2026-02-28T00:00:00Z",
+        "standardName": "ISO 14067"
+      }
+    }
+  },
+  {
+    "id": "e8e17f33-8363-4a41-b4a5-dc1b1ae12502",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Apple Inc.",
+    "companyIds": [
+      "urn:pact:company:apple-inc"
+    ],
+    "productDescription": "14-inch laptop computer, M-series chip, 16GB unified memory, 512GB SSD, aluminum unibody enclosure, including retail packaging.",
+    "productIds": [
+      "urn:pact:product:apple-mbp14-001"
+    ],
+    "productNameCompany": "MacBook Pro 14-inch",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:45230"
+    ],
+    "comment": "SAMPLE: Cradle-to-gate. Apple Supplier Clean Energy Program data used for key suppliers. Packaging uses 100% recycled fiber.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1.55",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "185.00",
+      "pcfIncludingBiogenicUptake": "185.00",
+      "fossilGhgEmissions": "178.00",
+      "fossilCarbonContent": "0.95",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Component manufacturing, main logic board assembly, display assembly, final assembly, OS installation, QC, retail packaging with recycled fiber.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "US",
+      "packagingGhgEmissions": "2.50",
+      "primaryDataShare": "0.48",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "2.5",
+        "temporalDQR": "1.5"
+      },
+      "verification": {
+        "coverage": "product level",
+        "providerName": "Fraunhofer IBP",
+        "completedAt": "2026-01-15T00:00:00Z",
+        "standardName": "ISO 14067"
+      }
+    }
+  },
+  {
+    "id": "1251bc7e-0e89-4967-ad2f-2b31f9ff8400",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Sony Group Corporation",
+    "companyIds": [
+      "urn:pact:company:sony-group"
+    ],
+    "productDescription": "Over-ear wireless noise-cancelling headphones, 30-hour battery life, multipoint Bluetooth, including carrying case and USB-C cable.",
+    "productIds": [
+      "urn:pact:product:sony-wh-nc-001"
+    ],
+    "productNameCompany": "WH-Series Wireless Headphones",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47310"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.254",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "18.50",
+      "pcfIncludingBiogenicUptake": "18.50",
+      "fossilGhgEmissions": "17.80",
+      "fossilCarbonContent": "0.08",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Driver unit assembly, ANC module assembly, headband forming, ear cup injection molding, final assembly, acoustic tuning, firmware loading, packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "JP",
+      "packagingGhgEmissions": "0.45",
+      "primaryDataShare": "0.50",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "2.0",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "7613df28-52a2-4d43-9059-32e1643dbb4c",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Dell Technologies",
+    "companyIds": [
+      "urn:pact:company:dell-tech"
+    ],
+    "productDescription": "27-inch IPS LCD monitor, 3840x2160 resolution, USB-C hub with 90W PD, built-in KVM switch, aluminum stand, including cables and retail packaging.",
+    "productIds": [
+      "urn:pact:product:dell-monitor-27-4k-001"
+    ],
+    "productNameCompany": "27\" 4K USB-C Monitor",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47310"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "6.50",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "280.00",
+      "pcfIncludingBiogenicUptake": "280.00",
+      "fossilGhgEmissions": "272.00",
+      "fossilCarbonContent": "1.20",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "LCD panel production, LED backlight assembly, TCON/scaler board assembly, power supply unit, metal stand fabrication, final assembly, calibration, packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CN",
+      "packagingGhgEmissions": "3.80",
+      "primaryDataShare": "0.45",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        },
+        {
+          "name": "GaBi",
+          "version": "2024.1"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.5",
+        "geographicalDQR": "2.0",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "0961e6b3-b058-4a66-a694-4fbdfe78f085",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Logitech International",
+    "companyIds": [
+      "urn:pact:company:logitech-intl"
+    ],
+    "productDescription": "Ergonomic vertical wireless mouse, 4000 DPI sensor, USB-A/Bluetooth dual mode, rechargeable Li-ion battery, recycled plastic shell (75% PCR).",
+    "productIds": [
+      "urn:pact:product:logitech-ergo-mouse-001"
+    ],
+    "productNameCompany": "Wireless Ergonomic Mouse",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:45290"
+    ],
+    "comment": "SAMPLE: Shell uses 75% post-consumer recycled plastic. Biogenic uptake from FSC-certified paper packaging.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.120",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "4.80",
+      "pcfIncludingBiogenicUptake": "4.60",
+      "fossilGhgEmissions": "4.50",
+      "fossilCarbonContent": "0.03",
+      "biogenicCarbonContent": "0.02",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "PCR plastic compounding, injection molding, sensor/PCB assembly, scroll wheel assembly, final assembly, firmware flashing, FSC-certified packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CN",
+      "packagingGhgEmissions": "0.22",
+      "biogenicCO2Uptake": "-0.20",
+      "primaryDataShare": "0.55",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.5",
+        "temporalDQR": "1.5"
+      }
+    }
+  },
+  {
+    "id": "9ead3c2b-6f51-463f-8fdb-3ba4bd18c3db",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Anker Innovations",
+    "companyIds": [
+      "urn:pact:company:anker-innov"
+    ],
+    "productDescription": "Compact 65W GaN USB-C charger with foldable prongs, single USB-C port, PPS/PD3.0 support, including retail packaging.",
+    "productIds": [
+      "urn:pact:product:anker-65w-charger-001"
+    ],
+    "productNameCompany": "65W GaN USB-C Charger",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47120"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.105",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "5.20",
+      "pcfIncludingBiogenicUptake": "5.20",
+      "fossilGhgEmissions": "5.00",
+      "fossilCarbonContent": "0.04",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "GaN FET procurement, PCB assembly, transformer winding, plastic enclosure molding, final assembly, safety testing (UL), retail packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CN",
+      "packagingGhgEmissions": "0.18",
+      "primaryDataShare": "0.52",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "03106900-77b2-4ad5-8eac-82b03b306be0",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Western Digital",
+    "companyIds": [
+      "urn:pact:company:western-digital"
+    ],
+    "productDescription": "1TB external portable NVMe SSD, USB 3.2 Gen2 interface, aluminum enclosure, shock-resistant, including USB-C cable and retail packaging.",
+    "productIds": [
+      "urn:pact:product:wd-portable-ssd-1tb-001"
+    ],
+    "productNameCompany": "1TB Portable SSD",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:45230"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.077",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "12.80",
+      "pcfIncludingBiogenicUptake": "12.80",
+      "fossilGhgEmissions": "12.40",
+      "fossilCarbonContent": "0.06",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "NAND flash die procurement, SSD controller procurement, PCB assembly, firmware loading, aluminum enclosure fabrication, final assembly, performance testing, packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "TH",
+      "packagingGhgEmissions": "0.35",
+      "primaryDataShare": "0.48",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "1e2d0502-6718-485b-8756-c08578f296b2",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Nintendo Co., Ltd.",
+    "companyIds": [
+      "urn:pact:company:nintendo-co"
+    ],
+    "productDescription": "Handheld gaming console with detachable controllers, 7-inch OLED display, 64GB internal storage, dock included, retail packaging.",
+    "productIds": [
+      "urn:pact:product:nintendo-switch-oled-001"
+    ],
+    "productNameCompany": "Switch Handheld Console",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:45230"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.420",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "42.00",
+      "pcfIncludingBiogenicUptake": "42.00",
+      "fossilGhgEmissions": "40.50",
+      "fossilCarbonContent": "0.22",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Component manufacturing, PCB assembly, display lamination, controller assembly, dock assembly, final system assembly, QA, firmware install, retail packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "JP",
+      "packagingGhgEmissions": "1.50",
+      "primaryDataShare": "0.42",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        },
+        {
+          "name": "GaBi",
+          "version": "2024.1"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.5",
+        "geographicalDQR": "2.5",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "0a19ec60-3cf4-4943-bdec-4fda39706316",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Bose Corporation",
+    "companyIds": [
+      "urn:pact:company:bose-corp"
+    ],
+    "productDescription": "Compact soundbar with Dolby Atmos, Wi-Fi/Bluetooth/AirPlay 2, HDMI eARC, wall-mountable, including power cable and HDMI cable.",
+    "productIds": [
+      "urn:pact:product:bose-soundbar-600-001"
+    ],
+    "productNameCompany": "Smart Soundbar 600",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47310"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "3.18",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "65.00",
+      "pcfIncludingBiogenicUptake": "65.00",
+      "fossilGhgEmissions": "63.00",
+      "fossilCarbonContent": "0.35",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Speaker driver manufacturing, DSP board assembly, enclosure extrusion, acoustic mesh fabrication, final assembly, acoustic calibration, QC, packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "US",
+      "packagingGhgEmissions": "2.10",
+      "primaryDataShare": "0.40",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.5",
+        "geographicalDQR": "2.0",
+        "temporalDQR": "2.5"
+      }
+    }
+  },
+  {
+    "id": "1f286a7f-ddd0-440c-bd11-40deda7c300b",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Raspberry Pi Ltd",
+    "companyIds": [
+      "urn:pact:company:raspberry-pi"
+    ],
+    "productDescription": "Single-board computer, quad-core Arm Cortex-A76 SoC, 8GB LPDDR4X, USB3, PCIe, dual 4K HDMI, PoE-ready, in anti-static bag with quick-start guide.",
+    "productIds": [
+      "urn:pact:product:rpi5-8gb-001"
+    ],
+    "productNameCompany": "Raspberry Pi 5 Single-Board Computer",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:45230"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.046",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "3.50",
+      "pcfIncludingBiogenicUptake": "3.50",
+      "fossilGhgEmissions": "3.35",
+      "fossilCarbonContent": "0.02",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "SoC procurement, PCB fabrication, SMT assembly, flash programming, functional test, anti-static packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "GB",
+      "packagingGhgEmissions": "0.08",
+      "primaryDataShare": "0.50",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "2.0",
+        "temporalDQR": "2.0"
+      },
+      "verification": {
+        "coverage": "PCF calculation model",
+        "providerName": "Carbon Trust",
+        "completedAt": "2026-03-01T00:00:00Z",
+        "standardName": "PAS 2050"
+      }
+    }
+  }
+]

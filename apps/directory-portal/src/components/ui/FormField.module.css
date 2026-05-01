@@ -1,0 +1,27 @@
+.field {
+  margin-bottom: 20px;
+}
+
+.label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--gray-12);
+}
+
+.required {
+  color: var(--red-9);
+  margin-left: 2px;
+}
+
+.description {
+  margin-bottom: 8px;
+  color: var(--gray-9);
+}
+
+.error {
+  color: var(--red-9);
+  font-size: 13px;
+  margin-top: 6px;
+}

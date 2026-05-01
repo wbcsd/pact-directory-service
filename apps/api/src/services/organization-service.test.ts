@@ -35,7 +35,7 @@ describe('OrganizationService', () => {
   const rootUserContext: UserContext = {
     ...adminUserContext,
     role: Role.Root,
-    policies: ['view-own-organizations', 'edit-own-organizations', 'view-all-organizations', 'edit-all-organizations'],
+    policies: ['view-own-organizations', 'edit-own-organizations', 'view-all-organizations', 'edit-all-organizations', 'assign-root-role'],
   };
 
   beforeEach(() => {
@@ -416,6 +416,35 @@ describe('OrganizationService', () => {
       ).rejects.toThrow(ForbiddenError);
     });
 
+    it('should throw ForbiddenError when trying to assign root role without access', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValue({ id: 2 });
+
+      await expect(
+        organizationService.updateMember(
+          adminUserContext,
+          1,
+          2,
+          { role: Role.Root }
+        )
+      ).rejects.toThrow(ForbiddenError);
+    });
+
+    it('should allow root user to assign root role', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValue({ id: 2 });
+      dbMocks.executors.execute
+        .mockResolvedValueOnce([{ id: 1 }, { id: 2 }]) // two admins
+        .mockResolvedValueOnce(undefined); // update result
+
+      const result = await organizationService.updateMember(
+        rootUserContext,
+        1,
+        2,
+        { role: Role.Root }
+      );
+
+      expect(result).toEqual({ message: 'User updated successfully' });
+    });
+
     it('should allow role change when there are multiple administrators', async () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValue({ id: 2 });
       dbMocks.executors.execute
@@ -484,6 +513,24 @@ describe('OrganizationService', () => {
           { status: 'disabled' }
         )
       ).rejects.toThrow(ForbiddenError);
+    });
+  });
+
+  describe('checkOrganizationExistsByName', () => {
+    it('should return true if organization exists', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValue({ id: 1 });
+
+      const result = await organizationService.checkOrganizationExistsByName('Existing Org');
+
+      expect(result.exists).toBe(true);
+    });
+
+    it('should return false if organization does not exist', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValue(undefined);
+
+      const result = await organizationService.checkOrganizationExistsByName('Nonexistent Org');
+
+      expect(result.exists).toBe(false);
     });
   });
 });

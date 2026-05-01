@@ -7,6 +7,7 @@ import { UserContext, UserService } from './user-service';
 import { ListQuery, ListResult } from '@src/common/list-query';
 import { OrganizationService } from './organization-service';
 import { Role } from '@src/common/policies';
+import * as activityLogger from '@src/common/activity-logger';
 
 export interface CreateTestRunData {
   apiUrl: string;
@@ -91,14 +92,35 @@ export class TestRunService {
           }),
         }
       );
+      // If the response is not ok, throw an error with the response text
       if (!response.ok) {
         const errorbodyText = await response.text();
         throw new Error(`Failed to create test run: ${response.status} ${response.statusText} - ${errorbodyText}`);
       } 
-      const responseData: unknown = await response.json();
+      const responseData: any = await response.json();
+      
+      // Log test run creation
+      // TODO: Also log failure to intialize test run if response is not ok. 
+      const testRunId = responseData?.testRunId || 'unknown';
+
+      // If the test has failed, extract the failed tests
+      const failedTests = responseData.results.filter((test: any) => test.status === 'FAILURE');
+
+      activityLogger.logConformanceTest(testRunId, responseData.status, {
+        organizationName: user.organizationName,
+        organizationId: user.organizationId,
+        userId: user.id,
+        failedTests,
+      });
+
       return responseData;
     } catch (error) {
       logger.error('createTestRun error', error);
+      activityLogger.logConformanceTest('unknown', 'failed', {
+        organizationId: user.organizationId,
+        userId: user.id,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
       throw error;
     }
   }
@@ -125,6 +147,7 @@ export class TestRunService {
       });
 
       const data: unknown = await response.json();
+            
       return data;
     } catch (error) {
       logger.error('getTestResults error', error);
@@ -149,10 +172,13 @@ export class TestRunService {
         url.searchParams.append('page', query.page.toString());
 
       if (query.pageSize)
-        url.searchParams.append('size', query.pageSize.toString());
+        url.searchParams.append('pageSize', query.pageSize.toString());
 
-      // Non-administrator users should only see their own test runs
-      if (user.role !== Role.Administrator && user.role !== Role.Root)
+      // Non-root users should only see their own test runs.
+      // TODO: In the future, we may want to allow users to see all 
+      // test runs from their organization, but for now we will 
+      // only show their own test runs.
+      if (user.role !== Role.Root)
         url.searchParams.append('adminEmail', user.email);
 
       const response = await fetch(url, {
@@ -163,9 +189,18 @@ export class TestRunService {
       });
 
       const { testRuns, count } = await response.json();
+      
+      // The API returns one no totals, so we need to determine hasNext without needing total count
       return { 
         data: testRuns, 
-        pagination: query.pagination(count ?? 0)
+        pagination: { 
+          page: query.page ?? 1,
+          pageSize: query.pageSize,
+          hasNext: count >= query.pageSize,
+          hasPrevious: query.page ? query.page > 1 : false,
+          total: -1,
+          totalPages: -1,
+        }
       }
     } catch (error) {
       logger.error('listTestRuns error', error);

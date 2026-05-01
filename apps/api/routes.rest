@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:3010/api
-@jwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsImVtYWlsIjoidGVzdEBleGFtcGxlLmNvbSIsIm9yZ2FuaXphdGlvbklkIjozLCJyb2xlIjoiYWRtaW5pc3RyYXRvciIsInN0YXR1cyI6ImVuYWJsZWQiLCJwb2xpY2llcyI6WyJ2aWV3LWNvbm5lY3Rpb25zLW93bi1vcmdhbml6YXRpb24iLCJlZGl0LWNvbm5lY3Rpb25zLW93bi1vcmdhbml6YXRpb24iLCJ2aWV3LW93bi1vcmdhbml6YXRpb25zIiwiZWRpdC1vd24tb3JnYW5pemF0aW9ucyIsInZpZXctdXNlcnMiLCJlZGl0LXVzZXJzIl0sImlhdCI6MTc2MjUwNTk1MywiZXhwIjoxNzYyNTI3NTUzfQ.NtmecUVWRLjEtZvU1hCNAgBMFrpEJ31d3Xyw7sXtfyY
+@jwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjI1LCJlbWFpbCI6ImRldkBleGFtcGxlLmNvbSIsIm9yZ2FuaXphdGlvbklkIjo5LCJyb2xlIjoicm9vdCIsInN0YXR1cyI6ImVuYWJsZWQiLCJwb2xpY2llcyI6WyJ2aWV3LWNvbm5lY3Rpb25zLWFsbC1vcmdhbml6YXRpb25zIiwiZWRpdC1jb25uZWN0aW9ucy1hbGwtb3JnYW5pemF0aW9ucyIsInZpZXctYWxsLW9yZ2FuaXphdGlvbnMiLCJlZGl0LWFsbC1vcmdhbml6YXRpb25zIiwiYXNzaWduLXJvb3Qtcm9sZSIsInZpZXctYWxsLXVzZXJzIiwiZWRpdC1hbGwtdXNlcnMiLCJ2aWV3LW5vZGVzLWFsbC1vcmdhbml6YXRpb25zIiwiZWRpdC1ub2Rlcy1hbGwtb3JnYW5pemF0aW9ucyIsIm1hbmFnZS1jb25uZWN0aW9ucy1hbGwtbm9kZXMiXSwiaWF0IjoxNzY1ODIzMzkwLCJleHAiOjE3NjU4NDQ5OTB9.Ugi9o9LIny0_oeJ7wMUtYQmQUM1wJrvO91KKJ8Jzyfs
 @searchQuery = DINGDONG
 @testRunId = e4caed81-b4a7-42ef-9fef-b569398649c5
 @testCaseId = 060efbc1-db69-4e3f-8f4a-e23e371219c2
@@ -211,4 +211,216 @@ Content-Type: application/json
 # - sortBy: Field to sort by (varies by endpoint)
 # - sortOrder: "asc" or "desc" (default varies by endpoint)
 # - filters: Key-value filters (future feature)
+###
+
+###
+# ======================
+# Node Management
+# ======================
+
+@organizationId = 9
+@nodeId = 1
+@targetNodeId = 2
+@invitationId = 1
+@connectionId = 1
+
+### Create a node for an organization
+POST {{baseUrl}}/directory/organizations/{{organizationId}}/nodes
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+{
+  "name": "Production Node",
+  "type": "internal"
+}
+
+### Create an external node for an organization
+POST {{baseUrl}}/directory/organizations/{{organizationId}}/nodes
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+{
+  "name": "External Partner Node",
+  "type": "external",
+  "apiUrl": "https://partner.example.com/api"
+}
+
+### Get a specific node by ID
+GET {{baseUrl}}/directory/nodes/{{nodeId}}
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### Update a node
+PUT {{baseUrl}}/directory/nodes/{{nodeId}}
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+{
+  "name": "Updated Node Name",
+  "status": "active"
+}
+
+### Update an external node's API URL
+PUT {{baseUrl}}/directory/nodes/{{nodeId}}
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+{
+  "apiUrl": "https://new-partner.example.com/api"
+}
+
+### Delete a node (soft delete - sets status to inactive)
+DELETE {{baseUrl}}/directory/nodes/{{nodeId}}
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### List nodes for an organization (with pagination)
+GET {{baseUrl}}/directory/organizations/{{organizationId}}/nodes?page=1&pageSize=10
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### Search nodes for an organization
+GET {{baseUrl}}/directory/organizations/{{organizationId}}/nodes?search=production&page=1&pageSize=5
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### List nodes for an organization (sorted by name ascending)
+GET {{baseUrl}}/directory/organizations/{{organizationId}}/nodes?sortBy=name&sortOrder=asc&page=1&pageSize=10
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### List nodes for an organization (sorted by type)
+GET {{baseUrl}}/directory/organizations/{{organizationId}}/nodes?sortBy=type&sortOrder=asc&page=1&pageSize=10
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### List nodes for an organization (sorted by status)
+GET {{baseUrl}}/directory/organizations/{{organizationId}}/nodes?sortBy=status&sortOrder=desc&page=1&pageSize=10
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### List nodes for an organization (sorted by createdAt descending - newest first)
+GET {{baseUrl}}/directory/organizations/{{organizationId}}/nodes?sortBy=createdAt&sortOrder=desc&page=1&pageSize=10
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### List all nodes (root only)
+GET {{baseUrl}}/directory/nodes?page=1&pageSize=10
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### Search all nodes by name or organization name
+GET {{baseUrl}}/directory/nodes?search=production&page=1&pageSize=5
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### List all nodes (sorted by organization)
+GET {{baseUrl}}/directory/nodes?sortBy=organizationId&sortOrder=asc&page=1&pageSize=10
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+###
+# ======================
+# Node Connections & Invitations
+# ======================
+
+### List connections for a node (with pagination)
+GET {{baseUrl}}/directory/nodes/{{nodeId}}/connections?page=1&pageSize=10
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### List connections for a node (sorted by createdAt descending)
+GET {{baseUrl}}/directory/nodes/{{nodeId}}/connections?sortBy=createdAt&sortOrder=desc&page=1&pageSize=10
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### Create an invitation (connection request)
+POST {{baseUrl}}/directory/nodes/{{nodeId}}/invitations
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+{
+  "targetNodeId": {{targetNodeId}},
+  "message": "Let's connect our nodes for data exchange"
+}
+
+### List invitations for a node (with pagination)
+GET {{baseUrl}}/directory/nodes/{{nodeId}}/invitations?page=1&pageSize=10
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### List invitations for a node (sorted by createdAt descending - newest first)
+GET {{baseUrl}}/directory/nodes/{{nodeId}}/invitations?sortBy=createdAt&sortOrder=desc&page=1&pageSize=10
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### Accept an invitation (returns credentials)
+POST {{baseUrl}}/directory/node-invitations/{{invitationId}}/accept
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### Reject an invitation
+POST {{baseUrl}}/directory/node-invitations/{{invitationId}}/reject
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### Remove a node connection
+DELETE {{baseUrl}}/directory/node-invitations/{{connectionId}}
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+### Rotate credentials for a connection
+POST {{baseUrl}}/directory/node-connections/{{connectionId}}/credentials/rotate
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+###
+# ======================
+# Node Endpoints - Expected Responses
+# ======================
+# Create Node Response:
+# {
+#   "id": 1,
+#   "organizationId": 9,
+#   "organizationName": "Test Organization",
+#   "name": "Production Node",
+#   "type": "internal",
+#   "apiUrl": "https://directory.carbon-transparency.org/api/nodes/1",
+#   "status": "active",
+#   "createdAt": "2024-01-15T10:30:00.000Z",
+#   "updatedAt": "2024-01-15T10:30:00.000Z"
+# }
+#
+# List Nodes Response:
+# {
+#   "data": [{ NodeData objects }],
+#   "pagination": {
+#     "page": 1,
+#     "pageSize": 10,
+#     "total": 25,
+#     "totalPages": 3,
+#     "hasNext": true,
+#     "hasPrevious": false
+#   }
+# }
+#
+# Accept Invitation Response (with credentials):
+# {
+#   "connectionId": 1,
+#   "clientId": "a1b2c3d4e5f6...",
+#   "clientSecret": "secret123456..."
+# }
+#
+# Node Connection Data:
+# {
+#   "id": 1,
+#   "fromNodeId": 1,
+#   "targetNodeId": 2,
+#   "clientId": "a1b2c3d4e5f6...",
+#   "clientSecret": "encrypted_secret",
+#   "status": "accepted",
+#   "createdAt": "2024-01-15T10:30:00.000Z",
+#   "updatedAt": "2024-01-15T11:00:00.000Z",
+#   "expiresAt": "2025-01-15T11:00:00.000Z"
+# }
 ###

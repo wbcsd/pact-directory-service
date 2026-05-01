@@ -1,6 +1,10 @@
 **/node_modules
 dist/
 **/**/*.log
+**/*.tsbuildinfo
 apps/api/.env
 .vscode/launch.json
 .idea/
+.github
+.claude
+.DS_Store

@@ -131,6 +131,11 @@ describe('UserService', () => {
         where: jest.fn().mockReturnValue({
           executeTakeFirst: jest.fn().mockResolvedValue(null),
         }),
+        select: jest.fn().mockReturnValue({
+          where: jest.fn().mockReturnValue({
+            executeTakeFirst: jest.fn().mockResolvedValue(null),
+          }),
+        }),
       });
       dbMocks.db.selectFrom = mockSelectFrom;
 
@@ -176,6 +181,17 @@ describe('UserService', () => {
       await userService.signup(dataWithUppercaseEmail);
 
       expect(mockSelectFrom).toHaveBeenCalledWith('users');
+    });
+
+    it('should throw BadRequestError if organization name is already taken', async () => {
+      // Mock email check - user doesn't exist
+      dbMocks.executors.executeTakeFirst
+        .mockResolvedValueOnce(null) // For email check
+        .mockResolvedValueOnce({ id: 1 }); // For organization name check
+
+      await expect(userService.signup(signupData)).rejects.toThrow(
+        'Organization name is already in use'
+      );
     });
   });
 

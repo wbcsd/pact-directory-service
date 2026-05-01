@@ -7,9 +7,12 @@ export interface Database {
   roles: RolesTable;
   policies: PoliciesTable;
   roles_policies: RolesPoliciesTable;
-  connection_requests: ConnectionRequestTable;
+  nodes: NodesTable;
   connections: ConnectionTable;
   password_tokens: PasswordTokenTable;
+  activity_logs: ActivityLogsTable;
+  product_footprints: ProductFootprintsTable;
+  pcf_requests: PcfRequestsTable;
 }
 
 export interface OrganizationsTable {
@@ -54,21 +57,32 @@ export interface RolesPoliciesTable {
   policy: string;
 }
 
-export interface ConnectionRequestTable {
+export interface NodesTable {
   id: Generated<number>;
-  requestingCompanyId: number;
-  requestedCompanyId: number;
-  status: 'pending' | 'accepted' | 'rejected';
-  createdAt: Date;
-  updatedAt: Date;
+  organizationId: number;
+  name: string;
+  type: 'internal' | 'external';
+  apiUrl: string;
+  status: 'active' | 'inactive' | 'pending';
+  authBaseUrl: string | null;
+  scope: string | null;
+  audience: string | null;
+  resource: string | null;
+  specVersion: string | null;
+  createdAt: Generated<Date>;
+  updatedAt: Generated<Date>;
 }
 
 export interface ConnectionTable {
   id: Generated<number>;
-  connectedCompanyOneId: number;
-  connectedCompanyTwoId: number;
-  createdAt: Date;
-  requestedAt: Date;
+  fromNodeId: number;
+  targetNodeId: number;
+  clientId: string;
+  clientSecret: string;
+  status: 'pending' | 'accepted' | 'rejected';
+  createdAt: Generated<Date>;
+  updatedAt: Generated<Date>;
+  expiresAt: Date | null;
 }
 
 export interface PasswordTokenTable {
@@ -79,4 +93,39 @@ export interface PasswordTokenTable {
   createdAt: Date;
   type: 'reset' | 'setup';
   usedAt: Date | null;
+}
+
+export interface ActivityLogsTable {
+  id: Generated<number>;
+  path: string;
+  level: 'info' | 'warn' | 'error' | 'debug';
+  message: string;
+  content: Record<string, any>; // JSONB
+  nodeId: number | null;
+  organizationId: number | null;
+  userId: number | null;
+  createdAt: Generated<Date>;
+}
+
+export interface ProductFootprintsTable {
+  id: string; // UUID — must equal data.id (the PACT footprint ID)
+  nodeId: number;
+  data: Record<string, any>; // JSONB
+  createdAt: Generated<Date>;
+  updatedAt: Generated<Date>;
+}
+
+export interface PcfRequestsTable {
+  id: Generated<number>;
+  fromNodeId: number | null;  // null for requests from external nodes without a directory record
+  targetNodeId: number;
+  connectionId: number | null; // null for incoming requests not yet matched to a connection
+  requestEventId: string; // UUID of the sent CloudEvent
+  source: string | null;  // source URL from incoming event — used as callback base
+  filters: Record<string, unknown>; // JSONB — FootprintFilters
+  status: 'pending' | 'fulfilled' | 'rejected';
+  resultCount: number | null;
+  fulfilledFootprintIds: unknown[] | null; // footprint IDs sent in RequestFulfilledEvent
+  createdAt: Generated<Date>;
+  updatedAt: Generated<Date>;
 }

@@ -1,0 +1,140 @@
+.data-table-with-search {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Toolbar: search left, actions right */
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+/* Search bar: input + clear + search button */
+.search-bar {
+  display: flex;
+  align-items: center;
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 0.5rem 2rem 0.5rem 0.625rem;
+  font-size: 0.875rem;
+  border: 1px solid var(--gray-6);
+  border-radius: var(--radius-2) 0 0 var(--radius-2);
+  outline: none;
+  transition: border-color 0.15s;
+  min-height: 32px;
+  max-height: 32px;;
+}
+
+.search-bar input:focus {
+  border-color: var(--accent-9);
+}
+
+.search-bar .clear-btn {
+  position: absolute;
+  right: 2.6rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--gray-9);
+  line-height: 1;
+  padding: 0;
+  display: flex;
+}
+
+.search-bar .clear-btn:hover {
+  color: var(--gray-12);
+}
+
+.search-bar .search-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.625rem;
+  background: var(--accent-9);
+  color: white;
+  border: 1px solid var(--accent-9);
+  border-radius: 0 var(--radius-2) var(--radius-2) 0;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  min-height: 32px;
+  max-height: 32px;;
+}
+
+.search-bar .search-btn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.search-bar .search-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Action bar: flat row of buttons */
+.action-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+/* Paging Strip */
+.paging-strip {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+}
+
+.paging-link {
+  background: none;
+  border: none;
+  color: var(--gray-9);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: var(--radius-1);
+  transition: color 0.15s, background 0.15s;
+}
+
+.paging-link:hover:not(:disabled) {
+  color: var(--accent-12);
+  background: var(--gray-3);
+}
+
+.paging-link:disabled {
+  color: var(--gray-6);
+  cursor: default;
+}
+
+.paging-info {
+  font-size: 0.8rem;
+  color: var(--gray-9);
+  user-select: none;
+}
+
+.paging-total {
+  color: var(--gray-8);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-bar {
+    width: 100%;
+  }
+}

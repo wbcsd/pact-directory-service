@@ -1,4 +1,5 @@
 import React from "react";
+import { Flex, Box, Heading, Text } from "@radix-ui/themes";
 
 interface PageHeaderProps {
   title: string;
@@ -8,13 +9,16 @@ interface PageHeaderProps {
 
 const PageHeader: React.FC<PageHeaderProps> = ({ title, actions, subtitle }) => {
   return (
-    <div className="header">
-      <div>
-        <h2>{title}</h2>
-        {subtitle && <p style={{ margin: "5px 0 0 0", color: "#666" }}>{subtitle}</p>}
-      </div>
-      {actions && <div>{actions}</div>}
-    </div>
+    <Flex className="header">
+      <Box flexGrow="1">
+        <Heading as="h2" mt="0">{title}</Heading>
+        <Text as="p" size="3" mb="6">{subtitle}</Text>
+      </Box>
+      {actions && 
+      <Flex gap="2">
+        {actions}
+      </Flex>}
+    </Flex>
   );
 };
 

@@ -1,7 +1,12 @@
-import React from "react";
-import { Box } from "@radix-ui/themes";
+import React, { useState } from "react";
+import { Flex, IconButton } from "@radix-ui/themes";
+import { HamburgerMenuIcon, Cross2Icon } from "@radix-ui/react-icons";
 import SideNav from "../components/SideNav";
-import Spinner from "../components/LoadingSpinner";
+import LoadingSpinner from "../components/LoadingSpinner";
+import SignUp from "../components/SignUp";
+import FeedbackWidget from "../components/FeedbackWidget";
+import pactLogo from "../assets/pact-logo.svg";
+import pactLogoDark from "../assets/pact-logo-dark.svg";
 
 interface FunctionalPageLayoutProps {
   children: React.ReactNode;
@@ -14,34 +19,63 @@ const FunctionalPageLayout: React.FC<FunctionalPageLayoutProps> = ({
   loading = false,
   loadingMessage = "Loading...",
 }) => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
-    <>
-      <aside className="sidebar">
-        <div className="marker-divider"></div>
-        <SideNav />
-      </aside>
-      
-      {loading ? (
-        <Box
-          style={{
-            padding: "20px",
-            verticalAlign: "middle",
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            flexDirection: "column",
-            gap: "20px",
-          }}
+    <div className="layout">
+      <header className="top-bar">
+        <div className="hamburger">
+          <IconButton
+            className="hamburger-button"
+            variant="ghost"
+            size="3"
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            onClick={() => setMobileMenuOpen((open) => !open)}
+          >
+            {mobileMenuOpen
+              ? <Cross2Icon width={20} height={20} />
+              : <HamburgerMenuIcon width={20} height={20} />}
+          </IconButton>
+        </div>
+        <div className="logo">
+          <picture>
+            <source srcSet={pactLogoDark} media="(prefers-color-scheme: dark)" />
+            <img height={32} src={pactLogo} alt="PACT Logo" />
+          </picture>
+        </div>
+        <div className="top-bar-right">
+          <SignUp />
+        </div>
+      </header>
+
+      <div className="container">
+        {mobileMenuOpen && (
+          <div
+            className="sidebar-overlay"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+        <aside
+          className={`sidebar${mobileMenuOpen ? " sidebar--open" : ""}`}
+          onClick={() => setMobileMenuOpen(false)}
         >
-          <Spinner loadingText={loadingMessage} />
-        </Box>
-      ) : (
-        <main className="main">
-          {children}
-        </main>
-      )}
-    </>
+          <SideNav />
+        </aside>
+
+        {loading ? (
+          <Flex p="5" width="100%" justify="center" align="center" direction="column" gap="5">
+            <LoadingSpinner loadingText={loadingMessage} />
+          </Flex>
+        ) : (
+          <main className="main">
+            {children}
+          </main>
+        )}
+      </div>
+
+      <FeedbackWidget />
+    </div>
   );
 };
 

@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Kysely } from 'kysely';
-import jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken'; // Used in commented code that will be re-enabled after node migration
 import { Database } from '../database/types';
 import { UnauthorizedError } from '@src/common/errors';
 
@@ -24,6 +25,7 @@ export class AuthService {
         'organizations.clientSecret',
         'organizations.networkKey',
         'organizations.name as organizationName',
+        'organizations.status',
         'users.email',
       ])
       .where('clientId', '=', client_id)
@@ -40,35 +42,24 @@ export class AuthService {
       throw new UnauthorizedError('Invalid client_id or network_id');
     }
 
+    // Check if the client organization is active
+    if (clientOrganization.status !== 'active') {
+      throw new UnauthorizedError('Organization is not active');
+    }
+
     // 2. Check if the client_id and client_secret match the organization
     if (clientOrganization.clientSecret !== client_secret) {
       throw new UnauthorizedError('Invalid client_secret');
     }
 
     // 3. Check if a connection exists between them
-    const connection = await this.db
-      .selectFrom('connections')
-      .selectAll()
-      .where((qb) =>
-        qb('connectedCompanyOneId', '=', clientOrganization.id).or(
-          'connectedCompanyTwoId',
-          '=',
-          clientOrganization.id
-        )
-      )
-      .where((qb) =>
-        qb('connectedCompanyOneId', '=', networkOrganization.id).or(
-          'connectedCompanyTwoId',
-          '=',
-          networkOrganization.id
-        )
-      )
-      .executeTakeFirst();
+    // TODO: This needs to be updated to work with the new node-based connection system
+    // as part of T#141. For now, returning unauthorized to maintain security.
+    // The new system will check connections between nodes rather than organizations.
+    throw new UnauthorizedError('Connection verification not yet migrated to node-based system');
 
-    if (!connection) {
-      throw new UnauthorizedError('No connection between the organizations');
-    }
-
+    // The following code will be re-enabled once node-based connections are implemented:
+    /*
     // 4. If they do, generate a JWT signed with the secret being the one from the organization which network_id = body param network_id and return it
     const token = jwt.sign(
       {
@@ -86,5 +77,6 @@ export class AuthService {
       access_token: token,
       token_type: 'Bearer',
     };
+    */
   }
 }

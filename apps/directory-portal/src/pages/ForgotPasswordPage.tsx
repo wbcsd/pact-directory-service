@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import * as Form from "@radix-ui/react-form";
-import { Box, Button, TextField, Callout } from "@radix-ui/themes";
+import { Box, Button, Callout } from "@radix-ui/themes";
 import { Link } from "react-router-dom";
 import { ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
 import { LandingPageLayout } from "../layouts";
+import { FormField, TextField } from "../components/ui";
 
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -52,7 +53,7 @@ const ForgotPasswordPage: React.FC = () => {
 
             {status === "success" ? (
               <Box>
-                <h2 style={{ marginBottom: "20px", color: "#0A0552" }}>
+                <h2 style={{ marginBottom: "20px", color: "var(--accent-12)" }}>
                   Check Your Email
                 </h2>
                 <Callout.Root color="green" variant="surface">
@@ -69,7 +70,7 @@ const ForgotPasswordPage: React.FC = () => {
                   <Link
                     to="/login"
                     style={{
-                      color: "#0A0552",
+                      color: "var(--accent-12)",
                       textDecoration: "underline",
                       fontSize: "0.9em",
                     }}
@@ -87,51 +88,23 @@ const ForgotPasswordPage: React.FC = () => {
                 </p>
 
                 <Form.Root onSubmit={handleSubmit}>
-                  <Form.Field name="email">
-                    <Form.Label
-                      style={{
-                        display: "block",
-                        marginBottom: "8px",
-                        fontWeight: "500",
-                      }}
-                    >
-                      Email Address<span style={{ color: "red" }}>*</span>
-                    </Form.Label>
-                    <Form.Control asChild>
-                      <TextField.Root
-                        type="email"
-                        value={email}
-                        required
-                        placeholder="Enter your email address"
-                        onChange={handleChange}
-                        disabled={status === "loading"}
-                        style={{
-                          width: "100%",
-                          border: "1px solid #ccc",
-                          padding: "12px",
-                          fontSize: "16px",
-                        }}
-                      />
-                    </Form.Control>
-                    <Form.Message
-                      match="valueMissing"
-                      style={{
-                        color: "var(--base-color-brand--light-blue)",
-                        fontSize: "0.85em",
-                      }}
-                    >
-                      Email is required.
-                    </Form.Message>
-                    <Form.Message
-                      match="typeMismatch"
-                      style={{
-                        color: "var(--base-color-brand--light-blue)",
-                        fontSize: "0.85em",
-                      }}
-                    >
+                  <FormField
+                    name="email"
+                    label="Email Address"
+                    required
+                  >
+                    <TextField
+                      type="email"
+                      value={email}
+                      required
+                      placeholder="Enter your email address"
+                      onChange={handleChange}
+                      disabled={status === "loading"}
+                    />
+                    <Form.Message match="typeMismatch">
                       Please enter a valid email address.
                     </Form.Message>
-                  </Form.Field>
+                  </FormField>
 
                   <Box style={{ marginTop: "30px" }}>
                     <Form.Submit asChild>
@@ -152,7 +125,7 @@ const ForgotPasswordPage: React.FC = () => {
                   <Link
                     to="/login"
                     style={{
-                      color: "#0A0552",
+                      color: "var(--accent-12)",
                       textDecoration: "underline",
                       fontSize: "0.9em",
                     }}

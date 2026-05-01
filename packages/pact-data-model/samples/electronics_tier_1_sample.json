@@ -1,0 +1,566 @@
+[
+  {
+    "id": "bf4202f4-d161-4496-8075-a7c72e39abab",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Samsung Electronics",
+    "companyIds": [
+      "urn:pact:company:samsung-elec"
+    ],
+    "productDescription": "Flagship smartphone, 6.7\" AMOLED, 256GB storage, 12GB RAM, 5000mAh battery, titanium frame, including retail packaging and accessories (charger cable, SIM tool).",
+    "productIds": [
+      "urn:pact:product:samsung-galaxy-s-001"
+    ],
+    "productNameCompany": "Galaxy Smartphone S-Series",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47210"
+    ],
+    "comment": "SAMPLE: Cradle-to-gate PCF. Includes Scope 1/2 from assembly plant and Scope 3 from tier-1 components. Use-phase and end-of-life excluded.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.227",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "55.00",
+      "pcfIncludingBiogenicUptake": "55.00",
+      "fossilGhgEmissions": "52.50",
+      "fossilCarbonContent": "0.18",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Component procurement, SMT assembly, display lamination, final assembly, firmware flashing, QC, retail packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "KR",
+      "packagingGhgEmissions": "1.20",
+      "primaryDataShare": "0.52",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        },
+        {
+          "name": "GaBi",
+          "version": "2024.1"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "2.0",
+        "temporalDQR": "2.0"
+      },
+      "verification": {
+        "coverage": "product level",
+        "providerName": "T\u00dcV Rheinland",
+        "completedAt": "2026-02-28T00:00:00Z",
+        "standardName": "ISO 14067"
+      }
+    }
+  },
+  {
+    "id": "e8e17f33-8363-4a41-b4a5-dc1b1ae12502",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Apple Inc.",
+    "companyIds": [
+      "urn:pact:company:apple-inc"
+    ],
+    "productDescription": "14-inch laptop computer, M-series chip, 16GB unified memory, 512GB SSD, aluminum unibody enclosure, including retail packaging.",
+    "productIds": [
+      "urn:pact:product:apple-mbp14-001"
+    ],
+    "productNameCompany": "MacBook Pro 14-inch",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:45230"
+    ],
+    "comment": "SAMPLE: Cradle-to-gate. Apple Supplier Clean Energy Program data used for key suppliers. Packaging uses 100% recycled fiber.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1.55",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "185.00",
+      "pcfIncludingBiogenicUptake": "185.00",
+      "fossilGhgEmissions": "178.00",
+      "fossilCarbonContent": "0.95",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Component manufacturing, main logic board assembly, display assembly, final assembly, OS installation, QC, retail packaging with recycled fiber.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "US",
+      "packagingGhgEmissions": "2.50",
+      "primaryDataShare": "0.48",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "2.5",
+        "temporalDQR": "1.5"
+      },
+      "verification": {
+        "coverage": "product level",
+        "providerName": "Fraunhofer IBP",
+        "completedAt": "2026-01-15T00:00:00Z",
+        "standardName": "ISO 14067"
+      }
+    }
+  },
+  {
+    "id": "1251bc7e-0e89-4967-ad2f-2b31f9ff8400",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Sony Group Corporation",
+    "companyIds": [
+      "urn:pact:company:sony-group"
+    ],
+    "productDescription": "Over-ear wireless noise-cancelling headphones, 30-hour battery life, multipoint Bluetooth, including carrying case and USB-C cable.",
+    "productIds": [
+      "urn:pact:product:sony-wh-nc-001"
+    ],
+    "productNameCompany": "WH-Series Wireless Headphones",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47310"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.254",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "18.50",
+      "pcfIncludingBiogenicUptake": "18.50",
+      "fossilGhgEmissions": "17.80",
+      "fossilCarbonContent": "0.08",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Driver unit assembly, ANC module assembly, headband forming, ear cup injection molding, final assembly, acoustic tuning, firmware loading, packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "JP",
+      "packagingGhgEmissions": "0.45",
+      "primaryDataShare": "0.50",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "2.0",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "7613df28-52a2-4d43-9059-32e1643dbb4c",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Dell Technologies",
+    "companyIds": [
+      "urn:pact:company:dell-tech"
+    ],
+    "productDescription": "27-inch IPS LCD monitor, 3840x2160 resolution, USB-C hub with 90W PD, built-in KVM switch, aluminum stand, including cables and retail packaging.",
+    "productIds": [
+      "urn:pact:product:dell-monitor-27-4k-001"
+    ],
+    "productNameCompany": "27\" 4K USB-C Monitor",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47310"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "6.50",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "280.00",
+      "pcfIncludingBiogenicUptake": "280.00",
+      "fossilGhgEmissions": "272.00",
+      "fossilCarbonContent": "1.20",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "LCD panel production, LED backlight assembly, TCON/scaler board assembly, power supply unit, metal stand fabrication, final assembly, calibration, packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CN",
+      "packagingGhgEmissions": "3.80",
+      "primaryDataShare": "0.45",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        },
+        {
+          "name": "GaBi",
+          "version": "2024.1"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.5",
+        "geographicalDQR": "2.0",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "0961e6b3-b058-4a66-a694-4fbdfe78f085",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Logitech International",
+    "companyIds": [
+      "urn:pact:company:logitech-intl"
+    ],
+    "productDescription": "Ergonomic vertical wireless mouse, 4000 DPI sensor, USB-A/Bluetooth dual mode, rechargeable Li-ion battery, recycled plastic shell (75% PCR).",
+    "productIds": [
+      "urn:pact:product:logitech-ergo-mouse-001"
+    ],
+    "productNameCompany": "Wireless Ergonomic Mouse",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:45290"
+    ],
+    "comment": "SAMPLE: Shell uses 75% post-consumer recycled plastic. Biogenic uptake from FSC-certified paper packaging.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.120",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "4.80",
+      "pcfIncludingBiogenicUptake": "4.60",
+      "fossilGhgEmissions": "4.50",
+      "fossilCarbonContent": "0.03",
+      "biogenicCarbonContent": "0.02",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "PCR plastic compounding, injection molding, sensor/PCB assembly, scroll wheel assembly, final assembly, firmware flashing, FSC-certified packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CN",
+      "packagingGhgEmissions": "0.22",
+      "biogenicCO2Uptake": "-0.20",
+      "primaryDataShare": "0.55",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.5",
+        "temporalDQR": "1.5"
+      }
+    }
+  },
+  {
+    "id": "9ead3c2b-6f51-463f-8fdb-3ba4bd18c3db",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Anker Innovations",
+    "companyIds": [
+      "urn:pact:company:anker-innov"
+    ],
+    "productDescription": "Compact 65W GaN USB-C charger with foldable prongs, single USB-C port, PPS/PD3.0 support, including retail packaging.",
+    "productIds": [
+      "urn:pact:product:anker-65w-charger-001"
+    ],
+    "productNameCompany": "65W GaN USB-C Charger",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47120"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.105",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "5.20",
+      "pcfIncludingBiogenicUptake": "5.20",
+      "fossilGhgEmissions": "5.00",
+      "fossilCarbonContent": "0.04",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "GaN FET procurement, PCB assembly, transformer winding, plastic enclosure molding, final assembly, safety testing (UL), retail packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CN",
+      "packagingGhgEmissions": "0.18",
+      "primaryDataShare": "0.52",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "03106900-77b2-4ad5-8eac-82b03b306be0",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Western Digital",
+    "companyIds": [
+      "urn:pact:company:western-digital"
+    ],
+    "productDescription": "1TB external portable NVMe SSD, USB 3.2 Gen2 interface, aluminum enclosure, shock-resistant, including USB-C cable and retail packaging.",
+    "productIds": [
+      "urn:pact:product:wd-portable-ssd-1tb-001"
+    ],
+    "productNameCompany": "1TB Portable SSD",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:45230"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.077",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "12.80",
+      "pcfIncludingBiogenicUptake": "12.80",
+      "fossilGhgEmissions": "12.40",
+      "fossilCarbonContent": "0.06",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "NAND flash die procurement, SSD controller procurement, PCB assembly, firmware loading, aluminum enclosure fabrication, final assembly, performance testing, packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "TH",
+      "packagingGhgEmissions": "0.35",
+      "primaryDataShare": "0.48",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "1e2d0502-6718-485b-8756-c08578f296b2",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Nintendo Co., Ltd.",
+    "companyIds": [
+      "urn:pact:company:nintendo-co"
+    ],
+    "productDescription": "Handheld gaming console with detachable controllers, 7-inch OLED display, 64GB internal storage, dock included, retail packaging.",
+    "productIds": [
+      "urn:pact:product:nintendo-switch-oled-001"
+    ],
+    "productNameCompany": "Switch Handheld Console",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:45230"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.420",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "42.00",
+      "pcfIncludingBiogenicUptake": "42.00",
+      "fossilGhgEmissions": "40.50",
+      "fossilCarbonContent": "0.22",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Component manufacturing, PCB assembly, display lamination, controller assembly, dock assembly, final system assembly, QA, firmware install, retail packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "JP",
+      "packagingGhgEmissions": "1.50",
+      "primaryDataShare": "0.42",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        },
+        {
+          "name": "GaBi",
+          "version": "2024.1"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.5",
+        "geographicalDQR": "2.5",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "0a19ec60-3cf4-4943-bdec-4fda39706316",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Bose Corporation",
+    "companyIds": [
+      "urn:pact:company:bose-corp"
+    ],
+    "productDescription": "Compact soundbar with Dolby Atmos, Wi-Fi/Bluetooth/AirPlay 2, HDMI eARC, wall-mountable, including power cable and HDMI cable.",
+    "productIds": [
+      "urn:pact:product:bose-soundbar-600-001"
+    ],
+    "productNameCompany": "Smart Soundbar 600",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:47310"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "3.18",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "65.00",
+      "pcfIncludingBiogenicUptake": "65.00",
+      "fossilGhgEmissions": "63.00",
+      "fossilCarbonContent": "0.35",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Speaker driver manufacturing, DSP board assembly, enclosure extrusion, acoustic mesh fabrication, final assembly, acoustic calibration, QC, packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "US",
+      "packagingGhgEmissions": "2.10",
+      "primaryDataShare": "0.40",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.5",
+        "geographicalDQR": "2.0",
+        "temporalDQR": "2.5"
+      }
+    }
+  },
+  {
+    "id": "1f286a7f-ddd0-440c-bd11-40deda7c300b",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Raspberry Pi Ltd",
+    "companyIds": [
+      "urn:pact:company:raspberry-pi"
+    ],
+    "productDescription": "Single-board computer, quad-core Arm Cortex-A76 SoC, 8GB LPDDR4X, USB3, PCIe, dual 4K HDMI, PoE-ready, in anti-static bag with quick-start guide.",
+    "productIds": [
+      "urn:pact:product:rpi5-8gb-001"
+    ],
+    "productNameCompany": "Raspberry Pi 5 Single-Board Computer",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:45230"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "piece",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "0.046",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "3.50",
+      "pcfIncludingBiogenicUptake": "3.50",
+      "fossilGhgEmissions": "3.35",
+      "fossilCarbonContent": "0.02",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "SoC procurement, PCB fabrication, SMT assembly, flash programming, functional test, anti-static packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "GB",
+      "packagingGhgEmissions": "0.08",
+      "primaryDataShare": "0.50",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "2.0",
+        "temporalDQR": "2.0"
+      },
+      "verification": {
+        "coverage": "PCF calculation model",
+        "providerName": "Carbon Trust",
+        "completedAt": "2026-03-01T00:00:00Z",
+        "standardName": "PAS 2050"
+      }
+    }
+  }
+]

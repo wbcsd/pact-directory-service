@@ -7,6 +7,8 @@ import jwt from 'jsonwebtoken';
 import config from '@src/common/config';
 import logger from '@src/common/logger';
 import { Role } from '@src/common/policies';
+import { UpdateNodeData } from '@src/services/node-service';
+import { createInternalNodeRoutes } from './internal-node-routes';
 
 const router = Router();
 
@@ -57,11 +59,11 @@ const context =
  */
 
 // Auth token
-
+// Note: This endpoint is temporarily disabled during migration to node-based connections (T#139-141)
 router.post('/im/auth/token', context(async (req) => {
-  const user = await req.services.auth.token(req.body);
-  const token = jwt.sign(user, config.JWT_SECRET, { expiresIn: '6h' });
-  return { token };
+  const tokenResponse = await req.services.auth.token(req.body);
+  // The auth service now returns { access_token, token_type } directly
+  return tokenResponse;
 }));
 
 // Signup 
@@ -83,6 +85,12 @@ router.get('/directory/users/me', authenticate, context(async (req) => {
   return user;
 }));
 
+router.post('/directory/feedback', authenticate, context(async (req, res) => {
+  const result = await req.services.feedback.submit(req.context, req.body);
+  res.status(202);
+  return result;
+}));
+
 // Password reset
 router.post('/directory/users/forgot-password', context(async (req) => {
   const result = await req.services.user.forgotPassword(req.body);
@@ -101,7 +109,7 @@ router.post('/directory/users/reset-password', context(async (req) => {
 }));
 
 router.get('/directory/users/verify-reset-token/:token', context(async (req) => {
-  const result = await req.services.user.verifyResetToken(req.params.token);
+  const result = await req.services.user.verifyResetToken(req.params.token as string);
   return result;
 }));
 
@@ -112,14 +120,14 @@ router.get('/directory/organizations', authenticate, context(async (req) => {
 
 // Organization list and search, only show organizations the user is allowed to see.
 router.get('/directory/organizations/:id', authenticate, context(async (req) => {
-  return req.services.organization.get(req.context, parseInt(req.params.id));
+  return req.services.organization.get(req.context, parseInt(req.params.id as string));
 }));
 
 // Update organization details
 router.post('/directory/organizations/:id', authenticate, context(async (req) => {
   return req.services.organization.update(
     req.context,
-    parseInt(req.params.id),
+    parseInt(req.params.id as string),
     req.body
   );
 }));
@@ -128,7 +136,7 @@ router.post('/directory/organizations/:id', authenticate, context(async (req) =>
 router.get('/directory/organizations/:id/users', authenticate, context(async (req) => {
   return req.services.organization.listMembers(
     req.context,
-    parseInt(req.params.id),
+    parseInt(req.params.id as string),
     ListQuery.parse(req.query)
   );
 }));
@@ -137,7 +145,7 @@ router.get('/directory/organizations/:id/users', authenticate, context(async (re
 router.post('/directory/organizations/:id/users', authenticate, context(async (req) => {
   return req.services.user.addUserToOrganization(
     req.context,
-     parseInt(req.params.id),
+     parseInt(req.params.id as string),
     req.body as AddUserToOrganizationData
   );
 }));
@@ -146,7 +154,7 @@ router.post('/directory/organizations/:id/users', authenticate, context(async (r
 router.get('/directory/organizations/:id/users', authenticate, context(async (req) => {
   return req.services.organization.listMembers(
     req.context,
-    parseInt(req.params.id),
+    parseInt(req.params.id as string),
     ListQuery.parse(req.query)
   );
 }));
@@ -154,14 +162,20 @@ router.get('/directory/organizations/:id/users', authenticate, context(async (re
 router.get('/directory/organizations/:oid/users/:uid', authenticate, context(async (req) => {
   return req.services.organization.getMember(
     req.context,
-    parseInt(req.params.oid),
-    parseInt(req.params.uid)
+    parseInt(req.params.oid as string),
+    parseInt(req.params.uid as string )
   );
 }));
 
+router.get('/directory/organizations/check-name/:name', context(async (req) => {
+  const organizationName = req.params.name as string;
+  const response = await req.services.organization.checkOrganizationExistsByName(organizationName);
+  return response;
+}));
+
 router.post('/directory/organizations/:oid/users/:uid', authenticate, context(async (req) => {
-  const organizationId = parseInt(req.params.oid);
-  const userId = parseInt(req.params.uid);
+  const organizationId = parseInt(req.params.oid as string);
+  const userId = parseInt(req.params.uid as string);
 
   return req.services.organization.updateMember(
     req.context,
@@ -175,7 +189,7 @@ router.post('/directory/organizations/:oid/users/:uid', authenticate, context(as
 router.get('/directory/organizations/:id/connections', authenticate, context(async (req) => {
   return req.services.connection.listConnections(
     req.context, 
-    parseInt(req.params.id), 
+    parseInt(req.params.id as string), 
     ListQuery.parse(req.query)
   );
 }));
@@ -184,7 +198,7 @@ router.get('/directory/organizations/:id/connections', authenticate, context(asy
 router.get('/directory/organizations/:id/connection-requests', authenticate, context(async (req) => {
   return req.services.connection.listConnectionRequests(
     req.context, 
-    parseInt(req.params.id), 
+    parseInt(req.params.id as string), 
     ListQuery.parse(req.query)
   );
 }));
@@ -198,6 +212,208 @@ router.post('/directory/organizations/create-connection-request', authenticate, 
   );
 }));
 
+/////////////////// Nodes
+// Create a node for an organization
+router.post('/directory/organizations/:id/nodes', authenticate, context(async (req) => {
+  return req.services.node.create(
+    req.context,
+    parseInt(req.params.id as string),
+    req.body
+  );
+}));
+
+// Update a node by ID
+router.put('/directory/nodes/:id', authenticate, context(async (req) => {
+  return req.services.node.update(
+    req.context,
+    parseInt(req.params.id as string),
+    req.body as UpdateNodeData
+  );
+}));
+
+// Delete a node by ID
+router.delete('/directory/nodes/:id', authenticate, context(async (req) => {
+  return req.services.node.delete(
+    req.context,
+    parseInt(req.params.id as string)
+  );
+}));
+
+// List nodes for an organization
+// Lists all if user is root
+router.get('/directory/organizations/:id/nodes', authenticate, context(async (req) => {
+  console.log('List nodes query params:', req.query);
+  return req.services.node.list(
+    req.context,
+    parseInt(req.params.id as string),
+    ListQuery.parse(req.query)
+  );
+}));
+
+// Get a node by ID
+router.get('/directory/nodes/:id', authenticate, context(async (req) => {
+  return req.services.node.get(
+    req.context,
+    parseInt(req.params.id as string)
+  );
+}));
+
+// List node connections
+router.get('/directory/nodes/:id/connections', authenticate, context(async (req) => {
+  return req.services.nodeConnection.listConnections(
+    req.context,
+    parseInt(req.params.id as string)
+  );
+}));
+
+
+// Create invitation
+router.post('/directory/nodes/:id/invitations', authenticate, context(async (req) => {
+  return req.services.nodeConnection.createInvitation(
+    req.context,
+    parseInt(req.params.id as string),
+    req.body
+  );
+}));
+
+// List invitations per node
+router.get('/directory/nodes/:id/invitations', authenticate, context(async (req) => {
+  return req.services.nodeConnection.listInvitations(
+    req.context,
+    parseInt(req.params.id as string),
+    ListQuery.parse(req.query)
+  );
+}));
+
+// Accept invitation request for node connection
+router.post('/directory/node-invitations/:id/accept', authenticate, context(async (req) => {
+  return req.services.nodeConnection.acceptInvitation(
+    req.context,
+    parseInt(req.params.id as string),
+  );
+}));
+
+// Reject invitation request for node connection
+router.post('/directory/node-invitations/:id/reject', authenticate, context(async (req, res) => {
+  await req.services.nodeConnection.rejectInvitation(
+    req.context,
+    parseInt(req.params.id as string),
+  );
+  res.status(204).send();
+}));
+
+// Remove node connection
+router.delete('/directory/node-invitations/:id', authenticate, context(async (req) => {
+  return req.services.nodeConnection.removeConnection(
+    req.context,
+    parseInt(req.params.id as string),
+  );
+}));
+
+// Rotate credentials
+router.post('/directory/node-connections/:id/credentials/rotate', authenticate, context(async (req) => {
+  return req.services.nodeConnection.rotateCredentials(
+    req.context,
+    parseInt(req.params.id as string),
+  );
+}));
+
+/////////////////// Footprints (Product Footprints)
+
+// Import multiple footprints for a node
+router.post('/directory/nodes/:id/footprints/import', authenticate, context(async (req, res) => {
+  const result = await req.services.footprint.import(
+    req.context,
+    parseInt(req.params.id as string),
+    req.body
+  );
+  res.status(result.failed === 0 ? 200 : 207);
+  return result;
+}));
+
+// Create a footprint for a node
+router.post('/directory/nodes/:id/footprints', authenticate, context(async (req, res) => {
+  const result = await req.services.footprint.create(
+    req.context,
+    parseInt(req.params.id as string),
+    { data: req.body }
+  );
+  res.status(201);
+  return result;
+}));
+
+// List footprints for a node
+router.get('/directory/nodes/:id/footprints', authenticate, context(async (req) => {
+  return req.services.footprint.listByNode(
+    req.context,
+    parseInt(req.params.id as string),
+    ListQuery.parse(req.query)
+  );
+}));
+
+// Get a single footprint by ID
+router.get('/directory/footprints/:id', authenticate, context(async (req) => {
+  return req.services.footprint.get(
+    req.context,
+    req.params.id as string
+  );
+}));
+
+// Delete a footprint by ID
+router.delete('/directory/footprints/:id', authenticate, context(async (req) => {
+  return req.services.footprint.delete(
+    req.context,
+    req.params.id as string
+  );
+}));
+
+/////////////////// PCF Requests (outgoing)
+
+// Send a PCF request to a connected node
+router.post('/directory/nodes/:id/pcf-requests', authenticate, context(async (req, res) => {
+  const result = await req.services.pcfRequest.create(
+    req.context,
+    parseInt(req.params.id as string),
+    req.body
+  );
+  res.status(201);
+  return result;
+}));
+
+// List all PCF requests for a node (outgoing + incoming, unified)
+router.get('/directory/nodes/:id/pcf-requests', authenticate, context(async (req) => {
+  return req.services.pcfRequest.list(
+    req.context,
+    parseInt(req.params.id as string),
+    ListQuery.parse(req.query)
+  );
+}));
+
+// Fulfill an incoming PCF request
+router.post('/directory/nodes/:id/pcf-requests/:requestId/fulfill', authenticate, context(async (req) => {
+  await req.services.pcfRequest.fulfill(
+    req.context,
+    parseInt(req.params.id as string),
+    parseInt(req.params.requestId as string),
+    req.body.footprintIds
+  );
+  return { success: true };
+}));
+
+// Reject an incoming PCF request
+router.post('/directory/nodes/:id/pcf-requests/:requestId/reject', authenticate, context(async (req) => {
+  await req.services.pcfRequest.reject(
+    req.context,
+    parseInt(req.params.id as string),
+    parseInt(req.params.requestId as string)
+  );
+  return { success: true };
+}));
+
+
+//////////////// Organization connections
+
+// Accept connection request
 router.post('/directory/organizations/connection-request-action', authenticate, context(async (req) => {
   return req.services.connection.acceptConnectionRequest(
     req.body.requestId,
@@ -226,5 +442,89 @@ router.post('/directory/users/verify-email', context(async (req) => {
 router.post('/directory/users/resend-verification', context(async (req) => {
   return await req.services.user.resendEmailVerification(req.body);
 }));
+
+// Internal Node PACT API Routes
+// Mount PACT-compliant endpoints for internal nodes
+// URL structure: /api/nodes/:nodeId/auth/token and /api/nodes/:nodeId/3/footprints
+router.use('/nodes', createInternalNodeRoutes());
+
+// Activity Log Routes
+// Mount activity log endpoints for log viewing and management
+// URL structure: /api/activity-logs, /api/activity-logs/path, /api/activity-logs/nodes/:nodeId
+
+/**
+ * Get grouped activity logs (one row per path)
+ * GET /api/activity-logs?limit=50&offset=0
+ * Requires authentication
+ */
+router.get('/directory/activity-logs', authenticate, context(async (req) => {
+  const query = ListQuery.parse(req.query);
+  const result = await req.services.activityLog.getGroupedLogs(req.context, {}, query);
+  return result;
+}));
+
+/**
+ * Get detailed logs for a specific path
+ * GET /api/activity-logs/path?path=/pact/nodes/123/api&limit=100&offset=0
+ * Requires authentication
+ */
+router.get('/directory/activity-logs/path', authenticate, context(async (req, res) => {
+  const { path, limit, offset } = req.query;
+  
+  if (!path || typeof path !== 'string') {
+    res.status(400);
+    return { error: 'Path parameter is required' };
+  }
+
+  const query = {
+    limit: limit ? parseInt(limit as string, 10) : undefined,
+    offset: offset ? parseInt(offset as string, 10) : undefined,
+  };
+
+  const result = await req.services.activityLog.getLogsByPath(req.context, path, query);
+  return result;
+}));
+
+/**
+ * Get logs for a specific node
+ * GET /api/nodes/:nodeId/logs?limit=100&offset=0
+ * Requires authentication
+ */
+router.get('/directory/activity-logs/nodes/:nodeId', authenticate, context(async (req, res) => {
+  const nodeId = parseInt(req.params.nodeId as string, 10);
+
+  if (isNaN(nodeId)) {
+    res.status(400);
+    return { error: 'Invalid node ID' };
+  }
+
+  const query = ListQuery.parse(req.query);
+  const result = await req.services.activityLog.getNodeLogs(req.context, nodeId, query);
+  return result;
+}));
+
+/**
+ * Delete old activity logs
+ * DELETE /api/activity-logs?olderThanDays=90
+ * Requires authentication
+ */
+router.delete('/directory/activity-logs', authenticate, context(async (req, res) => {
+  const { olderThanDays } = req.query;
+
+  if (!olderThanDays) {
+    res.status(400);
+    return { error: 'olderThanDays parameter is required' };
+  }
+
+  const days = parseInt(olderThanDays as string, 10);
+  if (isNaN(days) || days < 1) {
+    res.status(400);
+    return { error: 'olderThanDays must be a positive number' };
+  }
+
+  const deletedCount = await req.services.activityLog.deleteOldLogs(req.context, days);
+  return { deletedCount };
+}));
+
 
 export default router;

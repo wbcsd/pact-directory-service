@@ -14,17 +14,30 @@ interface SendPasswordResetEmailParams {
   resetUrl: string;
 }
 
+interface SendFeedbackEmailParams {
+  to: string;
+  senderName: string;
+  senderEmail: string;
+  organizationName: string;
+  role: string;
+  pagePath: string;
+  pageTitle?: string;
+  message: string;
+}
+
 export class EmailService {
-  private mailjet: InstanceType<typeof Mailjet.Client>;
+  private mailjet?: InstanceType<typeof Mailjet.Client>;
   private mockMode: boolean;
 
   constructor() {
     this.mockMode = !config.MAIL_API_KEY.trim() || !config.MAIL_API_SECRET.trim();
 
-    this.mailjet = Mailjet.apiConnect(
-      config.MAIL_API_KEY,
-      config.MAIL_API_SECRET,
-    );
+    if (!this.mockMode) {
+      this.mailjet = Mailjet.apiConnect(
+        config.MAIL_API_KEY,
+        config.MAIL_API_SECRET,
+      );
+    }
   }
 
   private async sendEmail(params: {
@@ -40,20 +53,22 @@ export class EmailService {
       return;
     }
 
-    await this.mailjet.post('send', { version: 'v3.1' }).request({
-      Messages: [
-        {
-          From: {
-            Email: config.MAIL_FROM_EMAIL,
-            Name: config.MAIL_FROM_NAME,
+    if (this.mailjet) {
+      await this.mailjet.post('send', { version: 'v3.1' }).request({
+        Messages: [
+          {
+            From: {
+              Email: config.MAIL_FROM_EMAIL,
+              Name: config.MAIL_FROM_NAME,
+            },
+            To: [{ Email: params.to }],
+            Subject: params.subject,
+            TextPart: params.text,
+            HTMLPart: params.html,
           },
-          To: [{ Email: params.to }],
-          Subject: params.subject,
-          TextPart: params.text,
-          HTMLPart: params.html,
-        },
-      ],
-    });
+        ],
+      });
+    }
   }
 
   /**
@@ -220,5 +235,53 @@ export class EmailService {
       html: htmlContent,
     });
     logger.info(`Password reset email sent to ${to}`);
+  }
+
+  async sendFeedbackEmail({
+    to,
+    senderName,
+    senderEmail,
+    organizationName,
+    role,
+    pagePath,
+    pageTitle,
+    message,
+  }: SendFeedbackEmailParams): Promise<void> {
+    const details = [
+      `Sender: ${senderName}`,
+      `Email: ${senderEmail}`,
+      `Organization: ${organizationName}`,
+      `Role: ${role}`,
+      `Page: ${pagePath}`,
+      ...(pageTitle ? [`Page title: ${pageTitle}`] : []),
+      '',
+      'Feedback message:',
+      message,
+    ];
+
+    const textContent = details.join('\n');
+
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #0A0552;">PACT Directory Feedback</h2>
+        <p><strong>Sender:</strong> ${senderName}</p>
+        <p><strong>Email:</strong> ${senderEmail}</p>
+        <p><strong>Organization:</strong> ${organizationName}</p>
+        <p><strong>Role:</strong> ${role}</p>
+        <p><strong>Page:</strong> ${pagePath}</p>
+        ${pageTitle ? `<p><strong>Page title:</strong> ${pageTitle}</p>` : ''}
+        <hr style="border: none; border-top: 1px solid #ddd; margin: 24px 0;" />
+        <p><strong>Feedback message</strong></p>
+        <p style="white-space: pre-wrap;">${message}</p>
+      </div>
+    `;
+
+    await this.sendEmail({
+      to,
+      subject: `PACT Directory feedback from ${senderName}`,
+      text: textContent,
+      html: htmlContent,
+    });
+    logger.info(`Feedback email sent to ${to}`);
   }
 }

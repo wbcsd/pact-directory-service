@@ -1,0 +1,539 @@
+[
+  {
+    "id": "a4d0181c-861e-45eb-8856-a2e7e2b0613e",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Grasim Industries",
+    "companyIds": [
+      "urn:pact:company:grasim-ind"
+    ],
+    "productDescription": "Medium-staple ginned cotton fiber, 28mm length, suitable for ring spinning. Irrigated cultivation in Gujarat region.",
+    "productIds": [
+      "urn:pact:product:grasim-cotton-fiber-001"
+    ],
+    "productNameCompany": "Raw Cotton Fiber (Ginned)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:01610"
+    ],
+    "comment": "SAMPLE: Biogenic CO2 uptake reflects carbon sequestered during cotton plant growth. Land use change emissions not applicable (established farmland).",
+    "pcf": {
+      "declaredUnitOfMeasurement": "kilogram",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "5.20",
+      "pcfIncludingBiogenicUptake": "3.80",
+      "fossilGhgEmissions": "3.50",
+      "fossilCarbonContent": "0.02",
+      "biogenicCarbonContent": "0.42",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Cotton cultivation (irrigation, fertilization, pest management), harvesting, ginning.",
+      "packagingEmissionsIncluded": false,
+      "geographyCountry": "IN",
+      "biogenicCO2Uptake": "-1.40",
+      "primaryDataShare": "0.65",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "1.5",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "5b279b60-bfb3-4d86-8dac-01f3a16d93a5",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Lenzing AG",
+    "companyIds": [
+      "urn:pact:company:lenzing-ag"
+    ],
+    "productDescription": "Lyocell staple fiber, 1.3 dtex, 38mm cut length, produced in closed-loop solvent spinning process from sustainably sourced wood pulp.",
+    "productIds": [
+      "urn:pact:product:lenzing-lyocell-001"
+    ],
+    "productNameCompany": "TENCEL\u2122 Lyocell Fiber",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:26310"
+    ],
+    "comment": "SAMPLE: Closed-loop solvent recovery >99%. FSC/PEFC certified wood pulp. Biogenic uptake from sustainably managed forests.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "kilogram",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "1.60",
+      "pcfIncludingBiogenicUptake": "0.30",
+      "fossilGhgEmissions": "1.20",
+      "fossilCarbonContent": "0.01",
+      "biogenicCarbonContent": "0.40",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Wood pulp dissolution, NMMO solvent spinning, fiber washing, drying, crimping, cutting, baling.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "AT",
+      "packagingGhgEmissions": "0.05",
+      "biogenicCO2Uptake": "-1.30",
+      "primaryDataShare": "0.85",
+      "dqi": {
+        "technologicalDQR": "1.0",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.0"
+      },
+      "verification": {
+        "coverage": "product level",
+        "providerName": "T\u00dcV S\u00dcD",
+        "completedAt": "2026-01-20T00:00:00Z",
+        "standardName": "ISO 14067"
+      }
+    }
+  },
+  {
+    "id": "d5b66735-3361-498d-a770-30124d8b8c3c",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Reliance Industries",
+    "companyIds": [
+      "urn:pact:company:reliance-ind"
+    ],
+    "productDescription": "Virgin polyester staple fiber, 1.4 dtex, 38mm, semi-dull, suitable for blending with cotton. Produced from PTA and MEG via melt spinning.",
+    "productIds": [
+      "urn:pact:product:reliance-psf-virgin-001"
+    ],
+    "productNameCompany": "Polyester Staple Fiber (Virgin)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:26320"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "kilogram",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "5.50",
+      "pcfIncludingBiogenicUptake": "5.50",
+      "fossilGhgEmissions": "5.40",
+      "fossilCarbonContent": "0.62",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "PTA/MEG polymerization, chip drying, melt spinning, drawing, crimping, heat setting, cutting, baling.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "IN",
+      "packagingGhgEmissions": "0.06",
+      "primaryDataShare": "0.70",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      }
+    }
+  },
+  {
+    "id": "38a64c56-9f37-4230-b5a9-630b96b464fc",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Toray Industries",
+    "companyIds": [
+      "urn:pact:company:toray-ind"
+    ],
+    "productDescription": "Nylon 6,6 continuous filament yarn, 78dtex/68f, high-tenacity, for woven outerwear fabrics. Produced via adipic acid and hexamethylenediamine polymerization.",
+    "productIds": [
+      "urn:pact:product:toray-nylon66-yarn-001"
+    ],
+    "productNameCompany": "Nylon 6,6 Filament Yarn",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:26310"
+    ],
+    "comment": "SAMPLE: N2O abatement system installed on adipic acid line, reducing process N2O emissions by 98%.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "kilogram",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "9.80",
+      "pcfIncludingBiogenicUptake": "9.80",
+      "fossilGhgEmissions": "9.60",
+      "fossilCarbonContent": "0.53",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Adipic acid production, HMDA synthesis, polymerization, melt spinning, drawing, texturing, winding.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "JP",
+      "packagingGhgEmissions": "0.04",
+      "primaryDataShare": "0.72",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "1.0",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      }
+    }
+  },
+  {
+    "id": "07d25cd9-2040-4162-b39f-9c5288447678",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "S\u00fcdwolle Group",
+    "companyIds": [
+      "urn:pact:company:sudwolle-grp"
+    ],
+    "productDescription": "Fine merino wool yarn, 19.5\u00b5m, Nm 60/2, worsted spun, suitable for luxury knitwear and suiting. Australian greasy wool sourced.",
+    "productIds": [
+      "urn:pact:product:sudwolle-merino-yarn-001"
+    ],
+    "productNameCompany": "Merino Wool Yarn (19.5 micron)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:26130"
+    ],
+    "comment": "SAMPLE: Upstream sheep farming data from Australian Wool Innovation. Enteric methane included in biogenic non-CO2 emissions. Wool is a co-product (allocation by economic value).",
+    "pcf": {
+      "declaredUnitOfMeasurement": "kilogram",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "26.00",
+      "pcfIncludingBiogenicUptake": "22.50",
+      "fossilGhgEmissions": "20.50",
+      "fossilCarbonContent": "0.01",
+      "biogenicCarbonContent": "0.50",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Greasy wool scouring, carbonizing, carding, combing, gilling, drawing, spinning, plying, winding.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "DE",
+      "packagingGhgEmissions": "0.08",
+      "biogenicCO2Uptake": "-3.50",
+      "primaryDataShare": "0.55",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "2.0",
+        "temporalDQR": "2.5"
+      }
+    }
+  },
+  {
+    "id": "b84552f1-d31f-494b-8b5b-58e3e6cbfec8",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Repreve (Unifi)",
+    "companyIds": [
+      "urn:pact:company:unifi-repreve"
+    ],
+    "productDescription": "Recycled polyester staple fiber from post-consumer PET bottles, 1.5 dtex, 38mm, dope-dyed black. Certified GRS.",
+    "productIds": [
+      "urn:pact:product:repreve-rpet-fiber-001"
+    ],
+    "productNameCompany": "Recycled Polyester Fiber (rPET)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:26320"
+    ],
+    "comment": "SAMPLE: GRS 4.0 certified. Dope-dyeing eliminates separate dyeing step, saving water and energy vs. conventional dyeing.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "kilogram",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "2.30",
+      "pcfIncludingBiogenicUptake": "2.30",
+      "fossilGhgEmissions": "2.20",
+      "fossilCarbonContent": "0.62",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "PET bottle collection, sorting, washing, flaking, extrusion, melt spinning, drawing, crimping, cutting.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "US",
+      "packagingGhgEmissions": "0.04",
+      "primaryDataShare": "0.75",
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.0"
+      }
+    }
+  },
+  {
+    "id": "dd7c4fea-d793-484d-94e2-9545b7941c4b",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Birla Cellulose",
+    "companyIds": [
+      "urn:pact:company:birla-cell"
+    ],
+    "productDescription": "Viscose rayon staple fiber, 1.2 dtex, 38mm, bright luster. Produced from FSC-certified dissolving wood pulp.",
+    "productIds": [
+      "urn:pact:product:birla-viscose-rsf-001"
+    ],
+    "productNameCompany": "Viscose Rayon Staple Fiber",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:26310"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "kilogram",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "3.80",
+      "pcfIncludingBiogenicUptake": "2.60",
+      "fossilGhgEmissions": "3.40",
+      "fossilCarbonContent": "0.01",
+      "biogenicCarbonContent": "0.38",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Dissolving pulp production, alkali cellulose preparation, xanthation, dissolution, wet spinning, cutting, after-treatment, drying.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "IN",
+      "packagingGhgEmissions": "0.05",
+      "biogenicCO2Uptake": "-1.20",
+      "primaryDataShare": "0.68",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "67960698-066a-4767-a917-b173518e4847",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Xinjiang Zhongtai",
+    "companyIds": [
+      "urn:pact:company:zhongtai-chem"
+    ],
+    "productDescription": "Spandex (elastane) fiber, 40 denier, for stretch fabrics. Produced via dry spinning of segmented polyurethane.",
+    "productIds": [
+      "urn:pact:product:zhongtai-spandex-001"
+    ],
+    "productNameCompany": "Spandex/Elastane Fiber",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:26310"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "kilogram",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "12.50",
+      "pcfIncludingBiogenicUptake": "12.50",
+      "fossilGhgEmissions": "12.20",
+      "fossilCarbonContent": "0.45",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "MDI synthesis, PTMEG production, prepolymer formation, chain extension, dry spinning, winding.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "CN",
+      "packagingGhgEmissions": "0.06",
+      "primaryDataShare": "0.55",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "2.0",
+        "geographicalDQR": "1.5",
+        "temporalDQR": "2.0"
+      }
+    }
+  },
+  {
+    "id": "b570ed68-385b-4bc4-87e3-97ef5a829236",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Bcomp Ltd.",
+    "companyIds": [
+      "urn:pact:company:bcomp-ltd"
+    ],
+    "productDescription": "Technical-grade flax fiber, retted and hackled, for composite reinforcement and high-performance textile applications.",
+    "productIds": [
+      "urn:pact:product:bcomp-flax-tech-001"
+    ],
+    "productNameCompany": "Natural Flax Fiber (Technical Grade)",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:01920"
+    ],
+    "comment": "SAMPLE: Negative pcfIncludingBiogenicUptake reflects high biogenic carbon sequestration in flax fibers. Low-input European cultivation.",
+    "pcf": {
+      "declaredUnitOfMeasurement": "kilogram",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "0.85",
+      "pcfIncludingBiogenicUptake": "-0.35",
+      "fossilGhgEmissions": "0.50",
+      "fossilCarbonContent": "0.01",
+      "biogenicCarbonContent": "0.44",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Flax cultivation, pulling, retting (dew retting), scutching, hackling.",
+      "packagingEmissionsIncluded": false,
+      "geographyCountry": "CH",
+      "biogenicCO2Uptake": "-1.20",
+      "primaryDataShare": "0.70",
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      }
+    }
+  },
+  {
+    "id": "7d184825-aeaa-4782-b040-53785a39f217",
+    "specVersion": "3.0.0",
+    "created": "2026-03-15T10:00:00Z",
+    "status": "Active",
+    "companyName": "Hyosung TNC",
+    "companyIds": [
+      "urn:pact:company:hyosung-tnc"
+    ],
+    "productDescription": "High-performance spandex yarn, 20D-1120D range, offering superior stretch recovery. For intimate apparel and sportswear.",
+    "productIds": [
+      "urn:pact:product:hyosung-creora-001"
+    ],
+    "productNameCompany": "Creora\u00ae Spandex Yarn",
+    "productClassifications": [
+      "urn:pact:productclassification:un-cpc:26310"
+    ],
+    "pcf": {
+      "declaredUnitOfMeasurement": "kilogram",
+      "declaredUnitAmount": "1",
+      "productMassPerDeclaredUnit": "1",
+      "referencePeriodStart": "2025-01-01T00:00:00Z",
+      "referencePeriodEnd": "2025-12-31T23:59:59Z",
+      "pcfExcludingBiogenicUptake": "11.80",
+      "pcfIncludingBiogenicUptake": "11.80",
+      "fossilGhgEmissions": "11.50",
+      "fossilCarbonContent": "0.42",
+      "biogenicCarbonContent": "0",
+      "ipccCharacterizationFactors": [
+        "AR6"
+      ],
+      "crossSectoralStandards": [
+        "ISO14067",
+        "PACT-3.0"
+      ],
+      "exemptedEmissionsPercent": "0.5",
+      "boundaryProcessesDescription": "Polyurethane polymer synthesis, solution preparation, dry spinning, heat setting, winding, packaging.",
+      "packagingEmissionsIncluded": true,
+      "geographyCountry": "KR",
+      "packagingGhgEmissions": "0.05",
+      "primaryDataShare": "0.65",
+      "secondaryEmissionFactorSources": [
+        {
+          "name": "ecoinvent",
+          "version": "3.10"
+        }
+      ],
+      "dqi": {
+        "technologicalDQR": "1.5",
+        "geographicalDQR": "1.0",
+        "temporalDQR": "1.5"
+      }
+    }
+  }
+]

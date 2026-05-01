@@ -1,0 +1,58 @@
+{
+  "name": "pact-data-model",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": { "require": "./dist/index.js", "types": "./dist/index.d.ts" },
+    "./common": { "require": "./dist/common/validate.js", "types": "./dist/common/validate.d.ts" },
+    "./common/*": { "require": "./dist/common/*.js", "types": "./dist/common/*.d.ts" },
+    "./v2_0": { "require": "./dist/v2_0/index.js", "types": "./dist/v2_0/index.d.ts" },
+    "./v2_0/*": { "require": "./dist/v2_0/*.js", "types": "./dist/v2_0/*.d.ts" },
+    "./v2_1": { "require": "./dist/v2_1/index.js", "types": "./dist/v2_1/index.d.ts" },
+    "./v2_1/*": { "require": "./dist/v2_1/*.js", "types": "./dist/v2_1/*.d.ts" },
+    "./v2_2": { "require": "./dist/v2_2/index.js", "types": "./dist/v2_2/index.d.ts" },
+    "./v2_2/*": { "require": "./dist/v2_2/*.js", "types": "./dist/v2_2/*.d.ts" },
+    "./v2_3": { "require": "./dist/v2_3/index.js", "types": "./dist/v2_3/index.d.ts" },
+    "./v2_3/*": { "require": "./dist/v2_3/*.js", "types": "./dist/v2_3/*.d.ts" },
+    "./v3_0": { "require": "./dist/v3_0/index.js", "types": "./dist/v3_0/index.d.ts" },
+    "./v3_0/*": { "require": "./dist/v3_0/*.js", "types": "./dist/v3_0/*.d.ts" }  
+  },
+  "typesVersions": {
+    "*": {
+      "common": ["./dist/common/validate.d.ts"],
+      "common/*": ["./dist/common/*.d.ts"],
+      "v2_0": ["./dist/v2_0/index.d.ts"],
+      "v2_0/*": ["./dist/v2_0/*.d.ts"],
+      "v2_1": ["./dist/v2_1/index.d.ts"],
+      "v2_1/*": ["./dist/v2_1/*.d.ts"],
+      "v2_2": ["./dist/v2_2/index.d.ts"],
+      "v2_2/*": ["./dist/v2_2/*.d.ts"],
+      "v2_3": ["./dist/v2_3/index.d.ts"],
+      "v2_3/*": ["./dist/v2_3/*.d.ts"],
+      "v3_0": ["./dist/v3_0/index.d.ts"],
+      "v3_0/*": ["./dist/v3_0/*.d.ts"]
+    }
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "tsc --build tsconfig.prod.json",
+    "generate-schemas": "tsx scripts/generate-schemas.ts",
+    "generate-types": "tsx scripts/generate-types.ts",
+    "validate": "tsx scripts/validate-pcf.ts"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-errors": "^3.0.0",
+    "ajv-formats": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.15",
+    "@types/js-yaml": "^4.0.9",
+    "js-yaml": "^4.1.1",
+    "rimraf": "^6.1.3",
+    "typescript": "^5.0.0"
+  }
+}

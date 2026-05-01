@@ -1,13 +1,12 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { fetchWithAuth } from "../utils/auth-fetch";
-import SearchableDataTable, { PaginationInfo } from "../components/SearchableDataTable";
+import PaginatedDataTable, { PaginationInfo } from "../components/PaginatedDataTable";
 import { Column } from "../components/DataTable";
-import { useAuth } from "../contexts/AuthContext";
-import { InputIcon, PlusIcon } from "@radix-ui/react-icons";
-import { useNavigate } from "react-router-dom";
+import { InputIcon } from "@radix-ui/react-icons";
 import { GridPageLayout } from "../layouts";
-import ActionButton from "../components/ActionButton";
-import PolicyGuard from "../components/PolicyGuard";
+import { IconButton } from "@radix-ui/themes";
+import SlideOverPanel from "../components/SlideOverPanel";
+import OrganizationForm from "../components/OrganizationForm";
 
 export interface Organization {
   id: number;
@@ -21,9 +20,22 @@ export interface Organization {
   status: 'active' | 'disabled';
 }
 
+type PanelState =
+  | { mode: "closed" }
+  | { mode: "edit"; organizationId: number; organizationName: string };
+
 const Organizations: React.FC = () => {
-  const navigate = useNavigate();
-  const { profileData } = useAuth();
+  const [panel, setPanel] = useState<PanelState>({ mode: "closed" });
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const closePanel = useCallback(() => setPanel({ mode: "closed" }), []);
+
+  const handleSaved = useCallback(() => {
+    // Refresh the table data to reflect changes
+    setRefreshTrigger((prev) => prev + 1);
+    // Auto-close after a short delay so the user sees the success message
+    setTimeout(() => closePanel(), 1200);
+  }, [closePanel]);
 
   // Fetch function for DataTableWithSearch
   const fetchOrganizations = async (params: {
@@ -31,10 +43,6 @@ const Organizations: React.FC = () => {
     pageSize: number;
     search?: string;
   }): Promise<{ data: Organization[]; pagination: PaginationInfo }> => {
-    if (!profileData) {
-      throw new Error("Profile data not available");
-    }
-
     // Build query string
     const queryParams = new URLSearchParams({
       page: params.page.toString(),
@@ -97,50 +105,67 @@ const Organizations: React.FC = () => {
       header: "",
       extendedStyle: { textAlign: 'right' },
       render: (row: Organization) => (
-        <>
-        <ActionButton
+        <IconButton
           title="Edit Organization Details"
-          variant="secondary"
-          size="small"
-          onClick={() => navigate(`/organizations/${row.id}`)}
+          variant="soft"
+          color="gray"
+          size="1"
+          onClick={() =>
+            setPanel({
+              mode: "edit",
+              organizationId: row.id,
+              organizationName: row.organizationName,
+            })
+          }
         >
           <InputIcon />
-        </ActionButton>
-          <span>&nbsp;</span>
-          <PolicyGuard policies={["edit-all-users"]}>
-            <ActionButton
-              title="Add New User"
-              variant="secondary"
-              size="small"
-              onClick={() => navigate(`/organization/${row.id}/${row.organizationName}/add-user`)}
-            >
-              <PlusIcon /><span>Add User</span>
-            </ActionButton>
-          </PolicyGuard>
-        </>     
+        </IconButton>
       ),
     },
   ];
 
+  const panelTitle =
+    panel.mode === "edit" ? "Edit Organization" : "";
+
+  const panelSubtitle =
+    panel.mode === "edit" ? panel.organizationName : undefined;
+
   return (
     <GridPageLayout
-      title=""
+      title="Organizations"
+      subtitle="Manage and view all organizations in the system"
       loading={false}
       loadingMessage="Loading organizations..."
     >
-      <SearchableDataTable<Organization>
-        title="Organizations"
-        subtitle="Manage and view all organizations in the system"
+      <PaginatedDataTable<Organization>
+        isSearchable={true}
         searchPlaceholder="Search by organization name..."
         fetchData={fetchOrganizations}
         columns={columns}
         idColumnName="id"
-        defaultPageSize={50}
+        refreshTrigger={refreshTrigger}
         emptyState={{
           title: "No organizations found",
           description: "No organizations match your search criteria",
         }}
       />
+
+      {/* Slide-over panel for Edit */}
+      <SlideOverPanel
+        open={panel.mode !== "closed"}
+        onClose={closePanel}
+        title={panelTitle}
+        subtitle={panelSubtitle}
+      >
+        {panel.mode === "edit" && (
+          <OrganizationForm
+            key={panel.organizationId}
+            organizationId={panel.organizationId}
+            onCancel={closePanel}
+            onSaved={handleSaved}
+          />
+        )}
+      </SlideOverPanel>
     </GridPageLayout>
   );
 };

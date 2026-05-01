@@ -1,0 +1,385 @@
+import { Kysely } from 'kysely';
+import { Database } from '@src/database/types';
+import { NotFoundError, ForbiddenError, BadRequestError } from '@src/common/errors';
+import { registerPolicy, Role } from '@src/common/policies';
+import { UserContext } from './user-service';
+import { ListQuery, ListResult } from '@src/common/list-query';
+import config from '@src/common/config';
+
+// Register all policies used in this service
+registerPolicy([Role.Administrator], 'view-nodes-own-organization');
+registerPolicy([Role.Administrator], 'edit-nodes-own-organization');
+registerPolicy([Role.Root], 'view-nodes-all-organizations');
+registerPolicy([Role.Root], 'edit-nodes-all-organizations');
+
+export interface NodeData {
+  id: number;
+  organizationId: number;
+  organizationName?: string;
+  name: string;
+  type: NodeType;
+  apiUrl?: string;
+  authBaseUrl?: string | null;
+  scope?: string | null;
+  audience?: string | null;
+  resource?: string | null;
+  specVersion?: string | null;
+  status: NodeStatus;
+  createdAt: Date;
+  updatedAt: Date;
+  connectionsCount?: number;
+}
+
+export type NodeStatus = 'active' | 'inactive' | 'pending';
+export type NodeType = 'internal' | 'external';
+
+export interface CreateNodeData {
+  name: string;
+  type: NodeType;
+  apiUrl?: string; // Optional for internal nodes, required for external
+  authBaseUrl?: string;
+  scope?: string;
+  audience?: string;
+  resource?: string;
+  specVersion?: string;
+}
+
+export interface UpdateNodeData {
+  name?: string;
+  apiUrl?: string; // Only editable for external nodes
+  authBaseUrl?: string;
+  scope?: string;
+  audience?: string;
+  resource?: string;
+  specVersion?: string;
+  status?: 'active' | 'inactive' | 'pending';
+}
+
+export class NodeService {
+  constructor(private db: Kysely<Database>) {}
+
+  /**
+   * Get a single node by ID (no access control, for internal service use)
+   */
+  async getById(nodeId: number): Promise<NodeData> {
+    const node = await this.db
+      .selectFrom('nodes')
+      .leftJoin('organizations', 'organizations.id', 'nodes.organizationId')
+      .select([
+        'nodes.id',
+        'nodes.organizationId',
+        'nodes.name',
+        'nodes.type',
+        'nodes.apiUrl',
+        'nodes.authBaseUrl',
+        'nodes.scope',
+        'nodes.audience',
+        'nodes.resource',
+        'nodes.specVersion',
+        'nodes.status',
+        'nodes.createdAt',
+        'nodes.updatedAt',
+        'organizations.name as organizationName',
+      ])
+      .where('nodes.id', '=', nodeId)
+      .executeTakeFirst();
+
+    if (!node) {
+      throw new NotFoundError('Node not found');
+    }
+
+    return node as NodeData;
+  }
+
+  /**
+   * Get a single node by ID (with access control)
+   */
+  async get(context: UserContext, nodeId: number): Promise<NodeData> {
+    const node = await this.getById(nodeId);
+
+    // Check access
+    const allowed =
+      context.policies.includes('view-nodes-all-organizations') ||
+      (context.policies.includes('view-nodes-own-organization') &&
+        context.organizationId === node.organizationId);
+
+    if (!allowed) {
+      throw new ForbiddenError('You are not allowed to view this node');
+    }
+
+    return node as NodeData;
+  }
+
+  /**
+   * Create a new node
+   */
+  async create(
+    context: UserContext,
+    organizationId: number,
+    data: CreateNodeData
+  ): Promise<NodeData> {
+    // Check access
+    const allowed =
+      context.policies.includes('edit-nodes-all-organizations') ||
+      (context.policies.includes('edit-nodes-own-organization') &&
+        context.organizationId === organizationId);
+
+    if (!allowed) {
+      throw new ForbiddenError('You are not allowed to create nodes for this organization');
+    }
+
+    // Validate input
+    if (!data.name || data.name.trim().length === 0) {
+      throw new BadRequestError('Node name is required');
+    }
+
+    if (!data.type || !['internal', 'external'].includes(data.type)) {
+      throw new BadRequestError('Node type must be either "internal" or "external"');
+    }
+
+    // API URL required for external nodes, will be generated for internal nodes
+    if (data.type !== 'internal' && (!data.apiUrl || data.apiUrl.trim().length === 0)) {
+        throw new BadRequestError('API URL is required for external nodes');
+    }
+
+    // Insert the node
+    const result = await this.db
+      .insertInto('nodes')
+      .values({
+        organizationId,
+        name: data.name.trim(),
+        type: data.type,
+        apiUrl: data.apiUrl?.trim() || '', // Set API URL for external nodes, null for internal (will update later)
+        status: 'active',
+        authBaseUrl: data.type === 'external' ? (data.authBaseUrl?.trim() ?? null) : null,
+        scope: data.type === 'external' ? (data.scope?.trim() ?? null) : null,
+        audience: data.type === 'external' ? (data.audience?.trim() ?? null) : null,
+        resource: data.type === 'external' ? (data.resource?.trim() ?? null) : null,
+        specVersion: data.type === 'external' ? (data.specVersion?.trim() ?? null) : null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .returningAll()
+      .executeTakeFirstOrThrow();
+
+    // If internal node, update API URL with the node ID
+    if (data.type === 'internal') {
+      const generatedApiUrl = `${config.DIRECTORY_API}/api/nodes/${result.id}`;
+      
+      await this.db
+        .updateTable('nodes')
+        .set({ apiUrl: generatedApiUrl })
+        .where('id', '=', result.id)
+        .execute();
+
+      result.apiUrl = generatedApiUrl;
+    }
+
+    return result as NodeData;
+  }
+
+  /**
+   * Update a node
+   */
+  async update(
+    context: UserContext,
+    nodeId: number,
+    data: UpdateNodeData
+  ): Promise<NodeData> {
+    // Get the existing node
+    const existingNode = await this.get(context, nodeId);
+
+    // Check access
+    const allowed =
+      context.policies.includes('edit-nodes-all-organizations') ||
+      (context.policies.includes('edit-nodes-own-organization') &&
+        context.organizationId === existingNode.organizationId);
+
+    if (!allowed) {
+      throw new ForbiddenError('You are not allowed to update this node');
+    }
+
+    // Validate updates
+    const updates: Partial<typeof existingNode> = {
+      updatedAt: new Date(),
+    };
+
+    if (data.name !== undefined) {
+      if (data.name.trim().length === 0) {
+        throw new BadRequestError('Node name cannot be empty');
+      }
+      updates.name = data.name.trim();
+    }
+
+    if (data.status !== undefined) {
+      if (!['active', 'inactive', 'pending'].includes(data.status)) {
+        throw new BadRequestError('Invalid status value');
+      }
+      updates.status = data.status;
+    }
+
+    if (data.apiUrl !== undefined) {
+      // Only external nodes can have their API URL updated
+      if (existingNode.type === 'internal') {
+        throw new BadRequestError('Cannot change API URL for internal nodes');
+      }
+      if (data.apiUrl.trim().length === 0) {
+        throw new BadRequestError('API URL cannot be empty for external nodes');
+      }
+      updates.apiUrl = data.apiUrl.trim();
+    }
+
+    // Auth fields are only applicable to external nodes
+    if (existingNode.type === 'external') {
+      if (data.authBaseUrl !== undefined) updates.authBaseUrl = data.authBaseUrl?.trim() || null;
+      if (data.scope !== undefined) updates.scope = data.scope?.trim() || null;
+      if (data.audience !== undefined) updates.audience = data.audience?.trim() || null;
+      if (data.resource !== undefined) updates.resource = data.resource?.trim() || null;
+      if (data.specVersion !== undefined) updates.specVersion = data.specVersion?.trim() || null;
+    }
+
+    // Perform the update
+    const updated = await this.db
+      .updateTable('nodes')
+      .set(updates)
+      .where('id', '=', nodeId)
+      .returningAll()
+      .executeTakeFirstOrThrow();
+
+    return updated as NodeData;
+  }
+
+  /**
+   * Delete a node
+   */
+  async delete(context: UserContext, nodeId: number): Promise<{ success: boolean, nodeId: number }> {
+    // Get the existing node
+    const existingNode = await this.get(context, nodeId);
+
+    // Check access
+    const allowed =
+      context.policies.includes('edit-nodes-all-organizations') ||
+      (context.policies.includes('edit-nodes-own-organization') &&
+        context.organizationId === existingNode.organizationId);
+
+    if (!allowed) {
+      throw new ForbiddenError('You are not allowed to delete this node');
+    }
+
+    // Hard delete the node
+    try {
+      await this.db
+        .deleteFrom('nodes')
+        .where('id', '=', nodeId)
+        .execute();
+
+      return { success: true, nodeId };
+    } catch (error) {
+      console.error('Error deleting node:', error);
+      throw new Error('Failed to delete node');
+    }
+  }
+
+  /**
+   * List nodes for a specific organization
+   */
+  async list(
+    context: UserContext,
+    organizationId: number,
+    query: ListQuery = ListQuery.default()
+  ): Promise<ListResult<NodeData>> {
+
+    // Check access
+    const allowed =
+      context.policies.includes('view-nodes-all-organizations') ||
+      (context.policies.includes('view-nodes-own-organization') &&
+        context.organizationId === organizationId);
+
+    if (!allowed) {
+      throw new ForbiddenError('You are not allowed to view nodes for this organization');
+    }
+
+    let qb = this.db
+      .selectFrom('nodes')
+      .leftJoin('organizations', 'organizations.id', 'nodes.organizationId')
+      .select([
+        'nodes.id',
+        'nodes.organizationId',
+        'nodes.name',
+        'nodes.type',
+        'nodes.apiUrl',
+        'nodes.authBaseUrl',
+        'nodes.scope',
+        'nodes.audience',
+        'nodes.resource',
+        'nodes.specVersion',
+        'nodes.status',
+        'nodes.createdAt',
+        'nodes.updatedAt',
+        'organizations.name as organizationName',
+      ])
+      .select((eb) =>
+        eb
+          .selectFrom('connections')
+          .select((eb2) =>
+            eb2.fn.count<number>('connections.id').distinct().as('count')
+          )
+          .where((wb) =>
+            wb.and([
+              wb('connections.status', '=', 'accepted'),
+              wb.or([
+                wb('connections.fromNodeId', '=', eb.ref('nodes.id')),
+                wb('connections.targetNodeId', '=', eb.ref('nodes.id')),
+              ])
+            ])
+          )
+          .as('connectionsCount')
+      )
+
+    // Filter by organization only for non-root users
+    if (!context.policies.includes('view-nodes-all-organizations')) {
+      qb = qb.where('nodes.organizationId', '=', organizationId);
+    }
+
+    // Apply filters
+    if (query.filters) {
+      if (query.filters.type) {
+        const typeValue = query.filters.type as 'internal' | 'external';
+        qb = qb.where('nodes.type', '=', typeValue);
+      }
+      if (query.filters.status) {
+        const statusValue = query.filters.status as 'active' | 'inactive' | 'pending';
+        qb = qb.where('nodes.status', '=', statusValue);
+      }
+    }
+    if (query.search) {
+      qb = qb.where('nodes.name', 'ilike', `%${query.search}%`);
+    }
+
+    // Get total count
+    const total = (
+      await qb
+        .clearSelect()
+        .select((eb) => eb.fn.count('nodes.id').as('total'))
+        .executeTakeFirstOrThrow()
+    ).total as number;
+
+    // Apply sorting
+    const sortBy = query.sortBy || 'createdAt';
+    const validSortFields = ['name', 'type', 'status', 'createdAt', 'updatedAt'];
+    
+    if (validSortFields.includes(sortBy)) {
+      qb = qb.orderBy(`nodes.${sortBy}` as any, query.sortOrder || 'desc');
+    } else {
+      qb = qb.orderBy('nodes.createdAt', 'desc');
+    }
+
+    // Apply pagination
+    const data = await qb.offset(query.offset).limit(query.limit).execute();
+
+    return {
+      data: data as NodeData[],
+      pagination: query.pagination(total),
+    };
+  }
+}

@@ -35,6 +35,7 @@ export const createMockQueryChain = (executors = createMockExecutors()) => ({
   values: jest.fn().mockReturnThis(),
   set: jest.fn().mockReturnThis(),
   returningAll: jest.fn().mockReturnThis(),
+  onConflict: jest.fn().mockReturnThis(),
   
   // Pagination
   offset: jest.fn().mockReturnThis(),
@@ -50,6 +51,12 @@ export const createMockQueryChain = (executors = createMockExecutors()) => ({
   // $if
   $if: jest.fn().mockReturnThis(),
   $call: jest.fn().mockReturnThis(),
+
+  // Delete methods
+  deleteFrom: jest.fn().mockReturnThis(),
+
+  // Compile method to finalize the query
+  compile: jest.fn().mockReturnValue({ sql: 'MOCK_SQL', parameters: [] }),
   
   // Execution methods
   ...executors,
@@ -68,9 +75,13 @@ export const createMockDatabase = () => {
     // Main query methods
     selectFrom: jest.fn().mockReturnValue(queryChain),
     insertInto: jest.fn().mockReturnValue(queryChain),
+    deleteFrom: jest.fn().mockReturnValue(queryChain),
     updateTable: jest.fn().mockReturnValue(queryChain),
     withRecursive: jest.fn().mockReturnValue(queryChain),
     
+    // Raw SQL execution — used by sql`` template tag
+    executeQuery: jest.fn().mockResolvedValue({ rows: [] }),
+
     // Transaction support
     transaction: mockTransaction,
   };

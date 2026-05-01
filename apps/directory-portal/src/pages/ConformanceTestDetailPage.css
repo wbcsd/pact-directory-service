@@ -1,0 +1,154 @@
+.header p {
+  color: var(--gray-9);
+}
+
+.form-root {
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.main {
+  height: calc(100vh - 81px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: width 0.3s ease;
+}
+
+.main.full-width {
+  width: 100%;
+}
+
+.main.split {
+  width: 60%;
+}
+
+.spinner-container {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.error-container {
+  padding: 20px;
+  width: 40%;
+}
+
+.result-summary {
+  display: flex;
+  gap: 20px;
+  margin: 20px 0px;
+}
+
+.summary-card {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid var(--gray-4);
+  background-color: var(--color-panel-solid);
+}
+
+.mandatory-bar {
+  width: 30%;
+  height: 10px;
+  display: flex;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--gray-4);
+  margin: 8px 0 6px;
+}
+
+.mandatory-bar-segment {
+  height: 100%;
+}
+
+.mandatory-bar-segment.success {
+  background: var(--green-9);
+}
+
+.mandatory-bar-segment.pending {
+  background: var(--gray-8);
+}
+
+.mandatory-bar-segment.failure {
+  background: var(--red-9);
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.test-runs-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.test-runs-table th,
+.test-runs-table td {
+  padding: 12px;
+}
+
+.test-runs-table td.clickable {
+  cursor: pointer;
+}
+
+.test-runs-table td.selected {
+  background-color: var(--accent-a3);
+}
+
+.no-tests {
+  padding: 20px;
+  text-align: center;
+  color: var(--gray-9);
+}
+
+.test-details-container {
+  width: 40%;
+}
+
+.test-box {
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.test-box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.test-box-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-direction: row;
+  gap: 8px;
+}
+
+.documentation-section {
+  padding-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.code-block {
+  background-color: rgb(245, 245, 245);
+  font-size: var(--font-size-1);
+  padding: var(--space-2);
+  border-radius: var(--radius-2);
+  margin-top: 20px;
+  max-height: 300px;
+  overflow-y: auto;
+}

@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useCallback } from "react";
 import { fetchWithAuth } from "../utils/auth-fetch";
-import DataTable, { Column } from "../components/DataTable";
+import PaginatedDataTable from "../components/PaginatedDataTable";
+import { Column } from "../components/DataTable";
 import { useAuth } from "../contexts/AuthContext";
 import { InputIcon, PlusIcon } from "@radix-ui/react-icons";
-import { useNavigate } from "react-router-dom";
-import { Box, Button, Text } from "@radix-ui/themes";
+import { Box, Button, IconButton, Text } from "@radix-ui/themes";
 import StatusBadge from "../components/StatusBadge";
 import { GridPageLayout } from "../layouts";
-import ActionButton from "../components/ActionButton";
 import PolicyGuard from "../components/PolicyGuard";
-import "./OrganizationUsers.css";
+import SlideOverPanel from "../components/SlideOverPanel";
+import UserForm from "../components/UserForm";
 
 export interface User {
   id: number;
@@ -23,48 +23,83 @@ export interface User {
   organizationIdentifier: string;
 }
 
+type PanelState =
+  | { mode: "closed" }
+  | { mode: "add" }
+  | { mode: "edit"; userId: number; userName: string; organizationId: number };
+
 const OrganizationUsers: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedUserIds, setSelectedUserIds] = useState<(string | number)[]>([]);
   const [bulkActionLoading, setBulkActionLoading] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [notification, setNotification] = useState<{
     type: 'success' | 'error';
     message: string;
   } | null>(null);
+  const [panel, setPanel] = useState<PanelState>({ mode: "closed" });
   
-  const navigate = useNavigate();
-  const { profileData } = useAuth();
+  const { profileData, isAuthenticated } = useAuth();
 
-  useEffect(() => {
-    fetchUsers();
-  }, [profileData]);
+  const closePanel = useCallback(() => setPanel({ mode: "closed" }), []);
 
-  const fetchUsers = async () => {
-    if (!profileData) return;
-    
-    try {
-      setLoading(true);
-      const response = await fetchWithAuth(
-        // TODO: Update to use orgId from params if implementing multi-org admin
-        `/organizations/${profileData?.organizationId}/users`
-      );
-      if (response!.ok) {
-        const members = await response!.json();
-        setUsers(members.data);
-      } else {
-        console.error("Failed to fetch users");
-      }
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    } finally {
-      setLoading(false);
+  const handleSaved = useCallback(() => {
+    // Refresh the table data to reflect changes
+    setRefreshTrigger((prev) => prev + 1);
+    // Auto-close after a short delay so the user sees the success message
+    setTimeout(() => closePanel(), 1200);
+  }, [closePanel]);
+
+  const fetchUsers = async (params: {
+    page: number;
+    pageSize: number;
+    search?: string;
+  }): Promise<{ data: User[]; pagination: { page: number; pageSize: number; total: number; totalPages: number; hasNext: boolean; hasPrevious: boolean } }> => {
+    if (!profileData?.organizationId) {
+      return {
+        data: [],
+        pagination: {
+          page: params.page,
+          pageSize: params.pageSize,
+          total: 0,
+          totalPages: 1,
+          hasNext: false,
+          hasPrevious: false,
+        },
+      };
     }
+
+    const queryParams = new URLSearchParams({
+      page: params.page.toString(),
+      pageSize: params.pageSize.toString(),
+    });
+
+    if (params.search) {
+      queryParams.append("search", params.search);
+    }
+
+    const response = await fetchWithAuth(
+      // TODO: Update to use orgId from params if implementing multi-org admin
+      `/organizations/${profileData.organizationId}/users?${queryParams.toString()}`
+    );
+
+    if (!response || !response.ok) {
+      throw new Error("Failed to fetch users");
+    }
+
+    const result = await response.json();
+    setSelectedUserIds([]);
+    return result;
   };
 
   // Get selected users
   const selectedUsers = users.filter(user => 
     selectedUserIds.includes(user.id)
+  );
+
+  const usersToEnable = selectedUsers.filter((user) => user.status === "disabled");
+  const usersToDisable = selectedUsers.filter(
+    (user) => user.status !== "disabled" && user.status !== "deleted"
   );
 
   // runUsers Bulk action (enable/disable)
@@ -100,7 +135,7 @@ const OrganizationUsers: React.FC = () => {
           'success',
           `Successfully ${action}d ${successCount} user${successCount > 1 ? 's' : ''}${failCount > 0 ? `, ${failCount} failed` : ''}`
         );
-        await fetchUsers();
+        setRefreshTrigger((current) => current + 1);
         setSelectedUserIds([]);
       } else {
         showNotification('error', `Failed to ${action} users`);
@@ -116,15 +151,11 @@ const OrganizationUsers: React.FC = () => {
   // Bulk operations
   const handleBulkDisable = async () => {
     setBulkActionLoading(true);
-    const usersToDisable = selectedUsers.filter(u => 
-      u.status !== 'disabled' && u.status !== 'deleted'
-    );
     await runBulkAction('disable', usersToDisable);
   };
 
   const handleBulkEnable = async () => {
     setBulkActionLoading(true);
-    const usersToEnable = selectedUsers.filter(u => u.status === 'disabled');
     await runBulkAction('enable', usersToEnable);
   };
 
@@ -182,14 +213,22 @@ const OrganizationUsers: React.FC = () => {
       header: "",
       render: (row: User) => (
         <PolicyGuard policies={["edit-users", "edit-all-users"]}>
-          <ActionButton
+          <IconButton
             title="Edit User Details"
-            variant="secondary"
-            size="small"
-            onClick={() => navigate(`/organization/${row.organizationId}/users/${row.id}`)}
+            variant="soft"
+            color="gray"
+            size="1"
+            onClick={() =>
+              setPanel({
+                mode: "edit",
+                userId: row.id,
+                userName: row.fullName,
+                organizationId: row.organizationId,
+              })
+            }
           >
             <InputIcon />
-          </ActionButton>
+          </IconButton>
         </PolicyGuard>
       ),
     },
@@ -200,21 +239,34 @@ const OrganizationUsers: React.FC = () => {
     .filter(user => user.status === 'deleted')
     .map(user => user.id);
 
+  const panelTitle =
+    panel.mode === "add"
+      ? "Create User"
+      : panel.mode === "edit"
+        ? "Edit User"
+        : "";
+
+  const panelSubtitle =
+    panel.mode === "add"
+      ? profileData?.organizationName
+      : panel.mode === "edit"
+        ? panel.userName
+        : undefined;
+
   return (
     <GridPageLayout
       title="Users"
+      subtitle="Manage and view users in your organization"
+      loading={isAuthenticated && !profileData}
+      loadingMessage="Loading profile data..."
       actions={
-        <PolicyGuard policies={["edit-users"]}>
-          <Button
-            onClick={() => navigate(`/organization/${profileData?.organizationId}/${profileData?.organizationName}/add-user`)}
-          >
+        <PolicyGuard policies={["edit-all-users","edit-users"]}>
+          <Button onClick={() => setPanel({ mode: "add" })}>
             <PlusIcon />
             <span style={{ marginLeft: '4px' }}>Add User</span>
           </Button>
         </PolicyGuard>
       }
-      loading={loading}
-      loadingMessage="Loading users..."
     >
       {/* Notification Toast */}
       {notification && (
@@ -230,27 +282,29 @@ const OrganizationUsers: React.FC = () => {
         </Box>
       )}
 
-      {/* Bulk Action Bar */}
-      {selectedUserIds.length > 0 && (
-        <Box className="bulk-action-bar">
-          <div className="bulk-action-content">
-            <Text size="3" weight="medium">
-              {selectedUserIds.length} user{selectedUserIds.length > 1 ? 's' : ''} selected
-            </Text>
-            <div className="bulk-action-buttons">
+      {profileData?.organizationId && (
+        <PaginatedDataTable<User>
+          isSearchable={true}
+          searchPlaceholder="Search by name or email..."
+          fetchData={fetchUsers}
+          columns={columns}
+          idColumnName="id"
+          refreshTrigger={refreshTrigger}
+          headerActions={
+            <>
               <PolicyGuard policies={["edit-users", "edit-all-users"]}>
                 <>
                   <Button
                     color="green"
                     onClick={handleBulkEnable}
-                    disabled={bulkActionLoading}
+                    disabled={bulkActionLoading || usersToEnable.length === 0}
                   >
                     {bulkActionLoading ? 'Processing...' : 'Enable Selected'}
                   </Button>
                   <Button
                     color="orange"
                     onClick={handleBulkDisable}
-                    disabled={bulkActionLoading}
+                    disabled={bulkActionLoading || usersToDisable.length === 0}
                   >
                     {bulkActionLoading ? 'Processing...' : 'Disable Selected'}
                   </Button>
@@ -259,25 +313,49 @@ const OrganizationUsers: React.FC = () => {
               <Button
                 color="gray"
                 onClick={() => setSelectedUserIds([])}
-                disabled={bulkActionLoading}
+                disabled={bulkActionLoading || selectedUserIds.length === 0}
               >
-                Clear Selection
+                Clear
               </Button>
-            </div>
-          </div>
-        </Box>
+            </>
+          }
+          selectable={true}
+          selectedIds={selectedUserIds}
+          onSelectionChange={setSelectedUserIds}
+          disabledRowIds={disabledRowIds}
+          selectAllText="Select all users"
+          onDataLoaded={setUsers}
+          emptyState={{
+            title: "No users found",
+            description: "No users match your search criteria",
+          }}
+        />
       )}
 
-      <DataTable
-        idColumnName="id"
-        columns={columns}
-        data={users}
-        selectable={true}
-        selectedIds={selectedUserIds}
-        onSelectionChange={setSelectedUserIds}
-        disabledRowIds={disabledRowIds}
-        selectAllText="Select all users"
-      />
+      {/* Modal dialog for Add / Edit */}
+      <SlideOverPanel
+        open={panel.mode !== "closed"}
+        onClose={closePanel}
+        title={panelTitle}
+        subtitle={panelSubtitle}
+      >
+        {panel.mode === "add" && profileData?.organizationId && (
+          <UserForm
+            organizationId={profileData.organizationId}
+            onCancel={closePanel}
+            onSaved={handleSaved}
+          />
+        )}
+        {panel.mode === "edit" && (
+          <UserForm
+            key={panel.userId}
+            organizationId={panel.organizationId}
+            userId={panel.userId}
+            onCancel={closePanel}
+            onSaved={handleSaved}
+          />
+        )}
+      </SlideOverPanel>
     </GridPageLayout>
   );
 };

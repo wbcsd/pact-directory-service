@@ -6,12 +6,29 @@ import { OrganizationService } from './organization-service';
 import { TestRunService } from './test-run-service';
 import { UserService } from './user-service';
 import { ConnectionService } from './connection-service';
+import { NodeService } from './node-service';
+import { NodeConnectionService } from './node-connection-service';
+import { InternalNodePactService } from './internal-node-pact-service';
+import { InternalNodeAuthService } from './internal-node-auth-service';
+import { ActivityLogService } from './activity-log-service';
+import { FootprintService } from './footprint-service';
+import { PcfRequestService } from './pcf-request-service';
+import { FeedbackService } from './feedback-service';
+import config from '../common/config';
 
 // Export individual service classes for direct usage if needed
 export { AuthService } from './auth-service';
 export { UserService } from './user-service';
 export { OrganizationService } from './organization-service';
 export { ConnectionService } from './connection-service';
+export { NodeService } from './node-service';
+export { NodeConnectionService } from './node-connection-service';
+export { InternalNodePactService } from './internal-node-pact-service';
+export { InternalNodeAuthService } from './internal-node-auth-service';
+export { ActivityLogService } from './activity-log-service';
+export { FootprintService } from './footprint-service';
+export { PcfRequestService } from './pcf-request-service';
+export { FeedbackService } from './feedback-service';
 
 export interface Services {
   auth: AuthService;
@@ -20,6 +37,14 @@ export interface Services {
   testRun: TestRunService;
   user: UserService;
   connection: ConnectionService;
+  node: NodeService;
+  nodeConnection: NodeConnectionService;
+  internalNodePact: InternalNodePactService;
+  internalNodeAuth: InternalNodeAuthService;
+  activityLog: ActivityLogService;
+  footprint: FootprintService;
+  pcfRequest: PcfRequestService;
+  feedback: FeedbackService;
 }
 
 export class ServiceContainer implements Services {
@@ -29,6 +54,14 @@ export class ServiceContainer implements Services {
   user: UserService;
   connection: ConnectionService;
   testRun: TestRunService;
+  node: NodeService;
+  nodeConnection: NodeConnectionService;
+  internalNodePact: InternalNodePactService;
+  internalNodeAuth: InternalNodeAuthService;
+  activityLog: ActivityLogService;
+  footprint: FootprintService;
+  pcfRequest: PcfRequestService;
+  feedback: FeedbackService;
 
   constructor(db: Kysely<Database>) {
     this.email = new EmailService();
@@ -37,6 +70,19 @@ export class ServiceContainer implements Services {
     this.connection = new ConnectionService(db, this.organization, this.email);
     this.user = new UserService(db, this.email);
     this.testRun = new TestRunService(db, this.user, this.organization);
+    this.node = new NodeService(db);
+    this.nodeConnection = new NodeConnectionService(
+      db,
+      this.node,
+      this.email,
+      config.DIRECTORY_API
+    );
+    this.internalNodePact = new InternalNodePactService(db);
+    this.internalNodeAuth = new InternalNodeAuthService(this.node, this.nodeConnection);
+    this.activityLog = new ActivityLogService(db);
+    this.footprint = new FootprintService(db, this.node);
+    this.pcfRequest = new PcfRequestService(db, this.node, this.nodeConnection, config.DIRECTORY_API);
+    this.feedback = new FeedbackService(db, this.email);
     // this.environment = new EnvironmentService(db);
   }
 }
