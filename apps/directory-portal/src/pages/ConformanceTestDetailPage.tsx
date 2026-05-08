@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Heading, Text, Code, Button, Box, Badge, Callout } from "@radix-ui/themes";
 import {
+  CopyIcon,
   ExclamationTriangleIcon,
   ReaderIcon,
 } from "@radix-ui/react-icons";
@@ -14,6 +15,14 @@ import { FormPageLayout } from "../layouts";
 import SlideOverPanel from "../components/SlideOverPanel";
 import "./ConformanceTestDetailPage.css";
 
+
+export type LogEntry =
+  | { message: string }
+  | { warning: string }
+  | { error: string }
+  | { request: { method: string; url: string; headers: Record<string, string>; data?: any; text?: string } } 
+  | { response: { statusCode: number; headers: Record<string, string>; data?: any; text?: string } };
+
 export interface TestCase {
   name: string;
   status: "SUCCESS" | "FAILURE" | "PENDING";
@@ -23,6 +32,7 @@ export interface TestCase {
   curlRequest?: string;
   testKey: string;
   documentationUrl?: string;
+  log?: LogEntry[];
 }
 
 const getStatusColor = (testCase: TestCase) => {
@@ -143,6 +153,88 @@ const pollTestResults = (
     }
     pollTestResults(attempt + 1, setTestCases, testRunId, isCancelled);
   }, 2000);
+};
+
+type RequestData = { method: string; url: string; headers: Record<string, string>; data?: any; text?: string };
+
+const buildCurlCommand = ({ method, url, headers, data, text }: RequestData) => {
+  const parts = ["curl"];
+  if (method !== "GET") parts.push(`-X ${method}`);
+  for (const [k, v] of Object.entries(headers)) {
+    parts.push(`-H ${JSON.stringify(`${k}: ${v}`)}`);
+  }
+  const body = text ?? (data !== undefined ? JSON.stringify(data) : "");
+  if (body) parts.push(`--data-raw ${JSON.stringify(body)}`);
+  parts.push(JSON.stringify(url));
+  return parts.join(" \\\n  ");
+};
+
+const RequestLogEntry: React.FC<{ req: RequestData; index: number }> = ({ req, index }) => {
+  const [copied, setCopied] = useState(false);
+  const { method, url, headers, data, text } = req;
+  const headerLines = Object.entries(headers).map(([k, v]) => `${k}: ${v}`).join("\n");
+  const body = text ?? (data !== undefined ? JSON.stringify(data, null, 2) : "");
+  const content = `${method} ${url}\n${headerLines}${body ? "\n\n" + body : ""}`;
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(buildCurlCommand(req));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <Box key={index} mb="2">
+      <Box style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} mb="1">
+        <Text size="1" weight="bold" color="gray">Request</Text>
+        <Button size="1" variant="ghost" onClick={handleCopy}>
+          <CopyIcon /> {copied ? "Copied!" : "Copy as cURL"}
+        </Button>
+      </Box>
+      <CodeBlock language="text">{content}</CodeBlock>
+    </Box>
+  );
+};
+
+const renderLogEntry = (entry: LogEntry, index: number) => {
+  if ("message" in entry) {
+    return (
+      <Box key={index} mb="2">
+        <Text size="2">{entry.message}</Text>
+      </Box>
+    );
+  }
+  if ("warning" in entry) {
+    return (
+      <Callout.Root key={index} color="orange" size="1" mb="2">
+        <Callout.Icon><ExclamationTriangleIcon /></Callout.Icon>
+        <Callout.Text>{entry.warning}</Callout.Text>
+      </Callout.Root>
+    );
+  }
+  if ("error" in entry) {
+    return (
+      <Callout.Root key={index} color="red" size="1" mb="2">
+        <Callout.Icon><ExclamationTriangleIcon /></Callout.Icon>
+        <Callout.Text>{entry.error}</Callout.Text>
+      </Callout.Root>
+    );
+  }
+  if ("request" in entry) {
+    return <RequestLogEntry key={index} req={entry.request} index={index} />;
+  }
+  if ("response" in entry) {
+    const { statusCode, headers, data, text } = entry.response;
+    const headerLines = Object.entries(headers).map(([k, v]) => `${k}: ${v}`).join("\n");
+    const body = text ?? (data !== undefined ? JSON.stringify(data, null, 2) : "");
+    const content = `HTTP ${statusCode}\n${headerLines}${body ? "\n\n" + body : ""}`;
+    return (
+      <Box key={index} mb="2">
+        <Text size="1" weight="bold" color="gray">Response</Text>
+        <CodeBlock language="text">{content}</CodeBlock>
+      </Box>
+    );
+  }
+  return null;
 };
 
 const ConformanceTestDetailPage: React.FC = () => {
@@ -429,12 +521,20 @@ const ConformanceTestDetailPage: React.FC = () => {
                 />
                 <br />
 
-                {selectedTest.curlRequest && (
-                  <CodeBlock language="bash">{selectedTest.curlRequest}</CodeBlock>
-                )}
-
-                {selectedTest.apiResponse && (
-                  <CodeBlock language="json">{selectedTest.apiResponse}</CodeBlock>
+                {selectedTest.log && selectedTest.log.length > 0 ? (
+                  <>
+                    <h3>Log</h3>
+                    <Box>{selectedTest.log.map(renderLogEntry)}</Box>
+                  </>
+                ) : (
+                  <>
+                    {selectedTest.curlRequest && (
+                      <CodeBlock language="bash">{selectedTest.curlRequest}</CodeBlock>
+                    )}
+                    {selectedTest.apiResponse && (
+                      <CodeBlock language="json">{selectedTest.apiResponse}</CodeBlock>
+                    )}
+                  </>
                 )}
               </>
             )}
