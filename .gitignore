@@ -8,3 +8,5 @@ apps/api/.env
 .github
 .claude
 .DS_Store
+playwright-report/
+.last-run.json
