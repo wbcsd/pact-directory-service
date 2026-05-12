@@ -8,6 +8,7 @@ import {
   UnauthorizedError,
   NotFoundError,
   ForbiddenError,
+  EmailNotVerifiedError,
 } from '@src/common/errors';
 import { EmailService } from './email-service';
 import {
@@ -426,6 +427,12 @@ export class UserService {
     // Check if user is disabled
     if (user.status === 'disabled') {
       throw new UnauthorizedError('Account has been disabled. Please contact support.');
+    }
+
+    if (user.status === 'unverified') {
+      throw new EmailNotVerifiedError(
+        'Your email address has not been verified yet. Please check your inbox for the verification link.'
+      );
     }
 
     const isPasswordValid = await bcrypt.compare(data.password, user.password);

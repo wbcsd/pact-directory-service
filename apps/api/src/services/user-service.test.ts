@@ -7,6 +7,7 @@ import {
   BadRequestError,
   UnauthorizedError,
   NotFoundError,
+  EmailNotVerifiedError,
 } from '@src/common/errors';
 import { Role } from '@src/common/policies';
 import { createMockDatabase } from '../common/mock-utils';
@@ -309,6 +310,29 @@ describe('UserService', () => {
       );
       await expect(userService.login(loginData)).rejects.toThrow(
         'Account has been disabled'
+      );
+    });
+
+    it('should throw EmailNotVerifiedError if user is unverified', async () => {
+      const mockUser = {
+        id: 1,
+        email: 'john@example.com',
+        password: 'hashedPassword',
+        role: Role.User,
+        organizationId: 1,
+        status: 'unverified' as const,
+      };
+
+      dbMocks.db.selectFrom = jest.fn().mockReturnValue({
+        selectAll: jest.fn().mockReturnValue({
+          where: jest.fn().mockReturnValue({
+            executeTakeFirst: jest.fn().mockResolvedValue(mockUser),
+          }),
+        }),
+      });
+
+      await expect(userService.login(loginData)).rejects.toThrow(
+        EmailNotVerifiedError
       );
     });
   });

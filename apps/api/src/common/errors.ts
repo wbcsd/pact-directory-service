@@ -44,6 +44,12 @@ export class ForbiddenError extends ApiError {
   }
 }
 
+export class EmailNotVerifiedError extends ApiError {
+  constructor(message = 'Email not verified') {
+    super(403, message);
+  }
+}
+
 export class RequestTimeoutError extends ApiError {
   constructor(message: string) {
     super(408, message);
