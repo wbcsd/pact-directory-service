@@ -1,0 +1,70 @@
+name: PR Checks
+
+on:
+  pull_request:
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # API — unit tests + build
+  # ---------------------------------------------------------------------------
+  api:
+    name: API — test & build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm test --workspace=apps/api
+
+      - name: Build
+        run: npm run build --workspace=apps/api
+
+  # ---------------------------------------------------------------------------
+  # Directory Portal — unit tests + e2e + build
+  # ---------------------------------------------------------------------------
+  portal:
+    name: Portal — test, e2e & build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm test --workspace=apps/directory-portal
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+        working-directory: apps/directory-portal
+
+      - name: Run e2e tests
+        run: npm run e2e --workspace=apps/directory-portal
+        env:
+          CI: true
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: apps/directory-portal/playwright-report/
+          retention-days: 7
+
+      - name: Build
+        run: npm run build --workspace=apps/directory-portal
