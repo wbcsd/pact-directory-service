@@ -16,6 +16,7 @@ const LoginPage: React.FC = () => {
     password: "",
   });
   const [errorMessage, setErrorMessage] = useState("");
+  const [unverifiedMessage, setUnverifiedMessage] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -24,6 +25,8 @@ const LoginPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage("");
+    setUnverifiedMessage("");
 
     try {
       const response = await fetch(
@@ -52,6 +55,13 @@ const LoginPage: React.FC = () => {
         }
       } else if (response.status === 401) {
         setErrorMessage("Invalid email or password");
+      } else if (response.status === 403) {
+        const data = await response.json().catch(() => ({}));
+        if (data?.name === "EmailNotVerifiedError") {
+          setUnverifiedMessage("Your email address has not been verified yet. Please check your inbox for the verification link.");
+        } else {
+          setErrorMessage(data?.message || "Access denied");
+        }
       } else {
         throw new Error("Failed to login");
       }
@@ -128,6 +138,28 @@ const LoginPage: React.FC = () => {
             <ExclamationTriangleIcon />
           </Callout.Icon>
           <Callout.Text>{errorMessage}</Callout.Text>
+        </Callout.Root>
+      )}
+
+      {unverifiedMessage && (
+        <Callout.Root
+          color="bronze"
+          highContrast
+          variant="surface"
+          mt={"4"}
+        >
+          <Callout.Icon>
+            <ExclamationTriangleIcon />
+          </Callout.Icon>
+          <Callout.Text>
+            {unverifiedMessage}{" "}
+            <Link
+              to={`/resend-verification?email=${encodeURIComponent(formData.email)}`}
+            >
+              Resend verification email
+            </Link>
+            .
+          </Callout.Text>
         </Callout.Root>
       )}
 

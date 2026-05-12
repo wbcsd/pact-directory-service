@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import * as Form from "@radix-ui/react-form";
 import { Box, Button, Callout } from "@radix-ui/themes";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
 import { LandingPageLayout } from "../layouts";
 import { FormField, TextField } from "../components/ui";
 
 const ResendVerificationPage: React.FC = () => {
-  const [email, setEmail] = useState("");
+  const [searchParams] = useSearchParams();
+  const [email, setEmail] = useState(searchParams.get("email") ?? "");
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
