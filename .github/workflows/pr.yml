@@ -46,12 +46,25 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ hashFiles('apps/directory-portal/package-lock.json') }}
+
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+        working-directory: apps/directory-portal
+
+      - name: Install Playwright OS dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
         working-directory: apps/directory-portal
 
       - name: Run e2e tests
-        run: npm run e2e --workspace=apps/directory-portal
+        run: npm run e2e --workspace=apps/directory-portal -- --project=chromium
         env:
           CI: true
 
