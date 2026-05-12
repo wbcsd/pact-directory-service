@@ -23,7 +23,7 @@ describe("FeedbackWidget", () => {
       </MemoryRouter>
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /send feedback/i }));
+    fireEvent.click(screen.getByRole("button", { name: /open feedback form/i }));
     fireEvent.change(screen.getByLabelText("Feedback"), {
       target: { value: "Please make the logs easier to scan." },
     });
