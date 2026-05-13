@@ -190,7 +190,7 @@ describe('EmailService', () => {
       await emailService.sendConnectionRequestEmail(mockParams);
 
       const message = mockRequest.mock.calls[0][0].Messages[0];
-      expect(message.HTMLPart).toContain('https://pact-directory-portal.onrender.com/manage-connections');
+      expect(message.HTMLPart).toContain(`${config.FRONTEND_URL}/manage-connections`);
     });
 
     it('should log success message after sending', async () => {
@@ -289,7 +289,7 @@ describe('EmailService', () => {
 
       const message = mockRequest.mock.calls[0][0].Messages[0];
       expect(message.To[0].Email).toBe(mockParams.to);
-      expect(message.Subject).toBe('PACT Directory feedback from Alice Brown');
+      expect(message.Subject).toBe(`PACT Network feedback from ${mockParams.senderName}`);
       expect(message.TextPart).toContain(mockParams.pagePath);
       expect(message.TextPart).toContain(mockParams.message);
       expect(message.HTMLPart).toContain(mockParams.senderEmail);
