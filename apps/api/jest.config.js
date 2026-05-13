@@ -12,4 +12,8 @@ module.exports = {
 
   // Specify the root directory for Jest to look for tests and modules
   roots: ['<rootDir>/src'],
+
+  // Runs before each test file's module scope — sets required env vars so
+  // config.ts doesn't throw in CI where no .env file exists.
+  setupFiles: ['<rootDir>/jest.setup.ts'],
 };

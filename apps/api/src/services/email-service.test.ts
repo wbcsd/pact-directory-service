@@ -1,7 +1,7 @@
-import { EmailService } from './email-service';
 import config from '@src/common/config';
 import logger from '@src/common/logger';
 import Mailjet from 'node-mailjet';
+import { EmailService, htmlToText } from './email-service';
 
 // Mock dependencies
 jest.mock('node-mailjet');
@@ -190,7 +190,7 @@ describe('EmailService', () => {
       await emailService.sendConnectionRequestEmail(mockParams);
 
       const message = mockRequest.mock.calls[0][0].Messages[0];
-      expect(message.HTMLPart).toContain('https://pact-directory-portal.onrender.com/manage-connections');
+      expect(message.HTMLPart).toContain(`${config.FRONTEND_URL}/manage-connections`);
     });
 
     it('should log success message after sending', async () => {
@@ -289,7 +289,7 @@ describe('EmailService', () => {
 
       const message = mockRequest.mock.calls[0][0].Messages[0];
       expect(message.To[0].Email).toBe(mockParams.to);
-      expect(message.Subject).toBe('PACT Directory feedback from Alice Brown');
+      expect(message.Subject).toBe(`PACT Network feedback from ${mockParams.senderName}`);
       expect(message.TextPart).toContain(mockParams.pagePath);
       expect(message.TextPart).toContain(mockParams.message);
       expect(message.HTMLPart).toContain(mockParams.senderEmail);
@@ -300,6 +300,71 @@ describe('EmailService', () => {
       await emailService.sendFeedbackEmail(mockParams);
 
       expect(logger.info).toHaveBeenCalledWith('Feedback email sent to pact-support@wbcsd.org');
+    });
+  });
+
+  describe('htmlToText', () => {
+    it('converts <h1> to # heading', () => {
+      expect(htmlToText('<h1>Hello World</h1>')).toBe('# Hello World');
+    });
+
+    it('converts <h2> and <h3> with the correct number of hashes', () => {
+      expect(htmlToText('<h2>Section</h2>')).toBe('## Section');
+      expect(htmlToText('<h3>Sub</h3>')).toBe('### Sub');
+    });
+
+    it('converts <h1> with inline style attribute', () => {
+      expect(htmlToText('<h1 style="color: red;">Styled</h1>')).toBe('# Styled');
+    });
+
+    it('converts <p> to text followed by a blank line', () => {
+      expect(htmlToText('<p>First</p><p>Second</p>')).toBe('First\n\nSecond');
+    });
+
+    it('trims surrounding whitespace from the result', () => {
+      expect(htmlToText('<p>Hello</p>')).toBe('Hello');
+    });
+
+    it('converts <a href> to "link text <url>"', () => {
+      expect(htmlToText('<a href="https://example.com">Click here</a>')).toBe('Click here <https://example.com>');
+    });
+
+    it('converts <a href> with no text to "<url>"', () => {
+      expect(htmlToText('<a href="https://example.com"></a>')).toBe('<https://example.com>');
+    });
+
+    it('converts <br> and <br/> to newlines', () => {
+      expect(htmlToText('line1<br/>line2')).toBe('line1\nline2');
+      expect(htmlToText('line1<br>line2')).toBe('line1\nline2');
+    });
+
+    it('strips unrecognised tags like <strong> and <div>', () => {
+      expect(htmlToText('<strong>bold</strong>')).toBe('bold');
+      expect(htmlToText('<div><p>Wrapped</p></div>')).toBe('Wrapped');
+    });
+
+    it('handles an anchor nested inside a paragraph', () => {
+      const result = htmlToText('<p>Visit <a href="https://example.com">our site</a>.</p>');
+      expect(result).toBe('Visit our site <https://example.com>.');
+    });
+
+    it('collapses three or more consecutive newlines to two', () => {
+      const result = htmlToText('<p>A</p><p></p><p>B</p>');
+      expect(result).not.toMatch(/\n{3,}/);
+    });
+
+    it('produces expected plain text from a typical email fragment', () => {
+      const html = [
+        '<h2>Welcome!</h2>',
+        '<p>Hi Jane,</p>',
+        '<div>Thank you for joining <strong>Test Company</strong>.</div>',
+        '<p>Please <a href="https://example.com/verify">verify your email</a>.</p>',
+      ].join('');
+      const result = htmlToText(html);
+      expect(result).toContain('## Welcome!');
+      expect(result).toContain('Hi Jane,');
+      expect(result).toContain('Thank you for joining Test Company.');
+      expect(result).toContain('verify your email <https://example.com/verify>');
     });
   });
 
