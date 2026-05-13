@@ -94,7 +94,7 @@ export class EmailService {
     text?: string;
   }): Promise<void> {
     const wrappedHtml = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="font-family: Helvetica, Arial, sans-serif; font-size: 14px; max-width: 600px; margin: 0 auto;">
         ${params.html}
         <p>
           PACT Network<br/>
@@ -230,8 +230,8 @@ export class EmailService {
           </a>
         </div>
         <p>Or copy and paste this link into your browser:</p>
-        <p style="word-break: break-all; color: #666;">${resetUrl}</p>
-        <p style="color: #666; font-size: 14px; margin-top: 30px;">
+        <p style="word-break: break-all; color: #0A0552;">${resetUrl}</p>
+        <p>
           If you didn't request this reset, please ignore this email.
           Your password will not be changed.
         </p>
