@@ -23,6 +23,29 @@ test.describe("Authentication smoke tests", () => {
     await expect(page).toHaveURL(/\/conformance-test-runs/);
   });
 
+  test("login with unverified email shows resend-verification link", async ({ page }) => {
+    // Override the login endpoint to simulate a 403 EmailNotVerifiedError.
+    await page.route(`${apiBase}/directory/users/login`, (route) =>
+      route.fulfill({
+        status: 403,
+        contentType: "application/json",
+        body: JSON.stringify({ name: "EmailNotVerifiedError", message: "Email not verified" }),
+      })
+    );
+
+    await page.goto("/login");
+
+    await page.getByLabel("Email Address").fill("unverified@example.com");
+    await page.getByLabel("Password").fill("password123");
+    await page.getByRole("button", { name: "Login" }).click();
+
+    // The unverified callout and resend link should be visible.
+    await expect(page.getByText(/not been verified yet/)).toBeVisible();
+    await expect(page.getByRole("link", { name: "Resend verification email" })).toBeVisible();
+    // User should remain on the login page.
+    await expect(page).toHaveURL(/\/login/);
+  });
+
   test("login with invalid credentials shows an error message", async ({ page }) => {
     // Override the login endpoint to simulate a 401 — no other mocks needed
     // because the user stays on the login page and no other API calls are made.
