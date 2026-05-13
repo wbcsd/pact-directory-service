@@ -10,3 +10,5 @@ apps/api/.env
 .DS_Store
 playwright-report/
 .last-run.json
+
+test-results/
