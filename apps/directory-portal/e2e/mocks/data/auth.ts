@@ -17,6 +17,8 @@ export const mockProfileData: ProfileData = {
     "manage-nodes-own-organization",
     "view-users-own-organization",
     "manage-users-own-organization",
+    "view-users",
+    "edit-users",
   ],
 };
 

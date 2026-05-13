@@ -1,0 +1,19 @@
+{
+  "servers": {
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest",
+        "--browser",
+        "chromium",
+        "--isolated",
+        "--init-page",
+        "${workspaceFolder}/apps/directory-portal/e2e/mcp-init-page.ts"
+      ],
+      "env": {
+        "VITE_DIRECTORY_API": "http://localhost:3010/api"
+      }
+    }
+  }
+}
