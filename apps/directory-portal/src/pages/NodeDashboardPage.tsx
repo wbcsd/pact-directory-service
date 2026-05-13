@@ -762,6 +762,7 @@ const NodeDashboardPage: React.FC = () => {
               </Button>
             </Flex>
             <PaginatedDataTable<NodeConnection>
+              key={`connections-${nodeId}`}
               isSearchable={false}
               fetchData={fetchConnections}
               columns={connectionColumns}
@@ -791,6 +792,7 @@ const NodeDashboardPage: React.FC = () => {
               </Button>
             </Flex>
             <PaginatedDataTable<Footprint>
+              key={`footprints-${nodeId}`}
               isSearchable={false}
               fetchData={fetchFootprints}
               columns={footprintColumns}
@@ -818,6 +820,7 @@ const NodeDashboardPage: React.FC = () => {
               </Button>
             </Flex>
             <PaginatedDataTable<PcfRequest>
+              key={`pcf-requests-${nodeId}`}
               isSearchable={false}
               fetchData={fetchPcfRequests}
               columns={pcfRequestColumns}
