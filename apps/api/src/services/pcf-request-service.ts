@@ -17,7 +17,7 @@ export interface PcfRequestData {
   targetNodeName?: string;
   connectionId: number | null;
   requestEventId: string;
-  source: string | null;
+  source: string;
   filters: FootprintFilters;
   status: 'pending' | 'fulfilled' | 'rejected';
   resultCount: number | null;
