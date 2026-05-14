@@ -140,6 +140,7 @@ export class PcfRequestService {
         targetNodeId: targetNode.id,
         connectionId: connection.id,
         requestEventId,
+        source,
         filters: filters as unknown as Record<string, unknown>,
         status: 'pending',
         resultCount: null,
