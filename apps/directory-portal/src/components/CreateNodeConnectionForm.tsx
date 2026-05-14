@@ -91,11 +91,8 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
         if (connectionsResponse?.ok) {
           const connectionsResult = await connectionsResponse.json();
           const ids = new Set<number>(
-            (connectionsResult.data ?? []).flatMap(
-              (c: { fromNodeId: number; targetNodeId: number }) => [
-                c.fromNodeId,
-                c.targetNodeId,
-              ]
+            (connectionsResult.data ?? []).map(
+              (c: { fromNodeId: number; targetNodeId: number }) => c.targetNodeId
             )
           );
           ids.delete(lockedFromNodeId);
