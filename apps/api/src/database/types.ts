@@ -120,8 +120,8 @@ export interface PcfRequestsTable {
   fromNodeId: number | null;  // null for requests from external nodes without a directory record
   targetNodeId: number;
   connectionId: number | null; // null for incoming requests not yet matched to a connection
-  requestEventId: string; // UUID of the sent CloudEvent
-  source: string | null;  // source URL from incoming event — used as callback base
+  requestEventId: string; // id of the sent CloudEvent
+  source: string;  // source URL from CloudEvent — used as callback base
   filters: Record<string, unknown>; // JSONB — FootprintFilters
   status: 'pending' | 'fulfilled' | 'rejected';
   resultCount: number | null;

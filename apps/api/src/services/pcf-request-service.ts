@@ -17,7 +17,7 @@ export interface PcfRequestData {
   targetNodeName?: string;
   connectionId: number | null;
   requestEventId: string;
-  source: string | null;
+  source: string;
   filters: FootprintFilters;
   status: 'pending' | 'fulfilled' | 'rejected';
   resultCount: number | null;
@@ -140,6 +140,7 @@ export class PcfRequestService {
         targetNodeId: targetNode.id,
         connectionId: connection.id,
         requestEventId,
+        source,
         filters: filters as unknown as Record<string, unknown>,
         status: 'pending',
         resultCount: null,
@@ -147,7 +148,7 @@ export class PcfRequestService {
         updatedAt: new Date(),
       })
       .onConflict((oc) =>
-        oc.column('requestEventId').doUpdateSet((eb) => ({
+        oc.columns(['source','requestEventId']).doUpdateSet((eb) => ({
           connectionId: eb.ref('excluded.connectionId'),
         }))
       )
