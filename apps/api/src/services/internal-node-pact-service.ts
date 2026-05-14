@@ -237,9 +237,9 @@ export class InternalNodePactService {
         createdAt: new Date(),
         updatedAt: new Date(),
       })
-      .onConflict((oc) => oc.column('requestEventId').doNothing())
+      .onConflict((oc) => oc.columns(['source','requestEventId']).doNothing())
       .execute();
-
+      
     logger.info({ nodeId, requestEventId, fromNodeId }, 'Incoming PCF request saved to inbox');
   }
 

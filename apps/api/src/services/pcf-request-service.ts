@@ -148,7 +148,7 @@ export class PcfRequestService {
         updatedAt: new Date(),
       })
       .onConflict((oc) =>
-        oc.column('requestEventId').doUpdateSet((eb) => ({
+        oc.columns(['source','requestEventId']).doUpdateSet((eb) => ({
           connectionId: eb.ref('excluded.connectionId'),
         }))
       )
