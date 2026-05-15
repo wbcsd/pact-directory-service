@@ -55,6 +55,35 @@ export const mockTestResults: TestResult[] = [
 
 export const mockTestRunListResponse = makePaginated(mockTestRuns);
 
+/** Proper response shape that ConformanceTestDetailPage expects from GET /proxy/test-results */
+export const mockTestResultsResponse = {
+  results: [
+    {
+      name: "Auth2 - Get Footprints",
+      status: "SUCCESS",
+      mandatory: true,
+      errorMessage: "",
+      testKey: "TESTCASE#1",
+      documentationUrl: "",
+      log: [],
+    },
+    {
+      name: "Auth2 - Filter by date",
+      status: "SUCCESS",
+      mandatory: true,
+      errorMessage: "",
+      testKey: "TESTCASE#2",
+      documentationUrl: "",
+      log: [],
+    },
+  ],
+  techSpecVersion: "2.2.0",
+  organizationName: "Test Organisation",
+  adminName: "Test User",
+  adminEmail: "test@example.com",
+  timestamp: "2026-04-20T14:00:00.000Z",
+};
+
 export const mockPostTestResponse = {
   testRunId: "run-new-001",
 };
