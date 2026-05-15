@@ -6,8 +6,8 @@ import { mockNodeListResponse, mockNodeDetail } from "./data/nodes";
 import { mockConnectionListResponse, mockInvitationListResponse, mockAcceptInvitationResponse } from "./data/connections";
 import { mockFootprintListResponse, mockFootprintDetail } from "./data/footprints";
 import { mockPcfRequestListResponse } from "./data/pcf-requests";
-import { mockActivityLogsListResponse, mockActivityLogDetailResponse } from "./data/activity-logs";
-import { mockTestRunListResponse, mockTestResults, mockPostTestResponse } from "./data/conformance";
+import { mockActivityLogsListResponse, mockActivityLogDetailResponse, mockNodeActivityLogsResponse } from "./data/activity-logs";
+import { mockTestRunListResponse, mockTestResultsResponse, mockPostTestResponse } from "./data/conformance";
 
 const apiBase = process.env.API_BASE_URL ?? "http://localhost:3010/api";
 
@@ -77,12 +77,12 @@ const mockRegistry: Record<string, MockEntry> = {
   // Activity Logs
   getActivityLogs:         { method: "GET",    pattern: /^\/directory\/activity-logs$/,                           defaultResponse: mockActivityLogsListResponse },
   getActivityLogsByPath:   { method: "GET",    pattern: /^\/directory\/activity-logs\/path$/,                     defaultResponse: mockActivityLogDetailResponse },
-  getNodeActivityLogs:     { method: "GET",    pattern: /^\/directory\/activity-logs\/nodes\/\d+$/,               defaultResponse: mockActivityLogsListResponse },
+  getNodeActivityLogs:     { method: "GET",    pattern: /^\/directory\/activity-logs\/nodes\/\d+$/,               defaultResponse: mockNodeActivityLogsResponse },
 
   // Conformance (proxy)
   getTestRuns:             { method: "GET",    pattern: /^\/proxy\/test-runs$/,                                   defaultResponse: mockTestRunListResponse },
   postTest:                { method: "POST",   pattern: /^\/proxy\/test$/,                                        defaultResponse: mockPostTestResponse },
-  getTestResults:          { method: "GET",    pattern: /^\/proxy\/test-results$/,                                defaultResponse: mockTestResults },
+  getTestResults:          { method: "GET",    pattern: /^\/proxy\/test-results$/,                                defaultResponse: mockTestResultsResponse },
 
   // Feedback
   postFeedback:            { method: "POST",   pattern: /^\/directory\/feedback$/,                                defaultResponse: { message: "Feedback submitted." } },
