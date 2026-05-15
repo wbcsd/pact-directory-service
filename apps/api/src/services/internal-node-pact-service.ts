@@ -332,13 +332,13 @@ export class InternalNodePactService {
     if (filters.validOn) {
       qb = qb.where(
         sql`COALESCE(
-          (data->>'validityPeriodStart')::timestamptz,
-          (data#>>'{pcf,referencePeriodEnd}')::timestamptz
+          NULLIF(data->>'validityPeriodStart', '')::timestamptz,
+          NULLIF(data#>>'{pcf,referencePeriodEnd}', '')::timestamptz
         ) <= ${filters.validOn}::timestamptz`
       ).where(
         sql`COALESCE(
-          (data->>'validityPeriodEnd')::timestamptz,
-          (data#>>'{pcf,referencePeriodEnd}')::timestamptz + interval '3 years'
+          NULLIF(data->>'validityPeriodEnd', '')::timestamptz,
+          NULLIF(data#>>'{pcf,referencePeriodEnd}', '')::timestamptz + interval '3 years'
         ) >= ${filters.validOn}::timestamptz`
       );
     }
@@ -347,8 +347,8 @@ export class InternalNodePactService {
     if (filters.validAfter) {
       qb = qb.where(
         sql`COALESCE(
-          (data->>'validityPeriodStart')::timestamptz,
-          (data#>>'{pcf,referencePeriodEnd}')::timestamptz
+          NULLIF(data->>'validityPeriodStart', '')::timestamptz,
+          NULLIF(data#>>'{pcf,referencePeriodEnd}', '')::timestamptz
         ) > ${filters.validAfter}::timestamptz`
       );
     }
@@ -357,8 +357,8 @@ export class InternalNodePactService {
     if (filters.validBefore) {
       qb = qb.where(
         sql`COALESCE(
-          (data->>'validityPeriodEnd')::timestamptz,
-          (data#>>'{pcf,referencePeriodEnd}')::timestamptz + interval '3 years'
+          NULLIF(data->>'validityPeriodEnd', '')::timestamptz,
+          NULLIF(data#>>'{pcf,referencePeriodEnd}', '')::timestamptz + interval '3 years'
         ) < ${filters.validBefore}::timestamptz`
       );
     }
