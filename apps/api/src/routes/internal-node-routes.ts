@@ -6,6 +6,7 @@ import {
    UnauthorizedError as BaseUnauthorizedError 
   } from "../common/errors";
 import logger from "../common/logger";
+import config from "@src/common/config";
 
 /**
  * Custom error classes for internal node routes, extending base API errors 
@@ -158,7 +159,7 @@ export function createInternalNodeRoutes(): Router {
       { limit, offset }
     );
 
-    const baseUrl = `${req.protocol}://${req.get("host")}${req.baseUrl}${req.path}`;
+    const baseUrl = `${config.DIRECTORY_API}/api/nodes/${req.nodeId}/3/footprints`;
     const linkHeader = req.services.internalNodePact.buildLinkHeader(result.links, baseUrl);
     if (linkHeader) {
       res.set("Link", linkHeader);
