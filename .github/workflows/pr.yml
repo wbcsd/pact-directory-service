@@ -69,6 +69,9 @@ jobs:
           CI: true
           VITE_DIRECTORY_API: http://localhost:3010/api
           API_BASE_URL: http://localhost:3010/api
+          VITE_ENABLE_NM: true
+          VITE_ENABLE_OM: true
+          VITE_ENABLE_IM: true
 
       - name: Upload Playwright report
         if: always()
