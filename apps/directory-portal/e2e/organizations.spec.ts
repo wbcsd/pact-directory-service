@@ -140,7 +140,6 @@ test.describe("Organizations", () => {
 
   test("bulk disable calls status API for selected users", async ({
     authenticatedPage: page,
-    setupMocks,
   }) => {
     let disableCalled = false;
     const apiBase = process.env.API_BASE_URL ?? "http://localhost:3010/api";

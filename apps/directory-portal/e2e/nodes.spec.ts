@@ -44,7 +44,9 @@ test.describe("Nodes", () => {
     await page.goto("/nodes");
 
     await page.getByRole("button", { name: /add node/i }).click();
-    await page.getByRole("button", { name: /save|create|add/i }).click();
+    // Wait for the dialog to open before clicking submit
+    await expect(page.getByRole("textbox", { name: /name/i })).toBeVisible();
+    await page.getByRole("dialog").getByRole("button", { name: /save|create|add/i }).click();
 
     // Browser / Radix form validation should prevent submission or show errors
     // The form should still be visible (not closed)
