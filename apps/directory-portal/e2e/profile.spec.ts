@@ -54,7 +54,6 @@ test.describe("My Profile", () => {
 
   test("updating the full name field and saving shows success callout", async ({
     authenticatedPage: page,
-    setupMocks,
   }) => {
     // The form POSTs to /organizations/10/users/1 (not PATCH /users/me)
     const apiBase = process.env.API_BASE_URL ?? "http://localhost:3010/api";

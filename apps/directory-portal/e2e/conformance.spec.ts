@@ -1,9 +1,5 @@
 import { test, expect } from "./fixtures";
 import { mockTestResultsResponse } from "./mocks/data/conformance";
-import { setupApiMocks } from "./mocks/handlers";
-import { mockTestResults } from "./mocks/data/conformance";
-
-const apiBase = process.env.API_BASE_URL ?? "http://localhost:3010/api";
 
 test.describe("Conformance Tests", () => {
   // ---------------------------------------------------------------------------
