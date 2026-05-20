@@ -5,7 +5,7 @@
  * where no .env file is present. Values are intentionally minimal/fake; no real
  * database, mail server, or external service is contacted during unit tests.
  */
-process.env.NODE_ENV = "development";
+process.env.NODE_ENV = "test";
 process.env.PORT = "3010";
 process.env.DB_CONNECTION_STRING = "postgresql://postgres:postgres@localhost/pact_test";
 process.env.CONFORMANCE_API = "http://localhost:8004";
