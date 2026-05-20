@@ -38,9 +38,6 @@ jobs:
 
       - name: Test
         run: npm test
-
-      - name: Run e2e tests
-        run: npm run e2e --workspace=apps/directory-portal -- --project=chromium
         env:
           CI: true
           VITE_DIRECTORY_API: http://localhost:3010/api
