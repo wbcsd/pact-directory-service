@@ -1,5 +1,7 @@
 import { test as base, expect, type Page } from "@playwright/test";
 import { setupApiMocks, type MockOverrides } from "./mocks/handlers";
+import path from "path";
+import fs from "fs";
 
 const VITE_API_BASE =
   process.env.VITE_DIRECTORY_API ?? "http://localhost:3010/api";
@@ -35,6 +37,19 @@ export const test = base.extend<{
     await setupApiMocks(page);
 
     await use(page);
+
+    // Collect Istanbul coverage written to window.__coverage__ by vite-plugin-istanbul
+    if (process.env.VITE_COVERAGE === "true") {
+      const coverage = await page.evaluate(
+        () => (window as unknown as { __coverage__?: unknown }).__coverage__
+      );
+      if (coverage) {
+        const outputDir = path.join(process.cwd(), ".nyc_output");
+        fs.mkdirSync(outputDir, { recursive: true });
+        const fileName = `coverage-${Date.now()}-${Math.random().toString(36).slice(2)}.json`;
+        fs.writeFileSync(path.join(outputDir, fileName), JSON.stringify(coverage));
+      }
+    }
   },
 
   setupMocks: async ({ page }, use) => {
