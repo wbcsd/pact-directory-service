@@ -155,6 +155,19 @@ export function logConformanceTest(
   });
 }
 
+export function logNode(
+  nodeId: number,
+  action: string,
+  meta: Record<string, any> = {}
+) {
+  logActivity('info', `Node ${action}`, {
+    path: `/pact/nodes/${nodeId}`,
+    nodeId,
+    action,
+    ...meta,
+  });
+}
+
 export function logOrganization(
   organizationId: number,
   action: string,

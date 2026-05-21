@@ -5,6 +5,7 @@ import { registerPolicy, Role } from '@src/common/policies';
 import { UserContext } from './user-service';
 import { ListQuery, ListResult } from '@src/common/list-query';
 import config from '@src/common/config';
+import { logNode } from '@src/common/activity-logger';
 
 // Register all policies used in this service
 registerPolicy([Role.Administrator], 'view-nodes-own-organization');
@@ -107,6 +108,8 @@ export class NodeService {
       throw new ForbiddenError('You are not allowed to view this node');
     }
 
+    logNode(node.id, 'viewed', { organizationId: node.organizationId, userId: context.userId });
+
     return node as NodeData;
   }
 
@@ -174,6 +177,13 @@ export class NodeService {
 
       result.apiUrl = generatedApiUrl;
     }
+
+    logNode(result.id, 'created', {
+      organizationId,
+      userId: context.userId,
+      nodeName: result.name,
+      nodeType: result.type,
+    });
 
     return result as NodeData;
   }
@@ -246,6 +256,12 @@ export class NodeService {
       .returningAll()
       .executeTakeFirstOrThrow();
 
+    logNode(nodeId, 'updated', {
+      organizationId: existingNode.organizationId,
+      userId: context.userId,
+      changes: data,
+    });
+
     return updated as NodeData;
   }
 
@@ -272,6 +288,13 @@ export class NodeService {
         .deleteFrom('nodes')
         .where('id', '=', nodeId)
         .execute();
+
+      logNode(nodeId, 'deleted', {
+        organizationId: existingNode.organizationId,
+        userId: context.userId,
+        nodeName: existingNode.name,
+        nodeType: existingNode.type,
+      });
 
       return { success: true, nodeId };
     } catch (error) {
