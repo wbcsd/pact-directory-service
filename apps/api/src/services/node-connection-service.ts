@@ -687,12 +687,7 @@ export class NodeConnectionService {
     }
 
     // Get target node
-    const targetNode = await this.db
-      .selectFrom('nodes')
-      .select(['id', 'type', 'apiUrl'])
-      .where('id', '=', connection.targetNodeId)
-      .where('deletedAt', 'is', null)
-      .executeTakeFirstOrThrow();
+    const targetNode = await this.nodeService.get(context, connection.targetNodeId);
 
     // Create client with credentials — authentication happens automatically
     const baseUrl = targetNode.apiUrl
