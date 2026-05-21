@@ -4,6 +4,9 @@ import { Role } from '@src/common/policies';
 import { createMockDatabase } from '../common/mock-utils';
 import { UserContext } from './user-service';
 import { ListQuery } from '@src/common/list-query';
+import { logNode } from '@src/common/activity-logger';
+
+jest.mock('@src/common/activity-logger');
 
 describe('NodeService', () => {
   let dbMocks: ReturnType<typeof createMockDatabase>;
@@ -37,6 +40,7 @@ describe('NodeService', () => {
   };
 
   beforeEach(() => {
+    jest.clearAllMocks();
     dbMocks = createMockDatabase();
     nodeService = new NodeService(dbMocks.db as any);
   });
@@ -81,6 +85,7 @@ describe('NodeService', () => {
       const result = await nodeService.get(adminUserContext, 1);
 
       expect(result).toEqual(mockNode);
+      expect(logNode).toHaveBeenCalledWith(1, 'viewed', { organizationId: 1, userId: 1 });
     });
 
     it('should allow root user to view any node', async () => {
@@ -101,6 +106,7 @@ describe('NodeService', () => {
       const result = await nodeService.get(rootUserContext, 1);
 
       expect(result).toEqual(mockNode);
+      expect(logNode).toHaveBeenCalledWith(1, 'viewed', { organizationId: 999, userId: 2 });
     });
   });
 
@@ -166,6 +172,12 @@ describe('NodeService', () => {
       expect(result.type).toBe('internal');
       expect(result.apiUrl).toContain('/api/nodes/1');
       expect(dbMocks.db.updateTable).toHaveBeenCalledWith('nodes');
+      expect(logNode).toHaveBeenCalledWith(1, 'created', {
+        organizationId: 1,
+        userId: 1,
+        nodeName: 'Internal Node',
+        nodeType: 'internal',
+      });
     });
 
     it('should create external node with provided API URL', async () => {
@@ -190,6 +202,12 @@ describe('NodeService', () => {
 
       expect(result.type).toBe('external');
       expect(result.apiUrl).toBe('https://external.example.com/api');
+      expect(logNode).toHaveBeenCalledWith(2, 'created', {
+        organizationId: 1,
+        userId: 1,
+        nodeName: 'External Node',
+        nodeType: 'external',
+      });
     });
 
     it('should create external node with auth fields', async () => {
@@ -326,6 +344,11 @@ describe('NodeService', () => {
       const result = await nodeService.update(adminUserContext, 1, { name: 'New Name' });
 
       expect(result.name).toBe('New Name');
+      expect(logNode).toHaveBeenCalledWith(1, 'updated', {
+        organizationId: 1,
+        userId: 1,
+        changes: { name: 'New Name' },
+      });
     });
 
     it('should update node status successfully', async () => {
@@ -479,6 +502,12 @@ describe('NodeService', () => {
 
       await nodeService.delete(adminUserContext, 1);
       expect(dbMocks.db.deleteFrom).toHaveBeenCalledWith('nodes');
+      expect(logNode).toHaveBeenCalledWith(1, 'deleted', {
+        organizationId: 1,
+        userId: 1,
+        nodeName: 'Test Node',
+        nodeType: 'internal',
+      });
     });
   });
 
