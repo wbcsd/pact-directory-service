@@ -22,6 +22,9 @@ export async function up(db: Kysely<unknown>): Promise<void> {
     .addUniqueConstraint('pcf_requests_source_request_event_id_key', ['source', 'request_event_id'])
     .execute();
 
+  // Backfill any existing rows that have a NULL source before enforcing NOT NULL
+  await sql`UPDATE pcf_requests SET source = 'unknown' WHERE source IS NULL`.execute(db);
+
   // Make source non-nullable — every request must carry the CloudEvent source
   await sql`ALTER TABLE pcf_requests ALTER COLUMN source SET NOT NULL`.execute(db);
 }
