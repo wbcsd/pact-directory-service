@@ -120,6 +120,24 @@ describe('activity-logger', () => {
     });
   });
 
+  describe('logNode', () => {
+    it('should log node action without throwing', () => {
+      expect(() => {
+        activityLogger.logNode(
+          1,
+          'created',
+          { organizationId: 2, userId: 3, nodeName: 'Test Node', nodeType: 'internal' }
+        );
+      }).not.toThrow();
+    });
+
+    it('should log node action with minimal metadata', () => {
+      expect(() => {
+        activityLogger.logNode(42, 'deleted');
+      }).not.toThrow();
+    });
+  });
+
   describe('logOrganization', () => {
     it('should log organization action', () => {
       expect(() => {
