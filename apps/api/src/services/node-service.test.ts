@@ -478,7 +478,7 @@ describe('NodeService', () => {
       dbMocks.executors.execute.mockResolvedValueOnce(undefined);
 
       await nodeService.delete(adminUserContext, 1);
-      expect(dbMocks.db.deleteFrom).toHaveBeenCalledWith('nodes');
+      expect(dbMocks.db.updateTable).toHaveBeenCalledWith('nodes');
     });
   });
 

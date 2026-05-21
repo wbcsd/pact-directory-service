@@ -82,6 +82,7 @@ export class NodeService {
         'organizations.name as organizationName',
       ])
       .where('nodes.id', '=', nodeId)
+      .where('nodes.deletedAt', 'is', null)
       .executeTakeFirst();
 
     if (!node) {
@@ -266,10 +267,11 @@ export class NodeService {
       throw new ForbiddenError('You are not allowed to delete this node');
     }
 
-    // Hard delete the node
+    // Soft delete the node
     try {
       await this.db
-        .deleteFrom('nodes')
+        .updateTable('nodes')
+        .set({ deletedAt: new Date() })
         .where('id', '=', nodeId)
         .execute();
 
@@ -302,6 +304,7 @@ export class NodeService {
     let qb = this.db
       .selectFrom('nodes')
       .leftJoin('organizations', 'organizations.id', 'nodes.organizationId')
+      .where('nodes.deletedAt', 'is', null)
       .select([
         'nodes.id',
         'nodes.organizationId',

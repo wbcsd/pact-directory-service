@@ -691,6 +691,7 @@ export class NodeConnectionService {
       .selectFrom('nodes')
       .select(['id', 'type', 'apiUrl'])
       .where('id', '=', connection.targetNodeId)
+      .where('deletedAt', 'is', null)
       .executeTakeFirstOrThrow();
 
     // Create client with credentials — authentication happens automatically

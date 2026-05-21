@@ -102,6 +102,7 @@ export class PcfRequestService {
       .selectFrom('nodes')
       .select(['id', 'type', 'apiUrl', 'authBaseUrl', 'scope', 'audience', 'resource'])
       .where('id', '=', connection.targetNodeId)
+      .where('deletedAt', 'is', null)
       .executeTakeFirstOrThrow();
 
     // Build PactApiClient — mirrors requestFootprints() in node-connection-service.ts
@@ -370,6 +371,7 @@ export class PcfRequestService {
         .selectFrom('nodes')
         .select('id')
         .where('id', '=', request.fromNodeId)
+        .where('deletedAt', 'is', null)
         .executeTakeFirst();
 
       if (requesterNodeExists) {

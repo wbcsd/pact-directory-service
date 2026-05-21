@@ -1,5 +1,5 @@
 import { Role } from '@src/common/policies';
-import { Generated } from 'kysely';
+import { ColumnType, Generated } from 'kysely';
 
 export interface Database {
   organizations: OrganizationsTable;
@@ -71,6 +71,7 @@ export interface NodesTable {
   specVersion: string | null;
   createdAt: Generated<Date>;
   updatedAt: Generated<Date>;
+  deletedAt: ColumnType<Date | null, Date | null, Date | null>;
 }
 
 export interface ConnectionTable {
