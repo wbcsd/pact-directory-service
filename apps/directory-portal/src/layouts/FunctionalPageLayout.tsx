@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Flex, IconButton } from "@radix-ui/themes";
-import { HamburgerMenuIcon, Cross2Icon } from "@radix-ui/react-icons";
+import { Callout, Flex, IconButton, Text } from "@radix-ui/themes";
+import { HamburgerMenuIcon, Cross2Icon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import SideNav from "../components/SideNav";
 import LoadingSpinner from "../components/LoadingSpinner";
 import SignUp from "../components/SignUp";
 import FeedbackWidget from "../components/FeedbackWidget";
+import { useAuth } from "../contexts/AuthContext";
 import pactLogo from "../assets/pact-logo.svg";
 import pactLogoDark from "../assets/pact-logo-dark.svg";
 
@@ -20,6 +21,8 @@ const FunctionalPageLayout: React.FC<FunctionalPageLayoutProps> = ({
   loadingMessage = "Loading...",
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { profileData } = useAuth();
+  const isRoot = profileData?.role === "root";
 
   return (
     <div className="layout">
@@ -47,6 +50,18 @@ const FunctionalPageLayout: React.FC<FunctionalPageLayoutProps> = ({
           <SignUp />
         </div>
       </header>
+
+      {isRoot && (
+        <Callout.Root color="amber" variant="surface" style={{ borderRadius: 0, position: "sticky", top: 0, zIndex: 100 }}>
+          <Callout.Icon>
+            <ExclamationTriangleIcon />
+          </Callout.Icon>
+          <Callout.Text>
+            <Text weight="bold">Root access active.</Text>{" "}
+            You are logged in as a root user and can view and modify data across all organizations.
+          </Callout.Text>
+        </Callout.Root>
+      )}
 
       <div className="container">
         {mobileMenuOpen && (

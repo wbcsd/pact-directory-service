@@ -9,9 +9,11 @@ import {
   IconButton,
   Separator,
   Text,
+  TextField,
   Box,
   Flex
 } from "@radix-ui/themes";
+import { useAuth } from "../contexts/AuthContext";
 import {
   ArrowLeftIcon,
   CheckIcon,
@@ -154,6 +156,11 @@ const NodeDashboardPage: React.FC = () => {
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
   const [rejectingId, setRejectingId] = useState<number | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteNameInput, setDeleteNameInput] = useState("");
+  const [crossOrgDialogOpen, setCrossOrgDialogOpen] = useState(false);
+
+  const { profileData } = useAuth();
 
   const copyToClipboard = useCallback(async (value: string) => {
     try {
@@ -197,8 +204,26 @@ const NodeDashboardPage: React.FC = () => {
     setConnectionsRefreshTrigger(prev => prev + 1);
   }, [closePanel]);
 
-  const handleDelete = async () => {
-    if (!window.confirm(`Are you sure you want to delete "${nodeData?.name}"? This action cannot be undone.`)) return;
+  const handleDelete = () => {
+    setDeleteNameInput("");
+    setDeleteError("");
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDeleteName = () => {
+    const isRoot = profileData?.role === "root";
+    const isCrossOrg = nodeData?.organizationId !== profileData?.organizationId;
+    if (isRoot && isCrossOrg) {
+      setDeleteDialogOpen(false);
+      setCrossOrgDialogOpen(true);
+    } else {
+      performDelete();
+    }
+  };
+
+  const performDelete = async () => {
+    setDeleteDialogOpen(false);
+    setCrossOrgDialogOpen(false);
     try {
       setDeleting(true);
       const response = await fetchWithAuth(`/nodes/${nodeId}`, { method: "DELETE" });
@@ -955,6 +980,58 @@ const NodeDashboardPage: React.FC = () => {
           />
         )}
       </SlideOverPanel>
+
+      {/* Delete node — step 1: confirm by typing the node name */}
+      <Dialog.Root open={deleteDialogOpen} onOpenChange={(open) => { if (!open) setDeleteDialogOpen(false); }}>
+        <Dialog.Content maxWidth="460px">
+          <Dialog.Title>Delete node</Dialog.Title>
+          <Dialog.Description size="2" color="gray" mb="4">
+            This action <Text weight="bold">cannot be undone</Text>. Type the node name{" "}
+            <Text weight="bold">{nodeData?.name}</Text> to confirm deletion.
+          </Dialog.Description>
+          <TextField.Root
+            placeholder={nodeData?.name ?? ""}
+            value={deleteNameInput}
+            onChange={(e) => setDeleteNameInput(e.target.value)}
+            autoFocus
+          />
+          <Flex gap="3" mt="4" justify="end">
+            <Dialog.Close>
+              <Button variant="soft" color="gray">Cancel</Button>
+            </Dialog.Close>
+            <Button
+              color="red"
+              disabled={deleteNameInput !== nodeData?.name}
+              onClick={handleConfirmDeleteName}
+            >
+              <TrashIcon /> Delete node
+            </Button>
+          </Flex>
+        </Dialog.Content>
+      </Dialog.Root>
+
+      {/* Delete node — step 2 (root only): cross-org warning */}
+      <Dialog.Root open={crossOrgDialogOpen} onOpenChange={(open) => { if (!open) setCrossOrgDialogOpen(false); }}>
+        <Dialog.Content maxWidth="460px">
+          <Dialog.Title>Delete node from another organization</Dialog.Title>
+          <Dialog.Description size="2" color="gray" mb="4">
+            You are logged in as root and are about to delete node{" "}
+            <Text weight="bold">{nodeData?.name}</Text> which belongs to{" "}
+            <Text weight="bold">{nodeData?.organizationName}</Text>, not your own organization.
+            This action <Text weight="bold">cannot be undone</Text>.
+          </Dialog.Description>
+          <Callout.Root color="red" mb="4">
+            <Callout.Icon><ExclamationTriangleIcon /></Callout.Icon>
+            <Callout.Text>You are modifying data that belongs to another organization.</Callout.Text>
+          </Callout.Root>
+          <Flex gap="3" mt="2" justify="end">
+            <Button variant="soft" color="gray" onClick={() => setCrossOrgDialogOpen(false)}>Cancel</Button>
+            <Button color="red" onClick={performDelete}>
+              <TrashIcon /> Confirm deletion
+            </Button>
+          </Flex>
+        </Dialog.Content>
+      </Dialog.Root>
     </FormPageLayout>
   );
 };

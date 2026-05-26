@@ -1,4 +1,6 @@
 import { test, expect } from "./fixtures";
+import { mockProfileData } from "./mocks/data/auth";
+import { mockNodeDetail } from "./mocks/data/nodes";
 
 test.describe("Nodes", () => {
   // ---------------------------------------------------------------------------
@@ -139,20 +141,166 @@ test.describe("Nodes", () => {
     await expect(page.getByRole("menuitem", { name: /edit node/i })).toBeVisible();
   });
 
-  test("delete node shows confirmation before deleting", async ({
+  test("delete node opens a confirmation dialog", async ({
     authenticatedPage: page,
   }) => {
     await page.goto("/nodes/100");
 
-    // Open dropdown menu via aria-haspopup button
     await page.locator('[aria-haspopup="menu"]').click();
     await page.getByRole("menuitem", { name: /delete node/i }).click();
 
-    // Expect a native confirm dialog — dismiss so node is NOT deleted
-    page.once("dialog", (dialog) => dialog.dismiss());
+    // Radix Dialog should open — not a native browser confirm
+    await expect(page.getByRole("dialog")).toBeVisible();
+    await expect(page.getByRole("dialog").getByRole("heading", { name: /delete node/i })).toBeVisible();
+  });
 
-    // After dismissing the confirmation, we should still be on the same page
+  test("delete node — cancel keeps user on the page", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/nodes/100");
+
+    await page.locator('[aria-haspopup="menu"]').click();
+    await page.getByRole("menuitem", { name: /delete node/i }).click();
+
+    await expect(page.getByRole("dialog")).toBeVisible();
+    await page.getByRole("button", { name: /cancel/i }).click();
+
     await expect(page).toHaveURL(/\/nodes\/100/);
+  });
+
+  test("delete node — confirm button disabled until node name is typed", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/nodes/100");
+
+    await page.locator('[aria-haspopup="menu"]').click();
+    await page.getByRole("menuitem", { name: /delete node/i }).click();
+
+    await expect(page.getByRole("dialog")).toBeVisible();
+
+    // Delete button should be disabled when the input is empty
+    const deleteButton = page.getByRole("dialog").getByRole("button", { name: /delete node/i });
+    await expect(deleteButton).toBeDisabled();
+
+    // Wrong name — still disabled
+    await page.getByRole("dialog").getByRole("textbox").fill("wrong name");
+    await expect(deleteButton).toBeDisabled();
+
+    // Correct name — now enabled
+    await page.getByRole("dialog").getByRole("textbox").fill("Test Node Alpha");
+    await expect(deleteButton).toBeEnabled();
+  });
+
+  test("delete node — completes after typing correct name", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/nodes/100");
+
+    await page.locator('[aria-haspopup="menu"]').click();
+    await page.getByRole("menuitem", { name: /delete node/i }).click();
+
+    await expect(page.getByRole("dialog")).toBeVisible();
+    await page.getByRole("dialog").getByRole("textbox").fill("Test Node Alpha");
+    await page.getByRole("dialog").getByRole("button", { name: /delete node/i }).click();
+
+    // After deletion the app navigates back to the nodes list
+    await expect(page).toHaveURL(/\/nodes$/);
+  });
+
+  // ---------------------------------------------------------------------------
+  // Root user — sticky banner
+  // ---------------------------------------------------------------------------
+
+  test("root user sees the sticky root access banner", async ({
+    authenticatedPage: page,
+    setupMocks,
+  }) => {
+    await setupMocks({ getMe: { ...mockProfileData, role: "root" } });
+    await page.goto("/nodes");
+
+    await expect(page.getByText(/root access active/i)).toBeVisible();
+  });
+
+  test("non-root user does not see the root access banner", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/nodes");
+
+    await expect(page.getByText(/root access active/i)).not.toBeVisible();
+  });
+
+  // ---------------------------------------------------------------------------
+  // Root cross-org deletion — second confirmation dialog
+  // ---------------------------------------------------------------------------
+
+  test("root deleting a cross-org node shows a second warning dialog", async ({
+    authenticatedPage: page,
+    setupMocks,
+  }) => {
+    // Root user in org 10 viewing a node belonging to a different org
+    await setupMocks({
+      getMe: { ...mockProfileData, role: "root" },
+      getNode: { ...mockNodeDetail, organizationId: 99, organizationName: "Other Organisation" },
+    });
+    await page.goto("/nodes/100");
+
+    await page.locator('[aria-haspopup="menu"]').click();
+    await page.getByRole("menuitem", { name: /delete node/i }).click();
+
+    // Step 1 — type the node name to pass the first dialog
+    await expect(page.getByRole("dialog")).toBeVisible();
+    await page.getByRole("dialog").getByRole("textbox").fill("Test Node Alpha");
+    await page.getByRole("dialog").getByRole("button", { name: /delete node/i }).click();
+
+    // Step 2 — cross-org warning dialog should appear
+    const crossOrgDialog = page.getByRole("dialog");
+    await expect(crossOrgDialog.getByRole("heading", { name: /delete node from another organization/i })).toBeVisible();
+    await expect(crossOrgDialog.getByText(/Other Organisation/i)).toBeVisible();
+  });
+
+  test("root can cancel the cross-org warning dialog", async ({
+    authenticatedPage: page,
+    setupMocks,
+  }) => {
+    await setupMocks({
+      getMe: { ...mockProfileData, role: "root" },
+      getNode: { ...mockNodeDetail, organizationId: 99, organizationName: "Other Organisation" },
+    });
+    await page.goto("/nodes/100");
+
+    await page.locator('[aria-haspopup="menu"]').click();
+    await page.getByRole("menuitem", { name: /delete node/i }).click();
+
+    await page.getByRole("dialog").getByRole("textbox").fill("Test Node Alpha");
+    await page.getByRole("dialog").getByRole("button", { name: /delete node/i }).click();
+
+    // Cancel on the second dialog — should stay on the node page
+    await expect(page.getByText(/delete node from another organization/i)).toBeVisible();
+    await page.getByRole("button", { name: /cancel/i }).click();
+    await expect(page).toHaveURL(/\/nodes\/100/);
+  });
+
+  test("root can confirm cross-org deletion via second dialog", async ({
+    authenticatedPage: page,
+    setupMocks,
+  }) => {
+    await setupMocks({
+      getMe: { ...mockProfileData, role: "root" },
+      getNode: { ...mockNodeDetail, organizationId: 99, organizationName: "Other Organisation" },
+    });
+    await page.goto("/nodes/100");
+
+    await page.locator('[aria-haspopup="menu"]').click();
+    await page.getByRole("menuitem", { name: /delete node/i }).click();
+
+    await page.getByRole("dialog").getByRole("textbox").fill("Test Node Alpha");
+    await page.getByRole("dialog").getByRole("button", { name: /delete node/i }).click();
+
+    await expect(page.getByText(/delete node from another organization/i)).toBeVisible();
+    await page.getByRole("button", { name: /confirm deletion/i }).click();
+
+    // After deletion the app navigates back to the nodes list
+    await expect(page).toHaveURL(/\/nodes$/);
   });
 
   // ---------------------------------------------------------------------------
