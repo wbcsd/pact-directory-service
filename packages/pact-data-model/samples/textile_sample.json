@@ -4,13 +4,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Grasim Industries",
+    "companyName": "Kanvara Industries",
     "companyIds": [
-      "urn:pact:company:grasim-ind"
+      "urn:pact:company:kanvara-ind"
     ],
     "productDescription": "Medium-staple ginned cotton fiber, 28mm length, suitable for ring spinning. Irrigated cultivation in Gujarat region.",
     "productIds": [
-      "urn:pact:product:grasim-cotton-fiber-001"
+      "urn:pact:product:kanvara-cotton-fiber-001"
     ],
     "productNameCompany": "Raw Cotton Fiber (Ginned)",
     "productClassifications": [
@@ -59,15 +59,15 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Lenzing AG",
+    "companyName": "Lyofiber AG",
     "companyIds": [
-      "urn:pact:company:lenzing-ag"
+      "urn:pact:company:lyofiber-ag"
     ],
     "productDescription": "Lyocell staple fiber, 1.3 dtex, 38mm cut length, produced in closed-loop solvent spinning process from sustainably sourced wood pulp.",
     "productIds": [
-      "urn:pact:product:lenzing-lyocell-001"
+      "urn:pact:product:lyofiber-lyocell-001"
     ],
-    "productNameCompany": "TENCEL\u2122 Lyocell Fiber",
+    "productNameCompany": "TENCEL™ Lyocell Fiber",
     "productClassifications": [
       "urn:pact:productclassification:un-cpc:26310"
     ],
@@ -104,7 +104,7 @@
       },
       "verification": {
         "coverage": "product level",
-        "providerName": "T\u00dcV S\u00dcD",
+        "providerName": "TÜV SÜD",
         "completedAt": "2026-01-20T00:00:00Z",
         "standardName": "ISO 14067"
       }
@@ -115,13 +115,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Reliance Industries",
+    "companyName": "Veritas Industries",
     "companyIds": [
-      "urn:pact:company:reliance-ind"
+      "urn:pact:company:veritas-ind"
     ],
     "productDescription": "Virgin polyester staple fiber, 1.4 dtex, 38mm, semi-dull, suitable for blending with cotton. Produced from PTA and MEG via melt spinning.",
     "productIds": [
-      "urn:pact:product:reliance-psf-virgin-001"
+      "urn:pact:product:veritas-psf-virgin-001"
     ],
     "productNameCompany": "Polyester Staple Fiber (Virgin)",
     "productClassifications": [
@@ -169,13 +169,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Toray Industries",
+    "companyName": "Torika Industries",
     "companyIds": [
-      "urn:pact:company:toray-ind"
+      "urn:pact:company:torika-ind"
     ],
     "productDescription": "Nylon 6,6 continuous filament yarn, 78dtex/68f, high-tenacity, for woven outerwear fabrics. Produced via adipic acid and hexamethylenediamine polymerization.",
     "productIds": [
-      "urn:pact:product:toray-nylon66-yarn-001"
+      "urn:pact:product:torika-nylon66-yarn-001"
     ],
     "productNameCompany": "Nylon 6,6 Filament Yarn",
     "productClassifications": [
@@ -224,13 +224,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "S\u00fcdwolle Group",
+    "companyName": "Sudmerl Group",
     "companyIds": [
-      "urn:pact:company:sudwolle-grp"
+      "urn:pact:company:sudmerl-grp"
     ],
-    "productDescription": "Fine merino wool yarn, 19.5\u00b5m, Nm 60/2, worsted spun, suitable for luxury knitwear and suiting. Australian greasy wool sourced.",
+    "productDescription": "Fine merino wool yarn, 19.5µm, Nm 60/2, worsted spun, suitable for luxury knitwear and suiting. Australian greasy wool sourced.",
     "productIds": [
-      "urn:pact:product:sudwolle-merino-yarn-001"
+      "urn:pact:product:sudmerl-merino-yarn-001"
     ],
     "productNameCompany": "Merino Wool Yarn (19.5 micron)",
     "productClassifications": [
@@ -280,13 +280,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Repreve (Unifi)",
+    "companyName": "Uniflex Renewex",
     "companyIds": [
-      "urn:pact:company:unifi-repreve"
+      "urn:pact:company:uniflex-renewex"
     ],
     "productDescription": "Recycled polyester staple fiber from post-consumer PET bottles, 1.5 dtex, 38mm, dope-dyed black. Certified GRS.",
     "productIds": [
-      "urn:pact:product:repreve-rpet-fiber-001"
+      "urn:pact:product:renewex-rpet-fiber-001"
     ],
     "productNameCompany": "Recycled Polyester Fiber (rPET)",
     "productClassifications": [
@@ -329,13 +329,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Birla Cellulose",
+    "companyName": "Birkha Cellulose",
     "companyIds": [
-      "urn:pact:company:birla-cell"
+      "urn:pact:company:birkha-cell"
     ],
     "productDescription": "Viscose rayon staple fiber, 1.2 dtex, 38mm, bright luster. Produced from FSC-certified dissolving wood pulp.",
     "productIds": [
-      "urn:pact:product:birla-viscose-rsf-001"
+      "urn:pact:product:birkha-viscose-rsf-001"
     ],
     "productNameCompany": "Viscose Rayon Staple Fiber",
     "productClassifications": [
@@ -384,13 +384,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Xinjiang Zhongtai",
+    "companyName": "Zhongfang Chemicals",
     "companyIds": [
-      "urn:pact:company:zhongtai-chem"
+      "urn:pact:company:zhongfang-chem"
     ],
     "productDescription": "Spandex (elastane) fiber, 40 denier, for stretch fabrics. Produced via dry spinning of segmented polyurethane.",
     "productIds": [
-      "urn:pact:product:zhongtai-spandex-001"
+      "urn:pact:product:zhongfang-spandex-001"
     ],
     "productNameCompany": "Spandex/Elastane Fiber",
     "productClassifications": [
@@ -438,13 +438,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Bcomp Ltd.",
+    "companyName": "Fibertek Ltd.",
     "companyIds": [
-      "urn:pact:company:bcomp-ltd"
+      "urn:pact:company:fibertek-ltd"
     ],
     "productDescription": "Technical-grade flax fiber, retted and hackled, for composite reinforcement and high-performance textile applications.",
     "productIds": [
-      "urn:pact:product:bcomp-flax-tech-001"
+      "urn:pact:product:fibertek-flax-tech-001"
     ],
     "productNameCompany": "Natural Flax Fiber (Technical Grade)",
     "productClassifications": [
@@ -487,15 +487,15 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Hyosung TNC",
+    "companyName": "Haesong TNC",
     "companyIds": [
-      "urn:pact:company:hyosung-tnc"
+      "urn:pact:company:haesong-tnc"
     ],
     "productDescription": "High-performance spandex yarn, 20D-1120D range, offering superior stretch recovery. For intimate apparel and sportswear.",
     "productIds": [
-      "urn:pact:product:hyosung-creora-001"
+      "urn:pact:product:haesong-creora-001"
     ],
-    "productNameCompany": "Creora\u00ae Spandex Yarn",
+    "productNameCompany": "Creora® Spandex Yarn",
     "productClassifications": [
       "urn:pact:productclassification:un-cpc:26310"
     ],
@@ -541,13 +541,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Lu Thai Textile",
+    "companyName": "Lin Tai Textile",
     "companyIds": [
-      "urn:pact:company:lu-thai-textile"
+      "urn:pact:company:lin-tai-textile"
     ],
     "productDescription": "100% combed cotton poplin fabric, 120 GSM, yarn-dyed, wrinkle-free finish. For dress shirts and blouses.",
     "productIds": [
-      "urn:pact:product:luthai-poplin-001"
+      "urn:pact:product:linthai-poplin-001"
     ],
     "productNameCompany": "Cotton Poplin Fabric (Woven)",
     "productClassifications": [
@@ -595,13 +595,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Pratibha Syntex",
+    "companyName": "Parvana Syntex",
     "companyIds": [
-      "urn:pact:company:pratibha-syntex"
+      "urn:pact:company:parvana-syntex"
     ],
     "productDescription": "GOTS-certified organic cotton single jersey fabric, 160 GSM, tubular knit, garment-dyed compatible. For T-shirts and casual wear.",
     "productIds": [
-      "urn:pact:product:pratibha-org-jersey-001"
+      "urn:pact:product:parvana-org-jersey-001"
     ],
     "productNameCompany": "Organic Cotton Jersey Knit",
     "productClassifications": [
@@ -644,13 +644,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Toray Textiles Europe",
+    "companyName": "Torika Textiles Europe",
     "companyIds": [
-      "urn:pact:company:toray-txt-eu"
+      "urn:pact:company:torika-txt-eu"
     ],
     "productDescription": "Nylon 6,6 ripstop fabric, 70 denier, DWR (C0 fluorine-free) treated, calendered. For outdoor jackets and backpacks.",
     "productIds": [
-      "urn:pact:product:toray-ripstop-nylon-001"
+      "urn:pact:product:torika-ripstop-nylon-001"
     ],
     "productNameCompany": "Ripstop Nylon Fabric (DWR-treated)",
     "productClassifications": [
@@ -698,13 +698,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Arvind Limited",
+    "companyName": "Arindal Limited",
     "companyIds": [
-      "urn:pact:company:arvind-ltd"
+      "urn:pact:company:arindal-ltd"
     ],
     "productDescription": "Cotton/elastane (98/2) stretch denim, 10oz, indigo rope-dyed, right-hand twill. For jeans and denim jackets.",
     "productIds": [
-      "urn:pact:product:arvind-stretch-denim-001"
+      "urn:pact:product:arindal-stretch-denim-001"
     ],
     "productNameCompany": "Stretch Denim Fabric",
     "productClassifications": [
@@ -753,13 +753,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Schoeller Textil",
+    "companyName": "Schoena Textil",
     "companyIds": [
-      "urn:pact:company:schoeller-txt"
+      "urn:pact:company:schoena-txt"
     ],
     "productDescription": "3-layer bonded softshell fabric: woven nylon face, TPU membrane, fleece backing. Windproof, water-resistant, breathable.",
     "productIds": [
-      "urn:pact:product:schoeller-softshell-001"
+      "urn:pact:product:schoena-softshell-001"
     ],
     "productNameCompany": "4-Way Stretch Softshell Fabric",
     "productClassifications": [
@@ -806,13 +806,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Albini Group",
+    "companyName": "Tessori Group",
     "companyIds": [
-      "urn:pact:company:albini-grp"
+      "urn:pact:company:tessori-grp"
     ],
     "productDescription": "Cotton/silk blend (80/20) shirting fabric, 100 GSM, jacquard woven, piece-dyed. For premium dress shirts.",
     "productIds": [
-      "urn:pact:product:albini-shirting-silk-001"
+      "urn:pact:product:tessori-shirting-silk-001"
     ],
     "productNameCompany": "Luxury Cotton/Silk Shirting Fabric",
     "productClassifications": [
@@ -854,13 +854,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Polartec LLC",
+    "companyName": "Polarwave LLC",
     "companyIds": [
-      "urn:pact:company:polartec-llc"
+      "urn:pact:company:polarwave-llc"
     ],
     "productDescription": "100% recycled polyester microfleece, 200 GSM, brushed both sides, anti-pill finish. Made from post-consumer PET bottles.",
     "productIds": [
-      "urn:pact:product:polartec-recfleece-200-001"
+      "urn:pact:product:polarwave-recfleece-200-001"
     ],
     "productNameCompany": "Recycled Fleece Fabric (200 GSM)",
     "productClassifications": [
@@ -902,13 +902,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Cone Denim",
+    "companyName": "Stone Denim",
     "companyIds": [
-      "urn:pact:company:cone-denim"
+      "urn:pact:company:stone-denim"
     ],
     "productDescription": "100% cotton selvedge denim, 14oz, shuttle-loom woven, natural indigo dyed, raw/unwashed. For premium jeans.",
     "productIds": [
-      "urn:pact:product:cone-selvedge-raw-001"
+      "urn:pact:product:stone-selvedge-raw-001"
     ],
     "productNameCompany": "Selvedge Denim Fabric (Raw)",
     "productClassifications": [
@@ -951,13 +951,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Pontoglio 1883",
+    "companyName": "Tessitura 1880",
     "companyIds": [
-      "urn:pact:company:pontoglio-1883"
+      "urn:pact:company:tessitura-1880"
     ],
     "productDescription": "Cotton/viscose (60/40) cut-pile velvet, 350 GSM, piece-dyed, flame-retardant (FR) treated. For furniture upholstery.",
     "productIds": [
-      "urn:pact:product:pontoglio-velvet-001"
+      "urn:pact:product:tessitura-velvet-001"
     ],
     "productNameCompany": "Velvet Upholstery Fabric",
     "productClassifications": [
@@ -1000,13 +1000,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Milliken & Company",
+    "companyName": "Textren & Company",
     "companyIds": [
-      "urn:pact:company:milliken-co"
+      "urn:pact:company:textren-co"
     ],
     "productDescription": "3D spacer knit fabric, polyester/spandex (92/8), 300 GSM, moisture-wicking, for athletic footwear uppers.",
     "productIds": [
-      "urn:pact:product:milliken-spacer-knit-001"
+      "urn:pact:product:textren-spacer-knit-001"
     ],
     "productNameCompany": "Performance Knit Spacer Fabric",
     "productClassifications": [
@@ -1047,15 +1047,15 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Patagonia Inc.",
+    "companyName": "Terrafoam Inc.",
     "companyIds": [
-      "urn:pact:company:patagonia-inc"
+      "urn:pact:company:terrafoam-inc"
     ],
     "productDescription": "Men's full-zip fleece jacket, 100% recycled polyester, Fair Trade Certified sewn. Sizes S-XXL. 415g average weight.",
     "productIds": [
-      "urn:pact:product:patagonia-better-sweater-001"
+      "urn:pact:product:terrafoam-better-sweater-001"
     ],
-    "productNameCompany": "Better Sweater\u00ae Fleece Jacket",
+    "productNameCompany": "Better Sweater® Fleece Jacket",
     "productClassifications": [
       "urn:pact:productclassification:un-cpc:28220"
     ],
@@ -1108,19 +1108,19 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Levi Strauss & Co.",
+    "companyName": "Indigo Strauss & Co.",
     "companyIds": [
-      "urn:pact:company:levis-co"
+      "urn:pact:company:indigo-co"
     ],
-    "productDescription": "Iconic straight-fit jeans, 99% cotton / 1% elastane stretch denim, button fly, 5-pocket styling. Water<Less\u00ae finish. 860g average.",
+    "productDescription": "Iconic straight-fit jeans, 99% cotton / 1% elastane stretch denim, button fly, 5-pocket styling. Water<Less® finish. 860g average.",
     "productIds": [
-      "urn:pact:product:levis-501-original-001"
+      "urn:pact:product:indigo-501-original-001"
     ],
-    "productNameCompany": "501\u00ae Original Fit Jeans",
+    "productNameCompany": "501® Original Fit Jeans",
     "productClassifications": [
       "urn:pact:productclassification:un-cpc:28220"
     ],
-    "comment": "SAMPLE: Water<Less\u00ae finishing uses up to 96% less water than conventional finishing. Denim sourced from certified sustainable cotton.",
+    "comment": "SAMPLE: Water<Less® finishing uses up to 96% less water than conventional finishing. Denim sourced from certified sustainable cotton.",
     "pcf": {
       "declaredUnitOfMeasurement": "piece",
       "declaredUnitAmount": "1",
@@ -1140,7 +1140,7 @@
         "PACT-3.0"
       ],
       "exemptedEmissionsPercent": "0.5",
-      "boundaryProcessesDescription": "Cotton/elastane denim weaving, indigo dyeing, cutting, sewing, stone-wash finishing (Water<Less\u00ae), labeling, packaging.",
+      "boundaryProcessesDescription": "Cotton/elastane denim weaving, indigo dyeing, cutting, sewing, stone-wash finishing (Water<Less®), labeling, packaging.",
       "packagingEmissionsIncluded": true,
       "geographyCountry": "US",
       "packagingGhgEmissions": "0.35",
@@ -1170,13 +1170,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Arc'teryx Equipment",
+    "companyName": "Peakline Equipment",
     "companyIds": [
-      "urn:pact:company:arcteryx-equip"
+      "urn:pact:company:peakline-equip"
     ],
     "productDescription": "Gore-Tex Pro 3L hardshell mountaineering jacket, fully seam-taped, helmet-compatible hood, pit zips. 490g. For alpine climbing.",
     "productIds": [
-      "urn:pact:product:arcteryx-alpha-sv-001"
+      "urn:pact:product:peakline-alpha-sv-001"
     ],
     "productNameCompany": "Alpha SV Hardshell Jacket",
     "productClassifications": [
@@ -1229,13 +1229,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Ermenegildo Zegna",
+    "companyName": "Renova Group",
     "companyIds": [
-      "urn:pact:company:zegna-group"
+      "urn:pact:company:renova-group"
     ],
-    "productDescription": "Men's two-piece suit (jacket + trousers), 100% superfine merino wool (15.5\u00b5m), half-canvassed construction. Made in Italy.",
+    "productDescription": "Men's two-piece suit (jacket + trousers), 100% superfine merino wool (15.5µm), half-canvassed construction. Made in Italy.",
     "productIds": [
-      "urn:pact:product:zegna-wool-suit-001"
+      "urn:pact:product:renova-wool-suit-001"
     ],
     "productNameCompany": "Wool Two-Piece Suit",
     "productClassifications": [
@@ -1285,13 +1285,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Nike Inc.",
+    "companyName": "Nexstride Inc.",
     "companyIds": [
-      "urn:pact:company:nike-inc"
+      "urn:pact:company:nexstride-inc"
     ],
     "productDescription": "Men's running shoe, engineered mesh upper (recycled polyester), Air Max sole unit, rubber outsole. 310g per shoe (size US10).",
     "productIds": [
-      "urn:pact:product:nike-air-max-run-001"
+      "urn:pact:product:nexstride-air-max-run-001"
     ],
     "productNameCompany": "Air Max Running Shoe",
     "productClassifications": [
@@ -1340,13 +1340,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "H&M Group",
+    "companyName": "V&M Group",
     "companyIds": [
-      "urn:pact:company:hm-group"
+      "urn:pact:company:vm-group"
     ],
     "productDescription": "Unisex regular-fit T-shirt, 100% organic cotton, 160 GSM jersey, crew neck, single color (garment-dyed). 180g average.",
     "productIds": [
-      "urn:pact:product:hm-organic-tshirt-001"
+      "urn:pact:product:vm-organic-tshirt-001"
     ],
     "productNameCompany": "Organic Cotton Basic T-Shirt",
     "productClassifications": [
@@ -1395,13 +1395,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Adidas AG",
+    "companyName": "Strideo AG",
     "companyIds": [
-      "urn:pact:company:adidas-ag"
+      "urn:pact:company:strideo-ag"
     ],
     "productDescription": "Performance running shoe, Primeknit upper from Parley Ocean Plastic (recycled marine waste), Boost midsole, Continental rubber outsole. 330g (US10).",
     "productIds": [
-      "urn:pact:product:adidas-ultraboost-parley-001"
+      "urn:pact:product:strideo-ultraboost-ocean-001"
     ],
     "productNameCompany": "Ultraboost Running Shoe (Parley)",
     "productClassifications": [
@@ -1450,13 +1450,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Burberry Group",
+    "companyName": "Dalmoor Group",
     "companyIds": [
-      "urn:pact:company:burberry-grp"
+      "urn:pact:company:dalmoor-grp"
     ],
     "productDescription": "Iconic mid-length trench coat, cotton gabardine (weatherproof), 100% cotton, double-breasted, belted. Made in Castleford, England. 1.2kg.",
     "productIds": [
-      "urn:pact:product:burberry-trench-001"
+      "urn:pact:product:dalmoor-trench-001"
     ],
     "productNameCompany": "Heritage Trench Coat",
     "productClassifications": [
@@ -1505,13 +1505,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Canada Goose Holdings",
+    "companyName": "Arctic Crest Holdings",
     "companyIds": [
-      "urn:pact:company:canada-goose"
+      "urn:pact:company:arctic-crest"
     ],
     "productDescription": "Extreme-weather down parka, Arctic Tech shell, 625-fill white duck down insulation, fur-free, adjustable hood. 1.8kg.",
     "productIds": [
-      "urn:pact:product:canada-goose-expedition-001"
+      "urn:pact:product:arctic-crest-expedition-001"
     ],
     "productNameCompany": "Expedition Parka",
     "productClassifications": [
@@ -1561,13 +1561,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "UNIQLO (Fast Retailing)",
+    "companyName": "UNIFOLD (Swift Retail)",
     "companyIds": [
-      "urn:pact:company:uniqlo-fr"
+      "urn:pact:company:unifold-sr"
     ],
     "productDescription": "Lightweight packable down jacket, nylon ripstop shell, 90% duck down / 10% feather, water-repellent DWR. 230g. Packs into included pouch.",
     "productIds": [
-      "urn:pact:product:uniqlo-uld-jacket-001"
+      "urn:pact:product:unifold-uld-jacket-001"
     ],
     "productNameCompany": "Ultra Light Down Jacket",
     "productClassifications": [

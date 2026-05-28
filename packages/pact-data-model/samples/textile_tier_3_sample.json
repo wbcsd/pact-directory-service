@@ -4,13 +4,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Grasim Industries",
+    "companyName": "Kanvara Industries",
     "companyIds": [
-      "urn:pact:company:grasim-ind"
+      "urn:pact:company:kanvara-ind"
     ],
     "productDescription": "Medium-staple ginned cotton fiber, 28mm length, suitable for ring spinning. Irrigated cultivation in Gujarat region.",
     "productIds": [
-      "urn:pact:product:grasim-cotton-fiber-001"
+      "urn:pact:product:kanvara-cotton-fiber-001"
     ],
     "productNameCompany": "Raw Cotton Fiber (Ginned)",
     "productClassifications": [
@@ -59,15 +59,15 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Lenzing AG",
+    "companyName": "Lyofiber AG",
     "companyIds": [
-      "urn:pact:company:lenzing-ag"
+      "urn:pact:company:lyofiber-ag"
     ],
     "productDescription": "Lyocell staple fiber, 1.3 dtex, 38mm cut length, produced in closed-loop solvent spinning process from sustainably sourced wood pulp.",
     "productIds": [
-      "urn:pact:product:lenzing-lyocell-001"
+      "urn:pact:product:lyofiber-lyocell-001"
     ],
-    "productNameCompany": "TENCEL\u2122 Lyocell Fiber",
+    "productNameCompany": "TENCEL™ Lyocell Fiber",
     "productClassifications": [
       "urn:pact:productclassification:un-cpc:26310"
     ],
@@ -104,7 +104,7 @@
       },
       "verification": {
         "coverage": "product level",
-        "providerName": "T\u00dcV S\u00dcD",
+        "providerName": "TÜV SÜD",
         "completedAt": "2026-01-20T00:00:00Z",
         "standardName": "ISO 14067"
       }
@@ -115,13 +115,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Reliance Industries",
+    "companyName": "Veritas Industries",
     "companyIds": [
-      "urn:pact:company:reliance-ind"
+      "urn:pact:company:veritas-ind"
     ],
     "productDescription": "Virgin polyester staple fiber, 1.4 dtex, 38mm, semi-dull, suitable for blending with cotton. Produced from PTA and MEG via melt spinning.",
     "productIds": [
-      "urn:pact:product:reliance-psf-virgin-001"
+      "urn:pact:product:veritas-psf-virgin-001"
     ],
     "productNameCompany": "Polyester Staple Fiber (Virgin)",
     "productClassifications": [
@@ -169,13 +169,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Toray Industries",
+    "companyName": "Torika Industries",
     "companyIds": [
-      "urn:pact:company:toray-ind"
+      "urn:pact:company:torika-ind"
     ],
     "productDescription": "Nylon 6,6 continuous filament yarn, 78dtex/68f, high-tenacity, for woven outerwear fabrics. Produced via adipic acid and hexamethylenediamine polymerization.",
     "productIds": [
-      "urn:pact:product:toray-nylon66-yarn-001"
+      "urn:pact:product:torika-nylon66-yarn-001"
     ],
     "productNameCompany": "Nylon 6,6 Filament Yarn",
     "productClassifications": [
@@ -224,13 +224,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "S\u00fcdwolle Group",
+    "companyName": "Sudmerl Group",
     "companyIds": [
-      "urn:pact:company:sudwolle-grp"
+      "urn:pact:company:sudmerl-grp"
     ],
-    "productDescription": "Fine merino wool yarn, 19.5\u00b5m, Nm 60/2, worsted spun, suitable for luxury knitwear and suiting. Australian greasy wool sourced.",
+    "productDescription": "Fine merino wool yarn, 19.5µm, Nm 60/2, worsted spun, suitable for luxury knitwear and suiting. Australian greasy wool sourced.",
     "productIds": [
-      "urn:pact:product:sudwolle-merino-yarn-001"
+      "urn:pact:product:sudmerl-merino-yarn-001"
     ],
     "productNameCompany": "Merino Wool Yarn (19.5 micron)",
     "productClassifications": [
@@ -280,13 +280,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Repreve (Unifi)",
+    "companyName": "Uniflex Renewex",
     "companyIds": [
-      "urn:pact:company:unifi-repreve"
+      "urn:pact:company:uniflex-renewex"
     ],
     "productDescription": "Recycled polyester staple fiber from post-consumer PET bottles, 1.5 dtex, 38mm, dope-dyed black. Certified GRS.",
     "productIds": [
-      "urn:pact:product:repreve-rpet-fiber-001"
+      "urn:pact:product:renewex-rpet-fiber-001"
     ],
     "productNameCompany": "Recycled Polyester Fiber (rPET)",
     "productClassifications": [
@@ -329,13 +329,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Birla Cellulose",
+    "companyName": "Birkha Cellulose",
     "companyIds": [
-      "urn:pact:company:birla-cell"
+      "urn:pact:company:birkha-cell"
     ],
     "productDescription": "Viscose rayon staple fiber, 1.2 dtex, 38mm, bright luster. Produced from FSC-certified dissolving wood pulp.",
     "productIds": [
-      "urn:pact:product:birla-viscose-rsf-001"
+      "urn:pact:product:birkha-viscose-rsf-001"
     ],
     "productNameCompany": "Viscose Rayon Staple Fiber",
     "productClassifications": [
@@ -384,13 +384,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Xinjiang Zhongtai",
+    "companyName": "Zhongfang Chemicals",
     "companyIds": [
-      "urn:pact:company:zhongtai-chem"
+      "urn:pact:company:zhongfang-chem"
     ],
     "productDescription": "Spandex (elastane) fiber, 40 denier, for stretch fabrics. Produced via dry spinning of segmented polyurethane.",
     "productIds": [
-      "urn:pact:product:zhongtai-spandex-001"
+      "urn:pact:product:zhongfang-spandex-001"
     ],
     "productNameCompany": "Spandex/Elastane Fiber",
     "productClassifications": [
@@ -438,13 +438,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Bcomp Ltd.",
+    "companyName": "Fibertek Ltd.",
     "companyIds": [
-      "urn:pact:company:bcomp-ltd"
+      "urn:pact:company:fibertek-ltd"
     ],
     "productDescription": "Technical-grade flax fiber, retted and hackled, for composite reinforcement and high-performance textile applications.",
     "productIds": [
-      "urn:pact:product:bcomp-flax-tech-001"
+      "urn:pact:product:fibertek-flax-tech-001"
     ],
     "productNameCompany": "Natural Flax Fiber (Technical Grade)",
     "productClassifications": [
@@ -487,15 +487,15 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Hyosung TNC",
+    "companyName": "Haesong TNC",
     "companyIds": [
-      "urn:pact:company:hyosung-tnc"
+      "urn:pact:company:haesong-tnc"
     ],
     "productDescription": "High-performance spandex yarn, 20D-1120D range, offering superior stretch recovery. For intimate apparel and sportswear.",
     "productIds": [
-      "urn:pact:product:hyosung-creora-001"
+      "urn:pact:product:haesong-creora-001"
     ],
-    "productNameCompany": "Creora\u00ae Spandex Yarn",
+    "productNameCompany": "Creora® Spandex Yarn",
     "productClassifications": [
       "urn:pact:productclassification:un-cpc:26310"
     ],

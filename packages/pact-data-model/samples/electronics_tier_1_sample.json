@@ -4,13 +4,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Samsung Electronics",
+    "companyName": "Galaxia Electronics",
     "companyIds": [
-      "urn:pact:company:samsung-elec"
+      "urn:pact:company:galaxia-elec"
     ],
     "productDescription": "Flagship smartphone, 6.7\" AMOLED, 256GB storage, 12GB RAM, 5000mAh battery, titanium frame, including retail packaging and accessories (charger cable, SIM tool).",
     "productIds": [
-      "urn:pact:product:samsung-galaxy-s-001"
+      "urn:pact:product:galaxia-mobile-s-001"
     ],
     "productNameCompany": "Galaxy Smartphone S-Series",
     "productClassifications": [
@@ -58,7 +58,7 @@
       },
       "verification": {
         "coverage": "product level",
-        "providerName": "T\u00dcV Rheinland",
+        "providerName": "TÜV Rheinland",
         "completedAt": "2026-02-28T00:00:00Z",
         "standardName": "ISO 14067"
       }
@@ -69,13 +69,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Apple Inc.",
+    "companyName": "Aura Inc.",
     "companyIds": [
-      "urn:pact:company:apple-inc"
+      "urn:pact:company:aura-inc"
     ],
     "productDescription": "14-inch laptop computer, M-series chip, 16GB unified memory, 512GB SSD, aluminum unibody enclosure, including retail packaging.",
     "productIds": [
-      "urn:pact:product:apple-mbp14-001"
+      "urn:pact:product:aura-mbp14-001"
     ],
     "productNameCompany": "MacBook Pro 14-inch",
     "productClassifications": [
@@ -130,13 +130,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Sony Group Corporation",
+    "companyName": "Sonix Group",
     "companyIds": [
-      "urn:pact:company:sony-group"
+      "urn:pact:company:sonix-grp"
     ],
     "productDescription": "Over-ear wireless noise-cancelling headphones, 30-hour battery life, multipoint Bluetooth, including carrying case and USB-C cable.",
     "productIds": [
-      "urn:pact:product:sony-wh-nc-001"
+      "urn:pact:product:sonix-wh-nc-001"
     ],
     "productNameCompany": "WH-Series Wireless Headphones",
     "productClassifications": [
@@ -184,13 +184,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Dell Technologies",
+    "companyName": "Dalta Technologies",
     "companyIds": [
-      "urn:pact:company:dell-tech"
+      "urn:pact:company:dalta-tech"
     ],
     "productDescription": "27-inch IPS LCD monitor, 3840x2160 resolution, USB-C hub with 90W PD, built-in KVM switch, aluminum stand, including cables and retail packaging.",
     "productIds": [
-      "urn:pact:product:dell-monitor-27-4k-001"
+      "urn:pact:product:dalta-monitor-27-4k-001"
     ],
     "productNameCompany": "27\" 4K USB-C Monitor",
     "productClassifications": [
@@ -242,13 +242,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Logitech International",
+    "companyName": "Lexitech International",
     "companyIds": [
-      "urn:pact:company:logitech-intl"
+      "urn:pact:company:lexitech-intl"
     ],
     "productDescription": "Ergonomic vertical wireless mouse, 4000 DPI sensor, USB-A/Bluetooth dual mode, rechargeable Li-ion battery, recycled plastic shell (75% PCR).",
     "productIds": [
-      "urn:pact:product:logitech-ergo-mouse-001"
+      "urn:pact:product:lexitech-ergo-mouse-001"
     ],
     "productNameCompany": "Wireless Ergonomic Mouse",
     "productClassifications": [
@@ -298,13 +298,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Anker Innovations",
+    "companyName": "Amper Innovations",
     "companyIds": [
-      "urn:pact:company:anker-innov"
+      "urn:pact:company:amper-innov"
     ],
     "productDescription": "Compact 65W GaN USB-C charger with foldable prongs, single USB-C port, PPS/PD3.0 support, including retail packaging.",
     "productIds": [
-      "urn:pact:product:anker-65w-charger-001"
+      "urn:pact:product:amper-65w-charger-001"
     ],
     "productNameCompany": "65W GaN USB-C Charger",
     "productClassifications": [
@@ -347,13 +347,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Western Digital",
+    "companyName": "Westcore Digital",
     "companyIds": [
-      "urn:pact:company:western-digital"
+      "urn:pact:company:westcore-digital"
     ],
     "productDescription": "1TB external portable NVMe SSD, USB 3.2 Gen2 interface, aluminum enclosure, shock-resistant, including USB-C cable and retail packaging.",
     "productIds": [
-      "urn:pact:product:wd-portable-ssd-1tb-001"
+      "urn:pact:product:wcd-portable-ssd-1tb-001"
     ],
     "productNameCompany": "1TB Portable SSD",
     "productClassifications": [
@@ -396,13 +396,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Nintendo Co., Ltd.",
+    "companyName": "Nexendo Co.",
     "companyIds": [
-      "urn:pact:company:nintendo-co"
+      "urn:pact:company:nexendo-co"
     ],
     "productDescription": "Handheld gaming console with detachable controllers, 7-inch OLED display, 64GB internal storage, dock included, retail packaging.",
     "productIds": [
-      "urn:pact:product:nintendo-switch-oled-001"
+      "urn:pact:product:nexendo-switch-oled-001"
     ],
     "productNameCompany": "Switch Handheld Console",
     "productClassifications": [
@@ -454,13 +454,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Bose Corporation",
+    "companyName": "Proxima Corporation",
     "companyIds": [
-      "urn:pact:company:bose-corp"
+      "urn:pact:company:proxima-corp"
     ],
     "productDescription": "Compact soundbar with Dolby Atmos, Wi-Fi/Bluetooth/AirPlay 2, HDMI eARC, wall-mountable, including power cable and HDMI cable.",
     "productIds": [
-      "urn:pact:product:bose-soundbar-600-001"
+      "urn:pact:product:proxima-soundbar-600-001"
     ],
     "productNameCompany": "Smart Soundbar 600",
     "productClassifications": [
@@ -508,13 +508,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Raspberry Pi Ltd",
+    "companyName": "Pico Computing",
     "companyIds": [
-      "urn:pact:company:raspberry-pi"
+      "urn:pact:company:pico-computing"
     ],
     "productDescription": "Single-board computer, quad-core Arm Cortex-A76 SoC, 8GB LPDDR4X, USB3, PCIe, dual 4K HDMI, PoE-ready, in anti-static bag with quick-start guide.",
     "productIds": [
-      "urn:pact:product:rpi5-8gb-001"
+      "urn:pact:product:pico5-8gb-001"
     ],
     "productNameCompany": "Raspberry Pi 5 Single-Board Computer",
     "productClassifications": [

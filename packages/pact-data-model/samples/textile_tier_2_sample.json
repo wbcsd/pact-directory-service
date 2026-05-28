@@ -4,13 +4,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Lu Thai Textile",
+    "companyName": "Lin Tai Textile",
     "companyIds": [
-      "urn:pact:company:lu-thai-textile"
+      "urn:pact:company:lin-tai-textile"
     ],
     "productDescription": "100% combed cotton poplin fabric, 120 GSM, yarn-dyed, wrinkle-free finish. For dress shirts and blouses.",
     "productIds": [
-      "urn:pact:product:luthai-poplin-001"
+      "urn:pact:product:linthai-poplin-001"
     ],
     "productNameCompany": "Cotton Poplin Fabric (Woven)",
     "productClassifications": [
@@ -58,13 +58,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Pratibha Syntex",
+    "companyName": "Parvana Syntex",
     "companyIds": [
-      "urn:pact:company:pratibha-syntex"
+      "urn:pact:company:parvana-syntex"
     ],
     "productDescription": "GOTS-certified organic cotton single jersey fabric, 160 GSM, tubular knit, garment-dyed compatible. For T-shirts and casual wear.",
     "productIds": [
-      "urn:pact:product:pratibha-org-jersey-001"
+      "urn:pact:product:parvana-org-jersey-001"
     ],
     "productNameCompany": "Organic Cotton Jersey Knit",
     "productClassifications": [
@@ -107,13 +107,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Toray Textiles Europe",
+    "companyName": "Torika Textiles Europe",
     "companyIds": [
-      "urn:pact:company:toray-txt-eu"
+      "urn:pact:company:torika-txt-eu"
     ],
     "productDescription": "Nylon 6,6 ripstop fabric, 70 denier, DWR (C0 fluorine-free) treated, calendered. For outdoor jackets and backpacks.",
     "productIds": [
-      "urn:pact:product:toray-ripstop-nylon-001"
+      "urn:pact:product:torika-ripstop-nylon-001"
     ],
     "productNameCompany": "Ripstop Nylon Fabric (DWR-treated)",
     "productClassifications": [
@@ -161,13 +161,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Arvind Limited",
+    "companyName": "Arindal Limited",
     "companyIds": [
-      "urn:pact:company:arvind-ltd"
+      "urn:pact:company:arindal-ltd"
     ],
     "productDescription": "Cotton/elastane (98/2) stretch denim, 10oz, indigo rope-dyed, right-hand twill. For jeans and denim jackets.",
     "productIds": [
-      "urn:pact:product:arvind-stretch-denim-001"
+      "urn:pact:product:arindal-stretch-denim-001"
     ],
     "productNameCompany": "Stretch Denim Fabric",
     "productClassifications": [
@@ -216,13 +216,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Schoeller Textil",
+    "companyName": "Schoena Textil",
     "companyIds": [
-      "urn:pact:company:schoeller-txt"
+      "urn:pact:company:schoena-txt"
     ],
     "productDescription": "3-layer bonded softshell fabric: woven nylon face, TPU membrane, fleece backing. Windproof, water-resistant, breathable.",
     "productIds": [
-      "urn:pact:product:schoeller-softshell-001"
+      "urn:pact:product:schoena-softshell-001"
     ],
     "productNameCompany": "4-Way Stretch Softshell Fabric",
     "productClassifications": [
@@ -269,13 +269,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Albini Group",
+    "companyName": "Tessori Group",
     "companyIds": [
-      "urn:pact:company:albini-grp"
+      "urn:pact:company:tessori-grp"
     ],
     "productDescription": "Cotton/silk blend (80/20) shirting fabric, 100 GSM, jacquard woven, piece-dyed. For premium dress shirts.",
     "productIds": [
-      "urn:pact:product:albini-shirting-silk-001"
+      "urn:pact:product:tessori-shirting-silk-001"
     ],
     "productNameCompany": "Luxury Cotton/Silk Shirting Fabric",
     "productClassifications": [
@@ -317,13 +317,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Polartec LLC",
+    "companyName": "Polarwave LLC",
     "companyIds": [
-      "urn:pact:company:polartec-llc"
+      "urn:pact:company:polarwave-llc"
     ],
     "productDescription": "100% recycled polyester microfleece, 200 GSM, brushed both sides, anti-pill finish. Made from post-consumer PET bottles.",
     "productIds": [
-      "urn:pact:product:polartec-recfleece-200-001"
+      "urn:pact:product:polarwave-recfleece-200-001"
     ],
     "productNameCompany": "Recycled Fleece Fabric (200 GSM)",
     "productClassifications": [
@@ -365,13 +365,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Cone Denim",
+    "companyName": "Stone Denim",
     "companyIds": [
-      "urn:pact:company:cone-denim"
+      "urn:pact:company:stone-denim"
     ],
     "productDescription": "100% cotton selvedge denim, 14oz, shuttle-loom woven, natural indigo dyed, raw/unwashed. For premium jeans.",
     "productIds": [
-      "urn:pact:product:cone-selvedge-raw-001"
+      "urn:pact:product:stone-selvedge-raw-001"
     ],
     "productNameCompany": "Selvedge Denim Fabric (Raw)",
     "productClassifications": [
@@ -414,13 +414,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Pontoglio 1883",
+    "companyName": "Tessitura 1880",
     "companyIds": [
-      "urn:pact:company:pontoglio-1883"
+      "urn:pact:company:tessitura-1880"
     ],
     "productDescription": "Cotton/viscose (60/40) cut-pile velvet, 350 GSM, piece-dyed, flame-retardant (FR) treated. For furniture upholstery.",
     "productIds": [
-      "urn:pact:product:pontoglio-velvet-001"
+      "urn:pact:product:tessitura-velvet-001"
     ],
     "productNameCompany": "Velvet Upholstery Fabric",
     "productClassifications": [
@@ -463,13 +463,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Milliken & Company",
+    "companyName": "Textren & Company",
     "companyIds": [
-      "urn:pact:company:milliken-co"
+      "urn:pact:company:textren-co"
     ],
     "productDescription": "3D spacer knit fabric, polyester/spandex (92/8), 300 GSM, moisture-wicking, for athletic footwear uppers.",
     "productIds": [
-      "urn:pact:product:milliken-spacer-knit-001"
+      "urn:pact:product:textren-spacer-knit-001"
     ],
     "productNameCompany": "Performance Knit Spacer Fabric",
     "productClassifications": [
