@@ -59,10 +59,11 @@ test.describe("PCF Requests", () => {
   }) => {
     await page.goto("/nodes/100");
 
-    // Accept the confirmation dialog
-    page.once("dialog", (dialog) => dialog.accept());
-
     await page.getByRole("button", { name: /reject/i }).first().click();
+
+    // AlertDialog should appear — confirm the rejection
+    await expect(page.getByRole("alertdialog")).toBeVisible();
+    await page.getByRole("alertdialog").getByRole("button", { name: /confirm/i }).click();
 
     // After rejection the table refreshes — we should remain on the page without errors
     await expect(page).toHaveURL(/\/nodes\/100/);
@@ -73,9 +74,11 @@ test.describe("PCF Requests", () => {
   }) => {
     await page.goto("/nodes/100");
 
-    page.once("dialog", (dialog) => dialog.dismiss());
-
     await page.getByRole("button", { name: /reject/i }).first().click();
+
+    // AlertDialog should appear — cancel so the request is not removed
+    await expect(page.getByRole("alertdialog")).toBeVisible();
+    await page.getByRole("alertdialog").getByRole("button", { name: /cancel/i }).click();
 
     // Reject button should still be visible (request not removed)
     await expect(page.getByRole("button", { name: /reject/i }).first()).toBeVisible();

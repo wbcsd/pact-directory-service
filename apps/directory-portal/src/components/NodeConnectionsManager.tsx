@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import PaginatedDataTable, { PaginationInfo } from "./PaginatedDataTable";
 import { Column } from "./DataTable";
-import { Box, Button, Callout, Text } from "@radix-ui/themes";
+import { AlertDialog, Box, Button, Callout, Flex, Text } from "@radix-ui/themes";
 import { CheckIcon, Cross2Icon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import "./NodeForm.css";
 
@@ -49,6 +49,7 @@ const NodeConnectionsManager: React.FC<NodeConnectionsManagerProps> = ({ nodeId 
   const [invitationsRefreshKey, setInvitationsRefreshKey] = useState(0);
   const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error', message: string } | null>(null);
   const [showCredentials, setShowCredentials] = useState<ConnectionCredentials | null>(null);
+  const [pendingRejectId, setPendingRejectId] = useState<number | null>(null);
 
   // Fetch invitations
   const fetchInvitations = async (params: {
@@ -111,11 +112,11 @@ const NodeConnectionsManager: React.FC<NodeConnectionsManagerProps> = ({ nodeId 
     }
   };
 
-  const handleRejectInvitation = async (invitationId: number) => {
-    if (!confirm("Are you sure you want to reject this invitation?")) {
-      return;
-    }
+  const handleRejectInvitation = (invitationId: number) => {
+    setPendingRejectId(invitationId);
+  };
 
+  const performRejectInvitation = async (invitationId: number) => {
     try {
       setActionMessage(null);
       const response = await fetchWithAuth(
@@ -218,6 +219,7 @@ const NodeConnectionsManager: React.FC<NodeConnectionsManagerProps> = ({ nodeId 
   ];
 
   return (
+    <>
     <Box className="node-form">
       {actionMessage && (
         <Callout.Root 
@@ -279,6 +281,32 @@ const NodeConnectionsManager: React.FC<NodeConnectionsManagerProps> = ({ nodeId 
         />
       </Box>
     </Box>
+
+      <AlertDialog.Root
+        open={pendingRejectId !== null}
+        onOpenChange={(open) => { if (!open) setPendingRejectId(null); }}
+      >
+        <AlertDialog.Content maxWidth="450px">
+          <AlertDialog.Title>Reject Invitation</AlertDialog.Title>
+          <AlertDialog.Description size="2">
+            Are you sure you want to reject this invitation?
+          </AlertDialog.Description>
+          <Flex gap="3" mt="4" justify="end">
+            <AlertDialog.Cancel>
+              <Button variant="soft" color="gray">Cancel</Button>
+            </AlertDialog.Cancel>
+            <AlertDialog.Action>
+              <Button
+                color="red"
+                onClick={() => { if (pendingRejectId !== null) performRejectInvitation(pendingRejectId); }}
+              >
+                Reject
+              </Button>
+            </AlertDialog.Action>
+          </Flex>
+        </AlertDialog.Content>
+      </AlertDialog.Root>
+    </>
   );
 };
 

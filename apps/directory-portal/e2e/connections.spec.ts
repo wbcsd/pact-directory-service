@@ -42,14 +42,13 @@ test.describe("Node Connections", () => {
   }) => {
     await page.goto("/nodes/100");
 
-    // Set up dialog handler to accept the confirmation
-    page.once("dialog", (dialog) => dialog.accept());
-
     await page.getByRole("button", { name: /reject/i }).first().click();
 
-    // After rejection, the Reject button for invitation id=300 should be gone
-    // (connections refresh trigger will reload — mock returns empty invitations on next call)
-    // We just verify the flow completes without error
+    // AlertDialog should appear — confirm the rejection
+    await expect(page.getByRole("alertdialog")).toBeVisible();
+    await page.getByRole("alertdialog").getByRole("button", { name: /confirm/i }).click();
+
+    // After rejection, we should remain on the node dashboard without errors
     await expect(page).toHaveURL(/\/nodes\/100/);
   });
 
@@ -121,12 +120,13 @@ test.describe("Node Connections", () => {
   }) => {
     await page.goto("/nodes/100");
 
-    // Dismiss the dialog so the connection is not actually removed
-    page.once("dialog", (dialog) => dialog.dismiss());
-
     const removeButton = page.getByRole("button", { name: /remove/i }).first();
     if (await removeButton.isVisible()) {
       await removeButton.click();
+
+      // AlertDialog should appear — cancel so the connection is not removed
+      await expect(page.getByRole("alertdialog")).toBeVisible();
+      await page.getByRole("alertdialog").getByRole("button", { name: /cancel/i }).click();
     }
 
     // We should still be on the node dashboard

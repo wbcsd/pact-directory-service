@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
+  AlertDialog,
   Badge,
   Button,
   Callout,
@@ -106,6 +107,11 @@ type PanelState =
   | { mode: "importPcf" }
   | { mode: "fulfillPcfRequest"; request: PcfRequest };
 
+type ConfirmAction =
+  | { type: "removeConnection"; connectionId: number }
+  | { type: "rejectInvitation"; invitationId: number }
+  | { type: "rejectPcfRequest"; request: PcfRequest };
+
 const getLevelColor = (
   level: string
 ): "blue" | "green" | "yellow" | "red" | "gray" => {
@@ -159,6 +165,7 @@ const NodeDashboardPage: React.FC = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteNameInput, setDeleteNameInput] = useState("");
   const [crossOrgDialogOpen, setCrossOrgDialogOpen] = useState(false);
+  const [pendingConfirmAction, setPendingConfirmAction] = useState<ConfirmAction | null>(null);
 
   const { profileData } = useAuth();
 
@@ -293,16 +300,8 @@ const NodeDashboardPage: React.FC = () => {
     return response.json();
   }, [nodeId]);
 
-  const handleRemoveConnection = useCallback(async (connectionId: number) => {
-    if (!confirm("Are you sure you want to remove this connection? This action cannot be undone.")) return;
-    try {
-      const response = await fetchWithAuth(`/node-invitations/${connectionId}`, { method: "DELETE" });
-      if (response?.ok) {
-        setConnectionsRefreshTrigger(prev => prev + 1);
-      }
-    } catch {
-      // silently ignore — table will retain current state
-    }
+  const handleRemoveConnection = useCallback((connectionId: number) => {
+    setPendingConfirmAction({ type: "removeConnection", connectionId });
   }, []);
 
   const handleAcceptInvitation = useCallback(async (invitationId: number) => {
@@ -318,29 +317,51 @@ const NodeDashboardPage: React.FC = () => {
     }
   }, []);
 
-  const handleRejectInvitation = useCallback(async (invitationId: number) => {
-    if (!confirm("Are you sure you want to reject this invitation?")) return;
-    try {
-      const response = await fetchWithAuth(`/node-invitations/${invitationId}/reject`, { method: "POST" });
-      if (response?.ok) {
-        setConnectionsRefreshTrigger(prev => prev + 1);
-      }
-    } catch {
-      // silently ignore
-    }
+  const handleRejectInvitation = useCallback((invitationId: number) => {
+    setPendingConfirmAction({ type: "rejectInvitation", invitationId });
   }, []);
-  const handleRejectPcfRequest = useCallback(async (request: PcfRequest) => {
-    if (!confirm(`Reject PCF request from ${request.fromNodeName ?? `Node #${request.fromNodeId}`}? A rejection event will be sent.`)) return;
-    setRejectingId(request.id);
-    try {
-      await fetchWithAuth(`/nodes/${nodeId}/pcf-requests/${request.id}/reject`, { method: "POST" });
-      setPcfRequestsRefreshTrigger((prev) => prev + 1);
-    } catch {
-      // silently ignore
-    } finally {
-      setRejectingId(null);
+
+  const handleRejectPcfRequest = useCallback((request: PcfRequest) => {
+    setPendingConfirmAction({ type: "rejectPcfRequest", request });
+  }, []);
+
+  const handleConfirmAction = useCallback(async () => {
+    const action = pendingConfirmAction;
+    if (!action) return;
+    switch (action.type) {
+      case "removeConnection":
+        try {
+          const response = await fetchWithAuth(`/node-invitations/${action.connectionId}`, { method: "DELETE" });
+          if (response?.ok) {
+            setConnectionsRefreshTrigger(prev => prev + 1);
+          }
+        } catch {
+          // silently ignore — table will retain current state
+        }
+        break;
+      case "rejectInvitation":
+        try {
+          const response = await fetchWithAuth(`/node-invitations/${action.invitationId}/reject`, { method: "POST" });
+          if (response?.ok) {
+            setConnectionsRefreshTrigger(prev => prev + 1);
+          }
+        } catch {
+          // silently ignore
+        }
+        break;
+      case "rejectPcfRequest":
+        setRejectingId(action.request.id);
+        try {
+          await fetchWithAuth(`/nodes/${nodeId}/pcf-requests/${action.request.id}/reject`, { method: "POST" });
+          setPcfRequestsRefreshTrigger((prev) => prev + 1);
+        } catch {
+          // silently ignore
+        } finally {
+          setRejectingId(null);
+        }
+        break;
     }
-  }, [nodeId]);
+  }, [pendingConfirmAction, nodeId]);
 
   const fetchPcfRequests = useCallback(async (params: {
     page: number;
@@ -1009,6 +1030,36 @@ const NodeDashboardPage: React.FC = () => {
           </Flex>
         </Dialog.Content>
       </Dialog.Root>
+
+      {/* Confirm destructive action AlertDialog */}
+      <AlertDialog.Root
+        open={pendingConfirmAction !== null}
+        onOpenChange={(open) => { if (!open) setPendingConfirmAction(null); }}
+      >
+        <AlertDialog.Content maxWidth="450px">
+          <AlertDialog.Title>
+            {pendingConfirmAction?.type === "removeConnection" && "Remove Connection"}
+            {pendingConfirmAction?.type === "rejectInvitation" && "Reject Invitation"}
+            {pendingConfirmAction?.type === "rejectPcfRequest" && "Reject PCF Request"}
+          </AlertDialog.Title>
+          <AlertDialog.Description size="2">
+            {pendingConfirmAction?.type === "removeConnection" && "Are you sure you want to remove this connection? This action cannot be undone."}
+            {pendingConfirmAction?.type === "rejectInvitation" && "Are you sure you want to reject this invitation?"}
+            {pendingConfirmAction?.type === "rejectPcfRequest" &&
+              `Reject PCF request from ${
+                pendingConfirmAction.request.fromNodeName ?? `Node #${pendingConfirmAction.request.fromNodeId}`
+              }? A rejection event will be sent.`}
+          </AlertDialog.Description>
+          <Flex gap="3" mt="4" justify="end">
+            <AlertDialog.Cancel>
+              <Button variant="soft" color="gray">Cancel</Button>
+            </AlertDialog.Cancel>
+            <AlertDialog.Action>
+              <Button color="red" onClick={handleConfirmAction}>Confirm</Button>
+            </AlertDialog.Action>
+          </Flex>
+        </AlertDialog.Content>
+      </AlertDialog.Root>
 
       {/* Delete node — step 2 (root only): cross-org warning */}
       <Dialog.Root open={crossOrgDialogOpen} onOpenChange={(open) => { if (!open) setCrossOrgDialogOpen(false); }}>
