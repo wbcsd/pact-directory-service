@@ -150,15 +150,6 @@ router.post('/directory/organizations/:id/users', authenticate, context(async (r
   );
 }));
 
-// Retrieve users from the organization
-router.get('/directory/organizations/:id/users', authenticate, context(async (req) => {
-  return req.services.organization.listMembers(
-    req.context,
-    parseInt(req.params.id as string),
-    ListQuery.parse(req.query)
-  );
-}));
-
 router.get('/directory/organizations/:oid/users/:uid', authenticate, context(async (req) => {
   return req.services.organization.getMember(
     req.context,
@@ -171,6 +162,14 @@ router.get('/directory/organizations/check-name/:name', context(async (req) => {
   const organizationName = req.params.name as string;
   const response = await req.services.organization.checkOrganizationExistsByName(organizationName);
   return response;
+}));
+
+router.post('/directory/organizations/:oid/users/:uid/resend-setup', authenticate, context(async (req) => {
+  return req.services.user.resendPasswordSetup(
+    req.context,
+    parseInt(req.params.oid as string),
+    parseInt(req.params.uid as string)
+  );
 }));
 
 router.post('/directory/organizations/:oid/users/:uid', authenticate, context(async (req) => {
