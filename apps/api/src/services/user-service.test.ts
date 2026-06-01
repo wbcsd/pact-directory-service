@@ -7,6 +7,7 @@ import {
   BadRequestError,
   UnauthorizedError,
   NotFoundError,
+  ForbiddenError,
   EmailNotVerifiedError,
 } from '@src/common/errors';
 import { Role } from '@src/common/policies';
@@ -789,7 +790,23 @@ describe('UserService', () => {
       ).rejects.toThrow('Email already in use');
     });
 
+    it('should throw ForbiddenError when user lacks permission for target org', async () => {
+      // context has organizationId: 1 and only 'edit-users' (not 'edit-all-users'),
+      // so targeting a different org (999) must be rejected
+      await expect(
+        userService.addUserToOrganization(context, 999, userData)
+      ).rejects.toThrow(ForbiddenError);
+    });
+
     it('should throw NotFoundError if organization does not exist', async () => {
+      // Use a root context (edit-all-users) so the permission check passes
+      // and the code reaches the org lookup
+      const rootContext = {
+        ...context,
+        role: Role.Root,
+        policies: ['edit-all-users'],
+      };
+
       dbMocks.db.selectFrom = jest
         .fn()
         .mockReturnValueOnce({
@@ -806,7 +823,7 @@ describe('UserService', () => {
         });
 
       await expect(
-        userService.addUserToOrganization(context, 999, userData)
+        userService.addUserToOrganization(rootContext, 999, userData)
       ).rejects.toThrow(NotFoundError);
     });
 
@@ -873,6 +890,114 @@ describe('UserService', () => {
       );
 
       loggerErrorSpy.mockRestore();
+    });
+  });
+
+  describe('resendPasswordSetup', () => {
+    const adminContext = {
+      userId: 1,
+      email: 'admin@example.com',
+      organizationId: 10,
+      role: Role.Administrator,
+      policies: ['edit-users'],
+      status: 'enabled' as const,
+    };
+
+    const mockUser = {
+      id: 2,
+      email: 'jane@example.com',
+      fullName: 'Jane Doe',
+      organizationName: 'Test Org',
+    };
+
+    it('should send a password setup email when admin requests it for a same-org user', async () => {
+      (crypto.randomBytes as jest.Mock).mockReturnValue({
+        toString: jest.fn().mockReturnValue('resetToken123'),
+      });
+
+      dbMocks.db.selectFrom = jest.fn().mockReturnValue({
+        innerJoin: jest.fn().mockReturnValue({
+          select: jest.fn().mockReturnValue({
+            where: jest.fn().mockReturnValue({
+              where: jest.fn().mockReturnValue({
+                executeTakeFirst: jest.fn().mockResolvedValue(mockUser),
+              }),
+            }),
+          }),
+        }),
+      });
+
+      dbMocks.db.insertInto = jest.fn().mockReturnValue({
+        values: jest.fn().mockReturnValue({
+          execute: jest.fn().mockResolvedValue(undefined),
+        }),
+      });
+
+      const result = await userService.resendPasswordSetup(adminContext, 10, 2);
+
+      expect(result.message).toBe('Password setup email has been sent.');
+      expect(mockEmailService.sendPasswordSetupEmail).toHaveBeenCalledWith(
+        expect.objectContaining({ to: mockUser.email })
+      );
+    });
+
+    it('should throw ForbiddenError when admin targets a different org', async () => {
+      await expect(
+        userService.resendPasswordSetup(adminContext, 99, 2)
+      ).rejects.toThrow(ForbiddenError);
+    });
+
+    it('should allow root to resend setup for any org', async () => {
+      const rootContext = {
+        ...adminContext,
+        role: Role.Root,
+        policies: ['edit-all-users'],
+        organizationId: 10,
+      };
+
+      (crypto.randomBytes as jest.Mock).mockReturnValue({
+        toString: jest.fn().mockReturnValue('resetToken456'),
+      });
+
+      dbMocks.db.selectFrom = jest.fn().mockReturnValue({
+        innerJoin: jest.fn().mockReturnValue({
+          select: jest.fn().mockReturnValue({
+            where: jest.fn().mockReturnValue({
+              where: jest.fn().mockReturnValue({
+                executeTakeFirst: jest.fn().mockResolvedValue(mockUser),
+              }),
+            }),
+          }),
+        }),
+      });
+
+      dbMocks.db.insertInto = jest.fn().mockReturnValue({
+        values: jest.fn().mockReturnValue({
+          execute: jest.fn().mockResolvedValue(undefined),
+        }),
+      });
+
+      const result = await userService.resendPasswordSetup(rootContext, 99, 2);
+
+      expect(result.message).toBe('Password setup email has been sent.');
+    });
+
+    it('should throw NotFoundError when user does not belong to the org', async () => {
+      dbMocks.db.selectFrom = jest.fn().mockReturnValue({
+        innerJoin: jest.fn().mockReturnValue({
+          select: jest.fn().mockReturnValue({
+            where: jest.fn().mockReturnValue({
+              where: jest.fn().mockReturnValue({
+                executeTakeFirst: jest.fn().mockResolvedValue(null),
+              }),
+            }),
+          }),
+        }),
+      });
+
+      await expect(
+        userService.resendPasswordSetup(adminContext, 10, 999)
+      ).rejects.toThrow(NotFoundError);
     });
   });
 });

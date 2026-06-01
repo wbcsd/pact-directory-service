@@ -123,6 +123,76 @@ test.describe("Organizations", () => {
     await expect(nameInput).toHaveValue("Test User");
   });
 
+  test("edit user slide-over shows Reset Password button", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/organization/users");
+
+    await page.getByRole("button", { name: "Edit User Details" }).first().click();
+
+    await expect(page.getByRole("button", { name: /reset password/i })).toBeVisible();
+  });
+
+  test("add user slide-over does not show Reset Password button", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/organization/users");
+
+    await page.getByRole("button", { name: /add user/i }).click();
+
+    await expect(page.getByRole("textbox", { name: /email/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /reset password/i })).not.toBeVisible();
+  });
+
+  test("Reset Password button calls resend-setup API and shows confirmation", async ({
+    authenticatedPage: page,
+  }) => {
+    let resendCalled = false;
+    const apiBase = process.env.API_BASE_URL ?? "http://localhost:3010/api";
+
+    await page.route(`${apiBase}/directory/organizations/10/users/1/resend-setup`, async (route) => {
+      if (route.request().method() === "POST") {
+        resendCalled = true;
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({ message: "Password setup email has been sent." }),
+        });
+      } else {
+        await route.continue();
+      }
+    });
+
+    await page.goto("/organization/users");
+    await page.getByRole("button", { name: "Edit User Details" }).first().click();
+
+    await page.getByRole("button", { name: /reset password/i }).click();
+
+    await expect(page.getByRole("button", { name: /email sent/i })).toBeVisible();
+    expect(resendCalled).toBe(true);
+  });
+
+  test("Reset Password button shows failure message on API error", async ({
+    authenticatedPage: page,
+  }) => {
+    const apiBase = process.env.API_BASE_URL ?? "http://localhost:3010/api";
+
+    await page.route(`${apiBase}/directory/organizations/10/users/1/resend-setup`, async (route) => {
+      await route.fulfill({
+        status: 500,
+        contentType: "application/json",
+        body: JSON.stringify({ error: "Internal server error" }),
+      });
+    });
+
+    await page.goto("/organization/users");
+    await page.getByRole("button", { name: "Edit User Details" }).first().click();
+
+    await page.getByRole("button", { name: /reset password/i }).click();
+
+    await expect(page.getByRole("button", { name: /failed.*try again/i })).toBeVisible();
+  });
+
   test("selecting a user shows Enable/Disable bulk action buttons", async ({
     authenticatedPage: page,
   }) => {

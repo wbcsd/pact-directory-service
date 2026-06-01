@@ -47,6 +47,7 @@ const mockRegistry: Record<string, MockEntry> = {
   getOrgUsers:             { method: "GET",    pattern: /^\/directory\/organizations\/\d+\/users$/,               defaultResponse: mockUserListResponse },
   getOrgUser:              { method: "GET",    pattern: /^\/directory\/organizations\/\d+\/users\/\d+$/,           defaultResponse: mockUserDetail },
   postOrgUser:             { method: "POST",   pattern: /^\/directory\/organizations\/\d+\/users(\/\d+)?$/,        defaultResponse: mockUserDetail },
+  postResendSetup:         { method: "POST",   pattern: /^\/directory\/organizations\/\d+\/users\/\d+\/resend-setup$/, defaultResponse: { message: "Password setup email has been sent." } },
 
   // Nodes
   getOrgNodes:             { method: "GET",    pattern: /^\/directory\/organizations\/\d+\/nodes$/,               defaultResponse: mockNodeListResponse },
