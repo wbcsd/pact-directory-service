@@ -11,6 +11,7 @@ import {
 import {
   ExclamationTriangleIcon,
   CheckIcon,
+  EnvelopeOpenIcon,
 } from "@radix-ui/react-icons";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import { useAuth } from "../contexts/AuthContext";
@@ -52,6 +53,8 @@ const UserForm: React.FC<UserFormProps> = ({
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(isEditMode);
   const [submitting, setSubmitting] = useState(false);
+  const [resendStatus, setResendStatus] = useState<null | "success" | "error">(null);
+  const [resendLoading, setResendLoading] = useState(false);
 
   // Load existing user data for edit mode
   const loadUser = useCallback(async () => {
@@ -133,6 +136,23 @@ const UserForm: React.FC<UserFormProps> = ({
 
   const handleRoleChange = (value: string) => {
     setFormData((prev) => ({ ...prev, role: value }));
+  };
+
+  const handleResendPasswordSetup = async () => {
+    if (!isEditMode) return;
+    try {
+      setResendLoading(true);
+      setResendStatus(null);
+      const response = await fetchWithAuth(
+        `/organizations/${organizationId}/users/${userId}/resend-setup`,
+        { method: "POST" }
+      );
+      setResendStatus(response!.ok ? "success" : "error");
+    } catch {
+      setResendStatus("error");
+    } finally {
+      setResendLoading(false);
+    }
   };
 
   const organizationName =
@@ -229,10 +249,27 @@ const UserForm: React.FC<UserFormProps> = ({
       </FormField>
 
       {/* Actions */}
-      <Flex gap="3" mt="2" justify="end">
+      <Flex gap="3" mt="2" justify="end" wrap="wrap">
         {onCancel && (
           <Button type="button" color="jade" onClick={onCancel}>
             Cancel
+          </Button>
+        )}
+        {isEditMode && (
+          <Button
+            type="button"
+            variant="soft"
+            color="amber"
+            disabled={resendLoading}
+            onClick={handleResendPasswordSetup}
+            title="Send the user an email to (re-)set their password"
+          >
+            {resendLoading ? <Spinner loading /> : <EnvelopeOpenIcon />}
+            {resendStatus === "success"
+              ? "Email sent!"
+              : resendStatus === "error"
+                ? "Failed — try again"
+                : "Reset Password"}
           </Button>
         )}
         <Form.Submit asChild>
