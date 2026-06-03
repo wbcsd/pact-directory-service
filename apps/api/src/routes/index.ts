@@ -150,6 +150,15 @@ router.post('/directory/organizations/:id/users', authenticate, context(async (r
   );
 }));
 
+// Retrieve users from the organization
+router.get('/directory/organizations/:id/users', authenticate, context(async (req) => {
+  return req.services.organization.listMembers(
+    req.context,
+    parseInt(req.params.id as string),
+    ListQuery.parse(req.query)
+  );
+}));
+
 router.get('/directory/organizations/:oid/users/:uid', authenticate, context(async (req) => {
   return req.services.organization.getMember(
     req.context,
