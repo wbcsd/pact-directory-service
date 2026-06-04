@@ -4,6 +4,7 @@ import { Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import "./index.css";
 import App from "./App.tsx";
+import { ConfirmProvider } from "./contexts/ConfirmContext";
 
 function useSystemTheme(): "light" | "dark" {
   const [theme, setTheme] = useState<"light" | "dark">(() =>
@@ -25,7 +26,9 @@ function SystemTheme() {
   const theme = useSystemTheme();
   return (
     <Theme accentColor="indigo" grayColor="slate" radius="small" scaling="100%" appearance={theme}>
-      <App />
+      <ConfirmProvider>
+        <App />
+      </ConfirmProvider>
     </Theme>
   );
 }
