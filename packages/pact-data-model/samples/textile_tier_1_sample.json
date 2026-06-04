@@ -4,15 +4,15 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Patagonia Inc.",
+    "companyName": "Terrafoam Inc.",
     "companyIds": [
-      "urn:pact:company:patagonia-inc"
+      "urn:pact:company:terrafoam-inc"
     ],
     "productDescription": "Men's full-zip fleece jacket, 100% recycled polyester, Fair Trade Certified sewn. Sizes S-XXL. 415g average weight.",
     "productIds": [
-      "urn:pact:product:patagonia-better-sweater-001"
+      "urn:pact:product:terrafoam-better-sweater-001"
     ],
-    "productNameCompany": "Better Sweater\u00ae Fleece Jacket",
+    "productNameCompany": "Better Sweater® Fleece Jacket",
     "productClassifications": [
       "urn:pact:productclassification:un-cpc:28220"
     ],
@@ -65,19 +65,19 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Levi Strauss & Co.",
+    "companyName": "Indigo Strauss & Co.",
     "companyIds": [
-      "urn:pact:company:levis-co"
+      "urn:pact:company:indigo-co"
     ],
-    "productDescription": "Iconic straight-fit jeans, 99% cotton / 1% elastane stretch denim, button fly, 5-pocket styling. Water<Less\u00ae finish. 860g average.",
+    "productDescription": "Iconic straight-fit jeans, 99% cotton / 1% elastane stretch denim, button fly, 5-pocket styling. Water<Less® finish. 860g average.",
     "productIds": [
-      "urn:pact:product:levis-501-original-001"
+      "urn:pact:product:indigo-501-original-001"
     ],
-    "productNameCompany": "501\u00ae Original Fit Jeans",
+    "productNameCompany": "501® Original Fit Jeans",
     "productClassifications": [
       "urn:pact:productclassification:un-cpc:28220"
     ],
-    "comment": "SAMPLE: Water<Less\u00ae finishing uses up to 96% less water than conventional finishing. Denim sourced from certified sustainable cotton.",
+    "comment": "SAMPLE: Water<Less® finishing uses up to 96% less water than conventional finishing. Denim sourced from certified sustainable cotton.",
     "pcf": {
       "declaredUnitOfMeasurement": "piece",
       "declaredUnitAmount": "1",
@@ -97,7 +97,7 @@
         "PACT-3.0"
       ],
       "exemptedEmissionsPercent": "0.5",
-      "boundaryProcessesDescription": "Cotton/elastane denim weaving, indigo dyeing, cutting, sewing, stone-wash finishing (Water<Less\u00ae), labeling, packaging.",
+      "boundaryProcessesDescription": "Cotton/elastane denim weaving, indigo dyeing, cutting, sewing, stone-wash finishing (Water<Less®), labeling, packaging.",
       "packagingEmissionsIncluded": true,
       "geographyCountry": "US",
       "packagingGhgEmissions": "0.35",
@@ -127,13 +127,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Arc'teryx Equipment",
+    "companyName": "Peakline Equipment",
     "companyIds": [
-      "urn:pact:company:arcteryx-equip"
+      "urn:pact:company:peakline-equip"
     ],
     "productDescription": "Gore-Tex Pro 3L hardshell mountaineering jacket, fully seam-taped, helmet-compatible hood, pit zips. 490g. For alpine climbing.",
     "productIds": [
-      "urn:pact:product:arcteryx-alpha-sv-001"
+      "urn:pact:product:peakline-alpha-sv-001"
     ],
     "productNameCompany": "Alpha SV Hardshell Jacket",
     "productClassifications": [
@@ -186,13 +186,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Ermenegildo Zegna",
+    "companyName": "Renova Group",
     "companyIds": [
-      "urn:pact:company:zegna-group"
+      "urn:pact:company:renova-group"
     ],
-    "productDescription": "Men's two-piece suit (jacket + trousers), 100% superfine merino wool (15.5\u00b5m), half-canvassed construction. Made in Italy.",
+    "productDescription": "Men's two-piece suit (jacket + trousers), 100% superfine merino wool (15.5µm), half-canvassed construction. Made in Italy.",
     "productIds": [
-      "urn:pact:product:zegna-wool-suit-001"
+      "urn:pact:product:renova-wool-suit-001"
     ],
     "productNameCompany": "Wool Two-Piece Suit",
     "productClassifications": [
@@ -242,13 +242,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Nike Inc.",
+    "companyName": "Nexstride Inc.",
     "companyIds": [
-      "urn:pact:company:nike-inc"
+      "urn:pact:company:nexstride-inc"
     ],
     "productDescription": "Men's running shoe, engineered mesh upper (recycled polyester), Air Max sole unit, rubber outsole. 310g per shoe (size US10).",
     "productIds": [
-      "urn:pact:product:nike-air-max-run-001"
+      "urn:pact:product:nexstride-air-max-run-001"
     ],
     "productNameCompany": "Air Max Running Shoe",
     "productClassifications": [
@@ -297,13 +297,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "H&M Group",
+    "companyName": "V&M Group",
     "companyIds": [
-      "urn:pact:company:hm-group"
+      "urn:pact:company:vm-group"
     ],
     "productDescription": "Unisex regular-fit T-shirt, 100% organic cotton, 160 GSM jersey, crew neck, single color (garment-dyed). 180g average.",
     "productIds": [
-      "urn:pact:product:hm-organic-tshirt-001"
+      "urn:pact:product:vm-organic-tshirt-001"
     ],
     "productNameCompany": "Organic Cotton Basic T-Shirt",
     "productClassifications": [
@@ -352,13 +352,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Adidas AG",
+    "companyName": "Strideo AG",
     "companyIds": [
-      "urn:pact:company:adidas-ag"
+      "urn:pact:company:strideo-ag"
     ],
     "productDescription": "Performance running shoe, Primeknit upper from Parley Ocean Plastic (recycled marine waste), Boost midsole, Continental rubber outsole. 330g (US10).",
     "productIds": [
-      "urn:pact:product:adidas-ultraboost-parley-001"
+      "urn:pact:product:strideo-ultraboost-ocean-001"
     ],
     "productNameCompany": "Ultraboost Running Shoe (Parley)",
     "productClassifications": [
@@ -407,13 +407,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Burberry Group",
+    "companyName": "Dalmoor Group",
     "companyIds": [
-      "urn:pact:company:burberry-grp"
+      "urn:pact:company:dalmoor-grp"
     ],
     "productDescription": "Iconic mid-length trench coat, cotton gabardine (weatherproof), 100% cotton, double-breasted, belted. Made in Castleford, England. 1.2kg.",
     "productIds": [
-      "urn:pact:product:burberry-trench-001"
+      "urn:pact:product:dalmoor-trench-001"
     ],
     "productNameCompany": "Heritage Trench Coat",
     "productClassifications": [
@@ -462,13 +462,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Canada Goose Holdings",
+    "companyName": "Arctic Crest Holdings",
     "companyIds": [
-      "urn:pact:company:canada-goose"
+      "urn:pact:company:arctic-crest"
     ],
     "productDescription": "Extreme-weather down parka, Arctic Tech shell, 625-fill white duck down insulation, fur-free, adjustable hood. 1.8kg.",
     "productIds": [
-      "urn:pact:product:canada-goose-expedition-001"
+      "urn:pact:product:arctic-crest-expedition-001"
     ],
     "productNameCompany": "Expedition Parka",
     "productClassifications": [
@@ -518,13 +518,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "UNIQLO (Fast Retailing)",
+    "companyName": "UNIFOLD (Swift Retail)",
     "companyIds": [
-      "urn:pact:company:uniqlo-fr"
+      "urn:pact:company:unifold-sr"
     ],
     "productDescription": "Lightweight packable down jacket, nylon ripstop shell, 90% duck down / 10% feather, water-repellent DWR. 230g. Packs into included pouch.",
     "productIds": [
-      "urn:pact:product:uniqlo-uld-jacket-001"
+      "urn:pact:product:unifold-uld-jacket-001"
     ],
     "productNameCompany": "Ultra Light Down Jacket",
     "productClassifications": [

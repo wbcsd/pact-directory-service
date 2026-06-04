@@ -4,13 +4,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "L'Or\u00e9al S.A.",
+    "companyName": "Luminos S.A.",
     "companyIds": [
-      "urn:pact:company:loreal-sa"
+      "urn:pact:company:luminos-sa"
     ],
     "productDescription": "Anti-aging facial serum with 1.5% hyaluronic acid in lightweight aqueous gel. 30mL glass dropper bottle with FSC-certified carton.",
     "productIds": [
-      "urn:pact:product:loreal-revitalift-ha-serum-001"
+      "urn:pact:product:luminos-revitalift-ha-serum-001"
     ],
     "productNameCompany": "Revitalift Hyaluronic Acid Serum (30mL)",
     "productClassifications": [
@@ -66,13 +66,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Est\u00e9e Lauder Companies",
+    "companyName": "Beaumont Beauty Group",
     "companyIds": [
-      "urn:pact:company:estee-lauder"
+      "urn:pact:company:beaumont-beauty-grp"
     ],
     "productDescription": "Full-coverage, long-wear liquid foundation, 30mL glass bottle with pump. SPF10. Oil-free formula. 40 shades.",
     "productIds": [
-      "urn:pact:product:estee-lauder-dw-found-001"
+      "urn:pact:product:beaumont-dw-found-001"
     ],
     "productNameCompany": "Double Wear Foundation (30mL)",
     "productClassifications": [
@@ -120,15 +120,15 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Chanel S.A.",
+    "companyName": "Maison Verelle S.A.",
     "companyIds": [
-      "urn:pact:company:chanel-sa"
+      "urn:pact:company:maison-verelle-sa"
     ],
     "productDescription": "Iconic floral-aldehyde eau de parfum, 100mL. Luxury glass bottle with beveled edges, stopper cap, and gift-quality outer carton.",
     "productIds": [
-      "urn:pact:product:chanel-no5-edp-100-001"
+      "urn:pact:product:verelle-no5-edp-100-001"
     ],
-    "productNameCompany": "N\u00b05 Eau de Parfum (100mL)",
+    "productNameCompany": "N°5 Eau de Parfum (100mL)",
     "productClassifications": [
       "urn:pact:productclassification:un-cpc:35410"
     ],
@@ -176,13 +176,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Shiseido Company",
+    "companyName": "Hikari Beauty Co.",
     "companyIds": [
-      "urn:pact:company:shiseido-co"
+      "urn:pact:company:hikari-beauty-co"
     ],
     "productDescription": "High-protection sunscreen lotion, SPF50+ PA++++, WetForce technology, lightweight texture. 50mL plastic tube.",
     "productIds": [
-      "urn:pact:product:shiseido-sunprotect-spf50-001"
+      "urn:pact:product:hikari-sunprotect-spf50-001"
     ],
     "productNameCompany": "Ultimate Sun Protector Lotion SPF50+ (50mL)",
     "productClassifications": [
@@ -230,13 +230,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "The Ordinary (DECIEM)",
+    "companyName": "The Essential (Pureform)",
     "companyIds": [
-      "urn:pact:company:deciem-ord"
+      "urn:pact:company:pureform-ess"
     ],
     "productDescription": "Concentrated vitamin B3 serum with zinc PCA for blemish-prone skin. 30mL glass dropper bottle, minimalist packaging.",
     "productIds": [
-      "urn:pact:product:ordinary-niacinamide-10-001"
+      "urn:pact:product:pureform-niacinamide-10-001"
     ],
     "productNameCompany": "Niacinamide 10% + Zinc 1% Serum (30mL)",
     "productClassifications": [
@@ -285,13 +285,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "MAC Cosmetics (ELC)",
+    "companyName": "Noir Studio (EBC)",
     "companyIds": [
-      "urn:pact:company:mac-cosmetics"
+      "urn:pact:company:noir-studio-ebc"
     ],
     "productDescription": "Creamy matte lipstick, 3g net weight, full-coverage, in signature black bullet case with magnetic closure.",
     "productIds": [
-      "urn:pact:product:mac-matte-lipstick-001"
+      "urn:pact:product:noir-matte-lipstick-001"
     ],
     "productNameCompany": "Matte Lipstick (3g)",
     "productClassifications": [
@@ -341,13 +341,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Dove (Unilever)",
+    "companyName": "Serene (Aqualux)",
     "companyIds": [
-      "urn:pact:company:dove-unilever"
+      "urn:pact:company:serene-aqualux"
     ],
     "productDescription": "Moisturizing beauty bar, 100g, 1/4 moisturizing cream, mild cleansing. Wrapped in recycled paperboard.",
     "productIds": [
-      "urn:pact:product:dove-beauty-bar-100g-001"
+      "urn:pact:product:serene-beauty-bar-100g-001"
     ],
     "productNameCompany": "Beauty Bar Soap (100g)",
     "productClassifications": [
@@ -403,19 +403,19 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "K\u00e9rastase (L'Or\u00e9al)",
+    "companyName": "Luxara (Luminos)",
     "companyIds": [
-      "urn:pact:company:kerastase-loreal"
+      "urn:pact:company:luxara-luminos"
     ],
     "productDescription": "Nourishing shampoo for dry hair, 250mL, sulfate-free formula. PET bottle with 50% PCR content, flip-top cap.",
     "productIds": [
-      "urn:pact:product:kerastase-nutritive-shampoo-001"
+      "urn:pact:product:luxara-nutritive-shampoo-001"
     ],
     "productNameCompany": "Nutritive Shampoo (250mL)",
     "productClassifications": [
       "urn:pact:productclassification:un-cpc:35410"
     ],
-    "comment": "SAMPLE: 50% PCR-PET bottle. Sulfate-free surfactant system. L'Or\u00e9al waterloop manufacturing (closed-loop water recycling).",
+    "comment": "SAMPLE: 50% PCR-PET bottle. Sulfate-free surfactant system. L'Oréal waterloop manufacturing (closed-loop water recycling).",
     "pcf": {
       "declaredUnitOfMeasurement": "piece",
       "declaredUnitAmount": "1",
@@ -459,13 +459,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Charlotte Tilbury Beauty",
+    "companyName": "Celeste Beaumont Beauty",
     "companyIds": [
-      "urn:pact:company:charlotte-tilbury"
+      "urn:pact:company:celeste-beaumont"
     ],
     "productDescription": "Luxury anti-aging moisturizer, 50mL, with peptides, hyaluronic acid, and rosehip oil. Airless pump jar, luxury outer carton.",
     "productIds": [
-      "urn:pact:product:ct-magic-cream-50ml-001"
+      "urn:pact:product:cb-magic-cream-50ml-001"
     ],
     "productNameCompany": "Magic Cream Moisturizer (50mL)",
     "productClassifications": [
@@ -518,13 +518,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "La Roche-Posay (L'Or\u00e9al)",
+    "companyName": "Clarté Derm (Luminos)",
     "companyIds": [
-      "urn:pact:company:laroche-posay"
+      "urn:pact:company:clarte-derm"
     ],
     "productDescription": "Very high protection sunscreen fluid, SPF50+, with Mexoryl 400 filter. 50mL recyclable tube. Dermatologist recommended.",
     "productIds": [
-      "urn:pact:product:lrp-anthelios-uvmune-50ml-001"
+      "urn:pact:product:cd-solaris-uvshield-50ml-001"
     ],
     "productNameCompany": "Anthelios UV Mune 400 SPF50+ (50mL)",
     "productClassifications": [

@@ -173,6 +173,14 @@ router.get('/directory/organizations/check-name/:name', context(async (req) => {
   return response;
 }));
 
+router.post('/directory/organizations/:oid/users/:uid/resend-setup', authenticate, context(async (req) => {
+  return req.services.user.resendPasswordSetup(
+    req.context,
+    parseInt(req.params.oid as string),
+    parseInt(req.params.uid as string)
+  );
+}));
+
 router.post('/directory/organizations/:oid/users/:uid', authenticate, context(async (req) => {
   const organizationId = parseInt(req.params.oid as string);
   const userId = parseInt(req.params.uid as string);

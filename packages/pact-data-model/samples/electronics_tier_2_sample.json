@@ -4,13 +4,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Foxconn Industrial",
+    "companyName": "Flexon Industrial",
     "companyIds": [
-      "urn:pact:company:foxconn-ind"
+      "urn:pact:company:flexon-ind"
     ],
     "productDescription": "10-layer HDI PCB with SMT components mounted (SoC, PMIC, RF transceiver, memory), fully tested. Main board for flagship smartphone.",
     "productIds": [
-      "urn:pact:product:foxconn-pcba-main-001"
+      "urn:pact:product:flexon-pcba-main-001"
     ],
     "productNameCompany": "Smartphone Main PCB Assembly",
     "productClassifications": [
@@ -58,13 +58,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Samsung SDI",
+    "companyName": "Voltex SDI",
     "companyIds": [
-      "urn:pact:company:samsung-sdi"
+      "urn:pact:company:voltex-sdi"
     ],
     "productDescription": "Pouch-type Li-ion battery cell, NMC811 cathode, 5000mAh, 3.87V nominal. For use in smartphones, tablets, and wearables.",
     "productIds": [
-      "urn:pact:product:samsung-sdi-cell-5000-001"
+      "urn:pact:product:voltex-sdi-cell-5000-001"
     ],
     "productNameCompany": "Lithium-Ion Battery Cell 5000mAh",
     "productClassifications": [
@@ -112,13 +112,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "BOE Technology",
+    "companyName": "Lumex Technology",
     "companyIds": [
-      "urn:pact:company:boe-tech"
+      "urn:pact:company:lumex-tech"
     ],
     "productDescription": "6.7-inch flexible AMOLED display module, 2400x1080 resolution, LTPO backplane, integrated touch digitizer and driver IC.",
     "productIds": [
-      "urn:pact:product:boe-amoled-67-001"
+      "urn:pact:product:lumex-amoled-67-001"
     ],
     "productNameCompany": "6.7\" AMOLED Display Module",
     "productClassifications": [
@@ -166,13 +166,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Qualcomm Technologies",
+    "companyName": "Voxchip Technologies",
     "companyIds": [
-      "urn:pact:company:qualcomm-tech"
+      "urn:pact:company:voxchip-tech"
     ],
     "productDescription": "Advanced mobile system-on-chip, 4nm process node, packaged in FOWLP. Integrates CPU, GPU, NPU, 5G modem, ISP.",
     "productIds": [
-      "urn:pact:product:qualcomm-soc-snap-001"
+      "urn:pact:product:voxchip-soc-snap-001"
     ],
     "productNameCompany": "Snapdragon Mobile SoC (Packaged)",
     "productClassifications": [
@@ -225,13 +225,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Amphenol Corporation",
+    "companyName": "Conntex Corporation",
     "companyIds": [
-      "urn:pact:company:amphenol-corp"
+      "urn:pact:company:conntex-corp"
     ],
     "productDescription": "USB Type-C receptacle connector, 24-pin, SMT mount, with EMI shielding and waterproof gasket (IP68).",
     "productIds": [
-      "urn:pact:product:amphenol-usbc-001"
+      "urn:pact:product:conntex-usbc-001"
     ],
     "productNameCompany": "USB-C Connector Assembly",
     "productClassifications": [
@@ -274,13 +274,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "AAC Technologies",
+    "companyName": "Acustix Technologies",
     "companyIds": [
-      "urn:pact:company:aac-tech"
+      "urn:pact:company:acustix-tech"
     ],
     "productDescription": "48MP rear camera module with OIS, f/1.8 aperture, 1/1.56\" sensor, 6P lens assembly, voice coil motor, and flex cable.",
     "productIds": [
-      "urn:pact:product:aac-camera-mod-001"
+      "urn:pact:product:acustix-camera-mod-001"
     ],
     "productNameCompany": "Smartphone Camera Module",
     "productClassifications": [
@@ -323,13 +323,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Delta Electronics",
+    "companyName": "Volta Electronics",
     "companyIds": [
-      "urn:pact:company:delta-electronics"
+      "urn:pact:company:volta-electronics"
     ],
     "productDescription": "Assembled PCB for 65W GaN fast charger, including GaN FETs, transformer, control IC, and output USB-C port. Requires enclosure for final product.",
     "productIds": [
-      "urn:pact:product:delta-charger-pcb-001"
+      "urn:pact:product:volta-charger-pcb-001"
     ],
     "productNameCompany": "65W GaN USB-C Charger PCB",
     "productClassifications": [
@@ -371,13 +371,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Luxshare Precision",
+    "companyName": "Nexlink Precision",
     "companyIds": [
-      "urn:pact:company:luxshare-prec"
+      "urn:pact:company:nexlink-prec"
     ],
     "productDescription": "6mm balanced armature + dynamic driver hybrid unit for true wireless stereo earbuds, including diaphragm, voice coil, and magnet assembly.",
     "productIds": [
-      "urn:pact:product:luxshare-driver-001"
+      "urn:pact:product:nexlink-driver-001"
     ],
     "productNameCompany": "TWS Earbuds Driver Unit",
     "productClassifications": [
@@ -420,13 +420,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Sunwoda Electronic",
+    "companyName": "Solara Electronic",
     "companyIds": [
-      "urn:pact:company:sunwoda-elec"
+      "urn:pact:company:solara-elec"
     ],
     "productDescription": "4-cell lithium polymer battery pack, 56Wh, with BMS, protection circuitry, and connector. For 14-inch ultrabook laptops.",
     "productIds": [
-      "urn:pact:product:sunwoda-laptop-batt-001"
+      "urn:pact:product:solara-laptop-batt-001"
     ],
     "productNameCompany": "Laptop Battery Pack 56Wh",
     "productClassifications": [
@@ -474,13 +474,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Pegatron Corporation",
+    "companyName": "Pegaform Corporation",
     "companyIds": [
-      "urn:pact:company:pegatron-corp"
+      "urn:pact:company:pegaform-corp"
     ],
     "productDescription": "Backlit scissor-switch keyboard module with aluminum frame, 78-key layout, integrated trackpad flex cable, for 14-inch ultrabook.",
     "productIds": [
-      "urn:pact:product:pegatron-keyboard-001"
+      "urn:pact:product:pegaform-keyboard-001"
     ],
     "productNameCompany": "Laptop Keyboard Module",
     "productClassifications": [

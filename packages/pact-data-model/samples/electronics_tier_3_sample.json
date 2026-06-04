@@ -4,13 +4,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Jiangxi Copper Co.",
+    "companyName": "Xiamei Copper Co.",
     "companyIds": [
-      "urn:pact:company:jiangxi-copper"
+      "urn:pact:company:xiamei-copper"
     ],
     "productDescription": "High-purity electrolytic copper cathode (99.99% Cu), produced via pyrometallurgical smelting and electrolytic refining. Used as feedstock for wire drawing and PCB manufacturing.",
     "productIds": [
-      "urn:pact:product:jiangxi-cu-cathode-001"
+      "urn:pact:product:xiamei-cu-cathode-001"
     ],
     "productNameCompany": "Electrolytic Copper Cathode",
     "productClassifications": [
@@ -58,13 +58,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Umicore N.V.",
+    "companyName": "Auritek N.V.",
     "companyIds": [
-      "urn:pact:company:umicore-nv"
+      "urn:pact:company:auritek-nv"
     ],
-    "productDescription": "Fine gold wire stock (99.99% Au), 25\u00b5m diameter, for semiconductor wire bonding. Produced from recycled electronic scrap via hydrometallurgical refining.",
+    "productDescription": "Fine gold wire stock (99.99% Au), 25µm diameter, for semiconductor wire bonding. Produced from recycled electronic scrap via hydrometallurgical refining.",
     "productIds": [
-      "urn:pact:product:umicore-au-wire-001"
+      "urn:pact:product:auritek-au-wire-001"
     ],
     "productNameCompany": "Gold Bonding Wire Stock",
     "productClassifications": [
@@ -112,13 +112,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Shin-Etsu Chemical",
+    "companyName": "Silven Chemical",
     "companyIds": [
-      "urn:pact:company:shin-etsu"
+      "urn:pact:company:silven-chem"
     ],
     "productDescription": "Monocrystalline silicon wafer, 300mm diameter, p-type, CZ-grown. Used as substrate for semiconductor fabrication.",
     "productIds": [
-      "urn:pact:product:shin-etsu-si-wafer-001"
+      "urn:pact:product:silven-si-wafer-001"
     ],
     "productNameCompany": "Electronic-Grade Silicon Wafer",
     "productClassifications": [
@@ -160,13 +160,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Sumitomo Chemical",
+    "companyName": "Sumeria Chemical",
     "companyIds": [
-      "urn:pact:company:sumitomo-chem"
+      "urn:pact:company:sumeria-chem"
     ],
     "productDescription": "Epoxy molding compound (EMC) for semiconductor encapsulation, silica-filled, low-stress formulation.",
     "productIds": [
-      "urn:pact:product:sumitomo-emc-001"
+      "urn:pact:product:sumeria-emc-001"
     ],
     "productNameCompany": "Epoxy Resin EMC Compound",
     "productClassifications": [
@@ -214,13 +214,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Albemarle Corporation",
+    "companyName": "Alkalith Corporation",
     "companyIds": [
-      "urn:pact:company:albemarle"
+      "urn:pact:company:alkalith-corp"
     ],
     "productDescription": "Battery-grade lithium carbonate (Li2CO3, 99.5% purity), extracted from brine operations. Precursor for lithium-ion battery cathode materials.",
     "productIds": [
-      "urn:pact:product:albemarle-li2co3-001"
+      "urn:pact:product:alkalith-li2co3-001"
     ],
     "productNameCompany": "Battery-Grade Lithium Carbonate",
     "productClassifications": [
@@ -268,13 +268,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Indorama Ventures",
+    "companyName": "Polirama Ventures",
     "companyIds": [
-      "urn:pact:company:indorama"
+      "urn:pact:company:polirama"
     ],
     "productDescription": "Bottle-grade PET resin pellets suitable for thermoforming electronic component trays and blister packaging.",
     "productIds": [
-      "urn:pact:product:indorama-pet-resin-001"
+      "urn:pact:product:polirama-pet-resin-001"
     ],
     "productNameCompany": "PET Resin for Electronics Packaging",
     "productClassifications": [
@@ -316,13 +316,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Tanaka Kikinzoku",
+    "companyName": "Tansei Precious Metals",
     "companyIds": [
-      "urn:pact:company:tanaka-precious"
+      "urn:pact:company:tansei-precious"
     ],
     "productDescription": "Palladium electrolyte solution for connector plating, concentration 10g Pd/L. Used in lead-free connector finishing.",
     "productIds": [
-      "urn:pact:product:tanaka-pd-plating-001"
+      "urn:pact:product:tansei-pd-plating-001"
     ],
     "productNameCompany": "Palladium Plating Solution",
     "productClassifications": [
@@ -365,13 +365,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Corning Incorporated",
+    "companyName": "Vitrex Incorporated",
     "companyIds": [
-      "urn:pact:company:corning-inc"
+      "urn:pact:company:vitrex-inc"
     ],
     "productDescription": "Alkali-aluminosilicate glass sheet, 0.7mm thickness, chemically strengthened. Used as cover glass for smartphones and tablets.",
     "productIds": [
-      "urn:pact:product:corning-glass-sub-001"
+      "urn:pact:product:vitrex-glass-sub-001"
     ],
     "productNameCompany": "Gorilla Glass Substrate",
     "productClassifications": [
@@ -413,13 +413,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "SK Hynix",
+    "companyName": "KX Memtek",
     "companyIds": [
-      "urn:pact:company:sk-hynix"
+      "urn:pact:company:kx-memtek"
     ],
     "productDescription": "256Gb TLC 3D NAND flash memory die, 176-layer, bare die before packaging. Produced in advanced semiconductor fab.",
     "productIds": [
-      "urn:pact:product:sk-hynix-nand-die-001"
+      "urn:pact:product:kx-memtek-nand-die-001"
     ],
     "productNameCompany": "NAND Flash Memory Die (Bare)",
     "productClassifications": [
@@ -460,13 +460,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Murata Manufacturing",
+    "companyName": "Ceramix Manufacturing",
     "companyIds": [
-      "urn:pact:company:murata-mfg"
+      "urn:pact:company:ceramix-mfg"
     ],
     "productDescription": "0402-size MLCC, X7R dielectric, 100nF/16V. Produced via tape casting, printing, stacking, sintering, and termination.",
     "productIds": [
-      "urn:pact:product:murata-mlcc-001"
+      "urn:pact:product:ceramix-mlcc-001"
     ],
     "productNameCompany": "Multilayer Ceramic Capacitor (MLCC)",
     "productClassifications": [

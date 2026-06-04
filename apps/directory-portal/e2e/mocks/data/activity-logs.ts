@@ -68,3 +68,10 @@ export const mockActivityLogDetailResponse = {
   logs: mockActivityLogEntries,
   total: mockActivityLogEntries.length,
 };
+
+// NodeDashboardPage fetchLogs expects { logs: ActivityLog[], total: number }
+// ActivityLog has: id, path, level, message, createdAt
+export const mockNodeActivityLogsResponse = {
+  logs: mockActivityLogEntries,
+  total: mockActivityLogEntries.length,
+};

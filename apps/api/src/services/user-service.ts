@@ -860,7 +860,7 @@ export class UserService {
     // Check if user has permission to add users to this organization
     const allowed = 
       context.policies.includes('edit-all-users') ||
-      context.policies.includes('edit-users') || context.organizationId === organizationId;
+      (context.policies.includes('edit-users') && context.organizationId === organizationId);
     if (!allowed) {
       throw new ForbiddenError('You are not allowed to add users to this organization');
     }
@@ -918,5 +918,43 @@ export class UserService {
       message: 'User created successfully. They will receive an email to set their password.',
       userId: user.id
     };
+  }
+
+  /**
+   * Resend a password setup email to an existing user in an organization.
+   * Admins can use this to let a user (re-)set their password.
+   */
+  async resendPasswordSetup(
+    context: UserContext,
+    organizationId: number,
+    userId: number
+  ): Promise<{ message: string }> {
+    const allowed =
+      context.policies.includes('edit-all-users') ||
+      (context.policies.includes('edit-users') && context.organizationId === organizationId);
+    if (!allowed) {
+      throw new ForbiddenError('You are not allowed to manage users in this organization');
+    }
+
+    const user = await this.db
+      .selectFrom('users')
+      .innerJoin('organizations', 'users.organizationId', 'organizations.id')
+      .select(['users.id', 'users.email', 'users.fullName', 'organizations.name as organizationName'])
+      .where('users.id', '=', userId)
+      .where('users.organizationId', '=', organizationId)
+      .executeTakeFirst();
+
+    if (!user) {
+      throw new NotFoundError('User not found in this organization');
+    }
+
+    await this.generateAndSendPasswordSetupToken(
+      user.id,
+      user.email,
+      user.fullName,
+      user.organizationName
+    );
+
+    return { message: 'Password setup email has been sent.' };
   }
 }

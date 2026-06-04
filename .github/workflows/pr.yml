@@ -4,35 +4,8 @@ on:
   pull_request:
 
 jobs:
-  # ---------------------------------------------------------------------------
-  # API — unit tests + build
-  # ---------------------------------------------------------------------------
-  api:
-    name: API — test & build
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run unit tests
-        run: npm test --workspace=apps/api
-
-      - name: Build
-        run: npm run build --workspace=apps/api
-
-  # ---------------------------------------------------------------------------
-  # Directory Portal — unit tests + e2e + build
-  # ---------------------------------------------------------------------------
-  portal:
-    name: Portal — test, e2e & build
+  ci:
+    name: Test & Build
     runs-on: ubuntu-latest
 
     steps:
@@ -51,7 +24,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-chromium-${{ hashFiles('apps/directory-portal/package-lock.json') }}
+          key: playwright-chromium-${{ hashFiles('package-lock.json') }}
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
@@ -63,12 +36,15 @@ jobs:
         run: npx playwright install-deps chromium
         working-directory: apps/directory-portal
 
-      - name: Run e2e tests
-        run: npm run e2e --workspace=apps/directory-portal -- --project=chromium
+      - name: Test
+        run: npm test
         env:
           CI: true
           VITE_DIRECTORY_API: http://localhost:3010/api
           API_BASE_URL: http://localhost:3010/api
+          VITE_ENABLE_NM: true
+          VITE_ENABLE_OM: true
+          VITE_ENABLE_IM: true
 
       - name: Upload Playwright report
         if: always()
@@ -79,4 +55,4 @@ jobs:
           retention-days: 7
 
       - name: Build
-        run: npm run build --workspace=apps/directory-portal
+        run: npm run build

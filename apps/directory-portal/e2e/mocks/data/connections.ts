@@ -36,7 +36,11 @@ export const mockInvitations: NodeInvitation[] = [
   },
 ];
 
-export const mockConnectionListResponse = makePaginated(mockConnections);
+// Combined list: accepted connections + pending incoming invitations (mirrors real API behaviour)
+export const mockConnectionListResponse = makePaginated([
+  ...mockConnections,
+  mockInvitations[0] as NodeConnection,
+]);
 export const mockInvitationListResponse = makePaginated(mockInvitations);
 
 export const mockAcceptInvitationResponse = {

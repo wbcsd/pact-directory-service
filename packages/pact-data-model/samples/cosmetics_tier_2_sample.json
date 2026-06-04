@@ -4,13 +4,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Givaudan Active Beauty",
+    "companyName": "Aromatix BioActives",
     "companyIds": [
-      "urn:pact:company:givaudan-ab"
+      "urn:pact:company:aromatix-bio"
     ],
     "productDescription": "Proprietary peptide active complex (palmitoyl tripeptide-1 + palmitoyl tetrapeptide-7) in butylene glycol carrier, 100ppm active. For anti-aging serums.",
     "productIds": [
-      "urn:pact:product:givaudan-peptide-complex-001"
+      "urn:pact:product:aromatix-peptide-complex-001"
     ],
     "productNameCompany": "Anti-Aging Peptide Complex",
     "productClassifications": [
@@ -52,13 +52,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Gattefoss\u00e9 SAS",
+    "companyName": "Emultech SAS",
     "companyIds": [
-      "urn:pact:company:gattefosse-sas"
+      "urn:pact:company:emultech-sas"
     ],
     "productDescription": "Pre-formulated self-emulsifying wax base (cetearyl alcohol, PEG-20 stearate, glyceryl stearate), for O/W cream formulations. Simplifies manufacturing.",
     "productIds": [
-      "urn:pact:product:gattefosse-emulwax-001"
+      "urn:pact:product:emultech-emulwax-001"
     ],
     "productNameCompany": "Self-Emulsifying Wax Base",
     "productClassifications": [
@@ -107,13 +107,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Sensient Cosmetic Technologies",
+    "companyName": "Chromex Color Technologies",
     "companyIds": [
-      "urn:pact:company:sensient-cosm"
+      "urn:pact:company:chromex-cosm"
     ],
     "productDescription": "Pre-dispersed mineral color blend (iron oxides, TiO2, mica) in isododecane/dimethicone carrier. Ready-to-use for foundation manufacturing.",
     "productIds": [
-      "urn:pact:product:sensient-mineral-premix-001"
+      "urn:pact:product:chromex-mineral-premix-001"
     ],
     "productNameCompany": "Mineral Foundation Premix",
     "productClassifications": [
@@ -161,13 +161,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Firmenich SA",
+    "companyName": "Florentis SA",
     "companyIds": [
-      "urn:pact:company:firmenich-sa"
+      "urn:pact:company:florentis-sa"
     ],
     "productDescription": "Alcohol-free fragrance concentrate, floral bouquet profile (rose, jasmine, ylang ylang notes), for eau de parfum dilution. IFRA 51st Amendment compliant.",
     "productIds": [
-      "urn:pact:product:firmenich-floral-conc-001"
+      "urn:pact:product:florentis-floral-conc-001"
     ],
     "productNameCompany": "Fine Fragrance Concentrate (Floral)",
     "productClassifications": [
@@ -217,13 +217,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Cosmetic Group Italia",
+    "companyName": "Bellezza Group Italia",
     "companyIds": [
-      "urn:pact:company:cosm-grp-italia"
+      "urn:pact:company:bellezza-grp-italia"
     ],
     "productDescription": "Semi-finished lipstick bullet (wax/oil/pigment), classic bullet shape, ready for assembly into packaging. Various shades available.",
     "productIds": [
-      "urn:pact:product:cgi-lipstick-bullet-001"
+      "urn:pact:product:bgi-lipstick-bullet-001"
     ],
     "productNameCompany": "Lipstick Bullet (Semi-finished)",
     "productClassifications": [
@@ -265,13 +265,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Schwan Cosmetics",
+    "companyName": "Stilo Cosmetics",
     "companyIds": [
-      "urn:pact:company:schwan-cosm"
+      "urn:pact:company:stilo-cosm"
     ],
     "productDescription": "Extruded cosmetic pencil core, kohl/eyeliner formula (waxes, iron oxide, carbon black), waterproof. Ready for encasing in wood barrel.",
     "productIds": [
-      "urn:pact:product:schwan-kohl-core-001"
+      "urn:pact:product:stilo-kohl-core-001"
     ],
     "productNameCompany": "Cosmetic Pencil Core (Kohl/Eyeliner)",
     "productClassifications": [
@@ -313,13 +313,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Aptar Group",
+    "companyName": "Aeropack Group",
     "companyIds": [
-      "urn:pact:company:aptar-grp"
+      "urn:pact:company:aeropack-grp"
     ],
     "productDescription": "Airless pump dispenser, 50mL capacity, PP/PE materials, for serum and cream products. Includes pump, collar, and base.",
     "productIds": [
-      "urn:pact:product:aptar-airless-50ml-001"
+      "urn:pact:product:aeropack-airless-50ml-001"
     ],
     "productNameCompany": "Airless Pump Dispenser (50mL)",
     "productClassifications": [
@@ -360,13 +360,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Verescence (formerly SGD)",
+    "companyName": "Veralux (formerly SGL)",
     "companyIds": [
-      "urn:pact:company:verescence-sas"
+      "urn:pact:company:veralux-sas"
     ],
     "productDescription": "Premium glass perfume bottle, 100mL, extra-flint glass, automated blow-molding, fire-polished. Ready for filling and crimping.",
     "productIds": [
-      "urn:pact:product:verescence-perf-bottle-100-001"
+      "urn:pact:product:veralux-perf-bottle-100-001"
     ],
     "productNameCompany": "Glass Perfume Bottle (100mL)",
     "productClassifications": [
@@ -414,13 +414,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Alb\u00e9a Group",
+    "companyName": "Tubex Group",
     "companyIds": [
-      "urn:pact:company:albea-grp"
+      "urn:pact:company:tubex-grp"
     ],
     "productDescription": "Squeezable cosmetic tube, 75mL, 50% post-consumer recycled PE, offset-printed, with flip-top cap. For creams, lotions, and cleansers.",
     "productIds": [
-      "urn:pact:product:albea-tube-75ml-pcr-001"
+      "urn:pact:product:tubex-tube-75ml-pcr-001"
     ],
     "productNameCompany": "Cosmetic Tube (75mL, PCR PE)",
     "productClassifications": [
@@ -468,13 +468,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Intercos Group",
+    "companyName": "Composita Group",
     "companyIds": [
-      "urn:pact:company:intercos-grp"
+      "urn:pact:company:composita-grp"
     ],
     "productDescription": "Semi-finished pressed powder compact (talc, mica, silica, pigments), wet-pressed into standard 59mm pan. For face powder and bronzer products.",
     "productIds": [
-      "urn:pact:product:intercos-pressed-powder-001"
+      "urn:pact:product:composita-pressed-powder-001"
     ],
     "productNameCompany": "Pressed Powder Compact (Semi-finished)",
     "productClassifications": [

@@ -755,6 +755,34 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /directory/organizations/{oid}/users/{uid}/resend-setup:
+    post:
+      summary: Resend password setup email to a user
+      tags: [Organizations]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: oid
+          required: true
+          schema: { type: integer }
+          description: Organization ID
+        - in: path
+          name: uid
+          required: true
+          schema: { type: integer }
+          description: User ID
+      responses:
+        "200":
+          description: Password setup email sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /directory/organizations/{oid}/users/{uid}:
     get:
       summary: List all users in an organization

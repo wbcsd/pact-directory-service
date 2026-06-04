@@ -4,13 +4,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "BASF SE",
+    "companyName": "Vectus SE",
     "companyIds": [
-      "urn:pact:company:basf-se"
+      "urn:pact:company:vectus-se"
     ],
     "productDescription": "Fatty alcohol blend (C16-C18), cosmetic grade, derived from palm kernel oil. Used as emollient, emulsifier, and thickener in lotions and creams.",
     "productIds": [
-      "urn:pact:product:basf-cetearyl-001"
+      "urn:pact:product:vectus-cetearyl-001"
     ],
     "productNameCompany": "Cetearyl Alcohol (Cosmetic Grade)",
     "productClassifications": [
@@ -60,13 +60,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Dow Chemical",
+    "companyName": "Nexchem",
     "companyIds": [
-      "urn:pact:company:dow-chem"
+      "urn:pact:company:nexchem"
     ],
     "productDescription": "Polydimethylsiloxane (PDMS) fluid, 350 centistoke viscosity, cosmetic grade. Used as skin conditioning agent, emollient, and hair smoothing ingredient.",
     "productIds": [
-      "urn:pact:product:dow-dimethicone-350-001"
+      "urn:pact:product:nexchem-dimethicone-350-001"
     ],
     "productNameCompany": "Dimethicone (Silicone Fluid 350cSt)",
     "productClassifications": [
@@ -91,7 +91,7 @@
         "PACT-3.0"
       ],
       "exemptedEmissionsPercent": "0.5",
-      "boundaryProcessesDescription": "Silicon metal production, methylchlorosilane synthesis (M\u00fcller-Rochow process), hydrolysis, polymerization, viscosity adjustment, filtration.",
+      "boundaryProcessesDescription": "Silicon metal production, methylchlorosilane synthesis (Müller-Rochow process), hydrolysis, polymerization, viscosity adjustment, filtration.",
       "packagingEmissionsIncluded": true,
       "geographyCountry": "US",
       "packagingGhgEmissions": "0.08",
@@ -114,13 +114,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Evonik Industries",
+    "companyName": "Biotex Industries",
     "companyIds": [
-      "urn:pact:company:evonik-ind"
+      "urn:pact:company:biotex-ind"
     ],
     "productDescription": "Fermentation-derived sodium hyaluronate, low molecular weight (50-100 kDa), cosmetic grade. Key active for hydrating serums and anti-aging products.",
     "productIds": [
-      "urn:pact:product:evonik-ha-cosmetic-001"
+      "urn:pact:product:biotex-ha-cosmetic-001"
     ],
     "productNameCompany": "Sodium Hyaluronate (HA, Cosmetic Grade)",
     "productClassifications": [
@@ -162,13 +162,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "IOI Oleochemicals",
+    "companyName": "Palma Oleochemicals",
     "companyIds": [
-      "urn:pact:company:ioi-oleo"
+      "urn:pact:company:palma-oleo"
     ],
     "productDescription": "Refined glycerin, USP/EP grade, 99.7% purity, from palm oil splitting. Used as humectant and solvent in skin care formulations.",
     "productIds": [
-      "urn:pact:product:ioi-glycerin-usp-001"
+      "urn:pact:product:palma-glycerin-usp-001"
     ],
     "productNameCompany": "Glycerin (USP Grade, Palm-derived)",
     "productClassifications": [
@@ -218,13 +218,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Symrise AG",
+    "companyName": "Aromalix AG",
     "companyIds": [
-      "urn:pact:company:symrise-ag"
+      "urn:pact:company:aromalix-ag"
     ],
     "productDescription": "Natural-identical vanilla fragrance compound for cosmetic applications, featuring vanillin, ethyl vanillin, and supporting aromatic molecules. IFRA compliant.",
     "productIds": [
-      "urn:pact:product:symrise-vanilla-frag-001"
+      "urn:pact:product:aromalix-vanilla-frag-001"
     ],
     "productNameCompany": "Vanilla Fragrance Compound",
     "productClassifications": [
@@ -272,13 +272,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Ashland Global",
+    "companyName": "Polyform Global",
     "companyIds": [
-      "urn:pact:company:ashland-global"
+      "urn:pact:company:polyform-global"
     ],
     "productDescription": "Cross-linked polyacrylic acid polymer (Carbomer 940), cosmetic grade. Used as gel thickener and emulsion stabilizer in skincare and haircare.",
     "productIds": [
-      "urn:pact:product:ashland-carbomer940-001"
+      "urn:pact:product:polyform-carbomer940-001"
     ],
     "productNameCompany": "Carbomer 940 (Thickener)",
     "productClassifications": [
@@ -326,13 +326,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Merck KGaA",
+    "companyName": "Petra KGaA",
     "companyIds": [
-      "urn:pact:company:merck-kgaa"
+      "urn:pact:company:petra-kgaa"
     ],
     "productDescription": "Rutile titanium dioxide, surface-treated (alumina/simethicone coated), micronized to 250nm. UV filter and white pigment for sunscreens and foundations.",
     "productIds": [
-      "urn:pact:product:merck-tio2-cosmetic-001"
+      "urn:pact:product:petra-tio2-cosmetic-001"
     ],
     "productNameCompany": "Titanium Dioxide (CI 77891, Cosmetic Grade)",
     "productClassifications": [
@@ -380,13 +380,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "DSM-Firmenich",
+    "companyName": "BioVitalis AG",
     "companyIds": [
-      "urn:pact:company:dsm-firmenich"
+      "urn:pact:company:biovitalis-ag"
     ],
     "productDescription": "dl-alpha-Tocopheryl acetate, synthetic, cosmetic grade. Antioxidant and skin-conditioning agent for serums, creams, and lip care.",
     "productIds": [
-      "urn:pact:product:dsm-vit-e-acetate-001"
+      "urn:pact:product:biovitalis-vit-e-acetate-001"
     ],
     "productNameCompany": "Tocopheryl Acetate (Vitamin E Acetate)",
     "productClassifications": [
@@ -434,13 +434,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Solvay S.A.",
+    "companyName": "Salvas S.A.",
     "companyIds": [
-      "urn:pact:company:solvay-sa"
+      "urn:pact:company:salvas-sa"
     ],
     "productDescription": "Sodium laureth sulfate, 2 EO, 70% active, from coconut-derived lauryl alcohol. Primary surfactant for shampoos, shower gels, facial cleansers.",
     "productIds": [
-      "urn:pact:product:solvay-sles-70-001"
+      "urn:pact:product:salvas-sles-70-001"
     ],
     "productNameCompany": "Sodium Laureth Sulfate (SLES, 70%)",
     "productClassifications": [
@@ -489,13 +489,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Croda International",
+    "companyName": "Natura International",
     "companyIds": [
-      "urn:pact:company:croda-intl"
+      "urn:pact:company:natura-intl"
     ],
     "productDescription": "Refined shea butter (Butyrospermum parkii), deodorized, bleached, cosmetic grade. Emollient and skin barrier ingredient for body butters and lip balms.",
     "productIds": [
-      "urn:pact:product:croda-shea-butter-001"
+      "urn:pact:product:natura-shea-butter-001"
     ],
     "productNameCompany": "Shea Butter (Refined, Cosmetic Grade)",
     "productClassifications": [
@@ -545,13 +545,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Givaudan Active Beauty",
+    "companyName": "Aromatix BioActives",
     "companyIds": [
-      "urn:pact:company:givaudan-ab"
+      "urn:pact:company:aromatix-bio"
     ],
     "productDescription": "Proprietary peptide active complex (palmitoyl tripeptide-1 + palmitoyl tetrapeptide-7) in butylene glycol carrier, 100ppm active. For anti-aging serums.",
     "productIds": [
-      "urn:pact:product:givaudan-peptide-complex-001"
+      "urn:pact:product:aromatix-peptide-complex-001"
     ],
     "productNameCompany": "Anti-Aging Peptide Complex",
     "productClassifications": [
@@ -593,13 +593,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Gattefoss\u00e9 SAS",
+    "companyName": "Emultech SAS",
     "companyIds": [
-      "urn:pact:company:gattefosse-sas"
+      "urn:pact:company:emultech-sas"
     ],
     "productDescription": "Pre-formulated self-emulsifying wax base (cetearyl alcohol, PEG-20 stearate, glyceryl stearate), for O/W cream formulations. Simplifies manufacturing.",
     "productIds": [
-      "urn:pact:product:gattefosse-emulwax-001"
+      "urn:pact:product:emultech-emulwax-001"
     ],
     "productNameCompany": "Self-Emulsifying Wax Base",
     "productClassifications": [
@@ -648,13 +648,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Sensient Cosmetic Technologies",
+    "companyName": "Chromex Color Technologies",
     "companyIds": [
-      "urn:pact:company:sensient-cosm"
+      "urn:pact:company:chromex-cosm"
     ],
     "productDescription": "Pre-dispersed mineral color blend (iron oxides, TiO2, mica) in isododecane/dimethicone carrier. Ready-to-use for foundation manufacturing.",
     "productIds": [
-      "urn:pact:product:sensient-mineral-premix-001"
+      "urn:pact:product:chromex-mineral-premix-001"
     ],
     "productNameCompany": "Mineral Foundation Premix",
     "productClassifications": [
@@ -702,13 +702,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Firmenich SA",
+    "companyName": "Florentis SA",
     "companyIds": [
-      "urn:pact:company:firmenich-sa"
+      "urn:pact:company:florentis-sa"
     ],
     "productDescription": "Alcohol-free fragrance concentrate, floral bouquet profile (rose, jasmine, ylang ylang notes), for eau de parfum dilution. IFRA 51st Amendment compliant.",
     "productIds": [
-      "urn:pact:product:firmenich-floral-conc-001"
+      "urn:pact:product:florentis-floral-conc-001"
     ],
     "productNameCompany": "Fine Fragrance Concentrate (Floral)",
     "productClassifications": [
@@ -758,13 +758,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Cosmetic Group Italia",
+    "companyName": "Bellezza Group Italia",
     "companyIds": [
-      "urn:pact:company:cosm-grp-italia"
+      "urn:pact:company:bellezza-grp-italia"
     ],
     "productDescription": "Semi-finished lipstick bullet (wax/oil/pigment), classic bullet shape, ready for assembly into packaging. Various shades available.",
     "productIds": [
-      "urn:pact:product:cgi-lipstick-bullet-001"
+      "urn:pact:product:bgi-lipstick-bullet-001"
     ],
     "productNameCompany": "Lipstick Bullet (Semi-finished)",
     "productClassifications": [
@@ -806,13 +806,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Schwan Cosmetics",
+    "companyName": "Stilo Cosmetics",
     "companyIds": [
-      "urn:pact:company:schwan-cosm"
+      "urn:pact:company:stilo-cosm"
     ],
     "productDescription": "Extruded cosmetic pencil core, kohl/eyeliner formula (waxes, iron oxide, carbon black), waterproof. Ready for encasing in wood barrel.",
     "productIds": [
-      "urn:pact:product:schwan-kohl-core-001"
+      "urn:pact:product:stilo-kohl-core-001"
     ],
     "productNameCompany": "Cosmetic Pencil Core (Kohl/Eyeliner)",
     "productClassifications": [
@@ -854,13 +854,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Aptar Group",
+    "companyName": "Aeropack Group",
     "companyIds": [
-      "urn:pact:company:aptar-grp"
+      "urn:pact:company:aeropack-grp"
     ],
     "productDescription": "Airless pump dispenser, 50mL capacity, PP/PE materials, for serum and cream products. Includes pump, collar, and base.",
     "productIds": [
-      "urn:pact:product:aptar-airless-50ml-001"
+      "urn:pact:product:aeropack-airless-50ml-001"
     ],
     "productNameCompany": "Airless Pump Dispenser (50mL)",
     "productClassifications": [
@@ -901,13 +901,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Verescence (formerly SGD)",
+    "companyName": "Veralux (formerly SGL)",
     "companyIds": [
-      "urn:pact:company:verescence-sas"
+      "urn:pact:company:veralux-sas"
     ],
     "productDescription": "Premium glass perfume bottle, 100mL, extra-flint glass, automated blow-molding, fire-polished. Ready for filling and crimping.",
     "productIds": [
-      "urn:pact:product:verescence-perf-bottle-100-001"
+      "urn:pact:product:veralux-perf-bottle-100-001"
     ],
     "productNameCompany": "Glass Perfume Bottle (100mL)",
     "productClassifications": [
@@ -955,13 +955,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Alb\u00e9a Group",
+    "companyName": "Tubex Group",
     "companyIds": [
-      "urn:pact:company:albea-grp"
+      "urn:pact:company:tubex-grp"
     ],
     "productDescription": "Squeezable cosmetic tube, 75mL, 50% post-consumer recycled PE, offset-printed, with flip-top cap. For creams, lotions, and cleansers.",
     "productIds": [
-      "urn:pact:product:albea-tube-75ml-pcr-001"
+      "urn:pact:product:tubex-tube-75ml-pcr-001"
     ],
     "productNameCompany": "Cosmetic Tube (75mL, PCR PE)",
     "productClassifications": [
@@ -1009,13 +1009,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Intercos Group",
+    "companyName": "Composita Group",
     "companyIds": [
-      "urn:pact:company:intercos-grp"
+      "urn:pact:company:composita-grp"
     ],
     "productDescription": "Semi-finished pressed powder compact (talc, mica, silica, pigments), wet-pressed into standard 59mm pan. For face powder and bronzer products.",
     "productIds": [
-      "urn:pact:product:intercos-pressed-powder-001"
+      "urn:pact:product:composita-pressed-powder-001"
     ],
     "productNameCompany": "Pressed Powder Compact (Semi-finished)",
     "productClassifications": [
@@ -1062,13 +1062,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "L'Or\u00e9al S.A.",
+    "companyName": "Luminos S.A.",
     "companyIds": [
-      "urn:pact:company:loreal-sa"
+      "urn:pact:company:luminos-sa"
     ],
     "productDescription": "Anti-aging facial serum with 1.5% hyaluronic acid in lightweight aqueous gel. 30mL glass dropper bottle with FSC-certified carton.",
     "productIds": [
-      "urn:pact:product:loreal-revitalift-ha-serum-001"
+      "urn:pact:product:luminos-revitalift-ha-serum-001"
     ],
     "productNameCompany": "Revitalift Hyaluronic Acid Serum (30mL)",
     "productClassifications": [
@@ -1124,13 +1124,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Est\u00e9e Lauder Companies",
+    "companyName": "Beaumont Beauty Group",
     "companyIds": [
-      "urn:pact:company:estee-lauder"
+      "urn:pact:company:beaumont-beauty-grp"
     ],
     "productDescription": "Full-coverage, long-wear liquid foundation, 30mL glass bottle with pump. SPF10. Oil-free formula. 40 shades.",
     "productIds": [
-      "urn:pact:product:estee-lauder-dw-found-001"
+      "urn:pact:product:beaumont-dw-found-001"
     ],
     "productNameCompany": "Double Wear Foundation (30mL)",
     "productClassifications": [
@@ -1178,15 +1178,15 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Chanel S.A.",
+    "companyName": "Maison Verelle S.A.",
     "companyIds": [
-      "urn:pact:company:chanel-sa"
+      "urn:pact:company:maison-verelle-sa"
     ],
     "productDescription": "Iconic floral-aldehyde eau de parfum, 100mL. Luxury glass bottle with beveled edges, stopper cap, and gift-quality outer carton.",
     "productIds": [
-      "urn:pact:product:chanel-no5-edp-100-001"
+      "urn:pact:product:verelle-no5-edp-100-001"
     ],
-    "productNameCompany": "N\u00b05 Eau de Parfum (100mL)",
+    "productNameCompany": "N°5 Eau de Parfum (100mL)",
     "productClassifications": [
       "urn:pact:productclassification:un-cpc:35410"
     ],
@@ -1234,13 +1234,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Shiseido Company",
+    "companyName": "Hikari Beauty Co.",
     "companyIds": [
-      "urn:pact:company:shiseido-co"
+      "urn:pact:company:hikari-beauty-co"
     ],
     "productDescription": "High-protection sunscreen lotion, SPF50+ PA++++, WetForce technology, lightweight texture. 50mL plastic tube.",
     "productIds": [
-      "urn:pact:product:shiseido-sunprotect-spf50-001"
+      "urn:pact:product:hikari-sunprotect-spf50-001"
     ],
     "productNameCompany": "Ultimate Sun Protector Lotion SPF50+ (50mL)",
     "productClassifications": [
@@ -1288,13 +1288,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "The Ordinary (DECIEM)",
+    "companyName": "The Essential (Pureform)",
     "companyIds": [
-      "urn:pact:company:deciem-ord"
+      "urn:pact:company:pureform-ess"
     ],
     "productDescription": "Concentrated vitamin B3 serum with zinc PCA for blemish-prone skin. 30mL glass dropper bottle, minimalist packaging.",
     "productIds": [
-      "urn:pact:product:ordinary-niacinamide-10-001"
+      "urn:pact:product:pureform-niacinamide-10-001"
     ],
     "productNameCompany": "Niacinamide 10% + Zinc 1% Serum (30mL)",
     "productClassifications": [
@@ -1343,13 +1343,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "MAC Cosmetics (ELC)",
+    "companyName": "Noir Studio (EBC)",
     "companyIds": [
-      "urn:pact:company:mac-cosmetics"
+      "urn:pact:company:noir-studio-ebc"
     ],
     "productDescription": "Creamy matte lipstick, 3g net weight, full-coverage, in signature black bullet case with magnetic closure.",
     "productIds": [
-      "urn:pact:product:mac-matte-lipstick-001"
+      "urn:pact:product:noir-matte-lipstick-001"
     ],
     "productNameCompany": "Matte Lipstick (3g)",
     "productClassifications": [
@@ -1399,13 +1399,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Dove (Unilever)",
+    "companyName": "Serene (Aqualux)",
     "companyIds": [
-      "urn:pact:company:dove-unilever"
+      "urn:pact:company:serene-aqualux"
     ],
     "productDescription": "Moisturizing beauty bar, 100g, 1/4 moisturizing cream, mild cleansing. Wrapped in recycled paperboard.",
     "productIds": [
-      "urn:pact:product:dove-beauty-bar-100g-001"
+      "urn:pact:product:serene-beauty-bar-100g-001"
     ],
     "productNameCompany": "Beauty Bar Soap (100g)",
     "productClassifications": [
@@ -1461,19 +1461,19 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "K\u00e9rastase (L'Or\u00e9al)",
+    "companyName": "Luxara (Luminos)",
     "companyIds": [
-      "urn:pact:company:kerastase-loreal"
+      "urn:pact:company:luxara-luminos"
     ],
     "productDescription": "Nourishing shampoo for dry hair, 250mL, sulfate-free formula. PET bottle with 50% PCR content, flip-top cap.",
     "productIds": [
-      "urn:pact:product:kerastase-nutritive-shampoo-001"
+      "urn:pact:product:luxara-nutritive-shampoo-001"
     ],
     "productNameCompany": "Nutritive Shampoo (250mL)",
     "productClassifications": [
       "urn:pact:productclassification:un-cpc:35410"
     ],
-    "comment": "SAMPLE: 50% PCR-PET bottle. Sulfate-free surfactant system. L'Or\u00e9al waterloop manufacturing (closed-loop water recycling).",
+    "comment": "SAMPLE: 50% PCR-PET bottle. Sulfate-free surfactant system. L'Oréal waterloop manufacturing (closed-loop water recycling).",
     "pcf": {
       "declaredUnitOfMeasurement": "piece",
       "declaredUnitAmount": "1",
@@ -1517,13 +1517,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Charlotte Tilbury Beauty",
+    "companyName": "Celeste Beaumont Beauty",
     "companyIds": [
-      "urn:pact:company:charlotte-tilbury"
+      "urn:pact:company:celeste-beaumont"
     ],
     "productDescription": "Luxury anti-aging moisturizer, 50mL, with peptides, hyaluronic acid, and rosehip oil. Airless pump jar, luxury outer carton.",
     "productIds": [
-      "urn:pact:product:ct-magic-cream-50ml-001"
+      "urn:pact:product:cb-magic-cream-50ml-001"
     ],
     "productNameCompany": "Magic Cream Moisturizer (50mL)",
     "productClassifications": [
@@ -1576,13 +1576,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "La Roche-Posay (L'Or\u00e9al)",
+    "companyName": "Clarté Derm (Luminos)",
     "companyIds": [
-      "urn:pact:company:laroche-posay"
+      "urn:pact:company:clarte-derm"
     ],
     "productDescription": "Very high protection sunscreen fluid, SPF50+, with Mexoryl 400 filter. 50mL recyclable tube. Dermatologist recommended.",
     "productIds": [
-      "urn:pact:product:lrp-anthelios-uvmune-50ml-001"
+      "urn:pact:product:cd-solaris-uvshield-50ml-001"
     ],
     "productNameCompany": "Anthelios UV Mune 400 SPF50+ (50mL)",
     "productClassifications": [

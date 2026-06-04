@@ -4,13 +4,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "BASF SE",
+    "companyName": "Vectus SE",
     "companyIds": [
-      "urn:pact:company:basf-se"
+      "urn:pact:company:vectus-se"
     ],
     "productDescription": "Fatty alcohol blend (C16-C18), cosmetic grade, derived from palm kernel oil. Used as emollient, emulsifier, and thickener in lotions and creams.",
     "productIds": [
-      "urn:pact:product:basf-cetearyl-001"
+      "urn:pact:product:vectus-cetearyl-001"
     ],
     "productNameCompany": "Cetearyl Alcohol (Cosmetic Grade)",
     "productClassifications": [
@@ -60,13 +60,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Dow Chemical",
+    "companyName": "Nexchem",
     "companyIds": [
-      "urn:pact:company:dow-chem"
+      "urn:pact:company:nexchem"
     ],
     "productDescription": "Polydimethylsiloxane (PDMS) fluid, 350 centistoke viscosity, cosmetic grade. Used as skin conditioning agent, emollient, and hair smoothing ingredient.",
     "productIds": [
-      "urn:pact:product:dow-dimethicone-350-001"
+      "urn:pact:product:nexchem-dimethicone-350-001"
     ],
     "productNameCompany": "Dimethicone (Silicone Fluid 350cSt)",
     "productClassifications": [
@@ -91,7 +91,7 @@
         "PACT-3.0"
       ],
       "exemptedEmissionsPercent": "0.5",
-      "boundaryProcessesDescription": "Silicon metal production, methylchlorosilane synthesis (M\u00fcller-Rochow process), hydrolysis, polymerization, viscosity adjustment, filtration.",
+      "boundaryProcessesDescription": "Silicon metal production, methylchlorosilane synthesis (Müller-Rochow process), hydrolysis, polymerization, viscosity adjustment, filtration.",
       "packagingEmissionsIncluded": true,
       "geographyCountry": "US",
       "packagingGhgEmissions": "0.08",
@@ -114,13 +114,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Evonik Industries",
+    "companyName": "Biotex Industries",
     "companyIds": [
-      "urn:pact:company:evonik-ind"
+      "urn:pact:company:biotex-ind"
     ],
     "productDescription": "Fermentation-derived sodium hyaluronate, low molecular weight (50-100 kDa), cosmetic grade. Key active for hydrating serums and anti-aging products.",
     "productIds": [
-      "urn:pact:product:evonik-ha-cosmetic-001"
+      "urn:pact:product:biotex-ha-cosmetic-001"
     ],
     "productNameCompany": "Sodium Hyaluronate (HA, Cosmetic Grade)",
     "productClassifications": [
@@ -162,13 +162,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "IOI Oleochemicals",
+    "companyName": "Palma Oleochemicals",
     "companyIds": [
-      "urn:pact:company:ioi-oleo"
+      "urn:pact:company:palma-oleo"
     ],
     "productDescription": "Refined glycerin, USP/EP grade, 99.7% purity, from palm oil splitting. Used as humectant and solvent in skin care formulations.",
     "productIds": [
-      "urn:pact:product:ioi-glycerin-usp-001"
+      "urn:pact:product:palma-glycerin-usp-001"
     ],
     "productNameCompany": "Glycerin (USP Grade, Palm-derived)",
     "productClassifications": [
@@ -218,13 +218,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Symrise AG",
+    "companyName": "Aromalix AG",
     "companyIds": [
-      "urn:pact:company:symrise-ag"
+      "urn:pact:company:aromalix-ag"
     ],
     "productDescription": "Natural-identical vanilla fragrance compound for cosmetic applications, featuring vanillin, ethyl vanillin, and supporting aromatic molecules. IFRA compliant.",
     "productIds": [
-      "urn:pact:product:symrise-vanilla-frag-001"
+      "urn:pact:product:aromalix-vanilla-frag-001"
     ],
     "productNameCompany": "Vanilla Fragrance Compound",
     "productClassifications": [
@@ -272,13 +272,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Ashland Global",
+    "companyName": "Polyform Global",
     "companyIds": [
-      "urn:pact:company:ashland-global"
+      "urn:pact:company:polyform-global"
     ],
     "productDescription": "Cross-linked polyacrylic acid polymer (Carbomer 940), cosmetic grade. Used as gel thickener and emulsion stabilizer in skincare and haircare.",
     "productIds": [
-      "urn:pact:product:ashland-carbomer940-001"
+      "urn:pact:product:polyform-carbomer940-001"
     ],
     "productNameCompany": "Carbomer 940 (Thickener)",
     "productClassifications": [
@@ -326,13 +326,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Merck KGaA",
+    "companyName": "Petra KGaA",
     "companyIds": [
-      "urn:pact:company:merck-kgaa"
+      "urn:pact:company:petra-kgaa"
     ],
     "productDescription": "Rutile titanium dioxide, surface-treated (alumina/simethicone coated), micronized to 250nm. UV filter and white pigment for sunscreens and foundations.",
     "productIds": [
-      "urn:pact:product:merck-tio2-cosmetic-001"
+      "urn:pact:product:petra-tio2-cosmetic-001"
     ],
     "productNameCompany": "Titanium Dioxide (CI 77891, Cosmetic Grade)",
     "productClassifications": [
@@ -380,13 +380,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "DSM-Firmenich",
+    "companyName": "BioVitalis AG",
     "companyIds": [
-      "urn:pact:company:dsm-firmenich"
+      "urn:pact:company:biovitalis-ag"
     ],
     "productDescription": "dl-alpha-Tocopheryl acetate, synthetic, cosmetic grade. Antioxidant and skin-conditioning agent for serums, creams, and lip care.",
     "productIds": [
-      "urn:pact:product:dsm-vit-e-acetate-001"
+      "urn:pact:product:biovitalis-vit-e-acetate-001"
     ],
     "productNameCompany": "Tocopheryl Acetate (Vitamin E Acetate)",
     "productClassifications": [
@@ -434,13 +434,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Solvay S.A.",
+    "companyName": "Salvas S.A.",
     "companyIds": [
-      "urn:pact:company:solvay-sa"
+      "urn:pact:company:salvas-sa"
     ],
     "productDescription": "Sodium laureth sulfate, 2 EO, 70% active, from coconut-derived lauryl alcohol. Primary surfactant for shampoos, shower gels, facial cleansers.",
     "productIds": [
-      "urn:pact:product:solvay-sles-70-001"
+      "urn:pact:product:salvas-sles-70-001"
     ],
     "productNameCompany": "Sodium Laureth Sulfate (SLES, 70%)",
     "productClassifications": [
@@ -489,13 +489,13 @@
     "specVersion": "3.0.0",
     "created": "2026-03-15T10:00:00Z",
     "status": "Active",
-    "companyName": "Croda International",
+    "companyName": "Natura International",
     "companyIds": [
-      "urn:pact:company:croda-intl"
+      "urn:pact:company:natura-intl"
     ],
     "productDescription": "Refined shea butter (Butyrospermum parkii), deodorized, bleached, cosmetic grade. Emollient and skin barrier ingredient for body butters and lip balms.",
     "productIds": [
-      "urn:pact:product:croda-shea-butter-001"
+      "urn:pact:product:natura-shea-butter-001"
     ],
     "productNameCompany": "Shea Butter (Refined, Cosmetic Grade)",
     "productClassifications": [

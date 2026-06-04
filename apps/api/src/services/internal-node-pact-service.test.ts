@@ -300,6 +300,36 @@ describe('InternalNodePactService', () => {
       expect(result.data).toHaveLength(1);
     });
 
+    // Conformance test cases 24/25/26: footprints with empty-string date fields must not
+    // cause a PostgreSQL "invalid input syntax for type timestamp with time zone: """
+    // error. NULLIF wraps ensure "" becomes NULL before the ::timestamptz cast.
+    it('should not throw when date fields are empty strings — validOn (TC#24)', async () => {
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 0 });
+      dbMocks.executors.execute.mockResolvedValueOnce([]);
+
+      await expect(
+        service.getFootprints(nodeId, { validOn: '2024-06-01T00:00:00Z' })
+      ).resolves.not.toThrow();
+    });
+
+    it('should not throw when date fields are empty strings — validAfter (TC#25)', async () => {
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 0 });
+      dbMocks.executors.execute.mockResolvedValueOnce([]);
+
+      await expect(
+        service.getFootprints(nodeId, { validAfter: '2023-01-14T00:00:00Z' })
+      ).resolves.not.toThrow();
+    });
+
+    it('should not throw when date fields are empty strings — validBefore (TC#26)', async () => {
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 0 });
+      dbMocks.executors.execute.mockResolvedValueOnce([]);
+
+      await expect(
+        service.getFootprints(nodeId, { validBefore: '2026-01-01T00:00:00Z' })
+      ).resolves.not.toThrow();
+    });
+
     it('should handle companyId filter — matches laptop with urn:uuid:12345678-1234-1234-1234-123456789012', async () => {
       dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 1 });
       dbMocks.executors.execute.mockResolvedValueOnce([mockFootprintRow]);

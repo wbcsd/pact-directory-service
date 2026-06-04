@@ -1,0 +1,11 @@
+{
+  "report-dir": "coverage",
+  "temp-dir": ".nyc_output",
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": [
+    "src/test/**",
+    "src/mocking/**",
+    "src/**/*.test.*",
+    "src/vite-env.d.ts"
+  ]
+}
