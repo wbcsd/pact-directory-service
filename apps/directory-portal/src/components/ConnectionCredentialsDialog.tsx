@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Button, Callout, Dialog, Flex, Text } from "@radix-ui/themes";
+import { Box, Button, Callout, Dialog, Flex } from "@radix-ui/themes";
 import { CheckIcon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { ConnectionCredentials } from "../pages/NodeDashboardPage.types";
 
