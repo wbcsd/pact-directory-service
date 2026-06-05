@@ -50,7 +50,7 @@ const OrganizationUsers: React.FC = () => {
     setTimeout(() => closePanel(), 1200);
   }, [closePanel]);
 
-  const fetchUsers = async (params: {
+  const fetchUsers = useCallback(async (params: {
     page: number;
     pageSize: number;
     search?: string;
@@ -90,7 +90,7 @@ const OrganizationUsers: React.FC = () => {
     const result = await response.json();
     setSelectedUserIds([]);
     return result;
-  };
+  }, [profileData?.organizationId]);
 
   // Get selected users
   const selectedUsers = users.filter(user => 
@@ -150,12 +150,10 @@ const OrganizationUsers: React.FC = () => {
 
   // Bulk operations
   const handleBulkDisable = async () => {
-    setBulkActionLoading(true);
     await runBulkAction('disable', usersToDisable);
   };
 
   const handleBulkEnable = async () => {
-    setBulkActionLoading(true);
     await runBulkAction('enable', usersToEnable);
   };
 

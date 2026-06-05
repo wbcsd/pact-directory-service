@@ -15,6 +15,7 @@ import FormPageLayout from "../layouts/FormPageLayout";
 import CodeBlock from "../components/CodeBlock";
 import { LazyLog } from "@melloware/react-logviewer";
 import { fetchWithAuth } from "../utils/auth-fetch";
+import { getLevelColor } from "../utils/activity-log-utils";
 
 interface ActivityLog {
   id: number;
@@ -91,23 +92,6 @@ const ActivityLogDetailPage: React.FC = () => {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const getLevelColor = (level: string): "blue" | "green" | "yellow" | "red" | "gray" => {
-    switch (level.toLowerCase()) {
-      case "info":
-        return "blue";
-      case "debug":
-        return "gray";
-      case "warn":
-        return "yellow";
-      case "error":
-        return "red";
-      case "fatal":
-        return "red";
-      default:
-        return "blue";
     }
   };
 

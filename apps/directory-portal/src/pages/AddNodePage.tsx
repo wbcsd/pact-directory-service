@@ -13,9 +13,9 @@ const AddNodePage: React.FC = () => {
       title={`Create node for ${profileData?.organizationName ?? ""}`}
     >
       <NodeForm
-        onCancel={() => navigate("/organization/nodes")}
+        onCancel={() => navigate("/nodes")}
         onSaved={() => {
-          setTimeout(() => navigate("/organization/nodes"), 1500);
+          setTimeout(() => navigate("/nodes"), 1500);
         }}
       />
     </FormPageLayout>
