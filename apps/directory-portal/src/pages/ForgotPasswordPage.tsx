@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import * as Form from "@radix-ui/react-form";
-import { Box, Button, Callout } from "@radix-ui/themes";
-import { Link } from "react-router-dom";
+import { Box, Button, Callout, Flex, Heading, Link, Text } from "@radix-ui/themes";
+import { Link as RouterLink } from "react-router-dom";
 import { ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
 import { LandingPageLayout } from "../layouts";
 import { FormField, TextField } from "../components/ui";
@@ -53,9 +53,9 @@ const ForgotPasswordPage: React.FC = () => {
 
             {status === "success" ? (
               <Box>
-                <h2 style={{ marginBottom: "20px", color: "var(--accent-12)" }}>
+                <Heading mb="4">
                   Check Your Email
-                </h2>
+                </Heading>
                 <Callout.Root color="green" variant="surface">
                   <Callout.Icon>
                     <CheckIcon />
@@ -66,26 +66,19 @@ const ForgotPasswordPage: React.FC = () => {
                     link to reset your password.
                   </Callout.Text>
                 </Callout.Root>
-                <Box style={{ marginTop: "30px", textAlign: "center" }}>
-                  <Link
-                    to="/login"
-                    style={{
-                      color: "var(--accent-12)",
-                      textDecoration: "underline",
-                      fontSize: "0.9em",
-                    }}
-                  >
-                    Back to Login
+                <Flex justify="center" mt="5">
+                  <Link asChild size="2">
+                    <RouterLink to="/login">Back to Login</RouterLink>
                   </Link>
-                </Box>
+                </Flex>
               </Box>
             ) : (
               <>
-                <h2 style={{ marginBottom: "20px" }}>Reset Your Password</h2>
-                <p style={{ marginBottom: "30px", color: "#666" }}>
+                <Heading mb="4">Reset Your Password</Heading>
+                <Text as="p" color="gray" mb="5">
                   Enter your email address and we'll send you a link to reset
                   your password.
-                </p>
+                </Text>
 
                 <Form.Root onSubmit={handleSubmit}>
                   <FormField
@@ -106,7 +99,7 @@ const ForgotPasswordPage: React.FC = () => {
                     </Form.Message>
                   </FormField>
 
-                  <Box style={{ marginTop: "30px" }}>
+                  <Box mt="5">
                     <Form.Submit asChild>
                       <Button
                         style={{ width: "100%" }}
@@ -121,25 +114,18 @@ const ForgotPasswordPage: React.FC = () => {
                   </Box>
                 </Form.Root>
 
-                <Box style={{ marginTop: "20px", textAlign: "center" }}>
-                  <Link
-                    to="/login"
-                    style={{
-                      color: "var(--accent-12)",
-                      textDecoration: "underline",
-                      fontSize: "0.9em",
-                    }}
-                  >
-                    Back to Login
+                <Flex justify="center" mt="4">
+                  <Link asChild size="2">
+                    <RouterLink to="/login">Back to Login</RouterLink>
                   </Link>
-                </Box>
+                </Flex>
 
                 {status === "error" && (
                   <Callout.Root
                     color="bronze"
                     highContrast
                     variant="surface"
-                    style={{ marginTop: "20px" }}
+                    mt="4"
                   >
                     <Callout.Icon>
                       <ExclamationTriangleIcon />
@@ -150,21 +136,17 @@ const ForgotPasswordPage: React.FC = () => {
                   </Callout.Root>
                 )}
 
-                <p
-                  style={{
-                    fontSize: "0.9em",
-                    marginTop: "30px",
-                    textAlign: "center",
-                  }}
+                <Text
+                  as="p"
+                  size="2"
+                  mt="5"
+                  align="center"
                 >
                   Need help? Contact us at:{" "}
-                  <a
-                    style={{ fontWeight: "bold" }}
-                    href="mailto:pact-support@wbcsd.org"
-                  >
+                  <Link href="mailto:pact-support@wbcsd.org" weight="bold">
                     pact-support@wbcsd.org
-                  </a>
-                </p>
+                  </Link>
+                </Text>
               </>
             )}
 

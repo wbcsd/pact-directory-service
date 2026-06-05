@@ -3,13 +3,11 @@ import {
   Badge,
   Button,
   Callout,
-  Dialog,
   DropdownMenu,
   Heading,
   IconButton,
   Separator,
   Text,
-  TextField,
   Box,
   Flex
 } from "@radix-ui/themes";
@@ -28,6 +26,7 @@ import {
   UploadIcon,
 } from "@radix-ui/react-icons";
 import { fetchWithAuth } from "../utils/auth-fetch";
+import { getLevelColor } from "../utils/activity-log-utils";
 import { useNavigate, useParams } from "react-router-dom";
 import { FormPageLayout } from "../layouts";
 import PaginatedDataTable, { PaginationInfo } from "../components/PaginatedDataTable";
@@ -40,106 +39,18 @@ import RequestPcfForm from "../components/RequestPcfForm";
 import ImportFootprintsForm from "../components/ImportFootprintsForm";
 import FulfillPcfRequestForm from "../components/FulfillPcfRequestForm";
 import NodeLink from "../components/NodeLink";
+import ConnectionCredentialsDialog from "../components/ConnectionCredentialsDialog";
+import DeleteNodeDialogs from "../components/DeleteNodeDialogs";
+import {
+  NodeData,
+  ActivityLog,
+  Footprint,
+  ConnectionCredentials,
+  PcfRequest,
+  PanelState,
+  getStatusColor,
+} from "./NodeDashboardPage.types";
 import "./NodeDashboardPage.css";
-
-interface NodeData {
-  id: number;
-  name: string;
-  type: "internal" | "external";
-  status: "active" | "inactive" | "pending";
-  apiUrl?: string;
-  organizationId: number;
-  organizationName?: string;
-  createdAt: string;
-  updatedAt: string;
-  connectionsCount?: number;
-}
-
-interface ActivityLog {
-  id: number;
-  path: string;
-  level: string;
-  message: string;
-  createdAt: string;
-}
-
-interface Footprint {
-  id: string;
-  nodeId: number;
-  data: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface ConnectionCredentials {
-  connectionId: number;
-  clientId: string;
-  clientSecret: string;
-  requestingNodeName?: string;
-  requestingNodeType?: "internal" | "external";
-}
-
-interface PcfRequest {
-  id: number;
-  fromNodeId: number | null;
-  fromNodeName?: string;
-  targetNodeId: number;
-  targetNodeName?: string;
-  connectionId: number | null;
-  requestEventId: string;
-  source: string | null;
-  filters: Record<string, unknown>;
-  status: "pending" | "fulfilled" | "rejected";
-  resultCount: number | null;
-  fulfilledFootprintIds: unknown[] | null;
-  direction: "outgoing" | "incoming";
-  fulfillable?: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-type PanelState =
-  | { mode: "closed" }
-  | { mode: "edit" }
-  | { mode: "connections" }
-  | { mode: "createConnection" }
-  | { mode: "requestPcf" }
-  | { mode: "importPcf" }
-  | { mode: "fulfillPcfRequest"; request: PcfRequest };
-
-const getLevelColor = (
-  level: string
-): "blue" | "green" | "yellow" | "red" | "gray" => {
-  switch (level.toLowerCase()) {
-    case "info":
-      return "blue";
-    case "debug":
-      return "gray";
-    case "warn":
-      return "yellow";
-    case "error":
-      return "red";
-    case "fatal":
-      return "red";
-    default:
-      return "blue";
-  }
-};
-
-const getStatusColor = (
-  status: string
-): "green" | "gray" | "yellow" => {
-  switch (status) {
-    case "active":
-      return "green";
-    case "inactive":
-      return "gray";
-    case "pending":
-      return "yellow";
-    default:
-      return "gray";
-  }
-};
 
 const NodeDashboardPage: React.FC = () => {
   const { id: nodeId } = useParams<{ id: string }>();
@@ -895,51 +806,6 @@ const NodeDashboardPage: React.FC = () => {
             />
           </section>
 
-      {/* Credentials dialog after accepting invitation */}
-      <Dialog.Root open={acceptedCredentials !== null} onOpenChange={(open) => { if (!open) setAcceptedCredentials(null); }}>
-        <Dialog.Content maxWidth="480px">
-          <Dialog.Title>Connection Accepted</Dialog.Title>
-          <Dialog.Description size="2" color="gray" mb="4">
-            Save these credentials securely. They are used by the requesting node to authenticate against this node.
-          </Dialog.Description>
-          {acceptedCredentials && (
-            <>
-              <Box mb="4" p="3" style={{ background: 'var(--gray-a3)', borderRadius: 'var(--radius-2)', fontFamily: 'monospace', fontSize: '13px', lineHeight: '1.8' }}>
-                <div><strong>Connection ID:</strong> {acceptedCredentials.connectionId}</div>
-                <Flex align="center" gap="2">
-                  <strong>Client ID:</strong> {truncateCredential(acceptedCredentials.clientId)}
-                  <Button size="1" variant="soft" onClick={() => copyToClipboard(acceptedCredentials.clientId)}>
-                    Copy
-                  </Button>
-                </Flex>
-                <Flex align="center" gap="2">
-                  <strong>Client Secret:</strong> {truncateCredential(acceptedCredentials.clientSecret)}
-                  <Button size="1" variant="soft" onClick={() => copyToClipboard(acceptedCredentials.clientSecret)}>
-                    Copy
-                  </Button>
-                </Flex>
-              </Box>
-              <Callout.Root color="yellow" mb="4">
-                <Callout.Icon><ExclamationTriangleIcon /></Callout.Icon>
-                <Callout.Text>The client secret will only be shown once. Make sure to copy and store it securely before closing this dialog.</Callout.Text>
-              </Callout.Root>
-              <Callout.Root color="blue" mb="4">
-                <Callout.Icon><CheckIcon /></Callout.Icon>
-                <Callout.Text>
-                  Register this client ID and client secret in the <strong>{acceptedCredentials.requestingNodeName ?? "requesting"}</strong> node configuration.
-                  {acceptedCredentials.requestingNodeType === "external" && " If that node is managed in external software, open that software and add these credentials there."}
-                </Callout.Text>
-              </Callout.Root>
-            </>
-          )}
-          <Flex justify="end">
-            <Dialog.Close>
-              <Button variant="soft">Close</Button>
-            </Dialog.Close>
-          </Flex>
-        </Dialog.Content>
-      </Dialog.Root>
-
       {/* Slide-over panels */}
       <SlideOverPanel
         open={panel.mode !== "closed"}
@@ -995,57 +861,24 @@ const NodeDashboardPage: React.FC = () => {
         )}
       </SlideOverPanel>
 
-      {/* Delete node — step 1: confirm by typing the node name */}
-      <Dialog.Root open={deleteDialogOpen} onOpenChange={(open) => { if (!open) setDeleteDialogOpen(false); }}>
-        <Dialog.Content maxWidth="460px">
-          <Dialog.Title>Delete node</Dialog.Title>
-          <Dialog.Description size="2" color="gray" mb="4">
-            This action <Text weight="bold">cannot be undone</Text>. Type the node name{" "}
-            <Text weight="bold">{nodeData?.name}</Text> to confirm deletion.
-          </Dialog.Description>
-          <TextField.Root
-            placeholder={nodeData?.name ?? ""}
-            value={deleteNameInput}
-            onChange={(e) => setDeleteNameInput(e.target.value)}
-            autoFocus
-          />
-          <Flex gap="3" mt="4" justify="end">
-            <Dialog.Close>
-              <Button variant="soft" color="gray">Cancel</Button>
-            </Dialog.Close>
-            <Button
-              color="red"
-              disabled={deleteNameInput !== nodeData?.name}
-              onClick={handleConfirmDeleteName}
-            >
-              <TrashIcon /> Delete node
-            </Button>
-          </Flex>
-        </Dialog.Content>
-      </Dialog.Root>
+      <ConnectionCredentialsDialog
+        credentials={acceptedCredentials}
+        onClose={() => setAcceptedCredentials(null)}
+        onCopy={copyToClipboard}
+        truncateCredential={truncateCredential}
+      />
 
-      {/* Delete node — step 2 (root only): cross-org warning */}
-      <Dialog.Root open={crossOrgDialogOpen} onOpenChange={(open) => { if (!open) setCrossOrgDialogOpen(false); }}>
-        <Dialog.Content maxWidth="460px">
-          <Dialog.Title>Delete node from another organization</Dialog.Title>
-          <Dialog.Description size="2" color="gray" mb="4">
-            You are logged in as root and are about to delete node{" "}
-            <Text weight="bold">{nodeData?.name}</Text> which belongs to{" "}
-            <Text weight="bold">{nodeData?.organizationName}</Text>, not your own organization.
-            This action <Text weight="bold">cannot be undone</Text>.
-          </Dialog.Description>
-          <Callout.Root color="red" mb="4">
-            <Callout.Icon><ExclamationTriangleIcon /></Callout.Icon>
-            <Callout.Text>You are modifying data that belongs to another organization.</Callout.Text>
-          </Callout.Root>
-          <Flex gap="3" mt="2" justify="end">
-            <Button variant="soft" color="gray" onClick={() => setCrossOrgDialogOpen(false)}>Cancel</Button>
-            <Button color="red" onClick={performDelete}>
-              <TrashIcon /> Confirm deletion
-            </Button>
-          </Flex>
-        </Dialog.Content>
-      </Dialog.Root>
+      <DeleteNodeDialogs
+        nodeData={nodeData}
+        deleteDialogOpen={deleteDialogOpen}
+        onDeleteDialogOpenChange={setDeleteDialogOpen}
+        deleteNameInput={deleteNameInput}
+        onDeleteNameInputChange={setDeleteNameInput}
+        crossOrgDialogOpen={crossOrgDialogOpen}
+        onCrossOrgDialogOpenChange={setCrossOrgDialogOpen}
+        onConfirmDeleteName={handleConfirmDeleteName}
+        onPerformDelete={performDelete}
+      />
     </FormPageLayout>
   );
 };

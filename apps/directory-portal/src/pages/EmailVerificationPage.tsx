@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
-import { Box, Callout } from "@radix-ui/themes";
+import { useParams, Link as RouterLink } from "react-router-dom";
+import { Box, Button, Callout, Flex, Heading, Link, Text } from "@radix-ui/themes";
 import { CheckIcon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { LandingPageLayout } from "../layouts";
 
@@ -59,18 +59,18 @@ const EmailVerificationPage: React.FC = () => {
     <LandingPageLayout>
 
             {status === "verifying" && (
-              <Box style={{ textAlign: "center" }}>
-                <h2 style={{ marginBottom: "20px" }}>Verifying Email...</h2>
-                <p style={{ color: "#666" }}>Please wait while we verify your email address.</p>
-              </Box>
+              <Flex direction="column" align="center">
+                <Heading mb="4">Verifying Email...</Heading>
+                <Text color="gray">Please wait while we verify your email address.</Text>
+              </Flex>
             )}
 
             {status === "success" && (
               <Box>
-                <h2 style={{ marginBottom: "20px", color: "var(--accent-12)" }}>
+                <Heading mb="4">
                   Email Verified Successfully!
-                </h2>
-                <Callout.Root color="green" variant="surface" style={{ marginBottom: "30px" }}>
+                </Heading>
+                <Callout.Root color="green" variant="surface" mb="5">
                   <Callout.Icon>
                     <CheckIcon />
                   </Callout.Icon>
@@ -78,31 +78,20 @@ const EmailVerificationPage: React.FC = () => {
                     {message}
                   </Callout.Text>
                 </Callout.Root>
-                <Box style={{ textAlign: "center" }}>
-                  <Link
-                    to="/login"
-                    style={{
-                      display: "inline-block",
-                      backgroundColor: "var(--accent-9)",
-                      color: "white",
-                      padding: "12px 24px",
-                      textDecoration: "none",
-                      borderRadius: "4px",
-                      fontSize: "1em",
-                    }}
-                  >
-                    Continue to Login
-                  </Link>
-                </Box>
+                <Flex justify="center">
+                  <Button asChild>
+                    <RouterLink to="/login">Continue to Login</RouterLink>
+                  </Button>
+                </Flex>
               </Box>
             )}
 
             {status === "error" && (
               <Box>
-                <h2 style={{ marginBottom: "20px", color: "var(--accent-12)" }}>
+                <Heading mb="4">
                   Verification Failed
-                </h2>
-                <Callout.Root color="bronze" highContrast variant="surface" style={{ marginBottom: "30px" }}>
+                </Heading>
+                <Callout.Root color="bronze" highContrast variant="surface" mb="5">
                   <Callout.Icon>
                     <ExclamationTriangleIcon />
                   </Callout.Icon>
@@ -110,42 +99,27 @@ const EmailVerificationPage: React.FC = () => {
                     {message}
                   </Callout.Text>
                 </Callout.Root>
-                <p style={{ marginBottom: "30px", color: "#666" }}>
+                <Text as="p" color="gray" mb="5">
                   You can request a new verification email or contact support if the problem persists.
-                </p>
-                <Box style={{ textAlign: "center", display: "flex", flexDirection: "column", gap: "15px" }}>
-                  <Link
-                    to="/resend-verification"
-                    style={{
-                      color: "var(--accent-12)",
-                      textDecoration: "underline",
-                      fontSize: "0.9em",
-                    }}
-                  >
-                    Request New Verification Email
+                </Text>
+                <Flex direction="column" align="center" gap="4">
+                  <Link asChild size="2">
+                    <RouterLink to="/resend-verification">
+                      Request New Verification Email
+                    </RouterLink>
                   </Link>
-                  <Link
-                    to="/login"
-                    style={{
-                      color: "var(--accent-12)",
-                      textDecoration: "underline",
-                      fontSize: "0.9em",
-                    }}
-                  >
-                    Back to Login
+                  <Link asChild size="2">
+                    <RouterLink to="/login">Back to Login</RouterLink>
                   </Link>
-                </Box>
+                </Flex>
               </Box>
             )}
-            <p style={{ fontSize: "0.9em", marginTop: "40px", textAlign: "center" }}>
+            <Text as="p" size="2" mt="6" align="center">
               Need help? Contact us at:{" "}
-              <a
-                style={{ fontWeight: "bold" }}
-                href="mailto:pact-support@wbcsd.org"
-              >
+              <Link href="mailto:pact-support@wbcsd.org" weight="bold">
                 pact-support@wbcsd.org
-              </a>
-            </p>
+              </Link>
+            </Text>
 
     </LandingPageLayout>
   );

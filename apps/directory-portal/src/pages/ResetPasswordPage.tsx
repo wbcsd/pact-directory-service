@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import * as Form from "@radix-ui/react-form";
-import { Box, Button, Callout } from "@radix-ui/themes";
-import { useNavigate, useParams, Link } from "react-router-dom";
+import { Box, Button, Callout, Flex, Heading, Link, Text } from "@radix-ui/themes";
+import { useNavigate, useParams, Link as RouterLink } from "react-router-dom";
 import { ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
 import { LandingPageLayout } from "../layouts";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -124,9 +124,9 @@ const ResetPasswordPage: React.FC = () => {
   if (tokenStatus === "invalid") {
     return (
       <LandingPageLayout>
-            <h2 style={{ marginBottom: "20px", color: "var(--accent-12)" }}>
+            <Heading mb="4">
               Invalid Reset Link
-            </h2>
+            </Heading>
             <Callout.Root color="bronze" variant="surface">
               <Callout.Icon>
                 <ExclamationTriangleIcon />
@@ -136,31 +136,16 @@ const ResetPasswordPage: React.FC = () => {
                   "This reset link is invalid or has expired. Please request a new one."}
               </Callout.Text>
             </Callout.Root>
-            <Box style={{ marginTop: "30px", textAlign: "center" }}>
-              <Link
-                to="/forgot-password"
-                style={{
-                  color: "var(--accent-12)",
-                  textDecoration: "underline",
-                  fontWeight: "500",
-                }}
-              >
-                Request New Reset Link
+            <Flex direction="column" align="center" gap="3" mt="5">
+              <Link asChild>
+                <RouterLink to="/forgot-password">
+                  Request New Reset Link
+                </RouterLink>
               </Link>
-              <br />
-              <Link
-                to="/login"
-                style={{
-                  color: "#666",
-                  textDecoration: "underline",
-                  fontSize: "0.9em",
-                  marginTop: "10px",
-                  display: "inline-block",
-                }}
-              >
-                Back to Login
+              <Link asChild size="2" color="gray">
+                <RouterLink to="/login">Back to Login</RouterLink>
               </Link>
-            </Box>
+            </Flex>
       </LandingPageLayout>
     );
   }
@@ -170,9 +155,9 @@ const ResetPasswordPage: React.FC = () => {
 
             {status === "success" ? (
               <Box>
-                <h2 style={{ marginBottom: "20px", color: "var(--accent-12)" }}>
+                <Heading mb="4">
                   Password Reset Successful
-                </h2>
+                </Heading>
                 <Callout.Root color="green" variant="surface">
                   <Callout.Icon>
                     <CheckIcon />
@@ -182,22 +167,18 @@ const ResetPasswordPage: React.FC = () => {
                     redirected to the login page shortly.
                   </Callout.Text>
                 </Callout.Root>
-                <Box style={{ marginTop: "30px", textAlign: "center" }}>
-                  <Link
-                    to="/login"
-                    style={{
-                      color: "var(--accent-12)",
-                      textDecoration: "underline",
-                      fontWeight: "500",
-                    }}
-                  >
-                    Go to Login
+                <Flex justify="center" mt="5">
+                  <Link asChild>
+                    <RouterLink to="/login">Go to Login</RouterLink>
                   </Link>
-                </Box>
+                </Flex>
               </Box>
             ) : (
               <>
-                <h2 style={{ marginBottom: "20px" }}>Set New Password</h2>
+                <Heading mb="4">Set New Password</Heading>
+                <Text as="p" color="gray" mb="5">
+                  Enter your new password below.
+                </Text>
                 <p style={{ marginBottom: "30px", color: "#666" }}>
                   Enter your new password below.
                 </p>
@@ -237,7 +218,7 @@ const ResetPasswordPage: React.FC = () => {
                     />
                   </FormField>
 
-                  <Box style={{ marginTop: "30px" }}>
+                  <Box mt="5">
                     <Form.Submit asChild>
                       <Button
                         style={{ width: "100%" }}
@@ -257,7 +238,7 @@ const ResetPasswordPage: React.FC = () => {
                     color="bronze"
                     highContrast
                     variant="surface"
-                    style={{ marginTop: "20px" }}
+                    mt="4"
                   >
                     <Callout.Icon>
                       <ExclamationTriangleIcon />
@@ -268,21 +249,17 @@ const ResetPasswordPage: React.FC = () => {
                   </Callout.Root>
                 )}
 
-                <p
-                  style={{
-                    fontSize: "0.9em",
-                    marginTop: "30px",
-                    textAlign: "center",
-                  }}
+                <Text
+                  as="p"
+                  size="2"
+                  mt="5"
+                  align="center"
                 >
                   Need help? Contact us at:{" "}
-                  <a
-                    style={{ fontWeight: "bold" }}
-                    href="mailto:pact-support@wbcsd.org"
-                  >
+                  <Link href="mailto:pact-support@wbcsd.org" weight="bold">
                     pact-support@wbcsd.org
-                  </a>
-                </p>
+                  </Link>
+                </Text>
               </>
             )}
             

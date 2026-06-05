@@ -1,6 +1,7 @@
 import React from "react";
 import { Badge, Text } from "@radix-ui/themes";
 import { useNavigate } from "react-router-dom";
+import { getLevelColor } from "../utils/activity-log-utils";
 import PaginatedDataTable, {
   PaginationInfo,
 } from "../components/PaginatedDataTable";
@@ -43,25 +44,6 @@ const ActivityLogsPage: React.FC = () => {
 
     const result: ActivityLogsResponse = await response!.json();
     return result;
-  };
-
-  const getLevelColor = (
-    level: string
-  ): "blue" | "green" | "yellow" | "red" | "gray" => {
-    switch (level.toLowerCase()) {
-      case "info":
-        return "blue";
-      case "debug":
-        return "gray";
-      case "warn":
-        return "yellow";
-      case "error":
-        return "red";
-      case "fatal":
-        return "red";
-      default:
-        return "blue";
-    }
   };
 
   const formatDate = (dateString: string) => {
