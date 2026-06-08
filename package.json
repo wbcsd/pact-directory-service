@@ -2,7 +2,6 @@
   "name": "pact-directory",
   "version": "1.0.0",
   "workspaces": [
-    "apps/*",
     "packages/*"
   ],
   "private": true,
@@ -10,6 +9,6 @@
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "clean": "npm run clean --workspaces --if-present",
-    "pristine": "npm run clean --workspaces --if-present && rm -rf node_modules && rm -rf packages/*/node_modules && rm -rf apps/*/node_modules"
+    "pristine": "npm run clean --workspaces --if-present && rm -rf node_modules && rm -rf packages/*/node_modules"
   }
 }

@@ -69,7 +69,7 @@ cd pact-directory
 npm i
 
 # Start Postgres
-cd apps/api && docker compose up -d && npm run db:migrate && cd ../..
+cd packages/api && docker compose up -d && npm run db:migrate && cd ../..
 
 # Run API + portal
 npm run dev

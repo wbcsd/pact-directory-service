@@ -4,18 +4,16 @@ This guide walks through setting up a local development environment for the PACT
 
 ## Project structure
 
-This is an npm workspaces monorepo with two applications and two supporting packages:
+This is an npm workspaces monorepo with all packages under `packages/`:
 
 ```
-apps/
+packages/
   api/                  Express.js + PostgreSQL backend serving the platform
                         (Conformance proxy, organizations, nodes, footprints,
                          PCF requests, internal node virtual PACT v3 API,
                          activity logs)
   directory-portal/     React + Vite frontend — the PACT Network Services
                         portal UI
-
-packages/
   pact-api-client/      HTTP client for PACT-conformant APIs. Used by the API
                         to talk to internal and external nodes (OAuth2 client-
                         credentials, footprints, events).
@@ -25,7 +23,7 @@ packages/
 docs/                   Design notes, integration guide, diagrams.
 ```
 
-`packages/*` are consumed by `apps/api` via npm workspace references (`"pact-api-client": "*"`, `"pact-data-model": "*"`).
+`packages/*` are consumed by `packages/api` via npm workspace references (`"pact-api-client": "*"`, `"pact-data-model": "*"`).
 
 ## Prerequisites
 
@@ -53,14 +51,14 @@ cd pact-directory
 npm i
 ```
 
-`npm i` at the root installs dependencies for all workspaces (`apps/*` and `packages/*`) and links the local packages into `apps/api`.
+`npm i` at the root installs dependencies for all workspaces (`packages/*` and `packages/*`) and links the local packages into `packages/api`.
 
 ### 2. Start PostgreSQL
 
-The API uses PostgreSQL. A `docker-compose.yml` is provided in `apps/api/`:
+The API uses PostgreSQL. A `docker-compose.yml` is provided in `packages/api/`:
 
 ```bash
-cd apps/api
+cd packages/api
 docker compose up -d
 docker compose ps          # verify the container is healthy
 ```
@@ -69,10 +67,10 @@ This starts a `postgres:15.2-alpine` container on `localhost:5432` with database
 
 ### 3. Configure the API
 
-The API loads its configuration from `apps/api/.env`. Copy the example and edit if needed:
+The API loads its configuration from `packages/api/.env`. Copy the example and edit if needed:
 
 ```bash
-cd apps/api
+cd packages/api
 cp .env.example .env
 ```
 
@@ -86,12 +84,12 @@ The default values in `.env.example` are sufficient for local development. Notab
 - `DIRECTORY_API` — public base URL of this API (used when generating PACT v3 URLs for internal nodes)
 - `MAIL_API_KEY`, `MAIL_API_SECRET`, `MAIL_FROM_*` — Mailjet credentials for outbound email (optional locally; emails are no-ops without a key)
 - `DEV_REQUEST_DELAY` — artificial delay (ms) on every request, useful for testing UI loading states
-- `ENABLE_OPENAPI_VALIDATION` — when `true`, requests/responses are validated against `apps/api/openapi.yaml`
+- `ENABLE_OPENAPI_VALIDATION` — when `true`, requests/responses are validated against `packages/api/openapi.yaml`
 
 ### 4. Run migrations
 
 ```bash
-cd apps/api
+cd packages/api
 npm run db:migrate                # migrate to latest
 
 # Other migration commands:
@@ -115,7 +113,7 @@ Argument order: `<email> <fullName> <password> <role> <organizationIdentifier> <
 ### 6. Configure the portal
 
 ```bash
-cd apps/directory-portal
+cd packages/directory-portal
 cp .env.example .env
 ```
 
@@ -128,7 +126,7 @@ VITE_ENABLE_OM=true                # Organization Management features
 VITE_ENABLE_NM=true                # Node Management (Data Exchange Sandbox)
 ```
 
-The three flags are read in [src/utils/feature-flags.ts](apps/directory-portal/src/utils/feature-flags.ts) and gate routes/components in the portal.
+The three flags are read in [src/utils/feature-flags.ts](packages/directory-portal/src/utils/feature-flags.ts) and gate routes/components in the portal.
 
 ### 7. Run everything
 
@@ -138,7 +136,7 @@ From the project root:
 npm run dev
 ```
 
-This runs `npm run dev` in each workspace that defines it (the API in watch mode via `tsx watch`, the portal via `vite`). You can also run them individually from `apps/api` or `apps/directory-portal`.
+This runs `npm run dev` in each workspace that defines it (the API in watch mode via `tsx watch`, the portal via `vite`). You can also run them individually from `packages/api` or `packages/directory-portal`.
 
 - API: <http://localhost:3010>
 - Portal: <http://localhost:5173>
@@ -156,7 +154,7 @@ From the repo root:
 | `npm run clean`  | Remove `dist/` from every workspace                               |
 | `npm run pristine` | `clean` + delete every `node_modules`                           |
 
-From `apps/api`:
+From `packages/api`:
 
 | Command                  | Effect                                            |
 | ------------------------ | ------------------------------------------------- |
@@ -168,7 +166,7 @@ From `apps/api`:
 | `npm run db:migrate*`    | Kysely migrations (see above)                    |
 | `npm run db:add-user`    | Add a user (see above)                           |
 
-From `apps/directory-portal`:
+From `packages/directory-portal`:
 
 | Command          | Effect                                    |
 | ---------------- | ----------------------------------------- |
@@ -182,7 +180,7 @@ From `apps/directory-portal`:
 
 ### Schema
 
-Migrations live in [apps/api/src/database/migrations/](apps/api/src/database/migrations/) and are managed with [Kysely](https://kysely.dev/). Current core tables include:
+Migrations live in [packages/api/src/database/migrations/](packages/api/src/database/migrations/) and are managed with [Kysely](https://kysely.dev/). Current core tables include:
 
 - `organizations` (renamed from `companies`) — registered organizations on the platform
 - `users` — user accounts with role and status
@@ -212,13 +210,13 @@ SELECT id, email FROM users;
 To populate a node with the PACT v3 mock footprints (laptop, steel beam, bioplastic container) used by the virtual PACT API:
 
 ```bash
-cd apps/api
+cd packages/api
 npx tsx src/scripts/seed-footprints.ts <nodeId>
 ```
 
 ## API surface
 
-The API is mounted under `/api`. The OpenAPI spec is at [apps/api/openapi.yaml](apps/api/openapi.yaml) and full route wiring is in [apps/api/src/routes/index.ts](apps/api/src/routes/index.ts). Highlights:
+The API is mounted under `/api`. The OpenAPI spec is at [packages/api/openapi.yaml](packages/api/openapi.yaml) and full route wiring is in [packages/api/src/routes/index.ts](packages/api/src/routes/index.ts). Highlights:
 
 ### Auth & users
 
@@ -334,7 +332,7 @@ npm run build -w packages/pact-data-model
 ### Database connection errors
 
 ```bash
-cd apps/api
+cd packages/api
 docker compose ps
 docker compose logs pact-directory-local-db
 docker compose restart pact-directory-local-db
@@ -351,7 +349,7 @@ kill -9 <PID>
 ### bcrypt build issues on macOS
 
 ```bash
-cd apps/api
+cd packages/api
 npm rebuild bcrypt --build-from-source
 ```
 
@@ -360,7 +358,7 @@ npm rebuild bcrypt --build-from-source
 This wipes all data:
 
 ```bash
-cd apps/api
+cd packages/api
 docker compose down -v
 docker compose up -d
 npm run db:migrate

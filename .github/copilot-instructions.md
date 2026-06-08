@@ -1,21 +1,21 @@
 # PACT Directory Service - AI Coding Instructions
 
 ## Architecture
-npm workspaces monorepo: Express.js API (`apps/api`) + React/Vite frontend (`apps/directory-portal`). Provides organization registration, directory search, node management, and authentication-as-a-service for the [PACT Network](https://www.carbon-transparency.org/network) (PCF data exchange).
+npm workspaces monorepo: Express.js API (`packages/api`) + React/Vite frontend (`packages/directory-portal`). Provides organization registration, directory search, node management, and authentication-as-a-service for the [PACT Network](https://www.carbon-transparency.org/network) (PCF data exchange).
 
 ## Development Commands
 ```bash
 npm run dev                              # Start both apps from root
-cd apps/api && npm run dev               # API only (tsx watch, hot reload)
-cd apps/directory-portal && npm run dev  # Frontend only (Vite)
-cd apps/api && npm test                  # Jest tests
-cd apps/directory-portal && npm test     # Vitest tests
-cd apps/api && npm run db:migrate        # Run Kysely migrations
-cd apps/api && docker compose up -d      # Start local PostgreSQL
+cd packages/api && npm run dev               # API only (tsx watch, hot reload)
+cd packages/directory-portal && npm run dev  # Frontend only (Vite)
+cd packages/api && npm test                  # Jest tests
+cd packages/directory-portal && npm test     # Vitest tests
+cd packages/api && npm run db:migrate        # Run Kysely migrations
+cd packages/api && docker compose up -d      # Start local PostgreSQL
 ```
 First-time setup: see `DEVELOPERS.md` (requires Node ≥20.9, Docker).
 
-## Backend Patterns (apps/api)
+## Backend Patterns (packages/api)
 
 ### Route → Context → Service flow
 All routes use a `context` middleware wrapper that injects `services` (from `ServiceContainer`) and `context` (user auth) into handlers. Pattern in `src/routes/index.ts`:
@@ -46,11 +46,11 @@ router.get('/directory/nodes/:id', authenticate, context(async (req) => {
 - Create typed `UserContext` fixtures for different roles (admin, root, user) to test access control
 
 ### OpenAPI
-- Spec in `apps/api/openapi.yaml` — validated at runtime by `express-openapi-validator` when `ENABLE_OPENAPI_VALIDATION=true`
+- Spec in `packages/api/openapi.yaml` — validated at runtime by `express-openapi-validator` when `ENABLE_OPENAPI_VALIDATION=true`
 - All `/api/directory/*` and `/api/im/*` routes must match the spec
 - Internal node PACT routes (`/api/nodes/:nodeId/*`) in separate `src/routes/internal-node-routes.ts`
 
-## Frontend Patterns (apps/directory-portal)
+## Frontend Patterns (packages/directory-portal)
 
 ### Radix Themes — primary UI framework
 The frontend uses **`@radix-ui/themes`** as a pre-styled component library. The `<Theme>` provider in `main.tsx` configures the global visual identity:

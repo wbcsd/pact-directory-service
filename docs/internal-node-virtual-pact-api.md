@@ -333,7 +333,7 @@ curl -X GET "http://localhost:3010/api/nodes/2/footprints?limit=5" \
 ### Automated Testing
 
 ```bash
-cd apps/api
+cd packages/api
 npm test internal-node
 ```
 
