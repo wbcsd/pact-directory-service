@@ -43,5 +43,8 @@
     "vite-plugin-istanbul": "^7.2.1",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^3.2.4"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.60.0"
   }
 }
