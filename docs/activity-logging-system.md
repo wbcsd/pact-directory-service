@@ -79,7 +79,7 @@ The Activity Logging System provides a CloudWatch-style hierarchical log viewer 
 
 ### 1. Database Layer
 
-**Migration**: `apps/api/src/database/migrations/2026_02_17_10_00_00_activity_logs.ts`
+**Migration**: `packages/api/src/database/migrations/2026_02_17_10_00_00_activity_logs.ts`
 
 Creates `activity_logs` table with:
 - `id` (serial primary key)
@@ -97,12 +97,12 @@ Creates `activity_logs` table with:
 - `created_at` - For time-based queries and ordering
 - GIN index on `content` - For JSONB queries
 
-**Types**: `apps/api/src/database/types.ts`
+**Types**: `packages/api/src/database/types.ts`
 - `ActivityLogsTable` interface with camelCase fields (auto-converted by Kysely)
 
 ### 2. Logging Infrastructure
 
-**Activity Logger**: `apps/api/src/common/activity-logger.ts`
+**Activity Logger**: `packages/api/src/common/activity-logger.ts`
 - Specialized logger for activity tracking
 - Writes directly to PostgreSQL (async, fire-and-forget)
 - Helper functions:
@@ -115,7 +115,7 @@ Creates `activity_logs` table with:
 
 ### 3. Service Layer
 
-**ActivityLogService**: `apps/api/src/services/activity-log-service.ts`
+**ActivityLogService**: `packages/api/src/services/activity-log-service.ts`
 
 Methods:
 - `getGroupedLogs(filters, query)` - Get summary by path with counts
@@ -123,11 +123,11 @@ Methods:
 - `getNodeLogs(nodeId, query)` - Get all logs for a node
 - `deleteOldLogs(olderThanDays)` - Cleanup utility
 
-Registered in `ServiceContainer` at `apps/api/src/services/index.ts`
+Registered in `ServiceContainer` at `packages/api/src/services/index.ts`
 
 ### 4. API Routes
 
-**Routes**: `apps/api/src/routes/activity-log-routes.ts`
+**Routes**: `packages/api/src/routes/activity-log-routes.ts`
 
 Endpoints:
 - `GET /api/activity-logs` - Grouped logs by path
@@ -135,19 +135,19 @@ Endpoints:
 - `GET /api/activity-logs/nodes/:nodeId` - Logs for specific node
 - `DELETE /api/activity-logs?olderThanDays={days}` - Delete old logs (authenticated)
 
-Mounted in main router at `apps/api/src/routes/index.ts`
+Mounted in main router at `packages/api/src/routes/index.ts`
 
 ## Frontend Implementation
 
 ### 1. Pages
 
-**ActivityLogsPage**: `apps/directory-portal/src/pages/ActivityLogsPage.tsx`
+**ActivityLogsPage**: `packages/directory-portal/src/pages/ActivityLogsPage.tsx`
 - Displays grouped logs by path
 - Shows count, last activity, level, and message
 - Click-through to detail view
 - Refresh button
 
-**ActivityLogDetailPage**: `apps/directory-portal/src/pages/ActivityLogDetailPage.tsx`
+**ActivityLogDetailPage**: `packages/directory-portal/src/pages/ActivityLogDetailPage.tsx`
 - Detailed view for a specific log path
 - Two view modes:
   - **Table View**: Structured cards with metadata, JSONB content, and context IDs
@@ -158,19 +158,19 @@ Mounted in main router at `apps/api/src/routes/index.ts`
 
 ### 2. Type Declarations
 
-**@melloware/react-logviewer**: `apps/directory-portal/src/types/react-logviewer.d.ts`
+**@melloware/react-logviewer**: `packages/directory-portal/src/types/react-logviewer.d.ts`
 - TypeScript definitions for @melloware/react-logviewer package
 - `LazyLog` component interface
 
 ### 3. Routes
 
-Updated `apps/directory-portal/src/AppRoutes.tsx`:
+Updated `packages/directory-portal/src/AppRoutes.tsx`:
 - `/activity-logs` - Grouped logs page
 - `/activity-logs/path` - Detail page with query param
 
 ### 4. Navigation
 
-Updated `apps/directory-portal/src/components/SideNav.tsx`:
+Updated `packages/directory-portal/src/components/SideNav.tsx`:
 - Added "Activity Logs" menu item under Services section
 - No authentication required (public viewing)
 
@@ -390,7 +390,7 @@ activityLogger.logConformanceTest(
 
 Run activity log service tests:
 ```bash
-cd apps/api
+cd packages/api
 npm test -- activity-log-service.test.ts
 ```
 
@@ -413,7 +413,7 @@ curl http://localhost:3000/api/activity-logs/nodes/1
 
 Start the development server:
 ```bash
-cd apps/directory-portal
+cd packages/directory-portal
 npm run dev
 ```
 
@@ -426,7 +426,7 @@ Navigate to:
 ### 1. Run Database Migration
 
 ```bash
-cd apps/api
+cd packages/api
 npm run db:migrate
 ```
 
@@ -443,7 +443,7 @@ Verify migration:
 
 ```bash
 # Frontend only
-cd apps/directory-portal
+cd packages/directory-portal
 npm install @melloware/react-logviewer
 ```
 

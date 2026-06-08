@@ -2,7 +2,7 @@
 dist/
 **/**/*.log
 **/*.tsbuildinfo
-apps/api/.env
+packages/api/.env
 .vscode/launch.json
 .idea/
 
