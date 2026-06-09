@@ -10,8 +10,8 @@
     "declaration": true,
     "types": ["jest", "node"],
     "paths": {
-      "pact-data-model": ["../pact-data-model/src/index.ts"],
-      "pact-data-model/*": ["../pact-data-model/src/*"]
+      "@wbcsd/pact-data-model": ["../pact-data-model/src/index.ts"],
+      "@wbcsd/pact-data-model/*": ["../pact-data-model/src/*"]
     }
   },
   "references": [

@@ -5,7 +5,7 @@ import { registerPolicy, Role } from '@src/common/policies';
 import { UserContext } from './user-service';
 import { ListQuery, ListResult } from '@src/common/list-query';
 import { NodeService } from './node-service';
-import { schema, validate } from 'pact-data-model/v3_0';
+import { schema, validate } from '@wbcsd/pact-data-model/v3_0';
 
 // Register all policies used in this service
 registerPolicy([Role.Administrator], 'manage-footprints-own-organization');
