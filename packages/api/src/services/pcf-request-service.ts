@@ -5,8 +5,8 @@ import { ListQuery, ListResult } from '@src/common/list-query';
 import { UserContext } from './user-service';
 import { NodeService } from './node-service';
 import { NodeConnectionService } from './node-connection-service';
-import { PactApiClient, FootprintFilters } from 'pact-api-client';
-import { EventTypes } from 'pact-data-model/v3_0';
+import { PactApiClient, FootprintFilters } from '@wbcsd/pact-api-client';
+import { EventTypes } from '@wbcsd/pact-data-model/v3_0';
 import logger from '@src/common/logger';
 
 export interface PcfRequestData {

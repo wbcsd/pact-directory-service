@@ -10,7 +10,7 @@ import { UserContext } from './user-service';
 import { NodeService } from './node-service';
 import { EmailService } from './email-service';
 import { ListQuery, ListResult } from '@src/common/list-query';
-import { PactApiClient, FootprintFilters } from 'pact-api-client';
+import { PactApiClient, FootprintFilters } from '@wbcsd/pact-api-client';
 import crypto from 'crypto';
 import { logNodeConnection } from '@src/common/activity-logger';
 

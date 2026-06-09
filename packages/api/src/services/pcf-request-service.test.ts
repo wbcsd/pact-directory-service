@@ -20,7 +20,7 @@ jest.mock('@src/common/config', () => ({
 
 // Mock PactApiClient so no real HTTP calls are made in tests
 const mockSendRequestCreated = jest.fn().mockResolvedValue('event-id-abc123');
-jest.mock('pact-api-client', () => ({
+jest.mock('@wbcsd/pact-api-client', () => ({
   PactApiClient: jest.fn().mockImplementation(() => ({
     sendRequestCreated: mockSendRequestCreated,
   })),
@@ -253,7 +253,7 @@ describe('PcfRequestService', () => {
     });
 
     it('builds the PactApiClient with the connection credentials', async () => {
-      const { PactApiClient } = require('pact-api-client');
+      const { PactApiClient } = require('@wbcsd/pact-api-client');
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockConnection);
       nodeService.get.mockResolvedValueOnce(mockFromNode as any);
       dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce(mockTargetNode);
@@ -272,7 +272,7 @@ describe('PcfRequestService', () => {
     });
 
     it('uses the node apiUrl when present', async () => {
-      const { PactApiClient } = require('pact-api-client');
+      const { PactApiClient } = require('@wbcsd/pact-api-client');
       const nodeWithUrl = { ...mockTargetNode, apiUrl: 'https://external.example.com/pact/' };
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockConnection);
       nodeService.get.mockResolvedValueOnce(mockFromNode as any);

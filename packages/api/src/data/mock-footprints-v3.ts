@@ -2,7 +2,7 @@ import {
   ProductFootprint,
   ProductFootprintStatus,
   CarbonFootprintDeclaredUnitOfMeasurement as DeclaredUnit,
-} from "pact-data-model/v3_0";
+} from "@wbcsd/pact-data-model/v3_0";
 
 /**
  * Mock Product Carbon Footprint data for PACT API v3.0.4
