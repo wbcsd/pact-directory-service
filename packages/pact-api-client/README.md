@@ -36,19 +36,6 @@ const footprint = await client.getFootprint('uuid-here');
 await client.sendRequestCreated({ ... });
 ```
 
-### Internal nodes (PACT Directory)
-
-For nodes hosted inside the PACT Directory, construct the base URL from the directory API:
-
-```ts
-const client = new PactApiClient(
-  `${directoryApiBaseUrl}/api/nodes/${nodeId}`,
-  clientId,
-  clientSecret,
-  sourceUri
-);
-```
-
 ### Custom auth endpoint
 
 If the token endpoint is not at `/.well-known/openid-configuration`, pass an `authBaseUrl`:
