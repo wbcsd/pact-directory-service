@@ -46,11 +46,6 @@ const FunctionalPageLayout: React.FC<FunctionalPageLayoutProps> = ({
             <img height={32} src={pactLogo} alt="PACT Logo" />
           </picture>
         </div>
-        <div className="top-bar-right">
-          <SignUp />
-        </div>
-      </header>
-
       {isRoot && (
         <Callout.Root color="amber" variant="surface" style={{ borderRadius: 0, position: "sticky", top: 0, zIndex: 100 }}>
           <Callout.Icon>
@@ -62,6 +57,12 @@ const FunctionalPageLayout: React.FC<FunctionalPageLayoutProps> = ({
           </Callout.Text>
         </Callout.Root>
       )}
+
+
+        <div className="top-bar-right">
+          <SignUp />
+        </div>
+      </header>
 
       <div className="container">
         {mobileMenuOpen && (
