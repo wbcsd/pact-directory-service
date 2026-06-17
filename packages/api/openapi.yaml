@@ -213,7 +213,9 @@ components:
       properties:
         fullName: { type: string }
         email: { type: string, format: email }
-        role: { type: string }
+        role:
+          type: string
+          enum: [administrator, user, root]
       required: [fullName, email, role]
     PaginationInfo:
       type: object
