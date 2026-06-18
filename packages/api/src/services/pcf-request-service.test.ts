@@ -503,16 +503,19 @@ describe('PcfRequestService', () => {
   // fulfill()
   // ──────────────────────────────────────────────────
   describe('fulfill()', () => {
-    // fromNodeId=null skips the local-node direct-write path, keeping most tests isolated.
-    // Tests that cover the direct-write path use a separate fixture with a known fromNodeId.
     const mockIncomingRequest = {
       id: 10,
-      fromNodeId: null,
+      fromNodeId: 888,
       targetNodeId: nodeId,
       requestEventId: 'req-ev-001',
       source: `${DIRECTORY_API}/api/nodes/888`,
       status: 'pending',
       filters: { geography: ['US'] },
+    };
+
+    const mockRequesterNode = {
+      id: 888,
+      apiUrl: 'https://requester.example.com/api/nodes/888',
     };
 
     // Use the real silversurfer23 US laptop row — DB row id ≠ PACT data id
@@ -541,6 +544,7 @@ describe('PcfRequestService', () => {
       nodeService.get.mockResolvedValueOnce(mockFromNode as any);
       dbMocks.executors.executeTakeFirst
         .mockResolvedValueOnce(mockIncomingRequest)
+        .mockResolvedValueOnce(mockRequesterNode)
         .mockResolvedValueOnce(mockReverseConnection);
       dbMocks.executors.execute
         .mockResolvedValueOnce([mockFootprintRow])  // footprint lookup
@@ -575,6 +579,7 @@ describe('PcfRequestService', () => {
       nodeService.get.mockResolvedValueOnce(mockFromNode as any);
       dbMocks.executors.executeTakeFirst
         .mockResolvedValueOnce(mockIncomingRequest)
+        .mockResolvedValueOnce(mockRequesterNode)
         .mockResolvedValueOnce(mockReverseConnection);
       dbMocks.executors.execute
         .mockResolvedValueOnce([mockFootprintRow])
@@ -600,6 +605,7 @@ describe('PcfRequestService', () => {
       nodeService.get.mockResolvedValueOnce(mockFromNode as any);
       dbMocks.executors.executeTakeFirst
         .mockResolvedValueOnce(mockIncomingRequest)
+        .mockResolvedValueOnce(mockRequesterNode)
         .mockResolvedValueOnce(mockReverseConnection);
       dbMocks.executors.execute
         .mockResolvedValueOnce([mockFootprintRow])
@@ -619,6 +625,7 @@ describe('PcfRequestService', () => {
       nodeService.get.mockResolvedValueOnce(mockFromNode as any);
       dbMocks.executors.executeTakeFirst
         .mockResolvedValueOnce(mockIncomingRequest)
+        .mockResolvedValueOnce(mockRequesterNode)
         .mockResolvedValueOnce(mockReverseConnection);
       dbMocks.executors.execute
         .mockResolvedValueOnce([{ data: ss23SteelData }, { data: ss23ContainerData }])
@@ -643,6 +650,7 @@ describe('PcfRequestService', () => {
       nodeService.get.mockResolvedValueOnce(mockFromNode as any);
       dbMocks.executors.executeTakeFirst
         .mockResolvedValueOnce(mockIncomingRequest)
+        .mockResolvedValueOnce(mockRequesterNode)
         .mockResolvedValueOnce(mockReverseConnection);
       dbMocks.executors.execute
         .mockResolvedValueOnce([mockFootprintRow])
@@ -655,7 +663,7 @@ describe('PcfRequestService', () => {
 
     it('marks fulfilled even when source URL is null (no callback sent)', async () => {
       jest.clearAllMocks();
-      const noSourceRequest = { ...mockIncomingRequest, source: null };
+      const noSourceRequest = { ...mockIncomingRequest, source: null, fromNodeId: null };
 
       nodeService.get.mockResolvedValueOnce(mockFromNode as any);
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(noSourceRequest);
@@ -718,6 +726,7 @@ describe('PcfRequestService', () => {
       nodeService.get.mockResolvedValueOnce(mockFromNode as any);
       dbMocks.executors.executeTakeFirst
         .mockResolvedValueOnce(localRequest)          // load pcf_request
+        .mockResolvedValueOnce(mockRequesterNode)     // resolveTrustedCallbackUrl
         .mockResolvedValueOnce(mockReverseConnection) // getCallbackToken: reverse connection
         .mockResolvedValueOnce({ id: localFromNodeId }) // node existence check
         .mockResolvedValueOnce(null);                 // no existing product_footprints row
@@ -751,6 +760,7 @@ describe('PcfRequestService', () => {
       nodeService.get.mockResolvedValueOnce(mockFromNode as any);
       dbMocks.executors.executeTakeFirst
         .mockResolvedValueOnce(localRequest)
+        .mockResolvedValueOnce(mockRequesterNode)
         .mockResolvedValueOnce(mockReverseConnection)
         .mockResolvedValueOnce({ id: localFromNodeId });      // node exists
       dbMocks.executors.execute
@@ -772,6 +782,7 @@ describe('PcfRequestService', () => {
       nodeService.get.mockResolvedValueOnce(mockFromNode as any);
       dbMocks.executors.executeTakeFirst
         .mockResolvedValueOnce(mockIncomingRequest)
+        .mockResolvedValueOnce(mockRequesterNode)
         .mockResolvedValueOnce(mockReverseConnection);
       dbMocks.executors.execute
         .mockResolvedValueOnce([mockFootprintRow])
@@ -805,6 +816,11 @@ describe('PcfRequestService', () => {
       clientSecret: Buffer.from('cb-secret').toString('base64'),
     };
 
+    const mockRequesterNode = {
+      id: 888,
+      apiUrl: 'https://requester.example.com/api/nodes/888',
+    };
+
     beforeEach(() => {
       mockFetch
         .mockResolvedValueOnce({
@@ -818,6 +834,7 @@ describe('PcfRequestService', () => {
       nodeService.get.mockResolvedValueOnce(mockFromNode as any);
       dbMocks.executors.executeTakeFirst
         .mockResolvedValueOnce(mockIncomingRequest)
+        .mockResolvedValueOnce(mockRequesterNode)
         .mockResolvedValueOnce(mockReverseConnection);
       dbMocks.executors.execute.mockResolvedValueOnce(undefined); // UPDATE
 
@@ -844,6 +861,7 @@ describe('PcfRequestService', () => {
       nodeService.get.mockResolvedValueOnce(mockFromNode as any);
       dbMocks.executors.executeTakeFirst
         .mockResolvedValueOnce(mockIncomingRequest)
+        .mockResolvedValueOnce(mockRequesterNode)
         .mockResolvedValueOnce(mockReverseConnection);
       dbMocks.executors.execute.mockResolvedValueOnce(undefined);
 
@@ -852,7 +870,7 @@ describe('PcfRequestService', () => {
 
     it('marks rejected even when source URL is null', async () => {
       jest.clearAllMocks();
-      const noSourceRequest = { ...mockIncomingRequest, source: null };
+      const noSourceRequest = { ...mockIncomingRequest, source: null, fromNodeId: null };
 
       nodeService.get.mockResolvedValueOnce(mockFromNode as any);
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(noSourceRequest);
