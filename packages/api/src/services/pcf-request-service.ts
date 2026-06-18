@@ -8,6 +8,7 @@ import { NodeConnectionService } from './node-connection-service';
 import { PactApiClient, FootprintFilters } from '@wbcsd/pact-api-client';
 import { EventTypes } from '@wbcsd/pact-data-model/v3_0';
 import logger from '@src/common/logger';
+import net from 'net';
 
 export interface PcfRequestData {
   id: number;
@@ -313,10 +314,8 @@ export class PcfRequestService {
 
     const footprints = footprintRows.map((r) => r.data);
 
-    // Send RequestFulfilledEvent callback
-    const callbackUrl = request.source
-      ? (request.source.endsWith('/3/events') ? request.source : `${request.source.replace(/\/+$/, '')}/3/events`)
-      : null;
+    // Send RequestFulfilledEvent callback using trusted node metadata.
+    const callbackUrl = await this.resolveTrustedCallbackUrl(nodeId, request.fromNodeId ?? null);
 
     if (callbackUrl) {
       const authToken = await this.getCallbackToken(nodeId, request.fromNodeId ?? null);
@@ -429,9 +428,7 @@ export class PcfRequestService {
       throw new NotFoundError('Pending incoming PCF request not found');
     }
 
-    const callbackUrl = request.source
-      ? (request.source.endsWith('/3/events') ? request.source : `${request.source.replace(/\/+$/, '')}/3/events`)
-      : null;
+    const callbackUrl = await this.resolveTrustedCallbackUrl(nodeId, request.fromNodeId ?? null);
 
     if (callbackUrl) {
       const authToken = await this.getCallbackToken(nodeId, request.fromNodeId ?? null);
@@ -518,6 +515,102 @@ export class PcfRequestService {
       logger.warn({ nodeId, fromNodeId, error: (err as Error).message }, 'Error obtaining callback auth token');
       return '';
     }
+  }
+
+  private async resolveTrustedCallbackUrl(
+    targetNodeId: number,
+    fromNodeId: number | null
+  ): Promise<string | null> {
+    if (!fromNodeId) {
+      return null;
+    }
+
+    const requesterNode = await this.db
+      .selectFrom('nodes')
+      .select(['id', 'apiUrl'])
+      .where('id', '=', fromNodeId)
+      .executeTakeFirst();
+
+    if (!requesterNode) {
+      logger.warn({ targetNodeId, fromNodeId }, 'Requester node not found — skipping callback');
+      return null;
+    }
+
+    const callbackBase = requesterNode.apiUrl
+      ? requesterNode.apiUrl.replace(/\/+$/, '')
+      : `${this.directoryApiBaseUrl}/api/nodes/${fromNodeId}`;
+
+    const callbackUrl = callbackBase.endsWith('/3/events')
+      ? callbackBase
+      : `${callbackBase}/3/events`;
+
+    if (!this.isSafeCallbackUrl(callbackUrl)) {
+      logger.warn(
+        { targetNodeId, fromNodeId, callbackUrl },
+        'Unsafe callback URL rejected — skipping callback'
+      );
+      return null;
+    }
+
+    return callbackUrl;
+  }
+
+  private isSafeCallbackUrl(urlString: string): boolean {
+    try {
+      const callbackUrl = new URL(urlString);
+      const directoryOrigin = new URL(this.directoryApiBaseUrl).origin;
+
+      // Strict by default: only HTTPS callbacks unless using our own directory origin.
+      if (callbackUrl.protocol !== 'https:' && callbackUrl.origin !== directoryOrigin) {
+        return false;
+      }
+
+      if (callbackUrl.origin === directoryOrigin) {
+        return true;
+      }
+
+      const host = callbackUrl.hostname.toLowerCase();
+      if (host === 'localhost' || host.endsWith('.localhost') || host === '127.0.0.1' || host === '::1') {
+        return false;
+      }
+
+      const ipVersion = net.isIP(host);
+      if (ipVersion === 4 && this.isPrivateIpv4(host)) {
+        return false;
+      }
+
+      if (ipVersion === 6 && this.isPrivateOrLocalIpv6(host)) {
+        return false;
+      }
+
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  private isPrivateIpv4(ip: string): boolean {
+    const [a, b] = ip.split('.').map(Number);
+    if ([a, b].some((n) => Number.isNaN(n))) {
+      return true;
+    }
+
+    if (a === 10 || a === 127 || a === 0) return true;
+    if (a === 169 && b === 254) return true;
+    if (a === 172 && b >= 16 && b <= 31) return true;
+    if (a === 192 && b === 168) return true;
+
+    return false;
+  }
+
+  private isPrivateOrLocalIpv6(ip: string): boolean {
+    const normalized = ip.toLowerCase();
+    return (
+      normalized === '::1' ||
+      normalized.startsWith('fc') ||
+      normalized.startsWith('fd') ||
+      normalized.startsWith('fe80')
+    );
   }
 
   private decryptSecret(encrypted: string): string {
