@@ -64,6 +64,7 @@ export interface NodesTable {
   type: 'internal' | 'external';
   apiUrl: string;
   status: 'active' | 'inactive' | 'pending';
+  discoverable: Generated<boolean>;
   authBaseUrl: string | null;
   scope: string | null;
   audience: string | null;

@@ -258,6 +258,14 @@ router.get('/directory/organizations/:id/nodes', authenticate, context(async (re
   );
 }));
 
+// List discoverable nodes from across the network
+router.get('/directory/nodes/discoverable', authenticate, context(async (req) => {
+  return req.services.node.listDiscoverable(
+    req.context,
+    ListQuery.parse(req.query)
+  );
+}));
+
 // Get a node by ID
 router.get('/directory/nodes/:id', authenticate, context(async (req) => {
   return req.services.node.get(

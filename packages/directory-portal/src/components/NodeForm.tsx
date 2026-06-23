@@ -8,7 +8,8 @@ import {
   Flex,
   Grid,
   Spinner,
-  Select
+  Select,
+  Switch
 } from "@radix-ui/themes";
 import {
   ExclamationTriangleIcon,
@@ -40,6 +41,7 @@ export interface NodeFormData {
   audience?: string;
   resource?: string;
   specVersion?: string;
+  discoverable: boolean;
 }
 
 interface NodeFormProps {
@@ -64,6 +66,7 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
     audience: "",
     resource: "",
     specVersion: "V3.0",
+    discoverable: false,
   });
   const [readOnlyOrganization, setReadOnlyOrganization] = useState("");
   const [status, setStatus] = useState<null | "success" | "error">(null);
@@ -87,6 +90,7 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
           audience: node.audience || "",
           resource: node.resource || "",
           specVersion: node.specVersion || "",
+          discoverable: node.discoverable ?? false,
         });
         setReadOnlyOrganization(node.organizationName || "");
       } else {
@@ -115,6 +119,7 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
       const dataToSend: NodeFormData = {
         name: formData.name,
         type: formData.type,
+        discoverable: formData.discoverable,
       };
       if (formData.type === NodeType.EXTERNAL && formData.apiUrl) {
         dataToSend.apiUrl = formData.apiUrl;
@@ -332,6 +337,25 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
           />
         </FormField>
       )}
+
+      {/* Discoverable */}
+      <Flex align="center" gap="3" mt="2">
+        <Switch
+          id="discoverable"
+          checked={formData.discoverable}
+          onCheckedChange={(checked) =>
+            setFormData((prev) => ({ ...prev, discoverable: checked }))
+          }
+        />
+        <Box>
+          <Text as="label" htmlFor="discoverable" size="2" weight="medium">
+            Discoverable on PACT Network
+          </Text>
+          <Text as="p" size="1" color="gray">
+            Allow organizations outside yours to find and connect to this node.
+          </Text>
+        </Box>
+      </Flex>
 
       {/* Actions */}
       <Flex gap="3" mt="2" justify="end">

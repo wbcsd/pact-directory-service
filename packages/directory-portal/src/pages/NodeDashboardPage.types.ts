@@ -6,6 +6,7 @@ export interface NodeData {
   apiUrl?: string;
   organizationId: number;
   organizationName?: string;
+  discoverable: boolean;
   createdAt: string;
   updatedAt: string;
   connectionsCount?: number;

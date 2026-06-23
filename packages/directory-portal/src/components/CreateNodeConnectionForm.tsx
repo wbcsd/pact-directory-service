@@ -38,12 +38,18 @@ interface CreateInvitationData {
 interface CreateNodeConnectionFormProps {
   /** When provided, locks the "From Node" to this node ID. */
   fromNodeId?: number;
+  /** When provided, locks the "Target Node" to this node ID (e.g. a discoverable cross-org node). */
+  targetNodeId?: number;
+  /** Display name for the locked target node. */
+  targetNodeName?: string;
   /** Called when the user clicks Cancel or Close. */
   onCancel?: () => void;
 }
 
 const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
   fromNodeId: lockedFromNodeId,
+  targetNodeId: lockedTargetNodeId,
+  targetNodeName: lockedTargetNodeName,
   onCancel,
 }) => {
   const { profileData } = useAuth();
@@ -54,7 +60,7 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
   const [targetNode, setTargetNode] = useState<Node | null>(null);
   const [formData, setFormData] = useState<CreateInvitationData>({
     fromNodeId: lockedFromNodeId ?? 0,
-    targetNodeId: 0,
+    targetNodeId: lockedTargetNodeId ?? 0,
     message: "",
   });
   const [status, setStatus] = useState<null | "success" | "error">(null);
@@ -279,34 +285,40 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
               />
             </Tooltip>
           </Box>
-          <Select.Root
-            value={formData.targetNodeId > 0 ? formData.targetNodeId.toString() : undefined}
-            onValueChange={handleTargetNodeChange}
-            disabled={!formData.fromNodeId}
-          >
-            <Select.Trigger placeholder={formData.fromNodeId ? "Select target node" : "Select source node first"} />
-            <Select.Content position="popper">
-              {availableTargetNodes.length === 0 ? (
-                <Select.Item value="none" disabled>
-                  {formData.fromNodeId ? "No other nodes available" : "Select source node first"}
-                </Select.Item>
-              ) : (
-                availableTargetNodes.map((node) => {
-                  const isConnected = connectedNodeIds.has(node.id);
-                  return (
-                    <Select.Item key={node.id} value={node.id.toString()} disabled={isConnected}>
-                      <Flex align="center" gap="2">
-                        <span style={{ flex: 1 }}>{node.name} ({node.type})</span>
-                        {isConnected && (
-                          <Link2Icon style={{ opacity: 0.6, flexShrink: 0 }} />
-                        )}
-                      </Flex>
-                    </Select.Item>
-                  );
-                })
-              )}
-            </Select.Content>
-          </Select.Root>
+          {lockedTargetNodeId ? (
+            <div className="readonly-field">
+              {lockedTargetNodeName ?? `Node #${lockedTargetNodeId}`}
+            </div>
+          ) : (
+            <Select.Root
+              value={formData.targetNodeId > 0 ? formData.targetNodeId.toString() : undefined}
+              onValueChange={handleTargetNodeChange}
+              disabled={!formData.fromNodeId}
+            >
+              <Select.Trigger placeholder={formData.fromNodeId ? "Select target node" : "Select source node first"} />
+              <Select.Content position="popper">
+                {availableTargetNodes.length === 0 ? (
+                  <Select.Item value="none" disabled>
+                    {formData.fromNodeId ? "No other nodes available" : "Select source node first"}
+                  </Select.Item>
+                ) : (
+                  availableTargetNodes.map((node) => {
+                    const isConnected = connectedNodeIds.has(node.id);
+                    return (
+                      <Select.Item key={node.id} value={node.id.toString()} disabled={isConnected}>
+                        <Flex align="center" gap="2">
+                          <span style={{ flex: 1 }}>{node.name} ({node.type})</span>
+                          {isConnected && (
+                            <Link2Icon style={{ opacity: 0.6, flexShrink: 0 }} />
+                          )}
+                        </Flex>
+                      </Select.Item>
+                    );
+                  })
+                )}
+              </Select.Content>
+            </Select.Root>
+          )}
         </Form.Field>
 
         {/* Optional Message */}
@@ -372,12 +384,14 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
           <Callout.Text>
             <Box style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
               <span>
-                Connection invitation sent to <strong>{targetNode?.name}</strong>. Go to that node's dashboard to accept it.
+                Connection invitation sent to <strong>{lockedTargetNodeName ?? targetNode?.name}</strong>. Go to that node's dashboard to accept it.
               </span>
               <Box style={{ display: "flex", gap: "8px" }}>
-                <Button size="2" variant="soft" color="green" onClick={() => { onCancel?.(); navigate(`/nodes/${targetNode?.id}`); }}>
-                  Go to {targetNode?.name}
-                </Button>
+                {targetNode && (
+                  <Button size="2" variant="soft" color="green" onClick={() => { onCancel?.(); navigate(`/nodes/${targetNode?.id}`); }}>
+                    Go to {targetNode?.name}
+                  </Button>
+                )}
                 <Button size="2" color="jade" onClick={onCancel}>
                   Close
                 </Button>

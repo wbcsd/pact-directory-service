@@ -264,16 +264,18 @@ components:
         type: { type: string, enum: [internal, external] }
         apiUrl: { type: string }
         status: { type: string, enum: [active, inactive, pending] }
+        discoverable: { type: boolean, description: "Whether this node is visible to users outside the organization" }
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
         connectionsCount: { type: integer, description: "Total number of incoming and outgoing connections" }
-      required: [id, organizationId, name, type, apiUrl, status, createdAt, updatedAt]
+      required: [id, organizationId, name, type, apiUrl, status, discoverable, createdAt, updatedAt]
     CreateNodeRequest:
       type: object
       properties:
         name: { type: string }
         type: { type: string, enum: [internal, external] }
         apiUrl: { type: string, description: "Optional for internal nodes, required for external" }
+        discoverable: { type: boolean, description: "Whether this node is visible to users outside the organization. Defaults to false." }
       required: [name, type]
     UpdateNodeRequest:
       type: object
@@ -281,6 +283,7 @@ components:
         name: { type: string }
         apiUrl: { type: string, description: "Only editable for external nodes" }
         status: { type: string, enum: [active, inactive, pending] }
+        discoverable: { type: boolean, description: "Whether this node is visible to users outside the organization" }
     NodeConnectionData:
       type: object
       properties:
@@ -1069,6 +1072,47 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /directory/nodes/discoverable:
+    get:
+      summary: List discoverable nodes from across the PACT Network
+      description: |
+        Returns nodes that have been marked as discoverable by their owners.
+        Admins see discoverable nodes from organizations other than their own.
+        Root users see all discoverable nodes.
+      tags: [Nodes]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: pageSize
+          schema: { type: integer, default: 50, maximum: 100 }
+        - in: query
+          name: search
+          schema: { type: string }
+          description: Search by node name or organization name
+        - in: query
+          name: sortBy
+          schema: { type: string, enum: [name, type, status, createdAt, updatedAt] }
+        - in: query
+          name: sortOrder
+          schema: { type: string, enum: [asc, desc], default: desc }
+      responses:
+        "200":
+          description: List of discoverable nodes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/NodeData" }
+                  pagination: { $ref: "#/components/schemas/Pagination" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+
   /directory/nodes/{id}:
     get:
       summary: Get a node by ID
