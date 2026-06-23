@@ -26,6 +26,7 @@ export interface NodeData {
   resource?: string | null;
   specVersion?: string | null;
   status: NodeStatus;
+  discoverable: boolean;
   createdAt: Date;
   updatedAt: Date;
   connectionsCount?: number;
@@ -43,6 +44,7 @@ export interface CreateNodeData {
   audience?: string;
   resource?: string;
   specVersion?: string;
+  discoverable?: boolean;
 }
 
 export interface UpdateNodeData {
@@ -54,6 +56,7 @@ export interface UpdateNodeData {
   resource?: string;
   specVersion?: string;
   status?: 'active' | 'inactive' | 'pending';
+  discoverable?: boolean;
 }
 
 export class NodeService {
@@ -78,6 +81,7 @@ export class NodeService {
         'nodes.resource',
         'nodes.specVersion',
         'nodes.status',
+        'nodes.discoverable',
         'nodes.createdAt',
         'nodes.updatedAt',
         'organizations.name as organizationName',
@@ -154,6 +158,7 @@ export class NodeService {
         type: data.type,
         apiUrl: data.apiUrl?.trim() || '', // Set API URL for external nodes, null for internal (will update later)
         status: 'active',
+        discoverable: data.discoverable ?? false,
         authBaseUrl: data.type === 'external' ? (data.authBaseUrl?.trim() ?? null) : null,
         scope: data.type === 'external' ? (data.scope?.trim() ?? null) : null,
         audience: data.type === 'external' ? (data.audience?.trim() ?? null) : null,
@@ -237,6 +242,10 @@ export class NodeService {
         throw new BadRequestError('API URL cannot be empty for external nodes');
       }
       updates.apiUrl = data.apiUrl.trim();
+    }
+
+    if (data.discoverable !== undefined) {
+      updates.discoverable = data.discoverable;
     }
 
     // Auth fields are only applicable to external nodes
@@ -337,6 +346,7 @@ export class NodeService {
         'nodes.resource',
         'nodes.specVersion',
         'nodes.status',
+        'nodes.discoverable',
         'nodes.createdAt',
         'nodes.updatedAt',
         'organizations.name as organizationName',
@@ -398,6 +408,81 @@ export class NodeService {
     }
 
     // Apply pagination
+    const data = await qb.offset(query.offset).limit(query.limit).execute();
+
+    return {
+      data: data as NodeData[],
+      pagination: query.pagination(total),
+    };
+  }
+
+  /**
+   * List discoverable nodes from across the network.
+   * Admins see discoverable nodes outside their own organization.
+   * Root users see all discoverable nodes.
+   */
+  async listDiscoverable(
+    context: UserContext,
+    query: ListQuery = ListQuery.default()
+  ): Promise<ListResult<NodeData>> {
+    const isRoot = context.policies.includes('view-nodes-all-organizations');
+    const isAdmin = context.policies.includes('view-nodes-own-organization');
+
+    if (!isRoot && !isAdmin) {
+      throw new ForbiddenError('You are not allowed to view discoverable nodes');
+    }
+
+    let qb = this.db
+      .selectFrom('nodes')
+      .leftJoin('organizations', 'organizations.id', 'nodes.organizationId')
+      .select([
+        'nodes.id',
+        'nodes.organizationId',
+        'nodes.name',
+        'nodes.type',
+        'nodes.apiUrl',
+        'nodes.authBaseUrl',
+        'nodes.scope',
+        'nodes.audience',
+        'nodes.resource',
+        'nodes.specVersion',
+        'nodes.status',
+        'nodes.discoverable',
+        'nodes.createdAt',
+        'nodes.updatedAt',
+        'organizations.name as organizationName',
+      ])
+      .where('nodes.discoverable', '=', true);
+
+    // Admins only see nodes from other organizations
+    if (!isRoot) {
+      qb = qb.where('nodes.organizationId', '!=', context.organizationId!);
+    }
+
+    if (query.search) {
+      qb = qb.where((wb) =>
+        wb.or([
+          wb('nodes.name', 'ilike', `%${query.search}%`),
+          wb('organizations.name', 'ilike', `%${query.search}%`),
+        ])
+      );
+    }
+
+    const total = (
+      await qb
+        .clearSelect()
+        .select((eb) => eb.fn.count('nodes.id').as('total'))
+        .executeTakeFirstOrThrow()
+    ).total as number;
+
+    const sortBy = query.sortBy || 'createdAt';
+    const validSortFields = ['name', 'type', 'status', 'createdAt', 'updatedAt'];
+    if (validSortFields.includes(sortBy)) {
+      qb = qb.orderBy(`nodes.${sortBy}` as any, query.sortOrder || 'desc');
+    } else {
+      qb = qb.orderBy('nodes.createdAt', 'desc');
+    }
+
     const data = await qb.offset(query.offset).limit(query.limit).execute();
 
     return {
