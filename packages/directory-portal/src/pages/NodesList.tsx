@@ -5,7 +5,7 @@ import { Column } from "../components/DataTable";
 import { useAuth } from "../contexts/AuthContext";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { GridPageLayout } from "../layouts";
-import { Button } from "@radix-ui/themes";
+import { Badge, Button, Flex } from "@radix-ui/themes";
 import SlideOverPanel from "../components/SlideOverPanel";
 import NodeForm from "../components/NodeForm";
 import NodeConnectionsManager from "../components/NodeConnectionsManager";
@@ -81,7 +81,14 @@ const NodesList: React.FC = () => {
       header: "Node Name",
       sortable: true,
       sortValue: (row: Node) => row.name,
-      render: (row: Node) => row.name,
+      render: (row: Node) => (
+        <Flex align="center" gap="2">
+          {row.name}
+          {row.organizationId !== profileData?.organizationId && row.organizationName && (
+            <Badge size="1" color="gray" variant="soft">{row.organizationName}</Badge>
+          )}
+        </Flex>
+      ),
     },
     {
       key: "type",

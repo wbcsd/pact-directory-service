@@ -403,12 +403,18 @@ const NodeDashboardPage: React.FC = () => {
         const otherName = isOutgoing
           ? (row.targetNodeName ?? `Node #${row.targetNodeId}`)
           : (row.fromNodeName ?? `Node #${row.fromNodeId}`);
+        const otherOrgId = isOutgoing ? row.targetNodeOrganizationId : row.fromNodeOrganizationId;
+        const otherOrgName = isOutgoing ? row.targetNodeOrganizationName : row.fromNodeOrganizationName;
+        const isExternal = otherOrgId !== undefined && otherOrgId !== profileData?.organizationId;
         return (
           <Flex align="center" gap="2">
             <NodeLink id={otherNodeId} name={otherName} />
             <Badge size="1" color="gray" variant="soft">
               {isOutgoing ? "Outgoing" : "Incoming"}
             </Badge>
+            {isExternal && otherOrgName && (
+              <Badge size="1" color="blue" variant="soft">{otherOrgName}</Badge>
+            )}
           </Flex>
         );
       },

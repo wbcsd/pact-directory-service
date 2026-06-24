@@ -369,10 +369,7 @@ export class NodeService {
           .as('connectionsCount')
       )
 
-    // Filter by organization only for non-root users
-    if (!context.policies.includes('view-nodes-all-organizations')) {
-      qb = qb.where('nodes.organizationId', '=', organizationId);
-    }
+    qb = qb.where('nodes.organizationId', '=', organizationId);
 
     // Apply filters
     if (query.filters) {

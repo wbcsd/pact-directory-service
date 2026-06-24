@@ -49,6 +49,13 @@ interface SendNotificationEmailParams {
   organizationName: string;
 }
 
+interface SendConnectionAcceptedEmailParams {
+  to: string;
+  name: string;
+  fromNodeName: string;
+  fromOrganizationName: string;
+}
+
 interface SendPasswordResetEmailParams {
   to: string;
   name: string;
@@ -210,6 +217,27 @@ export class EmailService {
       html: htmlContent,
     });
     logger.info(`Email sent to ${name}`);
+  }
+
+  async sendConnectionAcceptedEmail({
+    to,
+    name,
+    fromNodeName,
+    fromOrganizationName,
+  }: SendConnectionAcceptedEmailParams) {
+    const htmlContent = `
+        <p>Hello ${name},</p>
+        <p>Your connection invitation from node <strong>${fromNodeName}</strong>
+           (${fromOrganizationName}) has been accepted on the PACT Network.</p>
+        <p>You can now exchange data with this node. Log in to manage your connections:</p>
+        <p><a href="${config.FRONTEND_URL}">${config.FRONTEND_URL}</a></p>
+    `;
+    await this.sendEmail({
+      to,
+      subject: 'Connection Invitation Accepted — PACT Network',
+      html: htmlContent,
+    });
+    logger.info(`Connection accepted email sent to ${to}`);
   }
 
   async sendPasswordResetEmail({

@@ -22,8 +22,12 @@ export interface NodeConnectionData {
   id: number;
   fromNodeId: number;
   fromNodeName?: string;
+  fromNodeOrganizationId?: number;
+  fromNodeOrganizationName?: string;
   targetNodeId: number;
   targetNodeName?: string;
+  targetNodeOrganizationId?: number;
+  targetNodeOrganizationName?: string;
   clientId: string;
   clientSecret: string; // Encrypted
   status: 'pending' | 'accepted' | 'rejected';
@@ -99,7 +103,16 @@ export class NodeConnectionService {
 
     // Get both nodes and check access
     const fromNode = await this.nodeService.get(context, nodeId);
-    const targetNode = await this.nodeService.get(context, data.targetNodeId);
+    // Use getById for the target — access control on the target is handled below
+    const targetNode = await this.nodeService.getById(data.targetNodeId);
+
+    // Cross-org targets must be discoverable
+    if (
+      targetNode.organizationId !== context.organizationId &&
+      !targetNode.discoverable
+    ) {
+      throw new ForbiddenError('The target node is not discoverable');
+    }
 
     // Check if user has permission to create connections from this node
     const allowed =
@@ -168,13 +181,22 @@ export class NodeConnectionService {
       .returningAll()
       .executeTakeFirstOrThrow();
 
-    // Send email notification to target node's organization
-    // TODO: Get organization admin emails for notification
-    await this.emailService.sendConnectionRequestEmail({
-      to: context.email, // Placeholder - should be target org admin
-      name: targetNode.name,
-      organizationName: fromNode.organizationName || 'Unknown Organization',
-    });
+    // Send email notification to target node's organization admins
+    const targetOrgAdmins = await this.db
+      .selectFrom('users')
+      .select(['users.email', 'users.fullName'])
+      .where('users.organizationId', '=', targetNode.organizationId)
+      .where('users.role', '=', Role.Administrator)
+      .where('users.status', '=', 'enabled')
+      .execute();
+
+    for (const admin of targetOrgAdmins) {
+      await this.emailService.sendConnectionRequestEmail({
+        to: admin.email,
+        name: admin.fullName,
+        organizationName: fromNode.organizationName || 'Unknown Organization',
+      });
+    }
 
     // Log the connection invitation
     logNodeConnection(
@@ -299,8 +321,8 @@ export class NodeConnectionService {
       .where('id', '=', invitationId)
       .execute();
 
-    // Get the from node for logging
-    const fromNode = await this.nodeService.get(context, invitation.fromNodeId);
+    // Get the from node for logging (use getById — from node may belong to another org)
+    const fromNode = await this.nodeService.getById(invitation.fromNodeId);
 
     // Log the accepted invitation
     logNodeConnection(
@@ -316,6 +338,24 @@ export class NodeConnectionService {
         expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
       }
     );
+
+    // Notify the from node's org admins that their invitation was accepted
+    const fromOrgAdmins = await this.db
+      .selectFrom('users')
+      .select(['users.email', 'users.fullName'])
+      .where('users.organizationId', '=', fromNode.organizationId)
+      .where('users.role', '=', Role.Administrator)
+      .where('users.status', '=', 'enabled')
+      .execute();
+
+    for (const admin of fromOrgAdmins) {
+      await this.emailService.sendConnectionAcceptedEmail({
+        to: admin.email,
+        name: admin.fullName,
+        fromNodeName: fromNode.name,
+        fromOrganizationName: fromNode.organizationName || 'Unknown Organization',
+      });
+    }
 
     // Return the decrypted credentials
     return {
@@ -365,8 +405,8 @@ export class NodeConnectionService {
       .where('id', '=', invitationId)
       .execute();
 
-    // Get the from node for logging
-    const fromNode = await this.nodeService.get(context, invitation.fromNodeId);
+    // Get the from node for logging (use getById to avoid cross-org 403)
+    const fromNode = await this.nodeService.getById(invitation.fromNodeId);
 
     // Log the rejected invitation
     logNodeConnection(
@@ -407,12 +447,18 @@ export class NodeConnectionService {
       .selectFrom('connections')
       .leftJoin('nodes as fromNode', 'fromNode.id', 'connections.fromNodeId')
       .leftJoin('nodes as targetNode', 'targetNode.id', 'connections.targetNodeId')
+      .leftJoin('organizations as fromOrg', 'fromOrg.id', 'fromNode.organizationId')
+      .leftJoin('organizations as targetOrg', 'targetOrg.id', 'targetNode.organizationId')
       .select([
         'connections.id',
         'connections.fromNodeId',
         'fromNode.name as fromNodeName',
+        'fromNode.organizationId as fromNodeOrganizationId',
+        'fromOrg.name as fromNodeOrganizationName',
         'connections.targetNodeId',
         'targetNode.name as targetNodeName',
+        'targetNode.organizationId as targetNodeOrganizationId',
+        'targetOrg.name as targetNodeOrganizationName',
         'connections.clientId',
         'connections.clientSecret',
         'connections.status',
@@ -464,9 +510,9 @@ export class NodeConnectionService {
       throw new NotFoundError('Connection not found');
     }
 
-    // Get both nodes to check access
-    const fromNode = await this.nodeService.get(context, connection.fromNodeId);
-    const targetNode = await this.nodeService.get(context, connection.targetNodeId);
+    // Get both nodes to check access (use getById to avoid cross-org 403)
+    const fromNode = await this.nodeService.getById(connection.fromNodeId);
+    const targetNode = await this.nodeService.getById(connection.targetNodeId);
 
     // User must have access to at least one of the nodes
     const hasAccessToFrom =

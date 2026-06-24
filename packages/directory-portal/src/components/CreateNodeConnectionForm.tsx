@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import * as Form from "@radix-ui/react-form";
 import {
   Box,
@@ -27,6 +27,7 @@ interface Node {
   organizationId: number;
   organizationName: string;
   type: 'internal' | 'external';
+  isDiscoverable?: boolean;
 }
 
 interface CreateInvitationData {
@@ -66,6 +67,13 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
   const [status, setStatus] = useState<null | "success" | "error">(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [creating, setCreating] = useState(false);
+  const fromNodeWrapperRef = useRef<HTMLDivElement>(null);
+  const targetNodeWrapperRef = useRef<HTMLDivElement>(null);
+  const [fromNodeContentWidth, setFromNodeContentWidth] = useState<number>(0);
+  const [targetNodeContentWidth, setTargetNodeContentWidth] = useState<number>(0);
+  const [targetNodeSelectValue, setTargetNodeSelectValue] = useState<string | undefined>(
+    lockedTargetNodeId ? `net:${lockedTargetNodeId}` : undefined
+  );
 
   // Fetch available nodes
   const fetchNodes = useCallback(async () => {
@@ -87,7 +95,20 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
         throw new Error("Failed to fetch available nodes");
       }
       const nodesResult = await nodesResponse.json();
-      setAvailableNodes(nodesResult.data || []);
+      const ownNodes: Node[] = nodesResult.data || [];
+
+      // Fetch discoverable nodes from other organizations
+      const discoverableResponse = await fetchWithAuth(`/nodes/discoverable?pageSize=100`);
+      let discoverableNodes: Node[] = [];
+      if (discoverableResponse?.ok) {
+        const discoverableResult = await discoverableResponse.json();
+        discoverableNodes = (discoverableResult.data ?? []).map((n: Node) => ({
+          ...n,
+          isDiscoverable: true,
+        }));
+      }
+
+      setAvailableNodes([...ownNodes, ...discoverableNodes]);
 
       // Fetch existing connections to mark already-connected nodes
       if (lockedFromNodeId) {
@@ -195,11 +216,14 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
   };
 
   const handleTargetNodeChange = (value: string) => {
-    const selected = availableNodes.find((n) => n.id === parseInt(value)) ?? null;
+    const [, rawId] = value.split(':');
+    const nodeId = parseInt(rawId);
+    const selected = availableNodes.find((n) => n.id === nodeId) ?? null;
     setTargetNode(selected);
+    setTargetNodeSelectValue(value);
     setFormData((prevData) => ({
       ...prevData,
-      targetNodeId: parseInt(value),
+      targetNodeId: nodeId,
     }));
   };
 
@@ -224,7 +248,7 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
           <InfoCircledIcon />
         </Callout.Icon>
         <Callout.Text>
-          Create a connection invitation between two nodes in your organization.
+          Create a connection invitation to a node in your organization or a discoverable node on the PACT Network.
           The target node will need to accept this invitation to establish the connection and exchange credentials.
         </Callout.Text>
       </Callout.Root>
@@ -250,23 +274,26 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
               {availableNodes.find((n) => n.id === lockedFromNodeId)?.name ?? `Node #${lockedFromNodeId}`}
             </div>
           ) : (
-            <Select.Root
-              value={formData.fromNodeId > 0 ? formData.fromNodeId.toString() : undefined}
-              onValueChange={handleFromNodeChange}
-            >
-              <Select.Trigger placeholder="Select source node" />
-              <Select.Content position="popper">
-                {availableNodes.length === 0 ? (
-                  <Select.Item value="none" disabled>No available nodes</Select.Item>
-                ) : (
-                  availableNodes.map((node) => (
-                    <Select.Item key={node.id} value={node.id.toString()}>
-                      {node.name} ({node.type})
-                    </Select.Item>
-                  ))
-                )}
-              </Select.Content>
-            </Select.Root>
+            <div ref={fromNodeWrapperRef}>
+              <Select.Root
+                value={formData.fromNodeId > 0 ? formData.fromNodeId.toString() : undefined}
+                onValueChange={handleFromNodeChange}
+                onOpenChange={(open) => { if (open) setFromNodeContentWidth(fromNodeWrapperRef.current?.offsetWidth ?? 0); }}
+              >
+                <Select.Trigger placeholder="Select source node" style={{ width: '100%' }} />
+                <Select.Content position="popper" style={{ minWidth: fromNodeContentWidth || undefined }}>
+                  {availableNodes.length === 0 ? (
+                    <Select.Item value="none" disabled>No available nodes</Select.Item>
+                  ) : (
+                    availableNodes.map((node) => (
+                      <Select.Item key={node.id} value={node.id.toString()}>
+                        {node.name} ({node.type})
+                      </Select.Item>
+                    ))
+                  )}
+                </Select.Content>
+              </Select.Root>
+            </div>
           )}
         </Form.Field>
 
@@ -290,34 +317,73 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
               {lockedTargetNodeName ?? `Node #${lockedTargetNodeId}`}
             </div>
           ) : (
-            <Select.Root
-              value={formData.targetNodeId > 0 ? formData.targetNodeId.toString() : undefined}
-              onValueChange={handleTargetNodeChange}
-              disabled={!formData.fromNodeId}
-            >
-              <Select.Trigger placeholder={formData.fromNodeId ? "Select target node" : "Select source node first"} />
-              <Select.Content position="popper">
+            <div ref={targetNodeWrapperRef}>
+              <Select.Root
+                value={targetNodeSelectValue}
+                onValueChange={handleTargetNodeChange}
+                disabled={!formData.fromNodeId}
+                onOpenChange={(open) => { if (open) setTargetNodeContentWidth(targetNodeWrapperRef.current?.offsetWidth ?? 0); }}
+              >
+                <Select.Trigger placeholder={formData.fromNodeId ? "Select target node" : "Select source node first"} style={{ width: '100%' }} />
+                <Select.Content position="popper" style={{ minWidth: targetNodeContentWidth || undefined }}>
                 {availableTargetNodes.length === 0 ? (
                   <Select.Item value="none" disabled>
                     {formData.fromNodeId ? "No other nodes available" : "Select source node first"}
                   </Select.Item>
-                ) : (
-                  availableTargetNodes.map((node) => {
-                    const isConnected = connectedNodeIds.has(node.id);
-                    return (
-                      <Select.Item key={node.id} value={node.id.toString()} disabled={isConnected}>
-                        <Flex align="center" gap="2">
-                          <span style={{ flex: 1 }}>{node.name} ({node.type})</span>
-                          {isConnected && (
-                            <Link2Icon style={{ opacity: 0.6, flexShrink: 0 }} />
-                          )}
-                        </Flex>
-                      </Select.Item>
-                    );
-                  })
-                )}
+                ) : (() => {
+                  const ownNodes = availableTargetNodes.filter((n) => !n.isDiscoverable);
+                  const discoverableNodes = availableTargetNodes.filter((n) => n.isDiscoverable);
+                  return (
+                    <>
+                      {ownNodes.length > 0 && (
+                        <Select.Group>
+                          <Select.Label>Your Nodes</Select.Label>
+                          {ownNodes.map((node) => {
+                            const isConnected = connectedNodeIds.has(node.id);
+                            return (
+                              <Select.Item key={node.id} value={`own:${node.id}`} disabled={isConnected}>
+                                <Flex align="center" gap="2">
+                                  <span style={{ flex: 1 }}>{node.name} ({node.type})</span>
+                                  {isConnected && <Link2Icon style={{ opacity: 0.6, flexShrink: 0 }} />}
+                                </Flex>
+                              </Select.Item>
+                            );
+                          })}
+                        </Select.Group>
+                      )}
+                      {discoverableNodes.length > 0 && (
+                        <Select.Group>
+                          <Select.Label>
+                            <Flex align="center" gap="1">
+                              PACT Network
+                              <Tooltip
+                                content="Discoverable nodes from other organizations. Nodes from your own organization appear here but are disabled — use Your Nodes above to connect to them."
+                                delayDuration={0}
+                              >
+                                <InfoCircledIcon style={{ cursor: "help", opacity: 0.7 }} />
+                              </Tooltip>
+                            </Flex>
+                          </Select.Label>
+                          {discoverableNodes.map((node) => {
+                            const isConnected = connectedNodeIds.has(node.id);
+                            const isOwnOrg = node.organizationId === profileData?.organizationId;
+                            return (
+                              <Select.Item key={node.id} value={`net:${node.id}`} disabled={isConnected || isOwnOrg}>
+                                <Flex align="center" gap="2">
+                                  <span style={{ flex: 1 }}>{node.name} ({node.organizationName})</span>
+                                  {(isConnected || isOwnOrg) && <Link2Icon style={{ opacity: 0.6, flexShrink: 0 }} />}
+                                </Flex>
+                              </Select.Item>
+                            );
+                          })}
+                        </Select.Group>
+                      )}
+                    </>
+                  );
+                })()}
               </Select.Content>
             </Select.Root>
+            </div>
           )}
         </Form.Field>
 
@@ -383,11 +449,18 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
           </Callout.Icon>
           <Callout.Text>
             <Box style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              <span>
-                Connection invitation sent to <strong>{lockedTargetNodeName ?? targetNode?.name}</strong>. Go to that node's dashboard to accept it.
-              </span>
+              {targetNodeSelectValue?.startsWith("net:") || lockedTargetNodeId ? (
+                <span>
+                  Your connection invitation has been sent to <strong>{lockedTargetNodeName ?? targetNode?.name}</strong>.
+                  The organization will be notified and you will receive an email confirmation once they accept.
+                </span>
+              ) : (
+                <span>
+                  Connection invitation sent to <strong>{targetNode?.name}</strong>. Go to that node's dashboard to accept it.
+                </span>
+              )}
               <Box style={{ display: "flex", gap: "8px" }}>
-                {targetNode && (
+                {!targetNodeSelectValue?.startsWith("net:") && !lockedTargetNodeId && targetNode && (
                   <Button size="2" variant="soft" color="green" onClick={() => { onCancel?.(); navigate(`/nodes/${targetNode?.id}`); }}>
                     Go to {targetNode?.name}
                   </Button>
