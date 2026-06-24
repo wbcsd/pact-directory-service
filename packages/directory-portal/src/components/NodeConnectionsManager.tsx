@@ -11,8 +11,12 @@ export interface NodeConnection {
   id: number;
   fromNodeId: number;
   fromNodeName?: string;
+  fromNodeOrganizationId?: number;
+  fromNodeOrganizationName?: string;
   targetNodeId: number;
   targetNodeName?: string;
+  targetNodeOrganizationId?: number;
+  targetNodeOrganizationName?: string;
   clientId: string;
   clientSecret: string;
   status: 'pending' | 'accepted' | 'rejected';
@@ -25,8 +29,12 @@ export interface NodeInvitation {
   id: number;
   fromNodeId: number;
   fromNodeName?: string;
+  fromNodeOrganizationId?: number;
+  fromNodeOrganizationName?: string;
   targetNodeId: number;
   targetNodeName?: string;
+  targetNodeOrganizationId?: number;
+  targetNodeOrganizationName?: string;
   clientId: string;
   clientSecret: string;
   status: 'pending' | 'accepted' | 'rejected';

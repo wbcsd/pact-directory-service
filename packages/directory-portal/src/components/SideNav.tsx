@@ -20,20 +20,12 @@ const SideNav: React.FC = () => {
         <nav>
           <FeatureFlag flag="enableNodeManagement">
             <PolicyGuard policies={["view-nodes-own-organization", "view-nodes-all-organizations"]}>
-              <>
-                <NavLink
-                  to="/discoverable-nodes"
-                  style={{ textDecoration: "none", flex: 1 }}
-                >
-                  <Text>Discoverable Nodes</Text>
-                </NavLink>
-                <NavLink
-                  to="/nodes"
-                  style={{ textDecoration: "none", flex: 1 }}
-                >
-                  <Text>My Nodes</Text>
-                </NavLink>
-              </>
+              <NavLink
+                to="/nodes"
+                style={{ textDecoration: "none", flex: 1 }}
+              >
+                <Text>Nodes</Text>
+              </NavLink>
             </PolicyGuard>
           </FeatureFlag>          
           <NavLink to="/activity-logs">

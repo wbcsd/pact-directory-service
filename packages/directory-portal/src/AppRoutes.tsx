@@ -18,7 +18,6 @@ import NodeDashboardPage from "./pages/NodeDashboardPage";
 import AddNodePage from "./pages/AddNodePage";
 import EditNodePage from "./pages/EditNodePage";
 import NodesList from "./pages/NodesList";
-import DiscoverableNodesPage from "./pages/DiscoverableNodesPage";
 import CreateNodeConnectionPage from "./pages/CreateNodeConnectionPage";
 import ActivityLogsPage from "./pages/ActivityLogsPage";
 import ActivityLogDetailPage from "./pages/ActivityLogDetailPage";
@@ -40,7 +39,6 @@ const AppRoutes: React.FC = () => {
         <>
           <Route path="/nodes" element={<NodesList />} />
           <Route path="/nodes/:id" element={<NodeDashboardPage />} />
-          <Route path="/discoverable-nodes" element={<DiscoverableNodesPage />} />
           <Route path="/nodes/:id/create-connection" element={<CreateNodeConnectionPage />} />
           <Route path="/nodes/:id/footprints/new" element={<AddProductFootprintPage />} />
           <Route path="/nodes/:nodeId/footprints/:pcfId" element={<ViewProductFootprintPage />} />
