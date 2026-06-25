@@ -99,8 +99,18 @@ const NodeDashboardPage: React.FC = () => {
         setNodeError("");
         setNodeLoading(true);
         const res = await fetchWithAuth(`/nodes/${nodeId}`);
+        if (res?.status === 403) {
+          await confirm({
+            title: "Node not found",
+            description: "This node does not exist or you don't have permission to view it.",
+            confirmLabel: "OK",
+          });
+          navigate(-1);
+          return;
+        }
         if (!res || !res.ok) throw new Error("Failed to fetch node");
         const data: NodeData = await res.json();
+        console.log("Fetched node data:", data);
         setNodeData(data);
       } catch (error) {
         setNodeError("Failed to load node data.");
@@ -110,7 +120,7 @@ const NodeDashboardPage: React.FC = () => {
       }
     };
     fetchNodeData();
-  }, [nodeId, refreshTrigger]);
+  }, [nodeId, refreshTrigger, navigate, confirm]);
 
   const handlePanelClose = useCallback(() => {
     closePanel();
@@ -406,9 +416,14 @@ const NodeDashboardPage: React.FC = () => {
         const otherOrgId = isOutgoing ? row.targetNodeOrganizationId : row.fromNodeOrganizationId;
         const otherOrgName = isOutgoing ? row.targetNodeOrganizationName : row.fromNodeOrganizationName;
         const isExternal = otherOrgId !== undefined && otherOrgId !== profileData?.organizationId;
+        const isRoot = profileData?.role === "root";
+        const canNavigate = !isExternal || isRoot;
         return (
           <Flex align="center" gap="2">
-            <NodeLink id={otherNodeId} name={otherName} />
+            {canNavigate
+              ? <NodeLink id={otherNodeId} name={otherName} />
+              : <Text size="2" weight="medium">{otherName}</Text>
+            }
             <Badge size="1" color="gray" variant="soft">
               {isOutgoing ? "Outgoing" : "Incoming"}
             </Badge>
