@@ -13,6 +13,7 @@ export const mockNodes: Node[] = [
     createdAt: "2026-01-01T00:00:00.000Z",
     updatedAt: "2026-04-01T00:00:00.000Z",
     connectionsCount: 2,
+    discoverable: false,
   },
   {
     id: 101,
@@ -25,9 +26,25 @@ export const mockNodes: Node[] = [
     createdAt: "2026-02-01T00:00:00.000Z",
     updatedAt: "2026-04-15T00:00:00.000Z",
     connectionsCount: 0,
+    discoverable: true,
   },
 ];
+
+export const mockExternalNode: Node = {
+  id: 200,
+  organizationId: 20,
+  organizationName: "External Organisation",
+  name: "External Node Gamma",
+  type: "external",
+  apiUrl: "https://external-node.example.com",
+  status: "active",
+  createdAt: "2026-03-01T00:00:00.000Z",
+  updatedAt: "2026-05-01T00:00:00.000Z",
+  connectionsCount: 0,
+  discoverable: true,
+};
 
 export const mockNodeDetail: Node = mockNodes[0];
 
 export const mockNodeListResponse = makePaginated(mockNodes);
+export const mockDiscoverableNodeListResponse = makePaginated([mockExternalNode]);

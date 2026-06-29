@@ -320,4 +320,88 @@ test.describe("Nodes", () => {
 
     await expect(page.getByText(/failed to load|not found|error/i)).toBeVisible({ timeout: 5000 });
   });
+
+  // ---------------------------------------------------------------------------
+  // Discoverable toggle in NodeForm
+  // ---------------------------------------------------------------------------
+
+  test("edit node form shows the Discoverable toggle", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/nodes/100");
+
+    await page.locator('[aria-haspopup="menu"]').click();
+    await page.getByRole("menuitem", { name: /edit node/i }).click();
+
+    // The switch should be visible with a label matching "discoverable"
+    await expect(page.getByRole("switch")).toBeVisible();
+    await expect(page.getByText(/discoverable on pact network/i)).toBeVisible();
+  });
+
+  test("Discoverable toggle can be toggled in the edit form", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/nodes/100");
+
+    await page.locator('[aria-haspopup="menu"]').click();
+    await page.getByRole("menuitem", { name: /edit node/i }).click();
+
+    const toggle = page.getByRole("switch");
+    await expect(toggle).toBeVisible();
+
+    // Record initial state and click to toggle
+    const initialChecked = await toggle.isChecked();
+    await toggle.click();
+    const newChecked = await toggle.isChecked();
+
+    expect(newChecked).not.toBe(initialChecked);
+  });
+
+  // ---------------------------------------------------------------------------
+  // Access guard — 403 redirects with dialog
+  // ---------------------------------------------------------------------------
+
+  test("navigating to a forbidden node shows 'Node not found' dialog", async ({
+    authenticatedPage: page,
+  }) => {
+    const apiBase = process.env.API_BASE_URL ?? "http://localhost:3010/api";
+    // Return 403 for this specific node
+    await page.route(`${apiBase}/directory/nodes/999`, (route) =>
+      route.fulfill({
+        status: 403,
+        contentType: "application/json",
+        body: JSON.stringify({ error: "Forbidden" }),
+      })
+    );
+
+    await page.goto("/nodes/999");
+
+    // The ConfirmContext AlertDialog should appear with "Node not found" title
+    await expect(page.getByRole("alertdialog")).toBeVisible({ timeout: 5000 });
+    await expect(page.getByRole("alertdialog").getByText(/node not found/i)).toBeVisible();
+  });
+
+  test("clicking OK on the access guard dialog navigates back", async ({
+    authenticatedPage: page,
+  }) => {
+    const apiBase = process.env.API_BASE_URL ?? "http://localhost:3010/api";
+
+    await page.route(`${apiBase}/directory/nodes/999`, (route) =>
+      route.fulfill({
+        status: 403,
+        contentType: "application/json",
+        body: JSON.stringify({ error: "Forbidden" }),
+      })
+    );
+
+    // Navigate to nodes list first so there's a "back" page
+    await page.goto("/nodes");
+    await page.goto("/nodes/999");
+
+    await expect(page.getByRole("alertdialog")).toBeVisible({ timeout: 5000 });
+    await page.getByRole("alertdialog").getByRole("button", { name: /ok/i }).click();
+
+    // Should navigate back to the nodes list
+    await expect(page).toHaveURL(/\/nodes$/);
+  });
 });

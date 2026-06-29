@@ -1,4 +1,6 @@
 import { test, expect } from "./fixtures";
+import { mockProfileData } from "./mocks/data/auth";
+import { mockConnectionListWithExternalResponse } from "./mocks/data/connections";
 
 test.describe("Node Connections", () => {
   // ---------------------------------------------------------------------------
@@ -131,5 +133,102 @@ test.describe("Node Connections", () => {
 
     // We should still be on the node dashboard
     await expect(page).toHaveURL(/\/nodes\/100/);
+  });
+
+  // ---------------------------------------------------------------------------
+  // External org connections — org name badge
+  // ---------------------------------------------------------------------------
+
+  test("connection to an external org shows the organization name badge", async ({
+    authenticatedPage: page,
+    setupMocks,
+  }) => {
+    await setupMocks({ getNodeConnections: mockConnectionListWithExternalResponse });
+    await page.goto("/nodes/100");
+
+    // "External Organisation" badge should appear in the connections table
+    await expect(page.getByText("External Organisation").first()).toBeVisible();
+  });
+
+  test("external connected node name is plain text (not a link) for non-root user", async ({
+    authenticatedPage: page,
+    setupMocks,
+  }) => {
+    await setupMocks({ getNodeConnections: mockConnectionListWithExternalResponse });
+    await page.goto("/nodes/100");
+
+    // The external node name should be visible as text
+    await expect(page.getByText("External Node Gamma").first()).toBeVisible();
+    // But NOT rendered as a navigable link
+    await expect(page.getByRole("link", { name: "External Node Gamma" })).not.toBeVisible();
+  });
+
+  test("root user sees external connected node name as a link", async ({
+    authenticatedPage: page,
+    setupMocks,
+  }) => {
+    await setupMocks({
+      getMe: { ...mockProfileData, role: "root" },
+      getNodeConnections: mockConnectionListWithExternalResponse,
+    });
+    await page.goto("/nodes/100");
+
+    // Root can navigate to any node — so the name should be a link
+    await expect(page.getByRole("link", { name: "External Node Gamma" }).first()).toBeVisible();
+  });
+
+  // ---------------------------------------------------------------------------
+  // Create Connection — PACT Network group
+  // ---------------------------------------------------------------------------
+
+  test("Create Connection target dropdown shows a PACT Network group", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/nodes/100/create-connection");
+
+    // Open the target node Select trigger
+    const trigger = page.getByRole("combobox").first();
+    await trigger.click();
+
+    // Scope to the open Radix listbox portal to avoid matching the Callout text
+    await expect(page.locator('[role="listbox"]').getByText("PACT Network")).toBeVisible();
+  });
+
+  test("PACT Network group contains the discoverable external node", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/nodes/100/create-connection");
+
+    const trigger = page.getByRole("combobox").first();
+    await trigger.click();
+
+    // Scope to the open listbox to avoid matching hidden native <option> elements
+    const listbox = page.locator('[role="listbox"]');
+    await expect(listbox.getByText(/External Node Gamma/i)).toBeVisible();
+    await expect(listbox.getByText(/External Organisation/i)).toBeVisible();
+  });
+
+  test("cross-org invitation success message mentions the organization will be notified", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/nodes/100/create-connection");
+
+    // Open the target select and pick the external node (value = "net:200")
+    const trigger = page.getByRole("combobox").first();
+    await trigger.click();
+    // Click the External Node Gamma option
+    await page.getByRole("option", { name: /External Node Gamma/i }).click();
+
+    await page.getByRole("button", { name: "Create Invitation" }).click();
+
+    // Cross-org success message should mention the org will be notified
+    await expect(
+      page.getByText(/organization will be notified/i)
+    ).toBeVisible({ timeout: 5000 });
+
+    // No "Go to dashboard" button for cross-org invites
+    await expect(
+      page.getByRole("button", { name: /go to/i })
+    ).not.toBeVisible();
   });
 });
