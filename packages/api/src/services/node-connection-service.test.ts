@@ -55,9 +55,11 @@ describe('NodeConnectionService', () => {
     dbMocks = createMockDatabase();
     nodeService = {
       get: jest.fn(),
+      getById: jest.fn(),
     } as any;
     emailService = {
       sendConnectionRequestEmail: jest.fn(),
+      sendConnectionAcceptedEmail: jest.fn(),
     } as any;
     connectionService = new NodeConnectionService(
       dbMocks.db as any,
@@ -81,27 +83,27 @@ describe('NodeConnectionService', () => {
     });
 
     it('should throw ForbiddenError if user does not have permission', async () => {
-      nodeService.get
-        .mockResolvedValueOnce({
-          id: 1,
-          organizationId: 2, // Different org
-          name: 'Node 1',
-          type: 'internal',
-          apiUrl: 'http://example.com',
-          status: 'active',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        } as any)
-        .mockResolvedValueOnce({
-          id: 2,
-          organizationId: 3,
-          name: 'Node 2',
-          type: 'internal',
-          apiUrl: 'http://example2.com',
-          status: 'active',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        } as any);
+      nodeService.get.mockResolvedValueOnce({
+        id: 1,
+        organizationId: 2, // Different org from context
+        name: 'Node 1',
+        type: 'internal',
+        apiUrl: 'http://example.com',
+        status: 'active',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as any);
+      nodeService.getById.mockResolvedValueOnce({
+        id: 2,
+        organizationId: 3,
+        discoverable: false,
+        name: 'Node 2',
+        type: 'internal',
+        apiUrl: 'http://example2.com',
+        status: 'active',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as any);
 
       await expect(
         connectionService.createInvitation(adminUserContext, 1, {
@@ -111,27 +113,28 @@ describe('NodeConnectionService', () => {
     });
 
     it('should throw BadRequestError if connection already exists', async () => {
-      nodeService.get
-        .mockResolvedValueOnce({
-          id: 1,
-          organizationId: 1,
-          name: 'Node 1',
-          type: 'internal',
-          apiUrl: 'http://example.com',
-          status: 'active',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        } as any)
-        .mockResolvedValueOnce({
-          id: 2,
-          organizationId: 2,
-          name: 'Node 2',
-          type: 'internal',
-          apiUrl: 'http://example2.com',
-          status: 'active',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        } as any);
+      nodeService.get.mockResolvedValueOnce({
+        id: 1,
+        organizationId: 1,
+        name: 'Node 1',
+        type: 'internal',
+        apiUrl: 'http://example.com',
+        status: 'active',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as any);
+      // Target node is discoverable so the cross-org guard passes
+      nodeService.getById.mockResolvedValueOnce({
+        id: 2,
+        organizationId: 2,
+        discoverable: true,
+        name: 'Node 2',
+        type: 'internal',
+        apiUrl: 'http://example2.com',
+        status: 'active',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as any);
 
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
         id: 1,
@@ -148,30 +151,35 @@ describe('NodeConnectionService', () => {
     });
 
     it('should create invitation successfully', async () => {
-      nodeService.get
-        .mockResolvedValueOnce({
-          id: 1,
-          organizationId: 1,
-          organizationName: 'Org 1',
-          name: 'Node 1',
-          type: 'internal',
-          apiUrl: 'http://example.com',
-          status: 'active',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        } as any)
-        .mockResolvedValueOnce({
-          id: 2,
-          organizationId: 2,
-          name: 'Node 2',
-          type: 'internal',
-          apiUrl: 'http://example2.com',
-          status: 'active',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        } as any);
+      nodeService.get.mockResolvedValueOnce({
+        id: 1,
+        organizationId: 1,
+        organizationName: 'Org 1',
+        name: 'Node 1',
+        type: 'internal',
+        apiUrl: 'http://example.com',
+        status: 'active',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as any);
+      // Target node is discoverable (cross-org)
+      nodeService.getById.mockResolvedValueOnce({
+        id: 2,
+        organizationId: 2,
+        discoverable: true,
+        name: 'Node 2',
+        type: 'internal',
+        apiUrl: 'http://example2.com',
+        status: 'active',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as any);
 
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(null); // No existing connection
+      // delete rejected connections, then admin email query (one admin → one email sent)
+      dbMocks.executors.execute
+        .mockResolvedValueOnce(undefined)
+        .mockResolvedValueOnce([{ email: 'admin@target.com', fullName: 'Target Admin' }]);
 
       const mockConnection = {
         id: 1,
@@ -317,29 +325,33 @@ describe('NodeConnectionService', () => {
 
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockInvitation);
 
-      nodeService.get
-        .mockResolvedValueOnce({
-          id: 3,
-          organizationId: 1,
-          name: 'Node 3',
-          type: 'internal',
-          apiUrl: 'http://example.com',
-          status: 'active',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        } as any)
-        .mockResolvedValueOnce({
-          id: 2,
-          organizationId: 2,
-          name: 'Node 2',
-          type: 'internal',
-          apiUrl: 'http://example2.com',
-          status: 'active',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        } as any);
+      nodeService.get.mockResolvedValueOnce({
+        id: 3,
+        organizationId: 1,
+        name: 'Node 3',
+        type: 'internal',
+        apiUrl: 'http://example.com',
+        status: 'active',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as any);
+      // fromNode fetched via getById for logging + email
+      nodeService.getById.mockResolvedValueOnce({
+        id: 2,
+        organizationId: 2,
+        organizationName: 'Org 2',
+        name: 'Node 2',
+        type: 'internal',
+        apiUrl: 'http://example2.com',
+        status: 'active',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as any);
 
-      dbMocks.executors.execute.mockResolvedValueOnce(undefined);
+      // DB update, then from-org admin query (empty — no emails sent)
+      dbMocks.executors.execute
+        .mockResolvedValueOnce(undefined)
+        .mockResolvedValueOnce([]);
 
       const result = await connectionService.acceptInvitation(adminUserContext, 1);
 
@@ -383,27 +395,27 @@ describe('NodeConnectionService', () => {
         status: 'pending',
       });
 
-      nodeService.get
-        .mockResolvedValueOnce({
-          id: 3,
-          organizationId: 1,
-          name: 'Node 3',
-          type: 'internal',
-          apiUrl: 'http://example.com',
-          status: 'active',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        } as any)
-        .mockResolvedValueOnce({
-          id: 2,
-          organizationId: 2,
-          name: 'Node 2',
-          type: 'internal',
-          apiUrl: 'http://example2.com',
-          status: 'active',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        } as any);
+      // targetNode fetched via get(), fromNode via getById() for logging
+      nodeService.get.mockResolvedValueOnce({
+        id: 3,
+        organizationId: 1,
+        name: 'Node 3',
+        type: 'internal',
+        apiUrl: 'http://example.com',
+        status: 'active',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as any);
+      nodeService.getById.mockResolvedValueOnce({
+        id: 2,
+        organizationId: 2,
+        name: 'Node 2',
+        type: 'internal',
+        apiUrl: 'http://example2.com',
+        status: 'active',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as any);
 
       dbMocks.executors.execute.mockResolvedValueOnce(undefined);
 
@@ -487,10 +499,11 @@ describe('NodeConnectionService', () => {
         targetNodeId: 3,
       });
 
-      nodeService.get
+      // Both nodes fetched via getById
+      nodeService.getById
         .mockResolvedValueOnce({
           id: 2,
-          organizationId: 2,
+          organizationId: 2, // Neither matches admin's org (1)
           name: 'Node 2',
           type: 'internal',
           apiUrl: 'http://example.com',
@@ -521,10 +534,11 @@ describe('NodeConnectionService', () => {
         targetNodeId: 3,
       });
 
-      nodeService.get
+      // Both nodes fetched via getById
+      nodeService.getById
         .mockResolvedValueOnce({
           id: 2,
-          organizationId: 1,
+          organizationId: 1, // fromNode is in admin's org → has access
           name: 'Node 2',
           type: 'internal',
           apiUrl: 'http://example.com',
