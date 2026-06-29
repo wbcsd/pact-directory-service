@@ -22,6 +22,7 @@ export interface Node {
   createdAt: string;
   updatedAt: string;
   connectionsCount?: number;
+  discoverable?: boolean;
 }
 
 type PanelState =

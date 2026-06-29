@@ -2,7 +2,7 @@ import type { Page, Route } from "@playwright/test";
 import { mockProfileData, mockLoginResponse, mockForgotPasswordResponse, mockResetPasswordResponse, mockVerifyEmailResponse, mockSetPasswordResponse } from "./data/auth";
 import { mockOrganizationListResponse, mockOrganizationDetail, mockCheckNameAvailable } from "./data/organizations";
 import { mockUserListResponse, mockUserDetail } from "./data/users";
-import { mockNodeListResponse, mockNodeDetail } from "./data/nodes";
+import { mockNodeListResponse, mockNodeDetail, mockDiscoverableNodeListResponse } from "./data/nodes";
 import { mockConnectionListResponse, mockInvitationListResponse, mockAcceptInvitationResponse } from "./data/connections";
 import { mockFootprintListResponse, mockFootprintDetail } from "./data/footprints";
 import { mockPcfRequestListResponse } from "./data/pcf-requests";
@@ -51,6 +51,7 @@ const mockRegistry: Record<string, MockEntry> = {
 
   // Nodes
   getOrgNodes:             { method: "GET",    pattern: /^\/directory\/organizations\/\d+\/nodes$/,               defaultResponse: mockNodeListResponse },
+  getDiscoverableNodes:    { method: "GET",    pattern: /^\/directory\/nodes\/discoverable$/,                       defaultResponse: mockDiscoverableNodeListResponse },
   getNode:                 { method: "GET",    pattern: /^\/directory\/nodes\/\d+$/,                              defaultResponse: mockNodeDetail },
   postOrgNode:             { method: "POST",   pattern: /^\/directory\/organizations\/\d+\/nodes$/,               defaultResponse: mockNodeDetail },
   putNode:                 { method: "PUT",    pattern: /^\/directory\/nodes\/\d+$/,                              defaultResponse: mockNodeDetail },
