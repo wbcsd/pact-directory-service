@@ -62,15 +62,13 @@ test.describe("Nodes", () => {
 
     await page.getByRole("button", { name: /add node/i }).click();
 
-    await page.getByRole("textbox", { name: /name/i }).fill("New Test Node");
+    // Wait for the slide-over panel to open before interacting
+    const panel = page.getByRole("dialog");
+    await expect(panel).toBeVisible();
 
-    // Select type if there's a dropdown
-    const typeSelect = page.getByRole("combobox", { name: /type/i });
-    if (await typeSelect.isVisible()) {
-      await typeSelect.selectOption("internal");
-    }
-
-    await page.getByRole("button", { name: /save|create|add/i }).click();
+    // Scope fill and submit to the panel to avoid matching background elements
+    await panel.getByPlaceholder("Enter node name").fill("New Test Node");
+    await panel.getByRole("button", { name: /create node/i }).click();
 
     // Panel should auto-close after success delay (~1200 ms) — use a longer timeout
     // The SlideOverPanel wraps NodeForm; once closed, the "Enter node name" placeholder is gone
