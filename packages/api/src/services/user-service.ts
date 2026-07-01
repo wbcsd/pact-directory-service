@@ -13,6 +13,7 @@ import {
 import { EmailService } from './email-service';
 import {
   getPoliciesForRole,
+  hasAccess,
   registerPolicy,
   Role,
 } from '@src/common/policies';
@@ -863,6 +864,14 @@ export class UserService {
       (context.policies.includes('edit-users') && context.organizationId === organizationId);
     if (!allowed) {
       throw new ForbiddenError('You are not allowed to add users to this organization');
+    }
+
+    if (!Object.values(Role).includes(data.role)) {
+      throw new BadRequestError('Invalid role');
+    }
+
+    if (data.role === Role.Root && !hasAccess(context, 'assign-root-role')) {
+      throw new ForbiddenError('You are not allowed to assign root role');
     }
 
     // Normalize email: trim and lowercase

@@ -798,6 +798,34 @@ describe('UserService', () => {
       ).rejects.toThrow(ForbiddenError);
     });
 
+    it('should throw BadRequestError for invalid role values', async () => {
+      const invalidRoleData = {
+        ...userData,
+        role: 'super-admin' as Role,
+      };
+
+      await expect(
+        userService.addUserToOrganization(context, 1, invalidRoleData)
+      ).rejects.toThrow(BadRequestError);
+      await expect(
+        userService.addUserToOrganization(context, 1, invalidRoleData)
+      ).rejects.toThrow('Invalid role');
+    });
+
+    it('should throw ForbiddenError when assigning root role without assign-root-role policy', async () => {
+      const rootRoleData = {
+        ...userData,
+        role: Role.Root,
+      };
+
+      await expect(
+        userService.addUserToOrganization(context, 1, rootRoleData)
+      ).rejects.toThrow(ForbiddenError);
+      await expect(
+        userService.addUserToOrganization(context, 1, rootRoleData)
+      ).rejects.toThrow('You are not allowed to assign root role');
+    });
+
     it('should throw NotFoundError if organization does not exist', async () => {
       // Use a root context (edit-all-users) so the permission check passes
       // and the code reaches the org lookup
