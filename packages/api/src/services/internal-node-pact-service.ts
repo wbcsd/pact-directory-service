@@ -92,8 +92,7 @@ export class InternalNodePactService {
    */
   public async handleEvent(
     nodeId: number,
-    event: BaseEvent,
-    requesterNodeId: number | null = null
+    event: BaseEvent
   ) {
     const { type, id, source, data } = event;
 
@@ -121,16 +120,10 @@ export class InternalNodePactService {
 
       case EventTypes.RequestCreated: {
         logger.info(
-          { nodeId, eventId: id, source, requesterNodeId, productId: data?.productId },
+          { nodeId, eventId: id, source, productId: data?.productId },
           'Received RequestCreatedEvent for internal node — saving to inbox'
         );
-        await this.handleRequestCreatedEvent(
-          nodeId,
-          id,
-          source,
-          requesterNodeId,
-          event as RequestCreatedEvent
-        );
+        await this.handleRequestCreatedEvent(nodeId, id, source, event as RequestCreatedEvent);
         break;
       }
 
@@ -221,16 +214,20 @@ export class InternalNodePactService {
     nodeId: number,
     requestEventId: string,
     source: string,
-    requesterNodeId: number | null,
     event: RequestCreatedEvent
   ): Promise<void> {
     const filters = event.data as FootprintFilters;
+
+    // Parse fromNodeId from source URL if it's a directory-internal node
+    // e.g. "http://localhost:3010/api/nodes/14" → 14
+    const fromNodeMatch = source.match(/\/api\/nodes\/(\d+)/);
+    const fromNodeId = fromNodeMatch ? parseInt(fromNodeMatch[1], 10) : null;
 
     await this.db
       .insertInto('pcf_requests')
       .values({
         targetNodeId: nodeId,
-        fromNodeId: requesterNodeId,
+        fromNodeId,
         connectionId: null,
         source,
         requestEventId,
@@ -243,7 +240,7 @@ export class InternalNodePactService {
       .onConflict((oc) => oc.columns(['source','requestEventId']).doNothing())
       .execute();
       
-    logger.info({ nodeId, requestEventId, fromNodeId: requesterNodeId }, 'Incoming PCF request saved to inbox');
+    logger.info({ nodeId, requestEventId, fromNodeId }, 'Incoming PCF request saved to inbox');
   }
 
   /**

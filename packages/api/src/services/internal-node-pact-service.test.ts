@@ -462,23 +462,6 @@ describe('InternalNodePactService', () => {
     });
 
     describe('RequestCreatedEvent (Test Case #12)', () => {
-      it('stores requester node from authenticated context, not from event.source', async () => {
-        await service.handleEvent(
-          nodeId,
-          {
-            ...baseEvent,
-            type: EventTypes.RequestCreated,
-            source: 'https://attacker.example.com/api/nodes/99999',
-            data: { productId: ['urn:gtin:1234567890123'] },
-          },
-          14
-        );
-
-        const valuesCall = dbMocks.queryChain.values.mock.calls.find((args) => !!args[0]);
-        expect(valuesCall).toBeDefined();
-        expect(valuesCall![0].fromNodeId).toBe(14);
-      });
-
       it('should acknowledge and trigger async callback for RequestCreatedEvent', async () => {
         // Mock: no matching footprints found
         dbMocks.executors.execute.mockResolvedValueOnce([]);

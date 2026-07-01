@@ -1,6 +1,5 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { Services } from "../services";
-import { InternalNodeTokenPayload } from "../services/internal-node-auth-service";
 import {
    BadRequestError as BaseBadRequestError, 
    NotFoundError as BaseNotFoundError, 
@@ -197,8 +196,6 @@ export function createInternalNodeRoutes(): Router {
       eventSource: req.body.source,
     }, "Received PACT event for internal node");
 
-    const nodeAuth = res.locals.nodeAuth as InternalNodeTokenPayload | undefined;
-
     await req.services.internalNodePact.handleEvent(req.nodeId, {
       type: req.body.type,
       specversion: req.body.specversion,
@@ -206,7 +203,7 @@ export function createInternalNodeRoutes(): Router {
       source: req.body.source,
       time: req.body.time,
       data: req.body.data,
-    }, nodeAuth?.nodeId ?? null);
+    });
 
     res.status(200).send();
   }));
