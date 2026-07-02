@@ -46,5 +46,27 @@ export const mockExternalNode: Node = {
 
 export const mockNodeDetail: Node = mockNodes[0];
 
+export const mockInactiveNodeDetail: Node = {
+  ...mockNodes[0],
+  status: "inactive",
+};
+
+export const mockExternalNodeOwnOrg: Node = {
+  id: 100,
+  organizationId: 10,
+  organizationName: "Test Organisation",
+  name: "Test Node Alpha",
+  type: "external",
+  apiUrl: "https://api.supplier.example.com/pact",
+  status: "active",
+  createdAt: "2026-01-01T00:00:00.000Z",
+  updatedAt: "2026-04-01T00:00:00.000Z",
+  connectionsCount: 1,
+  discoverable: true,
+};
+
 export const mockNodeListResponse = makePaginated(mockNodes);
+export const mockFilteredNodeListResponse = makePaginated([mockNodes[0]]);
+export const mockEmptyNodeListResponse = makePaginated<Node>([]);
 export const mockDiscoverableNodeListResponse = makePaginated([mockExternalNode]);
+export const mockEmptyDiscoverableNodeListResponse = makePaginated<Node>([]);
