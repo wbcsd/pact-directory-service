@@ -1,6 +1,12 @@
 import { test, expect } from "./fixtures";
 import { mockProfileData } from "./mocks/data/auth";
-import { mockNodeDetail } from "./mocks/data/nodes";
+import {
+  mockNodeDetail,
+  mockEmptyNodeListResponse,
+  mockFilteredNodeListResponse,
+  mockInactiveNodeDetail,
+  mockExternalNodeOwnOrg,
+} from "./mocks/data/nodes";
 
 test.describe("Nodes", () => {
   // ---------------------------------------------------------------------------
@@ -403,3 +409,306 @@ test.describe("Nodes", () => {
     await expect(page).toHaveURL(/\/nodes$/);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Node List — additional coverage
+// ---------------------------------------------------------------------------
+
+test.describe("Nodes list — additional", () => {
+  test("shows empty state when the organisation has no nodes", async ({
+    authenticatedPage: page,
+    setupMocks,
+  }) => {
+    await setupMocks({ getOrgNodes: mockEmptyNodeListResponse });
+    await page.goto("/nodes");
+
+    await expect(page.getByText(/no nodes found/i)).toBeVisible();
+  });
+
+  test("search input is rendered with the correct placeholder", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/nodes");
+
+    await expect(
+      page.getByPlaceholder("Search by node name...")
+    ).toBeVisible();
+  });
+
+  test("search returns filtered results", async ({
+    authenticatedPage: page,
+    setupMocks,
+  }) => {
+    // Mock returns only Alpha — simulates a server-filtered response for search query "Alpha"
+    await setupMocks({ getOrgNodes: mockFilteredNodeListResponse });
+    await page.goto("/nodes");
+
+    // Type in search — component re-fetches; mock returns only Alpha
+    await page.getByPlaceholder("Search by node name...").fill("Alpha");
+
+    await expect(page.getByText("Test Node Alpha")).toBeVisible();
+    await expect(page.getByText("Test Node Beta")).not.toBeVisible();
+  });
+
+  test("connections count column shows the value for each node", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/nodes");
+
+    // Test Node Alpha has connectionsCount: 2
+    await expect(page.getByRole("columnheader", { name: "Connections" })).toBeVisible();
+    await expect(page.getByRole("cell", { name: "2", exact: true }).first()).toBeVisible();
+  });
+
+  test("Last Updated column header is visible", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/nodes");
+
+    await expect(page.getByRole("columnheader", { name: "Last Updated" })).toBeVisible();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Node Create Form — type switching behaviour
+// ---------------------------------------------------------------------------
+
+test.describe("Node create form — type switching", () => {
+  test("switching to External type reveals the API URL field", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/nodes");
+    await page.getByRole("button", { name: /add node/i }).click();
+
+    const panel = page.getByRole("dialog");
+    await expect(panel).toBeVisible();
+
+    // Default type is Internal — API URL field should NOT be visible yet
+    await expect(panel.getByLabel(/api url/i)).not.toBeVisible();
+
+    // Switch to External
+    await panel.getByRole("combobox").click();
+    await page.getByRole("option", { name: "External" }).click();
+
+    // API URL field should now appear
+    await expect(panel.getByLabel(/api url/i)).toBeVisible();
+  });
+
+  test("switching back to Internal type hides the API URL field", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/nodes");
+    await page.getByRole("button", { name: /add node/i }).click();
+
+    const panel = page.getByRole("dialog");
+    await expect(panel).toBeVisible();
+
+    // Switch to External first
+    await panel.getByRole("combobox").click();
+    await page.getByRole("option", { name: "External" }).click();
+    await expect(panel.getByLabel(/api url/i)).toBeVisible();
+
+    // Switch back to Internal — use .first() because the specVersion combobox is now also rendered
+    await panel.getByRole("combobox").first().click();
+    await page.getByRole("option", { name: "Internal" }).click();
+
+    await expect(panel.getByLabel(/api url/i)).not.toBeVisible();
+  });
+
+  test("External type reveals auth fields (Auth Base URL, Scope, Audience)", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/nodes");
+    await page.getByRole("button", { name: /add node/i }).click();
+
+    const panel = page.getByRole("dialog");
+    await expect(panel).toBeVisible();
+
+    // Switch to External
+    await panel.getByRole("combobox").click();
+    await page.getByRole("option", { name: "External" }).click();
+
+    // Auth fields should be visible
+    await expect(panel.getByPlaceholder(/https:\/\/auth\.example\.com/i)).toBeVisible();
+    await expect(panel.getByLabel(/scope/i)).toBeVisible();
+    await expect(panel.getByLabel(/audience/i)).toBeVisible();
+  });
+
+  test("submitting External type without an API URL is blocked by validation", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/nodes");
+    await page.getByRole("button", { name: /add node/i }).click();
+
+    const panel = page.getByRole("dialog");
+    await expect(panel).toBeVisible();
+
+    // Switch to External, fill name but leave API URL empty
+    await panel.getByRole("combobox").click();
+    await page.getByRole("option", { name: "External" }).click();
+    await panel.getByPlaceholder("Enter node name").fill("External Without URL");
+
+    await panel.getByRole("button", { name: /create node/i }).click();
+
+    // Form should still be visible (submission blocked)
+    await expect(panel.getByPlaceholder("Enter node name")).toBeVisible();
+  });
+
+  test("creating a full External node (name + API URL) shows success and closes panel", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/nodes");
+    await page.getByRole("button", { name: /add node/i }).click();
+
+    const panel = page.getByRole("dialog");
+    await expect(panel).toBeVisible();
+
+    await panel.getByRole("combobox").click();
+    await page.getByRole("option", { name: "External" }).click();
+    await panel.getByPlaceholder("Enter node name").fill("My External Node");
+    await panel.getByPlaceholder("Enter API URL").fill("https://api.supplier.example.com/pact");
+
+    await panel.getByRole("button", { name: /create node/i }).click();
+
+    // Panel closes after success
+    await expect(page.getByPlaceholder("Enter node name")).not.toBeVisible({ timeout: 5000 });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Node Edit Form — additional coverage
+// ---------------------------------------------------------------------------
+
+test.describe("Node edit form — additional", () => {
+  test("edit form pre-populates the current node name", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/nodes/100");
+
+    await page.locator('[aria-haspopup="menu"]').click();
+    await page.getByRole("menuitem", { name: /edit node/i }).click();
+
+    const panel = page.getByRole("dialog");
+    await expect(panel).toBeVisible();
+
+    // mockNodeDetail.name = "Test Node Alpha"
+    await expect(panel.getByPlaceholder("Enter node name")).toHaveValue("Test Node Alpha");
+  });
+
+  test("editing an internal node does not show the API URL field", async ({
+    authenticatedPage: page,
+  }) => {
+    // mockNodeDetail is an internal node
+    await page.goto("/nodes/100");
+
+    await page.locator('[aria-haspopup="menu"]').click();
+    await page.getByRole("menuitem", { name: /edit node/i }).click();
+
+    const panel = page.getByRole("dialog");
+    await expect(panel).toBeVisible();
+
+    // Internal node — API URL field should not be rendered
+    await expect(panel.getByLabel(/api url/i)).not.toBeVisible();
+  });
+
+  test("saving an edit shows the 'Node updated successfully!' callout", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/nodes/100");
+
+    await page.locator('[aria-haspopup="menu"]').click();
+    await page.getByRole("menuitem", { name: /edit node/i }).click();
+
+    const panel = page.getByRole("dialog");
+    await expect(panel).toBeVisible();
+
+    // Change the name slightly and save
+    await panel.getByPlaceholder("Enter node name").fill("Test Node Alpha Updated");
+    await panel.getByRole("button", { name: /save changes/i }).click();
+
+    // NodeDashboardPage.handleSaved() calls closePanel() immediately on success
+    await expect(panel).not.toBeVisible({ timeout: 5000 });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Node Dashboard — metadata display
+// ---------------------------------------------------------------------------
+
+test.describe("Node dashboard — metadata", () => {
+  test("status badge shows the node status", async ({
+    authenticatedPage: page,
+  }) => {
+    // mockNodeDetail.status = "active"
+    await page.goto("/nodes/100");
+
+    await expect(page.getByText("active", { exact: false }).first()).toBeVisible();
+  });
+
+  test("type badge shows the node type", async ({
+    authenticatedPage: page,
+  }) => {
+    // mockNodeDetail.type = "internal"
+    await page.goto("/nodes/100");
+
+    await expect(page.getByText("internal", { exact: false }).first()).toBeVisible();
+  });
+
+  test("API URL is displayed for an external node", async ({
+    authenticatedPage: page,
+    setupMocks,
+  }) => {
+    await setupMocks({ getNode: mockExternalNodeOwnOrg });
+    await page.goto("/nodes/100");
+
+    await expect(
+      page.getByText("https://api.supplier.example.com/pact")
+    ).toBeVisible();
+  });
+
+  test("Create Connection button is visible in the Connections section", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/nodes/100");
+
+    // The Connections section header has an inline "Create Connection" button
+    await expect(
+      page.getByRole("button", { name: /create connection/i }).first()
+    ).toBeVisible();
+  });
+
+  test("inactive node shows 'inactive' status badge", async ({
+    authenticatedPage: page,
+    setupMocks,
+  }) => {
+    await setupMocks({ getNode: mockInactiveNodeDetail });
+    await page.goto("/nodes/100");
+
+    await expect(page.getByText("inactive", { exact: false }).first()).toBeVisible();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Access control — root cross-org navigation
+// ---------------------------------------------------------------------------
+
+test.describe("Access control — root", () => {
+  test("root user can navigate to a cross-org node without triggering the access guard", async ({
+    authenticatedPage: page,
+    setupMocks,
+  }) => {
+    await setupMocks({
+      getMe: { ...mockProfileData, role: "root" },
+      // Node belongs to a different org (99), but root should be allowed
+      getNode: { ...mockNodeDetail, organizationId: 99, organizationName: "Other Organisation" },
+    });
+    await page.goto("/nodes/100");
+
+    // The access guard alertdialog should NOT appear
+    await expect(page.getByRole("alertdialog")).not.toBeVisible();
+
+    // The node name should be visible instead
+    await expect(page.getByText("Test Node Alpha")).toBeVisible();
+  });
+});
+

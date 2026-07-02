@@ -78,6 +78,31 @@ export const mockConnectionListWithExternalResponse = makePaginated([
 
 export const mockInvitationListResponse = makePaginated(mockInvitations);
 
+export const mockSecondInvitation: NodeInvitation = {
+  id: 301,
+  fromNodeId: 100,
+  fromNodeName: "Test Node Alpha",
+  fromNodeOrganizationId: 10,
+  fromNodeOrganizationName: "Test Organisation",
+  targetNodeId: 100,
+  targetNodeName: "Test Node Alpha",
+  targetNodeOrganizationId: 10,
+  targetNodeOrganizationName: "Test Organisation",
+  clientId: "client-id-pending-2",
+  clientSecret: "client-secret-pending-2",
+  status: "pending",
+  createdAt: "2026-05-10T00:00:00.000Z",
+  updatedAt: "2026-05-10T00:00:00.000Z",
+  expiresAt: null,
+};
+
+// Two pending invitations targeting node 100
+export const mockMultiplePendingConnectionList = makePaginated([
+  ...mockConnections,
+  mockInvitations[0] as NodeConnection,
+  mockSecondInvitation as NodeConnection,
+]);
+
 export const mockAcceptInvitationResponse = {
   connectionId: 300,
   clientId: "client-id-accepted",
