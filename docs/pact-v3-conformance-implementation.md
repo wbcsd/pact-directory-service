@@ -341,12 +341,12 @@ curl -X POST "http://localhost:3010/api/nodes/5/3/events" \
 ## Files Modified/Created
 
 ### Created Files
-- ✅ `apps/api/src/models/pact-v3/events.ts` - CloudEvents types and PACT event definitions
+- ✅ `packages/api/src/models/pact-v3/events.ts` - CloudEvents types and PACT event definitions
 - ✅ `docs/pact-v3-conformance-implementation.md` - This document
 
 ### Modified Files
-- ✅ `apps/api/src/services/internal-node-pact-service.ts` - Added advanced filtering logic
-- ✅ `apps/api/src/routes/internal-node-routes.ts` - Updated URLs to `/3/` prefix, added events endpoint
+- ✅ `packages/api/src/services/internal-node-pact-service.ts` - Added advanced filtering logic
+- ✅ `packages/api/src/routes/internal-node-routes.ts` - Updated URLs to `/3/` prefix, added events endpoint
 - ✅ `docs/internal-node-virtual-pact-api.md` - Updated documentation with new features
 
 ## Testing
@@ -355,7 +355,7 @@ curl -X POST "http://localhost:3010/api/nodes/5/3/events" \
 
 1. **Start the API:**
    ```bash
-   cd apps/api
+   cd packages/api
    docker compose up -d
    npm run db:migrate
    npm run dev

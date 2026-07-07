@@ -21,8 +21,8 @@ import {
   RequestRejectedEvent,
   PublishedEvent,
   EventTypes,
-} from 'pact-data-model/v3_0';
-export { EventTypes } from 'pact-data-model/v3_0';
+} from '@wbcsd/pact-data-model/v3_0';
+export { EventTypes } from '@wbcsd/pact-data-model/v3_0';
 
 
 /**

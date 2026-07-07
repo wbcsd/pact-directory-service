@@ -1,10 +1,10 @@
 {
 	"folders": [
 		{
-			"path": "apps/api"
+			"path": "packages/api"
 		},
 		{
-			"path": "apps/directory-portal"
+			"path": "packages/directory-portal"
 		},
 		{
 			"path": "docs"
