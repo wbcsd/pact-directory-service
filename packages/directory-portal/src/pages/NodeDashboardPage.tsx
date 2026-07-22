@@ -41,6 +41,7 @@ import FulfillPcfRequestForm from "../components/FulfillPcfRequestForm";
 import NodeLink from "../components/NodeLink";
 import ConnectionCredentialsDialog from "../components/ConnectionCredentialsDialog";
 import DeleteNodeDialogs from "../components/DeleteNodeDialogs";
+import PcfLevelBadge from "../components/PcfLevelBadge";
 import {
   NodeData,
   ActivityLog,
@@ -388,6 +389,11 @@ const NodeDashboardPage: React.FC = () => {
         const value = pcf?.primaryDataShare as string | undefined;
         return <Text size="2">{value != null ? `${value}%` : "—"}</Text>;
       },
+    },
+    {
+      key: "data.level",
+      header: "Level",
+      render: (row) => <PcfLevelBadge footprint={row.data} size="1" />,
     },
     {
       key: "createdAt",

@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Button, Heading, Text, Box } from "@radix-ui/themes";
 import * as Form from "@radix-ui/react-form";
 import { FormField, TextField, SelectField } from "./ui";
 import { TagInput } from "./ui/TagInput";
+import { EmissionFactorSourcesInput } from "./ui/EmissionFactorSourcesInput";
+import { PcfLevelPanel } from "./PcfLevelBadge";
 import {
   ProductFootprint,
   CarbonFootprint,
@@ -10,6 +12,7 @@ import {
   CarbonFootprintGeographyRegionOrSubregion,
   CarbonFootprintCcuCalculationApproach,
   ProductFootprintStatus,
+  EmissionFactorSource,
 } from "pact-data-model/v3_0";
 
 /** Build SelectField option list from a string enum's values. Labels capitalize the first letter. */
@@ -31,7 +34,8 @@ const CCU_APPROACH_OPTIONS = [NONE_OPTION, ...enumToOptions(CarbonFootprintCcuCa
 type AllStrings<T> = { [K in keyof T]-?: string };
 
 // All CarbonFootprint fields collapsed to string (enum / bool / string[] → string).
-// Complex sub-objects not shown in the basic form are omitted.
+// Complex sub-objects not shown in the basic form are omitted, except
+// secondaryEmissionFactorSources which is edited as a structured array.
 export type CarbonFootprintFormData = AllStrings<
   Omit<CarbonFootprint,
     | 'productOrSectorSpecificRules'
@@ -39,7 +43,9 @@ export type CarbonFootprintFormData = AllStrings<
     | 'dqi'
     | 'verification'
   >
->;
+> & {
+  secondaryEmissionFactorSources: EmissionFactorSource[];
+};
 
 // ProductFootprint minus server-generated fields, with array fields kept and pcf typed for the form.
 export type ProductFootprintFormData = AllStrings<
@@ -112,6 +118,7 @@ function footprintToFormData(data: Partial<ProductFootprint>): ProductFootprintF
       ccsTechnologicalCO2CaptureIncluded: String(pcf.ccsTechnologicalCO2CaptureIncluded ?? false),
       ipccCharacterizationFactors: pcf.ipccCharacterizationFactors?.join(', ') ?? 'AR6',
       crossSectoralStandards: pcf.crossSectoralStandards?.join(', ') ?? 'PACT-3.0',
+      secondaryEmissionFactorSources: pcf.secondaryEmissionFactorSources ?? [],
     },
   } as ProductFootprintFormData;
 }
@@ -141,6 +148,12 @@ function formDataToFootprint(form: ProductFootprintFormData): ProductFootprint {
       ccsTechnologicalCO2CaptureIncluded: pcf.ccsTechnologicalCO2CaptureIncluded === 'true',
       ipccCharacterizationFactors: pcf.ipccCharacterizationFactors.split(',').map(s => s.trim()).filter(Boolean),
       crossSectoralStandards: pcf.crossSectoralStandards.split(',').map(s => s.trim()).filter(Boolean),
+      secondaryEmissionFactorSources: (() => {
+        const sources = (pcf.secondaryEmissionFactorSources ?? [])
+          .map((s) => ({ name: s.name.trim(), version: s.version.trim() }))
+          .filter((s) => s.name !== '' && s.version !== '');
+        return sources.length > 0 ? sources : undefined;
+      })(),
     },
   } as ProductFootprint;
 }
@@ -152,6 +165,17 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
   readOnly = false,
 }) => {
   const [formData, setFormData] = useState<ProductFootprintFormData>(() => footprintToFormData(initialData ?? {}));
+
+  // Live PCF Usability Level source: current form values merged with the complex
+  // fields the form does not manage (e.g. secondaryEmissionFactorSources, dqi,
+  // verification), preserved from initialData so editing stays accurate.
+  const levelSource = useMemo(
+    () => ({
+      ...formData,
+      pcf: { ...(initialData?.pcf ?? {}), ...formData.pcf },
+    }),
+    [formData, initialData]
+  );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (readOnly) return;
@@ -174,6 +198,9 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
 
   return (
     <Form.Root onSubmit={handleSubmit} className="form-root">
+
+      {/* ── PCF Usability Level (updates live as the form is filled) ── */}
+      <PcfLevelPanel footprint={readOnly && initialData ? initialData : levelSource} />
 
       {/* ── Product Information ── */}
       <SectionHeading>Product Information</SectionHeading>
@@ -564,6 +591,23 @@ const ProductFootprintForm: React.FC<ProductFootprintFormProps> = ({
           <TextField value={formData.pcf.primaryDataShare} placeholder="e.g. 60.0" readOnly={readOnly} onChange={handlePcfChange} />
         </FormField>
       </FieldGrid>
+
+      <FormField
+        name="secondaryEmissionFactorSources"
+        label="Secondary Emission Factor Sources"
+        description="Secondary emission-factor databases used in the calculation (name and version). Required whenever secondary data was used."
+      >
+        <EmissionFactorSourcesInput
+          value={formData.pcf.secondaryEmissionFactorSources}
+          disabled={readOnly}
+          onChange={(secondaryEmissionFactorSources) =>
+            setFormData((prev) => ({
+              ...prev,
+              pcf: { ...prev.pcf, secondaryEmissionFactorSources },
+            }))
+          }
+        />
+      </FormField>
 
       <FormField name="exemptedEmissionsDescription" label="Exempted Emissions Description" description="Rationale behind exclusion of specific PCF emissions.">
         <TextField value={formData.pcf.exemptedEmissionsDescription} placeholder="Rationale for exclusions" readOnly={readOnly} onChange={handlePcfChange} />
