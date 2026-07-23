@@ -61,7 +61,7 @@ test.describe("Product Footprints", () => {
   }) => {
     await page.goto("/nodes/100/footprints/new");
 
-    await expect(page.getByRole("button", { name: /submit|save|add/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /save product footprint/i })).toBeVisible();
   });
 
   test("add footprint — submitting an empty form shows validation errors", async ({
@@ -69,10 +69,10 @@ test.describe("Product Footprints", () => {
   }) => {
     await page.goto("/nodes/100/footprints/new");
 
-    await page.getByRole("button", { name: /submit|save|add/i }).click();
+    await page.getByRole("button", { name: /save product footprint/i }).click();
 
     // Form validation should keep the form visible and show required field indicators
-    await expect(page.getByRole("button", { name: /submit|save|add/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /save product footprint/i })).toBeVisible();
   });
 
   test("add footprint — success shows the new PCF ID and copy buttons", async ({
@@ -96,7 +96,7 @@ test.describe("Product Footprints", () => {
       await productDescField.fill("E2E Test Product");
     }
 
-    await page.getByRole("button", { name: /submit|save|add/i }).click();
+    await page.getByRole("button", { name: /save product footprint/i }).click();
 
     // After success, should show the created footprint's UUID and copy buttons
     // or navigate — either way, no error should be shown
