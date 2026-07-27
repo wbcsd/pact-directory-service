@@ -42,7 +42,7 @@
     "vite": "^6.0.1",
     "vite-plugin-istanbul": "^7.2.1",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.6"
   },
   "optionalDependencies": {
     "@esbuild/linux-x64": "0.25.12",
