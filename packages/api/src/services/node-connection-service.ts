@@ -735,7 +735,7 @@ export class NodeConnectionService {
     // Get target node
     const targetNode = await this.db
       .selectFrom('nodes')
-      .select(['id', 'type', 'apiUrl'])
+      .select(['id', 'type', 'apiUrl', 'authBaseUrl', 'scope', 'audience', 'resource', 'clientId', 'clientSecret'])
       .where('id', '=', connection.targetNodeId)
       .executeTakeFirstOrThrow();
 
@@ -744,10 +744,28 @@ export class NodeConnectionService {
       ? targetNode.apiUrl.replace(/\/$/, '')
       : `${this.directoryApiBaseUrl}/api/nodes/${targetNode.id}`;
 
+    const source = `${this.directoryApiBaseUrl}/api/nodes/${connection.fromNodeId}`;
+
+    // For external targets authenticate with the credentials issued by the external node
+    // (stored on the node record); for internal targets use the connection credentials.
+    const useNodeCredentials =
+      targetNode.type === 'external' && !!targetNode.clientId && !!targetNode.clientSecret;
+    const clientId = useNodeCredentials ? targetNode.clientId! : connection.clientId;
+    const clientSecret = useNodeCredentials
+      ? this.decryptSecret(targetNode.clientSecret!)
+      : this.decryptSecret(connection.clientSecret);
+
     const client = new PactApiClient(
       baseUrl,
-      connection.clientId,
-      this.decryptSecret(connection.clientSecret)
+      clientId,
+      clientSecret,
+      source,
+      {
+        authBaseUrl: targetNode.authBaseUrl ?? undefined,
+        scope: targetNode.scope ?? undefined,
+        audience: targetNode.audience ?? undefined,
+        resource: targetNode.resource ?? undefined,
+      }
     );
 
     // Fetch footprints - same code for internal and external!

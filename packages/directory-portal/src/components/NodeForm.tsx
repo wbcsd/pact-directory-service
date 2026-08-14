@@ -41,6 +41,8 @@ export interface NodeFormData {
   audience?: string;
   resource?: string;
   specVersion?: string;
+  clientId?: string;
+  clientSecret?: string;
   discoverable: boolean;
 }
 
@@ -66,9 +68,12 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
     audience: "",
     resource: "",
     specVersion: "V3.0",
+    clientId: "",
+    clientSecret: "",
     discoverable: false,
   });
   const [readOnlyOrganization, setReadOnlyOrganization] = useState("");
+  const [hasExistingSecret, setHasExistingSecret] = useState(false);
   const [status, setStatus] = useState<null | "success" | "error">(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(isEditMode);
@@ -90,9 +95,12 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
           audience: node.audience || "",
           resource: node.resource || "",
           specVersion: node.specVersion || "",
+          clientId: node.clientId || "",
+          clientSecret: "",
           discoverable: node.discoverable ?? false,
         });
         setReadOnlyOrganization(node.organizationName || "");
+        setHasExistingSecret(!!node.hasClientSecret);
       } else {
         setErrorMessage("Failed to load node data");
         setStatus("error");
@@ -130,6 +138,9 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
         if (formData.audience) dataToSend.audience = formData.audience;
         if (formData.resource) dataToSend.resource = formData.resource;
         if (formData.specVersion) dataToSend.specVersion = formData.specVersion;
+        if (formData.clientId) dataToSend.clientId = formData.clientId;
+        // Only send the secret when the user entered a new value; blank keeps the current one.
+        if (formData.clientSecret) dataToSend.clientSecret = formData.clientSecret;
       }
 
       const url = isEditMode
@@ -180,6 +191,8 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
       audience: value === NodeType.INTERNAL ? "" : prev.audience,
       resource: value === NodeType.INTERNAL ? "" : prev.resource,
       specVersion: value === NodeType.INTERNAL ? "" : prev.specVersion,
+      clientId: value === NodeType.INTERNAL ? "" : prev.clientId,
+      clientSecret: value === NodeType.INTERNAL ? "" : prev.clientSecret,
     }));
   };
 
@@ -287,6 +300,29 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
               Please enter a valid URL.
             </Form.Message>
           </FormField>
+          <Grid columns={{ initial: "1", sm: "2" }} gap="3">
+            <FormField name="clientId" label="Client ID">
+              <TextField
+                value={formData.clientId || ""}
+                placeholder="OAuth2 client ID"
+                tooltip="The OAuth2 client ID issued to you by the external node's operator"
+                onChange={handleChange}
+              />
+            </FormField>
+            <FormField name="clientSecret" label="Client Secret">
+              <TextField
+                value={formData.clientSecret || ""}
+                type="password"
+                placeholder={
+                  hasExistingSecret
+                    ? "Leave blank to keep current secret"
+                    : "OAuth2 client secret"
+                }
+                tooltip="The OAuth2 client secret issued to you by the external node's operator. Used to authenticate outbound requests to this node."
+                onChange={handleChange}
+              />
+            </FormField>
+          </Grid>
           <Grid columns={{ initial: "1", sm: "3" }} gap="3">
             <FormField name="scope" label="Scope">
               <TextField

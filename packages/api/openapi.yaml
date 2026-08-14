@@ -263,6 +263,13 @@ components:
         name: { type: string }
         type: { type: string, enum: [internal, external] }
         apiUrl: { type: string }
+        authBaseUrl: { type: string, nullable: true, description: "OAuth2 authorization server base URL (external nodes)" }
+        scope: { type: string, nullable: true, description: "OAuth2 scope (external nodes)" }
+        audience: { type: string, nullable: true, description: "OAuth2 audience (external nodes)" }
+        resource: { type: string, nullable: true, description: "OAuth2 resource (external nodes)" }
+        specVersion: { type: string, nullable: true, description: "Supported PACT spec version (external nodes)" }
+        clientId: { type: string, nullable: true, description: "OAuth2 client ID used to authenticate to this external node" }
+        hasClientSecret: { type: boolean, description: "Whether an OAuth2 client secret is stored for this external node. The secret itself is never returned." }
         status: { type: string, enum: [active, inactive, pending] }
         discoverable: { type: boolean, description: "Whether this node is visible to users outside the organization" }
         createdAt: { type: string, format: date-time }
@@ -275,6 +282,13 @@ components:
         name: { type: string }
         type: { type: string, enum: [internal, external] }
         apiUrl: { type: string, description: "Optional for internal nodes, required for external" }
+        authBaseUrl: { type: string, description: "OAuth2 authorization server base URL (external nodes)" }
+        scope: { type: string, description: "OAuth2 scope (external nodes)" }
+        audience: { type: string, description: "OAuth2 audience (external nodes)" }
+        resource: { type: string, description: "OAuth2 resource (external nodes)" }
+        specVersion: { type: string, description: "Supported PACT spec version (external nodes)" }
+        clientId: { type: string, description: "OAuth2 client ID issued by the external node (external nodes)" }
+        clientSecret: { type: string, description: "OAuth2 client secret issued by the external node (external nodes)" }
         discoverable: { type: boolean, description: "Whether this node is visible to users outside the organization. Defaults to false." }
       required: [name, type]
     UpdateNodeRequest:
@@ -282,6 +296,13 @@ components:
       properties:
         name: { type: string }
         apiUrl: { type: string, description: "Only editable for external nodes" }
+        authBaseUrl: { type: string, description: "OAuth2 authorization server base URL (external nodes)" }
+        scope: { type: string, description: "OAuth2 scope (external nodes)" }
+        audience: { type: string, description: "OAuth2 audience (external nodes)" }
+        resource: { type: string, description: "OAuth2 resource (external nodes)" }
+        specVersion: { type: string, description: "Supported PACT spec version (external nodes)" }
+        clientId: { type: string, description: "OAuth2 client ID issued by the external node (external nodes)" }
+        clientSecret: { type: string, description: "OAuth2 client secret issued by the external node. When omitted or blank, the existing secret is kept." }
         status: { type: string, enum: [active, inactive, pending] }
         discoverable: { type: boolean, description: "Whether this node is visible to users outside the organization" }
     NodeConnectionData:

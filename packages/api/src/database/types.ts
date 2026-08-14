@@ -70,6 +70,8 @@ export interface NodesTable {
   audience: string | null;
   resource: string | null;
   specVersion: string | null;
+  clientId: string | null;
+  clientSecret: string | null;
   createdAt: Generated<Date>;
   updatedAt: Generated<Date>;
 }

@@ -100,7 +100,7 @@ export class PcfRequestService {
     // Get target node details (for auth config)
     const targetNode = await this.db
       .selectFrom('nodes')
-      .select(['id', 'type', 'apiUrl', 'authBaseUrl', 'scope', 'audience', 'resource'])
+      .select(['id', 'type', 'apiUrl', 'authBaseUrl', 'scope', 'audience', 'resource', 'clientId', 'clientSecret'])
       .where('id', '=', connection.targetNodeId)
       .executeTakeFirstOrThrow();
 
@@ -111,10 +111,23 @@ export class PcfRequestService {
 
     const source = `${this.directoryApiBaseUrl}/api/nodes/${nodeId}`;
 
+    // Credential selection:
+    // - External target: authenticate with the credentials issued by the external node
+    //   (stored on the node record). The directory-generated connection credentials are
+    //   meaningless to a third-party PACT API.
+    // - Internal target: use the connection credentials, which the internal node's
+    //   virtual PACT API validates via NodeConnectionService.verifyConnectionCredentials.
+    const useNodeCredentials =
+      targetNode.type === 'external' && !!targetNode.clientId && !!targetNode.clientSecret;
+    const clientId = useNodeCredentials ? targetNode.clientId! : connection.clientId;
+    const clientSecret = useNodeCredentials
+      ? this.decryptSecret(targetNode.clientSecret!)
+      : this.decryptSecret(connection.clientSecret);
+
     const client = new PactApiClient(
       baseUrl,
-      connection.clientId,
-      this.decryptSecret(connection.clientSecret),
+      clientId,
+      clientSecret,
       source,
       {
         authBaseUrl: targetNode.authBaseUrl ?? undefined,
