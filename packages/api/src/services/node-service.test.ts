@@ -84,7 +84,7 @@ describe('NodeService', () => {
 
       const result = await nodeService.get(adminUserContext, 1);
 
-      expect(result).toEqual(mockNode);
+      expect(result).toEqual({ ...mockNode, hasClientSecret: false });
       expect(logNode).toHaveBeenCalledWith(1, 'viewed', { organizationId: 1, userId: 1 });
     });
 
@@ -105,7 +105,7 @@ describe('NodeService', () => {
 
       const result = await nodeService.get(rootUserContext, 1);
 
-      expect(result).toEqual(mockNode);
+      expect(result).toEqual({ ...mockNode, hasClientSecret: false });
       expect(logNode).toHaveBeenCalledWith(1, 'viewed', { organizationId: 999, userId: 2 });
     });
   });
