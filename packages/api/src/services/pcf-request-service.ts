@@ -137,8 +137,18 @@ export class PcfRequestService {
       }
     );
 
-    // Send the RequestCreatedEvent and get back the event ID
-    const requestEventId = await client.sendRequestCreated(filters);
+    // Send the RequestCreatedEvent and get back the event ID.
+    // The PACT v3 spec models the RequestCreatedEvent's `data.status` as an array
+    // of strings, whereas FootprintFilters (shared with the ListFootprints query
+    // parameters) types it as a single string. Coerce `status` to an array so the
+    // outgoing event validates against a spec-conformant recipient.
+    const eventFilters: FootprintFilters = {
+      ...filters,
+      ...(filters.status !== undefined
+        ? { status: (Array.isArray(filters.status) ? filters.status : [filters.status]) as unknown as string }
+        : {}),
+    };
+    const requestEventId = await client.sendRequestCreated(eventFilters);
 
     // Persist the outgoing request.
     // When both nodes share the same database, the target node's event handler
