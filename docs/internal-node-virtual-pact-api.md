@@ -219,6 +219,15 @@ Content-Type: application/cloudevents+json
 3. System generates `clientId` and `clientSecret` for the connection
 4. Credentials are stored encrypted in the `connections` table
 
+Credentials always belong to the connection, never to a node: they authorise one
+specific from-node to call one specific target node. When the target is an
+**external** node the directory cannot issue them — the external operator does.
+Those credentials are entered when the connection is created (and can be updated
+via `PUT /directory/node-connections/{id}/credentials`), and the connection's
+`credentialsSource` records which side issued them: `generated` for the flow
+above, `external` otherwise. Only `generated` credentials can authenticate an
+inbound call to an internal node's virtual PACT API.
+
 ### Step 2: Request Access Token
 ```bash
 curl -X POST "http://localhost:3010/api/nodes/5/auth/token" \

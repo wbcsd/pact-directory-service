@@ -18,6 +18,8 @@ import { logNodeConnection } from '@src/common/activity-logger';
 registerPolicy([Role.Administrator], 'manage-connections-own-nodes');
 registerPolicy([Role.Root], 'manage-connections-all-nodes');
 
+export type CredentialsSource = 'generated' | 'external';
+
 export interface NodeConnectionData {
   id: number;
   fromNodeId: number;
@@ -28,8 +30,11 @@ export interface NodeConnectionData {
   targetNodeName?: string;
   targetNodeOrganizationId?: number;
   targetNodeOrganizationName?: string;
-  clientId: string;
-  clientSecret: string; // Encrypted
+  clientId: string | null;
+  /** Who issued the credentials this connection authenticates with. */
+  credentialsSource: CredentialsSource;
+  /** True when both a client ID and a client secret are stored. The secret never leaves the server. */
+  hasCredentials: boolean;
   status: 'pending' | 'accepted' | 'rejected';
   createdAt: Date;
   updatedAt: Date;
@@ -39,14 +44,45 @@ export interface NodeConnectionData {
 export interface ConnectionInvitationData {
   targetNodeId: number;
   message?: string;
+  /** Required when the target node is external — issued by that node's operator. */
+  clientId?: string;
+  clientSecret?: string;
 }
 
+export interface ConnectionCredentialsData {
+  clientId: string;
+  clientSecret: string;
+}
+
+/** Credentials revealed once, right after they are issued by this directory. */
 export interface ConnectionCredentials {
   clientId: string;
   clientSecret: string;
   connectionId: number;
   requestingNodeName?: string;
   requestingNodeType?: 'internal' | 'external';
+}
+
+export interface AcceptInvitationResult {
+  connectionId: number;
+  credentialsSource: CredentialsSource;
+  /**
+   * Directory-issued credentials, revealed once to the accepting user so they can
+   * be handed to the requesting node. Absent when the credentials were issued by
+   * an external operator — those belong to the requesting side, not to us.
+   */
+  clientId?: string;
+  clientSecret?: string;
+  requestingNodeName?: string;
+  requestingNodeType?: 'internal' | 'external';
+}
+
+/** Non-secret view of a connection's credentials. */
+export interface ConnectionCredentialsInfo {
+  connectionId: number;
+  clientId: string | null;
+  hasClientSecret: boolean;
+  credentialsSource: CredentialsSource;
 }
 
 export class NodeConnectionService {
@@ -82,6 +118,17 @@ export class NodeConnectionService {
     const clientId = crypto.randomBytes(16).toString('hex');
     const clientSecret = crypto.randomBytes(32).toString('hex');
     return { clientId, clientSecret };
+  }
+
+  /**
+   * Shape a connection row for API callers: the stored secret is replaced by a
+   * `hasCredentials` flag so it never reaches a client.
+   */
+  private toConnectionData<
+    T extends { clientId: string | null; clientSecret: string | null },
+  >(row: T): Omit<T, 'clientSecret'> & { hasCredentials: boolean } {
+    const { clientSecret, ...rest } = row;
+    return { ...rest, hasCredentials: !!clientSecret && !!row.clientId };
   }
 
   /**
@@ -162,8 +209,22 @@ export class NodeConnectionService {
       )
       .execute();
 
-    // Generate credentials
-    const credentials = this.generateCredentials();
+    // Credentials authenticate the from node against the target node.
+    // For an internal target this directory issues them; for an external target
+    // they were issued out-of-band by that node's operator and must be supplied.
+    const isExternalTarget = targetNode.type === 'external';
+    const credentials = isExternalTarget
+      ? {
+          clientId: data.clientId?.trim() ?? '',
+          clientSecret: data.clientSecret?.trim() ?? '',
+        }
+      : this.generateCredentials();
+
+    if (isExternalTarget && (!credentials.clientId || !credentials.clientSecret)) {
+      throw new BadRequestError(
+        'A client ID and client secret issued by the external node are required to connect to it'
+      );
+    }
 
     // Create the connection with pending status
     const connection = await this.db
@@ -173,6 +234,7 @@ export class NodeConnectionService {
         targetNodeId: data.targetNodeId,
         clientId: credentials.clientId,
         clientSecret: this.encryptSecret(credentials.clientSecret),
+        credentialsSource: isExternalTarget ? 'external' : 'generated',
         status: 'pending',
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -213,7 +275,7 @@ export class NodeConnectionService {
       }
     );
 
-    return connection as NodeConnectionData;
+    return this.toConnectionData(connection) as NodeConnectionData;
   }
 
   /**
@@ -248,6 +310,7 @@ export class NodeConnectionService {
         'targetNode.name as targetNodeName',
         'connections.clientId',
         'connections.clientSecret',
+        'connections.credentialsSource',
         'connections.status',
         'connections.createdAt',
         'connections.updatedAt',
@@ -273,7 +336,7 @@ export class NodeConnectionService {
     const data = await qb.offset(query.offset).limit(query.limit).execute();
 
     return {
-      data: data as NodeConnectionData[],
+      data: data.map((row) => this.toConnectionData(row)) as NodeConnectionData[],
       pagination: query.pagination(total),
     };
   }
@@ -284,7 +347,7 @@ export class NodeConnectionService {
   async acceptInvitation(
     context: UserContext,
     invitationId: number
-  ): Promise<ConnectionCredentials> {
+  ): Promise<AcceptInvitationResult> {
     // Get the invitation
     const invitation = await this.db
       .selectFrom('connections')
@@ -357,11 +420,24 @@ export class NodeConnectionService {
       });
     }
 
-    // Return the decrypted credentials
+    // Reveal the credentials only when this directory issued them. Credentials
+    // supplied by the requesting side (external target) are not ours to disclose.
+    if (invitation.credentialsSource !== 'generated') {
+      return {
+        connectionId: invitation.id,
+        credentialsSource: invitation.credentialsSource,
+        requestingNodeName: fromNode.name,
+        requestingNodeType: fromNode.type,
+      };
+    }
+
     return {
       connectionId: invitation.id,
-      clientId: invitation.clientId,
-      clientSecret: this.decryptSecret(invitation.clientSecret),
+      credentialsSource: 'generated',
+      clientId: invitation.clientId ?? undefined,
+      clientSecret: invitation.clientSecret
+        ? this.decryptSecret(invitation.clientSecret)
+        : undefined,
       requestingNodeName: fromNode.name,
       requestingNodeType: fromNode.type,
     };
@@ -461,6 +537,7 @@ export class NodeConnectionService {
         'targetOrg.name as targetNodeOrganizationName',
         'connections.clientId',
         'connections.clientSecret',
+        'connections.credentialsSource',
         'connections.status',
         'connections.createdAt',
         'connections.updatedAt',
@@ -490,7 +567,7 @@ export class NodeConnectionService {
     const data = await qb.offset(query.offset).limit(query.limit).execute();
 
     return {
-      data: data as NodeConnectionData[],
+      data: data.map((row) => this.toConnectionData(row)) as NodeConnectionData[],
       pagination: query.pagination(total),
     };
   }
@@ -586,6 +663,14 @@ export class NodeConnectionService {
       throw new ForbiddenError('You are not allowed to rotate credentials for this connection');
     }
 
+    // Credentials issued by an external operator can only be replaced by that
+    // operator; the directory has nothing to rotate.
+    if (connection.credentialsSource !== 'generated') {
+      throw new BadRequestError(
+        'These credentials were issued by the external node’s operator. Request new credentials from them and update the connection instead.'
+      );
+    }
+
     // Generate new credentials
     const newCredentials = this.generateCredentials();
 
@@ -610,12 +695,95 @@ export class NodeConnectionService {
   }
 
   /**
-   * Get credentials for a connection (for the requesting node)
+   * Replace the credentials a connection authenticates with. Only applies to
+   * credentials issued by an external node's operator — directory-issued
+   * credentials are managed through rotateCredentials().
+   */
+  async updateCredentials(
+    context: UserContext,
+    connectionId: number,
+    data: Partial<ConnectionCredentialsData>
+  ): Promise<ConnectionCredentialsInfo> {
+    const connection = await this.db
+      .selectFrom('connections')
+      .selectAll()
+      .where('id', '=', connectionId)
+      .executeTakeFirst();
+
+    if (!connection) {
+      throw new NotFoundError('Connection not found');
+    }
+
+    // Only the initiating side holds these credentials, so access is checked
+    // against the from node.
+    const fromNode = await this.nodeService.get(context, connection.fromNodeId);
+
+    const allowed =
+      context.policies.includes('manage-connections-all-nodes') ||
+      (context.policies.includes('manage-connections-own-nodes') &&
+        context.organizationId === fromNode.organizationId);
+
+    if (!allowed) {
+      throw new ForbiddenError('You are not allowed to update credentials for this connection');
+    }
+
+    if (connection.credentialsSource !== 'external') {
+      throw new BadRequestError(
+        'This connection uses credentials issued by the directory. Rotate them instead.'
+      );
+    }
+
+    const clientId = data.clientId?.trim();
+    const clientSecret = data.clientSecret?.trim();
+
+    if (!clientId) {
+      throw new BadRequestError('Client ID is required');
+    }
+
+    // An empty secret keeps the stored one, so credentials can be re-entered
+    // without retyping the secret.
+    if (!clientSecret && !connection.clientSecret) {
+      throw new BadRequestError('Client secret is required');
+    }
+
+    const updated = await this.db
+      .updateTable('connections')
+      .set({
+        clientId,
+        ...(clientSecret ? { clientSecret: this.encryptSecret(clientSecret) } : {}),
+        updatedAt: new Date(),
+      })
+      .where('id', '=', connectionId)
+      .returningAll()
+      .executeTakeFirstOrThrow();
+
+    logNodeConnection(
+      connection.fromNodeId,
+      connection.targetNodeId,
+      'credentials_updated',
+      {
+        connectionId,
+        fromNodeName: fromNode.name,
+        organizationId: fromNode.organizationId,
+        userId: context.userId,
+      }
+    );
+
+    return {
+      connectionId,
+      clientId: updated.clientId,
+      hasClientSecret: !!updated.clientSecret,
+      credentialsSource: updated.credentialsSource,
+    };
+  }
+
+  /**
+   * Get the non-secret view of a connection's credentials
    */
   async getCredentials(
     context: UserContext,
     connectionId: number
-  ): Promise<ConnectionCredentials> {
+  ): Promise<ConnectionCredentialsInfo> {
     // Get the connection
     const connection = await this.db
       .selectFrom('connections')
@@ -643,7 +811,8 @@ export class NodeConnectionService {
     return {
       connectionId: connection.id,
       clientId: connection.clientId,
-      clientSecret: this.decryptSecret(connection.clientSecret),
+      hasClientSecret: !!connection.clientSecret,
+      credentialsSource: connection.credentialsSource,
     };
   }
 
@@ -671,6 +840,9 @@ export class NodeConnectionService {
       .where('connections.targetNodeId', '=', targetNodeId)
       .where('connections.clientId', '=', clientId)
       .where('connections.status', '=', 'accepted')
+      // Only credentials this directory issued can authenticate an inbound call;
+      // credentials held for an external target are used outbound only.
+      .where('connections.credentialsSource', '=', 'generated')
       .executeTakeFirst();
 
     if (!connection) {
@@ -679,7 +851,7 @@ export class NodeConnectionService {
 
     // TODO: Use crypto.timingSafeEqual for constant-time comparison
     if (process.env.NODE_ENV !== 'development') {
-      if (this.decryptSecret(connection.clientSecret) !== clientSecret) {
+      if (!connection.clientSecret || this.decryptSecret(connection.clientSecret) !== clientSecret) {
         return null;
       }
     }
@@ -735,7 +907,7 @@ export class NodeConnectionService {
     // Get target node
     const targetNode = await this.db
       .selectFrom('nodes')
-      .select(['id', 'type', 'apiUrl', 'authBaseUrl', 'scope', 'audience', 'resource', 'clientId', 'clientSecret'])
+      .select(['id', 'type', 'apiUrl', 'authBaseUrl', 'scope', 'audience', 'resource'])
       .where('id', '=', connection.targetNodeId)
       .executeTakeFirstOrThrow();
 
@@ -746,19 +918,16 @@ export class NodeConnectionService {
 
     const source = `${this.directoryApiBaseUrl}/api/nodes/${connection.fromNodeId}`;
 
-    // For external targets authenticate with the credentials issued by the external node
-    // (stored on the node record); for internal targets use the connection credentials.
-    const useNodeCredentials =
-      targetNode.type === 'external' && !!targetNode.clientId && !!targetNode.clientSecret;
-    const clientId = useNodeCredentials ? targetNode.clientId! : connection.clientId;
-    const clientSecret = useNodeCredentials
-      ? this.decryptSecret(targetNode.clientSecret!)
-      : this.decryptSecret(connection.clientSecret);
+    // The connection carries the credentials the from node authenticates with,
+    // whether this directory issued them or the external operator did.
+    if (!connection.clientId || !connection.clientSecret) {
+      throw new BadRequestError('No credentials are configured for this connection');
+    }
 
     const client = new PactApiClient(
       baseUrl,
-      clientId,
-      clientSecret,
+      connection.clientId,
+      this.decryptSecret(connection.clientSecret),
       source,
       {
         authBaseUrl: targetNode.authBaseUrl ?? undefined,
