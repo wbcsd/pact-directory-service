@@ -7,6 +7,8 @@ import { CheckIcon, Cross2Icon, ExclamationTriangleIcon } from "@radix-ui/react-
 import { useConfirm } from "../contexts/ConfirmContext";
 import "./NodeForm.css";
 
+export type CredentialsSource = 'generated' | 'external';
+
 export interface NodeConnection {
   id: number;
   fromNodeId: number;
@@ -17,36 +19,24 @@ export interface NodeConnection {
   targetNodeName?: string;
   targetNodeOrganizationId?: number;
   targetNodeOrganizationName?: string;
-  clientId: string;
-  clientSecret: string;
+  clientId: string | null;
+  /** Who issued the credentials: this directory, or the external target's operator. */
+  credentialsSource: CredentialsSource;
+  /** Whether a complete credential pair is stored. The secret never leaves the server. */
+  hasCredentials: boolean;
   status: 'pending' | 'accepted' | 'rejected';
   createdAt: string;
   updatedAt: string;
   expiresAt: string | null;
 }
 
-export interface NodeInvitation {
-  id: number;
-  fromNodeId: number;
-  fromNodeName?: string;
-  fromNodeOrganizationId?: number;
-  fromNodeOrganizationName?: string;
-  targetNodeId: number;
-  targetNodeName?: string;
-  targetNodeOrganizationId?: number;
-  targetNodeOrganizationName?: string;
-  clientId: string;
-  clientSecret: string;
-  status: 'pending' | 'accepted' | 'rejected';
-  createdAt: string;
-  updatedAt: string;
-  expiresAt: string | null;
-}
+export type NodeInvitation = NodeConnection;
 
 interface ConnectionCredentials {
   connectionId: number;
-  clientId: string;
-  clientSecret: string;
+  credentialsSource: CredentialsSource;
+  clientId?: string;
+  clientSecret?: string;
 }
 
 interface NodeConnectionsManagerProps {
@@ -106,10 +96,15 @@ const NodeConnectionsManager: React.FC<NodeConnectionsManagerProps> = ({ nodeId 
       }
 
       const credentials: ConnectionCredentials = await response.json();
-      setShowCredentials(credentials);
-      setActionMessage({ 
-        type: 'success', 
-        message: 'Invitation accepted successfully! Save the credentials below.' 
+      // Credentials issued by an external operator are not disclosed here — the
+      // requesting side already holds them.
+      const revealed = !!credentials.clientId && !!credentials.clientSecret;
+      setShowCredentials(revealed ? credentials : null);
+      setActionMessage({
+        type: 'success',
+        message: revealed
+          ? 'Invitation accepted successfully! Save the credentials below.'
+          : 'Invitation accepted successfully.',
       });
       
       setInvitationsRefreshKey(prev => prev + 1);

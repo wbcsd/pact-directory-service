@@ -25,9 +25,6 @@ export interface NodeData {
   audience?: string | null;
   resource?: string | null;
   specVersion?: string | null;
-  clientId?: string | null;
-  /** True when an OAuth2 client secret is stored for this (external) node. The secret itself is never returned. */
-  hasClientSecret?: boolean;
   status: NodeStatus;
   discoverable: boolean;
   createdAt: Date;
@@ -47,8 +44,6 @@ export interface CreateNodeData {
   audience?: string;
   resource?: string;
   specVersion?: string;
-  clientId?: string; // OAuth2 client ID issued by the external node (external only)
-  clientSecret?: string; // OAuth2 client secret issued by the external node (external only)
   discoverable?: boolean;
 }
 
@@ -60,34 +55,12 @@ export interface UpdateNodeData {
   audience?: string;
   resource?: string;
   specVersion?: string;
-  clientId?: string; // Only editable for external nodes
-  clientSecret?: string; // Only editable for external nodes; when omitted/empty the existing secret is kept
   status?: 'active' | 'inactive' | 'pending';
   discoverable?: boolean;
 }
 
 export class NodeService {
   constructor(private db: Kysely<Database>) {}
-
-  /**
-   * Encrypt a secret before persisting.
-   * NOTE: base64 encoding kept consistent with NodeConnectionService.encryptSecret.
-   * TODO: replace with proper AES encryption using a key from config.
-   */
-  private encryptSecret(secret: string): string {
-    return Buffer.from(secret).toString('base64');
-  }
-
-  /**
-   * Remove the stored client secret from a node record before returning it to callers,
-   * exposing only a `hasClientSecret` flag. The secret must never leave the server.
-   */
-  private sanitizeNode<T extends { clientSecret?: string | null }>(
-    node: T
-  ): Omit<T, 'clientSecret'> & { hasClientSecret: boolean } {
-    const { clientSecret, ...rest } = node;
-    return { ...rest, hasClientSecret: !!clientSecret };
-  }
 
   /**
    * Get a single node by ID (no access control, for internal service use)
@@ -107,8 +80,6 @@ export class NodeService {
         'nodes.audience',
         'nodes.resource',
         'nodes.specVersion',
-        'nodes.clientId',
-        'nodes.clientSecret',
         'nodes.status',
         'nodes.discoverable',
         'nodes.createdAt',
@@ -122,7 +93,7 @@ export class NodeService {
       throw new NotFoundError('Node not found');
     }
 
-    return this.sanitizeNode(node) as NodeData;
+    return node as NodeData;
   }
 
   /**
@@ -193,11 +164,6 @@ export class NodeService {
         audience: data.type === 'external' ? (data.audience?.trim() ?? null) : null,
         resource: data.type === 'external' ? (data.resource?.trim() ?? null) : null,
         specVersion: data.type === 'external' ? (data.specVersion?.trim() ?? null) : null,
-        clientId: data.type === 'external' ? (data.clientId?.trim() || null) : null,
-        clientSecret:
-          data.type === 'external' && data.clientSecret?.trim()
-            ? this.encryptSecret(data.clientSecret.trim())
-            : null,
         createdAt: new Date(),
         updatedAt: new Date(),
       })
@@ -224,7 +190,7 @@ export class NodeService {
       nodeType: result.type,
     });
 
-    return this.sanitizeNode(result) as NodeData;
+    return result as NodeData;
   }
 
   /**
@@ -289,13 +255,6 @@ export class NodeService {
       if (data.audience !== undefined) updates.audience = data.audience?.trim() || null;
       if (data.resource !== undefined) updates.resource = data.resource?.trim() || null;
       if (data.specVersion !== undefined) updates.specVersion = data.specVersion?.trim() || null;
-      if (data.clientId !== undefined) updates.clientId = data.clientId?.trim() || null;
-      // Only replace the secret when a new non-empty value is supplied; otherwise keep the existing one.
-      if (data.clientSecret !== undefined && data.clientSecret.trim().length > 0) {
-        (updates as { clientSecret?: string | null }).clientSecret = this.encryptSecret(
-          data.clientSecret.trim()
-        );
-      }
     }
 
     // Perform the update
@@ -309,10 +268,10 @@ export class NodeService {
     logNode(nodeId, 'updated', {
       organizationId: existingNode.organizationId,
       userId: context.userId,
-      changes: { ...data, clientSecret: data.clientSecret ? '[redacted]' : undefined },
+      changes: data,
     });
 
-    return this.sanitizeNode(updated) as NodeData;
+    return updated as NodeData;
   }
 
   /**

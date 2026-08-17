@@ -26,19 +26,19 @@ const ConnectionCredentialsDialog: React.FC<ConnectionCredentialsDialogProps> = 
         <Dialog.Description size="2" color="gray" mb="4">
           Save these credentials securely. They are used by the requesting node to authenticate against this node.
         </Dialog.Description>
-        {credentials && (
+        {credentials?.clientId && credentials.clientSecret && (
           <>
             <Box mb="4" p="3" style={{ background: 'var(--gray-a3)', borderRadius: 'var(--radius-2)', fontFamily: 'monospace', fontSize: '13px', lineHeight: '1.8' }}>
               <div><strong>Connection ID:</strong> {credentials.connectionId}</div>
               <Flex align="center" gap="2">
                 <strong>Client ID:</strong> {truncateCredential(credentials.clientId)}
-                <Button size="1" variant="soft" onClick={() => onCopy(credentials.clientId)}>
+                <Button size="1" variant="soft" onClick={() => onCopy(credentials.clientId!)}>
                   Copy
                 </Button>
               </Flex>
               <Flex align="center" gap="2">
                 <strong>Client Secret:</strong> {truncateCredential(credentials.clientSecret)}
-                <Button size="1" variant="soft" onClick={() => onCopy(credentials.clientSecret)}>
+                <Button size="1" variant="soft" onClick={() => onCopy(credentials.clientSecret!)}>
                   Copy
                 </Button>
               </Flex>

@@ -100,7 +100,7 @@ export class PcfRequestService {
     // Get target node details (for auth config)
     const targetNode = await this.db
       .selectFrom('nodes')
-      .select(['id', 'type', 'apiUrl', 'authBaseUrl', 'scope', 'audience', 'resource', 'clientId', 'clientSecret'])
+      .select(['id', 'type', 'apiUrl', 'authBaseUrl', 'scope', 'audience', 'resource'])
       .where('id', '=', connection.targetNodeId)
       .executeTakeFirstOrThrow();
 
@@ -111,23 +111,18 @@ export class PcfRequestService {
 
     const source = `${this.directoryApiBaseUrl}/api/nodes/${nodeId}`;
 
-    // Credential selection:
-    // - External target: authenticate with the credentials issued by the external node
-    //   (stored on the node record). The directory-generated connection credentials are
-    //   meaningless to a third-party PACT API.
-    // - Internal target: use the connection credentials, which the internal node's
-    //   virtual PACT API validates via NodeConnectionService.verifyConnectionCredentials.
-    const useNodeCredentials =
-      targetNode.type === 'external' && !!targetNode.clientId && !!targetNode.clientSecret;
-    const clientId = useNodeCredentials ? targetNode.clientId! : connection.clientId;
-    const clientSecret = useNodeCredentials
-      ? this.decryptSecret(targetNode.clientSecret!)
-      : this.decryptSecret(connection.clientSecret);
+    // The connection carries the credentials the from node authenticates with:
+    // issued by this directory for an internal target (and validated there by
+    // NodeConnectionService.verifyConnectionCredentials), or issued by the
+    // external node's operator and stored on the connection.
+    if (!connection.clientId || !connection.clientSecret) {
+      throw new BadRequestError('No credentials are configured for this connection');
+    }
 
     const client = new PactApiClient(
       baseUrl,
-      clientId,
-      clientSecret,
+      connection.clientId,
+      this.decryptSecret(connection.clientSecret),
       source,
       {
         authBaseUrl: targetNode.authBaseUrl ?? undefined,
@@ -512,8 +507,8 @@ export class PcfRequestService {
             .executeTakeFirst()
         : null;
 
-      if (!connection) {
-        logger.warn({ nodeId, fromNodeId }, 'No reverse connection found for callback auth — proceeding unauthenticated');
+      if (!connection?.clientId || !connection.clientSecret) {
+        logger.warn({ nodeId, fromNodeId }, 'No reverse connection credentials found for callback auth — proceeding unauthenticated');
         return '';
       }
 

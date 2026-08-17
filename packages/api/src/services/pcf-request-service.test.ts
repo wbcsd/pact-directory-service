@@ -323,6 +323,49 @@ describe('PcfRequestService', () => {
       );
     });
 
+    it('uses the connection credentials for an external target', async () => {
+      const { PactApiClient } = require('@wbcsd/pact-api-client');
+      const externalTarget = {
+        ...mockTargetNode,
+        type: 'external' as const,
+        apiUrl: 'https://external.example.com/pact',
+      };
+      const externalConnection = {
+        ...mockConnection,
+        clientId: 'operator-client',
+        clientSecret: Buffer.from('operator-secret').toString('base64'),
+        credentialsSource: 'external' as const,
+      };
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(externalConnection);
+      nodeService.get.mockResolvedValueOnce(mockFromNode as any);
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce(externalTarget);
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce(mockInsertedRow);
+
+      await service.create(adminContext, nodeId, { connectionId, filters: mockFilters });
+
+      expect(PactApiClient).toHaveBeenCalledWith(
+        'https://external.example.com/pact',
+        'operator-client',
+        'operator-secret',
+        `${DIRECTORY_API}/api/nodes/${nodeId}`,
+        expect.any(Object)
+      );
+    });
+
+    it('throws BadRequestError when the connection has no credentials', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
+        ...mockConnection,
+        clientId: null,
+        clientSecret: null,
+      });
+      nodeService.get.mockResolvedValueOnce(mockFromNode as any);
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce(mockTargetNode);
+
+      await expect(
+        service.create(adminContext, nodeId, { connectionId, filters: mockFilters })
+      ).rejects.toThrow(BadRequestError);
+    });
+
     it('throws BadRequestError when no filters are provided', async () => {
       await expect(
         service.create(adminContext, nodeId, { connectionId, filters: {} })
