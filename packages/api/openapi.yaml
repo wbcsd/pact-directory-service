@@ -263,6 +263,11 @@ components:
         name: { type: string }
         type: { type: string, enum: [internal, external] }
         apiUrl: { type: string }
+        authBaseUrl: { type: string, nullable: true, description: "OAuth2 authorization server base URL (external nodes)" }
+        scope: { type: string, nullable: true, description: "OAuth2 scope (external nodes)" }
+        audience: { type: string, nullable: true, description: "OAuth2 audience (external nodes)" }
+        resource: { type: string, nullable: true, description: "OAuth2 resource (external nodes)" }
+        specVersion: { type: string, nullable: true, description: "Supported PACT spec version (external nodes)" }
         status: { type: string, enum: [active, inactive, pending] }
         discoverable: { type: boolean, description: "Whether this node is visible to users outside the organization" }
         createdAt: { type: string, format: date-time }
@@ -275,6 +280,11 @@ components:
         name: { type: string }
         type: { type: string, enum: [internal, external] }
         apiUrl: { type: string, description: "Optional for internal nodes, required for external" }
+        authBaseUrl: { type: string, description: "OAuth2 authorization server base URL (external nodes)" }
+        scope: { type: string, description: "OAuth2 scope (external nodes)" }
+        audience: { type: string, description: "OAuth2 audience (external nodes)" }
+        resource: { type: string, description: "OAuth2 resource (external nodes)" }
+        specVersion: { type: string, description: "Supported PACT spec version (external nodes)" }
         discoverable: { type: boolean, description: "Whether this node is visible to users outside the organization. Defaults to false." }
       required: [name, type]
     UpdateNodeRequest:
@@ -282,6 +292,11 @@ components:
       properties:
         name: { type: string }
         apiUrl: { type: string, description: "Only editable for external nodes" }
+        authBaseUrl: { type: string, description: "OAuth2 authorization server base URL (external nodes)" }
+        scope: { type: string, description: "OAuth2 scope (external nodes)" }
+        audience: { type: string, description: "OAuth2 audience (external nodes)" }
+        resource: { type: string, description: "OAuth2 resource (external nodes)" }
+        specVersion: { type: string, description: "Supported PACT spec version (external nodes)" }
         status: { type: string, enum: [active, inactive, pending] }
         discoverable: { type: boolean, description: "Whether this node is visible to users outside the organization" }
     NodeConnectionData:
@@ -290,26 +305,61 @@ components:
         id: { type: integer }
         fromNodeId: { type: integer }
         targetNodeId: { type: integer }
-        clientId: { type: string }
-        clientSecret: { type: string, description: "Encrypted" }
+        clientId: { type: string, nullable: true, description: "Client ID the from node authenticates to the target node with" }
+        credentialsSource:
+          type: string
+          enum: [generated, external]
+          description: "'generated' — issued by this directory (internal target); 'external' — issued by the external target node's operator"
+        hasCredentials: { type: boolean, description: "Whether a complete credential pair is stored. The secret is never returned." }
         status: { type: string, enum: [pending, accepted, rejected] }
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
         expiresAt: { type: string, format: date-time, nullable: true }
-      required: [id, fromNodeId, targetNodeId, clientId, clientSecret, status, createdAt, updatedAt]
+      required: [id, fromNodeId, targetNodeId, credentialsSource, hasCredentials, status, createdAt, updatedAt]
     CreateInvitationRequest:
       type: object
       properties:
         targetNodeId: { type: integer }
         message: { type: string }
+        clientId: { type: string, description: "Required when the target node is external — issued by that node's operator" }
+        clientSecret: { type: string, description: "Required when the target node is external — issued by that node's operator" }
       required: [targetNodeId]
+    AcceptInvitationResult:
+      type: object
+      description: >
+        Result of accepting an invitation. Directory-issued credentials are included
+        once, so they can be handed to the requesting node. Credentials issued by an
+        external node's operator are never returned.
+      properties:
+        connectionId: { type: integer }
+        credentialsSource: { type: string, enum: [generated, external] }
+        clientId: { type: string, description: "Only present when credentialsSource is 'generated'" }
+        clientSecret: { type: string, description: "Only present when credentialsSource is 'generated'. Shown once." }
+        requestingNodeName: { type: string }
+        requestingNodeType: { type: string, enum: [internal, external] }
+      required: [connectionId, credentialsSource]
     ConnectionCredentials:
       type: object
+      description: "Credentials revealed once, right after this directory issued them."
       properties:
         connectionId: { type: integer }
         clientId: { type: string }
         clientSecret: { type: string }
       required: [connectionId, clientId, clientSecret]
+    ConnectionCredentialsInfo:
+      type: object
+      properties:
+        connectionId: { type: integer }
+        clientId: { type: string, nullable: true }
+        hasClientSecret: { type: boolean }
+        credentialsSource: { type: string, enum: [generated, external] }
+      required: [connectionId, hasClientSecret, credentialsSource]
+    UpdateConnectionCredentialsRequest:
+      type: object
+      properties:
+        clientId: { type: string, description: "Client ID issued by the external node's operator" }
+        clientSecret: { type: string, description: "Client secret issued by the external node's operator. When omitted or blank, the stored secret is kept." }
+      required: [clientId]
     FootprintData:
       type: object
       properties:
@@ -1308,10 +1358,12 @@ paths:
           description: Invitation ID
       responses:
         "200":
-          description: Invitation accepted, credentials returned
+          description: >
+            Invitation accepted. Directory-issued credentials are returned once;
+            credentials issued by an external node's operator are not disclosed.
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/ConnectionCredentials" }
+              schema: { $ref: "#/components/schemas/AcceptInvitationResult" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
@@ -1365,6 +1417,54 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ConnectionCredentials" }
+        "400":
+          description: The credentials were issued by an external operator and cannot be rotated here
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /directory/node-connections/{id}/credentials:
+    get:
+      summary: Get a connection's credentials without the secret
+      tags: [Nodes]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          description: Connection ID
+      responses:
+        "200":
+          description: Credential metadata
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ConnectionCredentialsInfo" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    put:
+      summary: Replace credentials issued by an external node's operator
+      tags: [Nodes]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          description: Connection ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateConnectionCredentialsRequest" }
+      responses:
+        "200":
+          description: Credentials updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ConnectionCredentialsInfo" }
+        "400":
+          description: Missing client ID, or the connection uses directory-issued credentials
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }

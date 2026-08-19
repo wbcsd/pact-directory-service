@@ -78,8 +78,11 @@ export interface ConnectionTable {
   id: Generated<number>;
   fromNodeId: number;
   targetNodeId: number;
-  clientId: string;
-  clientSecret: string;
+  /** Credentials the from node uses to authenticate against the target node. */
+  clientId: string | null;
+  clientSecret: string | null;
+  /** 'generated' — issued by this directory; 'external' — issued by the external target's operator. */
+  credentialsSource: Generated<'generated' | 'external'>;
   status: 'pending' | 'accepted' | 'rejected';
   createdAt: Generated<Date>;
   updatedAt: Generated<Date>;

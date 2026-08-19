@@ -3,7 +3,7 @@ import { mockProfileData, mockLoginResponse, mockForgotPasswordResponse, mockRes
 import { mockOrganizationListResponse, mockOrganizationDetail, mockCheckNameAvailable } from "./data/organizations";
 import { mockUserListResponse, mockUserDetail } from "./data/users";
 import { mockNodeListResponse, mockNodeDetail, mockDiscoverableNodeListResponse } from "./data/nodes";
-import { mockConnectionListResponse, mockInvitationListResponse, mockAcceptInvitationResponse } from "./data/connections";
+import { mockConnectionListResponse, mockInvitationListResponse, mockAcceptInvitationResponse, mockUpdatedConnectionCredentials } from "./data/connections";
 import { mockFootprintListResponse, mockFootprintDetail } from "./data/footprints";
 import { mockPcfRequestListResponse } from "./data/pcf-requests";
 import { mockActivityLogsListResponse, mockActivityLogDetailResponse, mockNodeActivityLogsResponse } from "./data/activity-logs";
@@ -64,6 +64,7 @@ const mockRegistry: Record<string, MockEntry> = {
   postAcceptInvitation:    { method: "POST",   pattern: /^\/directory\/node-invitations\/\d+\/accept$/,           defaultResponse: mockAcceptInvitationResponse },
   postRejectInvitation:    { method: "POST",   pattern: /^\/directory\/node-invitations\/\d+\/reject$/,           defaultResponse: { message: "Invitation rejected." } },
   deleteInvitation:        { method: "DELETE", pattern: /^\/directory\/node-invitations\/\d+$/,                   defaultResponse: { message: "Invitation deleted." } },
+  putConnectionCreds:      { method: "PUT",    pattern: /^\/directory\/node-connections\/\d+\/credentials$/,      defaultResponse: mockUpdatedConnectionCredentials },
 
   // Footprints
   getNodeFootprints:       { method: "GET",    pattern: /^\/directory\/nodes\/\d+\/footprints$/,                  defaultResponse: mockFootprintListResponse },

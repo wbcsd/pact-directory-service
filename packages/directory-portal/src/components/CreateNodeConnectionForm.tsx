@@ -19,6 +19,7 @@ import {
 import { fetchWithAuth } from "../utils/auth-fetch";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { FormField, TextField } from "./ui";
 import "./NodeForm.css";
 
 interface Node {
@@ -34,6 +35,9 @@ interface CreateInvitationData {
   fromNodeId: number;
   targetNodeId: number;
   message?: string;
+  /** Only used when the target node is external — issued by that node's operator. */
+  clientId?: string;
+  clientSecret?: string;
 }
 
 interface CreateNodeConnectionFormProps {
@@ -63,6 +67,8 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
     fromNodeId: lockedFromNodeId ?? 0,
     targetNodeId: lockedTargetNodeId ?? 0,
     message: "",
+    clientId: "",
+    clientSecret: "",
   });
   const [status, setStatus] = useState<null | "success" | "error">(null);
   const [errorMessage, setErrorMessage] = useState("");
@@ -163,17 +169,36 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
       return;
     }
 
+    // An external node issues its own credentials — the directory cannot generate them.
+    if (isExternalTarget && (!formData.clientId?.trim() || !formData.clientSecret?.trim())) {
+      setErrorMessage(
+        "Enter the client ID and client secret issued to you by the external node's operator"
+      );
+      setStatus("error");
+      return;
+    }
+
     try {
       setCreating(true);
       setStatus(null);
       setErrorMessage("");
 
-      const dataToSend: { targetNodeId: number; message?: string } = {
+      const dataToSend: {
+        targetNodeId: number;
+        message?: string;
+        clientId?: string;
+        clientSecret?: string;
+      } = {
         targetNodeId: formData.targetNodeId,
       };
 
       if (formData.message && formData.message.trim()) {
         dataToSend.message = formData.message.trim();
+      }
+
+      if (isExternalTarget) {
+        dataToSend.clientId = formData.clientId?.trim();
+        dataToSend.clientSecret = formData.clientSecret?.trim();
       }
 
       const response = await fetchWithAuth(
@@ -231,6 +256,11 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
   const availableTargetNodes = availableNodes.filter(
     (node) => node.id !== formData.fromNodeId
   );
+
+  // Resolve the target, whether it was picked here or locked by the caller
+  const selectedTargetNode =
+    availableNodes.find((node) => node.id === formData.targetNodeId) ?? targetNode;
+  const isExternalTarget = selectedTargetNode?.type === "external";
 
   if (loading) {
     return (
@@ -386,6 +416,48 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
             </div>
           )}
         </Form.Field>
+
+        {/* Credentials (external targets only) */}
+        {isExternalTarget && (
+          <>
+            <Callout.Root variant="soft" mb="4">
+              <Callout.Icon>
+                <InfoCircledIcon />
+              </Callout.Icon>
+              <Callout.Text>
+                <strong>{selectedTargetNode?.name}</strong> is an external node, so it
+                issues its own credentials. Enter the client ID and secret its operator
+                gave you — they are stored on this connection and used only for requests
+                sent through it.
+              </Callout.Text>
+            </Callout.Root>
+
+            <FormField name="clientId" label="Client ID" required>
+              <TextField
+                required
+                value={formData.clientId ?? ""}
+                placeholder="OAuth2 client ID"
+                tooltip="The OAuth2 client ID issued to you by the external node's operator."
+                onChange={(event) =>
+                  setFormData((prev) => ({ ...prev, clientId: event.target.value }))
+                }
+              />
+            </FormField>
+
+            <FormField name="clientSecret" label="Client Secret" required>
+              <TextField
+                required
+                type="password"
+                value={formData.clientSecret ?? ""}
+                placeholder="OAuth2 client secret"
+                tooltip="The OAuth2 client secret issued to you by the external node's operator. It is stored encrypted and never shown again."
+                onChange={(event) =>
+                  setFormData((prev) => ({ ...prev, clientSecret: event.target.value }))
+                }
+              />
+            </FormField>
+          </>
+        )}
 
         {/* Optional Message */}
         <Form.Field name="message" className="form-field">

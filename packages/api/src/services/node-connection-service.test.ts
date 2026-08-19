@@ -218,6 +218,97 @@ describe('NodeConnectionService', () => {
         })
       );
     });
+
+    it('should require credentials when the target node is external', async () => {
+      nodeService.get.mockResolvedValueOnce({
+        id: 1,
+        organizationId: 1,
+        organizationName: 'Org 1',
+        name: 'Node 1',
+        type: 'internal',
+        apiUrl: 'http://example.com',
+        status: 'active',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as any);
+      nodeService.getById.mockResolvedValueOnce({
+        id: 2,
+        organizationId: 1,
+        discoverable: true,
+        name: 'External Node',
+        type: 'external',
+        apiUrl: 'http://external.example.com',
+        status: 'active',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as any);
+
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(null);
+      dbMocks.executors.execute.mockResolvedValueOnce(undefined);
+
+      await expect(
+        connectionService.createInvitation(adminUserContext, 1, { targetNodeId: 2 })
+      ).rejects.toThrow(BadRequestError);
+    });
+
+    it('should store operator-issued credentials for an external target', async () => {
+      nodeService.get.mockResolvedValueOnce({
+        id: 1,
+        organizationId: 1,
+        organizationName: 'Org 1',
+        name: 'Node 1',
+        type: 'internal',
+        apiUrl: 'http://example.com',
+        status: 'active',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as any);
+      nodeService.getById.mockResolvedValueOnce({
+        id: 2,
+        organizationId: 1,
+        discoverable: true,
+        name: 'External Node',
+        type: 'external',
+        apiUrl: 'http://external.example.com',
+        status: 'active',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as any);
+
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(null);
+      dbMocks.executors.execute
+        .mockResolvedValueOnce(undefined)
+        .mockResolvedValueOnce([]);
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({
+        id: 1,
+        fromNodeId: 1,
+        targetNodeId: 2,
+        clientId: 'operator-client',
+        clientSecret: Buffer.from('operator-secret').toString('base64'),
+        credentialsSource: 'external',
+        status: 'pending',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        expiresAt: null,
+      });
+
+      const result = await connectionService.createInvitation(adminUserContext, 1, {
+        targetNodeId: 2,
+        clientId: 'operator-client',
+        clientSecret: 'operator-secret',
+      });
+
+      expect(dbMocks.queryChain.values).toHaveBeenCalledWith(
+        expect.objectContaining({
+          clientId: 'operator-client',
+          clientSecret: Buffer.from('operator-secret').toString('base64'),
+          credentialsSource: 'external',
+        })
+      );
+      expect(result.credentialsSource).toBe('external');
+      expect(result.hasCredentials).toBe(true);
+      expect(result).not.toHaveProperty('clientSecret');
+    });
   });
 
   describe('listInvitations', () => {
@@ -273,7 +364,10 @@ describe('NodeConnectionService', () => {
         ListQuery.default()
       );
 
-      expect(result.data).toEqual(mockInvitations);
+      // The stored secret is replaced by a hasCredentials flag
+      const { clientSecret, ...expected } = mockInvitations[0];
+      expect(result.data).toEqual([{ ...expected, hasCredentials: true }]);
+      expect(result.data[0]).not.toHaveProperty('clientSecret');
       expect(result.pagination.total).toBe(1);
     });
   });
@@ -320,6 +414,7 @@ describe('NodeConnectionService', () => {
         targetNodeId: 3,
         clientId: 'client-1',
         clientSecret: Buffer.from('secret-1').toString('base64'),
+        credentialsSource: 'generated',
         status: 'pending',
       };
 
@@ -373,6 +468,51 @@ describe('NodeConnectionService', () => {
           userId: 1,
         })
       );
+    });
+
+    it('should not reveal operator-issued credentials on accept', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
+        id: 1,
+        fromNodeId: 2,
+        targetNodeId: 3,
+        clientId: 'operator-client',
+        clientSecret: Buffer.from('operator-secret').toString('base64'),
+        credentialsSource: 'external',
+        status: 'pending',
+      });
+
+      nodeService.get.mockResolvedValueOnce({
+        id: 3,
+        organizationId: 1,
+        name: 'Node 3',
+        type: 'external',
+        apiUrl: 'http://external.example.com',
+        status: 'active',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as any);
+      nodeService.getById.mockResolvedValueOnce({
+        id: 2,
+        organizationId: 2,
+        organizationName: 'Org 2',
+        name: 'Node 2',
+        type: 'internal',
+        apiUrl: 'http://example2.com',
+        status: 'active',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as any);
+
+      dbMocks.executors.execute
+        .mockResolvedValueOnce(undefined)
+        .mockResolvedValueOnce([]);
+
+      const result = await connectionService.acceptInvitation(adminUserContext, 1);
+
+      expect(result.connectionId).toBe(1);
+      expect(result.credentialsSource).toBe('external');
+      expect(result.clientId).toBeUndefined();
+      expect(result.clientSecret).toBeUndefined();
     });
   });
 
@@ -478,7 +618,10 @@ describe('NodeConnectionService', () => {
         ListQuery.default()
       );
 
-      expect(result.data).toEqual(mockConnections);
+      // The stored secret is replaced by a hasCredentials flag
+      const { clientSecret, ...expected } = mockConnections[0];
+      expect(result.data).toEqual([{ ...expected, hasCredentials: true }]);
+      expect(result.data[0]).not.toHaveProperty('clientSecret');
       expect(result.pagination.total).toBe(1);
     });
   });
@@ -595,6 +738,7 @@ describe('NodeConnectionService', () => {
         targetNodeId: 3,
         clientId: 'old-client-id',
         clientSecret: 'old-secret',
+        credentialsSource: 'generated',
         status: 'accepted',
       });
 
@@ -619,6 +763,33 @@ describe('NodeConnectionService', () => {
       expect(result.clientId).not.toBe('old-client-id');
       expect(dbMocks.db.updateTable).toHaveBeenCalledWith('connections');
     });
+
+    it('should refuse to rotate operator-issued credentials', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
+        id: 1,
+        fromNodeId: 2,
+        targetNodeId: 3,
+        clientId: 'operator-client',
+        clientSecret: 'operator-secret',
+        credentialsSource: 'external',
+        status: 'accepted',
+      });
+
+      nodeService.get.mockResolvedValueOnce({
+        id: 2,
+        organizationId: 1,
+        name: 'Node 2',
+        type: 'internal',
+        apiUrl: 'http://example.com',
+        status: 'active',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as any);
+
+      await expect(
+        connectionService.rotateCredentials(adminUserContext, 1)
+      ).rejects.toThrow(BadRequestError);
+    });
   });
 
   describe('getCredentials', () => {
@@ -630,13 +801,14 @@ describe('NodeConnectionService', () => {
       );
     });
 
-    it('should return decrypted credentials', async () => {
+    it('should return the credentials without the secret', async () => {
       const mockConnection = {
         id: 1,
         fromNodeId: 2,
         targetNodeId: 3,
         clientId: 'client-1',
         clientSecret: Buffer.from('secret-1').toString('base64'),
+        credentialsSource: 'generated',
         status: 'accepted',
       };
 
@@ -657,7 +829,123 @@ describe('NodeConnectionService', () => {
 
       expect(result.connectionId).toBe(1);
       expect(result.clientId).toBe('client-1');
-      expect(result.clientSecret).toBe('secret-1');
+      expect(result.hasClientSecret).toBe(true);
+      expect(result.credentialsSource).toBe('generated');
+      expect(result).not.toHaveProperty('clientSecret');
+    });
+  });
+
+  describe('updateCredentials', () => {
+    const externalConnection = {
+      id: 1,
+      fromNodeId: 2,
+      targetNodeId: 3,
+      clientId: 'operator-client',
+      clientSecret: Buffer.from('operator-secret').toString('base64'),
+      credentialsSource: 'external',
+      status: 'accepted',
+    };
+
+    const ownFromNode = {
+      id: 2,
+      organizationId: 1,
+      name: 'Node 2',
+      type: 'internal',
+      apiUrl: 'http://example.com',
+      status: 'active',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    it('should throw NotFoundError if connection not found', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(null);
+
+      await expect(
+        connectionService.updateCredentials(adminUserContext, 999, {
+          clientId: 'a',
+          clientSecret: 'b',
+        })
+      ).rejects.toThrow(NotFoundError);
+    });
+
+    it('should throw ForbiddenError if user does not own the from node', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(externalConnection);
+      nodeService.get.mockResolvedValueOnce({ ...ownFromNode, organizationId: 2 } as any);
+
+      await expect(
+        connectionService.updateCredentials(adminUserContext, 1, {
+          clientId: 'a',
+          clientSecret: 'b',
+        })
+      ).rejects.toThrow(ForbiddenError);
+    });
+
+    it('should reject directory-issued credentials', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
+        ...externalConnection,
+        credentialsSource: 'generated',
+      });
+      nodeService.get.mockResolvedValueOnce(ownFromNode as any);
+
+      await expect(
+        connectionService.updateCredentials(adminUserContext, 1, {
+          clientId: 'a',
+          clientSecret: 'b',
+        })
+      ).rejects.toThrow(BadRequestError);
+    });
+
+    it('should require a client ID', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(externalConnection);
+      nodeService.get.mockResolvedValueOnce(ownFromNode as any);
+
+      await expect(
+        connectionService.updateCredentials(adminUserContext, 1, { clientSecret: 'b' })
+      ).rejects.toThrow(BadRequestError);
+    });
+
+    it('should store the new credentials encrypted', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(externalConnection);
+      nodeService.get.mockResolvedValueOnce(ownFromNode as any);
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({
+        ...externalConnection,
+        clientId: 'new-client',
+        clientSecret: Buffer.from('new-secret').toString('base64'),
+      });
+
+      const result = await connectionService.updateCredentials(adminUserContext, 1, {
+        clientId: 'new-client',
+        clientSecret: 'new-secret',
+      });
+
+      expect(dbMocks.db.updateTable).toHaveBeenCalledWith('connections');
+      expect(dbMocks.queryChain.set).toHaveBeenCalledWith(
+        expect.objectContaining({
+          clientId: 'new-client',
+          clientSecret: Buffer.from('new-secret').toString('base64'),
+        })
+      );
+      expect(result.clientId).toBe('new-client');
+      expect(result.hasClientSecret).toBe(true);
+      expect(result.credentialsSource).toBe('external');
+    });
+
+    it('should keep the stored secret when none is supplied', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(externalConnection);
+      nodeService.get.mockResolvedValueOnce(ownFromNode as any);
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({
+        ...externalConnection,
+        clientId: 'new-client',
+      });
+
+      await connectionService.updateCredentials(adminUserContext, 1, {
+        clientId: 'new-client',
+        clientSecret: '',
+      });
+
+      expect(dbMocks.queryChain.set).toHaveBeenCalledWith(
+        expect.not.objectContaining({ clientSecret: expect.anything() })
+      );
     });
   });
 });

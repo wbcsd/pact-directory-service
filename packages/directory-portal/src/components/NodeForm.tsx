@@ -14,6 +14,7 @@ import {
 import {
   ExclamationTriangleIcon,
   CheckIcon,
+  InfoCircledIcon,
 } from "@radix-ui/react-icons";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import { useAuth } from "../contexts/AuthContext";
@@ -287,6 +288,16 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
               Please enter a valid URL.
             </Form.Message>
           </FormField>
+          <Callout.Root variant="soft" mb="4">
+            <Callout.Icon>
+              <InfoCircledIcon />
+            </Callout.Icon>
+            <Callout.Text>
+              The client ID and secret issued to you by this node's operator are
+              stored on the connection that uses them, not on the node. Add them
+              when you create a connection to this node.
+            </Callout.Text>
+          </Callout.Root>
           <Grid columns={{ initial: "1", sm: "3" }} gap="3">
             <FormField name="scope" label="Scope">
               <TextField
