@@ -182,6 +182,63 @@ test.describe("Node Connections", () => {
   });
 
   // ---------------------------------------------------------------------------
+  // Connection credentials
+  // ---------------------------------------------------------------------------
+
+  test("connection to an internal node shows directory-issued credentials", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/nodes/100");
+
+    await expect(page.getByText("Issued by directory").first()).toBeVisible();
+  });
+
+  test("connection to an external node shows configured credentials with an Edit button", async ({
+    authenticatedPage: page,
+    setupMocks,
+  }) => {
+    await setupMocks({ getNodeConnections: mockConnectionListWithExternalResponse });
+    await page.goto("/nodes/100");
+
+    await expect(page.getByText("Configured").first()).toBeVisible();
+    await expect(page.getByRole("button", { name: "Edit" }).first()).toBeVisible();
+  });
+
+  test("editing external credentials opens a dialog and saves", async ({
+    authenticatedPage: page,
+    setupMocks,
+  }) => {
+    await setupMocks({ getNodeConnections: mockConnectionListWithExternalResponse });
+    await page.goto("/nodes/100");
+
+    await page.getByRole("button", { name: "Edit" }).first().click();
+
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+    // The stored client ID is prefilled; the secret is never returned
+    await expect(dialog.locator('input[name="clientId"]')).toHaveValue("client-id-ext");
+    await expect(dialog.locator('input[name="clientSecret"]')).toHaveValue("");
+
+    await dialog.locator('input[name="clientId"]').fill("client-id-ext-updated");
+    await dialog.getByRole("button", { name: /save credentials/i }).click();
+
+    await expect(dialog).not.toBeVisible();
+  });
+
+  test("Create Connection form asks for credentials when the target is external", async ({
+    authenticatedPage: page,
+  }) => {
+    await page.goto("/nodes/100/create-connection");
+
+    // External Node Gamma (id=200) is an external node in the mock data
+    await page.getByRole("combobox").first().click();
+    await page.getByRole("option", { name: /External Node Gamma/i }).click();
+
+    await expect(page.locator('input[name="clientId"]')).toBeVisible();
+    await expect(page.locator('input[name="clientSecret"]')).toBeVisible();
+  });
+
+  // ---------------------------------------------------------------------------
   // Create Connection — PACT Network group
   // ---------------------------------------------------------------------------
 
@@ -222,6 +279,10 @@ test.describe("Node Connections", () => {
     await trigger.click();
     // Click the External Node Gamma option
     await page.getByRole("option", { name: /External Node Gamma/i }).click();
+
+    // An external target issues its own credentials, so they must be supplied
+    await page.locator('input[name="clientId"]').fill("client-id-ext");
+    await page.locator('input[name="clientSecret"]').fill("client-secret-ext");
 
     await page.getByRole("button", { name: "Create Invitation" }).click();
 

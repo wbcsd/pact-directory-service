@@ -16,7 +16,8 @@ export const mockConnections: NodeConnection[] = [
     targetNodeOrganizationId: 10,
     targetNodeOrganizationName: "Test Organisation",
     clientId: "client-id-abc",
-    clientSecret: "client-secret-abc",
+    credentialsSource: "generated",
+    hasCredentials: true,
     status: "accepted",
     createdAt: "2026-03-01T00:00:00.000Z",
     updatedAt: "2026-03-02T00:00:00.000Z",
@@ -36,7 +37,8 @@ export const mockExternalConnection: NodeConnection = {
   targetNodeOrganizationId: 20,
   targetNodeOrganizationName: "External Organisation",
   clientId: "client-id-ext",
-  clientSecret: "client-secret-ext",
+  credentialsSource: "external",
+  hasCredentials: true,
   status: "accepted",
   createdAt: "2026-05-01T00:00:00.000Z",
   updatedAt: "2026-05-02T00:00:00.000Z",
@@ -55,7 +57,8 @@ export const mockInvitations: NodeInvitation[] = [
     targetNodeOrganizationId: 10,
     targetNodeOrganizationName: "Test Organisation",
     clientId: "client-id-pending",
-    clientSecret: "client-secret-pending",
+    credentialsSource: "generated",
+    hasCredentials: true,
     status: "pending",
     createdAt: "2026-04-10T00:00:00.000Z",
     updatedAt: "2026-04-10T00:00:00.000Z",
@@ -89,7 +92,8 @@ export const mockSecondInvitation: NodeInvitation = {
   targetNodeOrganizationId: 10,
   targetNodeOrganizationName: "Test Organisation",
   clientId: "client-id-pending-2",
-  clientSecret: "client-secret-pending-2",
+  credentialsSource: "generated",
+  hasCredentials: true,
   status: "pending",
   createdAt: "2026-05-10T00:00:00.000Z",
   updatedAt: "2026-05-10T00:00:00.000Z",
@@ -103,8 +107,16 @@ export const mockMultiplePendingConnectionList = makePaginated([
   mockSecondInvitation as NodeConnection,
 ]);
 
+export const mockUpdatedConnectionCredentials = {
+  connectionId: 201,
+  clientId: "client-id-ext-updated",
+  hasClientSecret: true,
+  credentialsSource: "external",
+};
+
 export const mockAcceptInvitationResponse = {
   connectionId: 300,
+  credentialsSource: "generated",
   clientId: "client-id-accepted",
   clientSecret: "client-secret-accepted",
 };

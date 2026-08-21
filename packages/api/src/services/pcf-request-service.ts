@@ -111,6 +111,14 @@ export class PcfRequestService {
 
     const source = `${this.directoryApiBaseUrl}/api/nodes/${nodeId}`;
 
+    // The connection carries the credentials the from node authenticates with:
+    // issued by this directory for an internal target (and validated there by
+    // NodeConnectionService.verifyConnectionCredentials), or issued by the
+    // external node's operator and stored on the connection.
+    if (!connection.clientId || !connection.clientSecret) {
+      throw new BadRequestError('No credentials are configured for this connection');
+    }
+
     const client = new PactApiClient(
       baseUrl,
       connection.clientId,
@@ -124,8 +132,18 @@ export class PcfRequestService {
       }
     );
 
-    // Send the RequestCreatedEvent and get back the event ID
-    const requestEventId = await client.sendRequestCreated(filters);
+    // Send the RequestCreatedEvent and get back the event ID.
+    // The PACT v3 spec models the RequestCreatedEvent's `data.status` as an array
+    // of strings, whereas FootprintFilters (shared with the ListFootprints query
+    // parameters) types it as a single string. Coerce `status` to an array so the
+    // outgoing event validates against a spec-conformant recipient.
+    const eventFilters: FootprintFilters = {
+      ...filters,
+      ...(filters.status !== undefined
+        ? { status: (Array.isArray(filters.status) ? filters.status : [filters.status]) as unknown as string }
+        : {}),
+    };
+    const requestEventId = await client.sendRequestCreated(eventFilters);
 
     // Persist the outgoing request.
     // When both nodes share the same database, the target node's event handler
@@ -489,8 +507,8 @@ export class PcfRequestService {
             .executeTakeFirst()
         : null;
 
-      if (!connection) {
-        logger.warn({ nodeId, fromNodeId }, 'No reverse connection found for callback auth — proceeding unauthenticated');
+      if (!connection?.clientId || !connection.clientSecret) {
+        logger.warn({ nodeId, fromNodeId }, 'No reverse connection credentials found for callback auth — proceeding unauthenticated');
         return '';
       }
 

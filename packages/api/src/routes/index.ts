@@ -334,6 +334,23 @@ router.post('/directory/node-connections/:id/credentials/rotate', authenticate, 
   );
 }));
 
+// Get the non-secret view of a connection's credentials
+router.get('/directory/node-connections/:id/credentials', authenticate, context(async (req) => {
+  return req.services.nodeConnection.getCredentials(
+    req.context,
+    parseInt(req.params.id as string),
+  );
+}));
+
+// Replace credentials issued by an external node's operator
+router.put('/directory/node-connections/:id/credentials', authenticate, context(async (req) => {
+  return req.services.nodeConnection.updateCredentials(
+    req.context,
+    parseInt(req.params.id as string),
+    req.body
+  );
+}));
+
 /////////////////// Footprints (Product Footprints)
 
 // Import multiple footprints for a node

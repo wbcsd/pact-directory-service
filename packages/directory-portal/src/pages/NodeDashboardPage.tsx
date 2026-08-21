@@ -40,7 +40,9 @@ import ImportFootprintsForm from "../components/ImportFootprintsForm";
 import FulfillPcfRequestForm from "../components/FulfillPcfRequestForm";
 import NodeLink from "../components/NodeLink";
 import ConnectionCredentialsDialog from "../components/ConnectionCredentialsDialog";
+import EditConnectionCredentialsDialog from "../components/EditConnectionCredentialsDialog";
 import DeleteNodeDialogs from "../components/DeleteNodeDialogs";
+import PcfLevelBadge from "../components/PcfLevelBadge";
 import {
   NodeData,
   ActivityLog,
@@ -64,6 +66,7 @@ const NodeDashboardPage: React.FC = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [connectionsRefreshTrigger, setConnectionsRefreshTrigger] = useState(0);
   const [acceptedCredentials, setAcceptedCredentials] = useState<ConnectionCredentials | null>(null);
+  const [editingCredentials, setEditingCredentials] = useState<NodeConnection | null>(null);
   const [pcfRequestsRefreshTrigger, setPcfRequestsRefreshTrigger] = useState(0);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
@@ -236,7 +239,11 @@ const NodeDashboardPage: React.FC = () => {
       const response = await fetchWithAuth(`/node-invitations/${invitationId}/accept`, { method: "POST" });
       if (response?.ok) {
         const credentials: ConnectionCredentials = await response.json();
-        setAcceptedCredentials(credentials);
+        // Only directory-issued credentials are returned, and only once. For an
+        // external target the requesting side already holds them.
+        if (credentials.clientId && credentials.clientSecret) {
+          setAcceptedCredentials(credentials);
+        }
         setConnectionsRefreshTrigger(prev => prev + 1);
       }
     } catch {
@@ -390,6 +397,11 @@ const NodeDashboardPage: React.FC = () => {
       },
     },
     {
+      key: "data.level",
+      header: "Level",
+      render: (row) => <PcfLevelBadge footprint={row.data} size="1" />,
+    },
+    {
       key: "createdAt",
       header: "Created",
       render: (row) => <Text size="2">{new Date(row.createdAt).toLocaleDateString()}</Text>,
@@ -449,6 +461,33 @@ const NodeDashboardPage: React.FC = () => {
           <Badge color={statusColors[row.status] ?? "gray"} style={{ textTransform: "capitalize" }}>
             {row.status}
           </Badge>
+        );
+      },
+    },
+    {
+      key: "credentials",
+      header: "Credentials",
+      render: (row: NodeConnection) => {
+        // Only the initiating side holds the credentials for a connection.
+        if (row.fromNodeId !== Number(nodeId)) {
+          return <Text size="2" color="gray">—</Text>;
+        }
+        if (row.credentialsSource === "generated") {
+          return (
+            <Badge size="1" color="gray" variant="soft">
+              Issued by directory
+            </Badge>
+          );
+        }
+        return (
+          <Flex align="center" gap="2">
+            <Badge size="1" color={row.hasCredentials ? "green" : "red"} variant="soft">
+              {row.hasCredentials ? "Configured" : "Missing"}
+            </Badge>
+            <Button size="1" variant="soft" onClick={() => setEditingCredentials(row)}>
+              Edit
+            </Button>
+          </Flex>
         );
       },
     },
@@ -887,6 +926,16 @@ const NodeDashboardPage: React.FC = () => {
         onClose={() => setAcceptedCredentials(null)}
         onCopy={copyToClipboard}
         truncateCredential={truncateCredential}
+      />
+
+      <EditConnectionCredentialsDialog
+        connection={editingCredentials}
+        targetNodeName={
+          editingCredentials?.targetNodeName ??
+          (editingCredentials ? `Node #${editingCredentials.targetNodeId}` : undefined)
+        }
+        onClose={() => setEditingCredentials(null)}
+        onSaved={() => setConnectionsRefreshTrigger((prev) => prev + 1)}
       />
 
       <DeleteNodeDialogs

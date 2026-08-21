@@ -28,10 +28,18 @@ export interface Footprint {
   updatedAt: string;
 }
 
+export type CredentialsSource = "generated" | "external";
+
+/**
+ * Result of accepting an invitation. `clientId`/`clientSecret` are present only
+ * for directory-issued credentials, which are shown once; credentials issued by
+ * an external node's operator are never returned.
+ */
 export interface ConnectionCredentials {
   connectionId: number;
-  clientId: string;
-  clientSecret: string;
+  credentialsSource: CredentialsSource;
+  clientId?: string;
+  clientSecret?: string;
   requestingNodeName?: string;
   requestingNodeType?: "internal" | "external";
 }
