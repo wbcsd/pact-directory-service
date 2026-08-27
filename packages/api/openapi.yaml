@@ -273,6 +273,10 @@ components:
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
         connectionsCount: { type: integer, description: "Total number of incoming and outgoing connections" }
+        extensions:
+          type: array
+          description: "Data model extensions attached to this node"
+          items: { $ref: "#/components/schemas/DataModelExtensionSummary" }
       required: [id, organizationId, name, type, apiUrl, status, discoverable, createdAt, updatedAt]
     CreateNodeRequest:
       type: object
@@ -286,6 +290,10 @@ components:
         resource: { type: string, description: "OAuth2 resource (external nodes)" }
         specVersion: { type: string, description: "Supported PACT spec version (external nodes)" }
         discoverable: { type: boolean, description: "Whether this node is visible to users outside the organization. Defaults to false." }
+        extensionIds:
+          type: array
+          description: "IDs of registered data model extensions to attach to this node"
+          items: { type: integer }
       required: [name, type]
     UpdateNodeRequest:
       type: object
@@ -299,6 +307,79 @@ components:
         specVersion: { type: string, description: "Supported PACT spec version (external nodes)" }
         status: { type: string, enum: [active, inactive, pending] }
         discoverable: { type: boolean, description: "Whether this node is visible to users outside the organization" }
+        extensionIds:
+          type: array
+          description: "Replaces the full set of data model extensions attached to this node"
+          items: { type: integer }
+    DataModelExtensionSummary:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        dataSchemaUrl: { type: string, format: uri }
+        documentationUrl: { type: string, format: uri, nullable: true }
+        version: { type: string, nullable: true }
+        status: { type: string, enum: [active, deprecated] }
+      required: [id, name, dataSchemaUrl, status]
+    DataModelExtension:
+      type: object
+      description: "A registry entry for a known PACT data model extension (see https://wbcsd.github.io/data-model-extensions/spec/)"
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        dataSchemaUrl: { type: string, format: uri, description: "HTTPS URL of the extension schema file (spec § 4.3)" }
+        documentationUrl: { type: string, format: uri, nullable: true, description: "HTTPS URL of the extension documentation (spec § 4.4)" }
+        specVersion: { type: string, description: "Version of the Data Model Extension specification, e.g. 2.0.0" }
+        version: { type: string, nullable: true, description: "Semantic version of the extension itself" }
+        description: { type: string, nullable: true }
+        author: { type: string, nullable: true }
+        contactEmail: { type: string, nullable: true }
+        status: { type: string, enum: [active, deprecated] }
+        schemaJson: { type: object, nullable: true, additionalProperties: true, description: "Cached copy of the fetched extension schema file" }
+        schemaFetchedAt: { type: string, format: date-time, nullable: true }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        nodesCount: { type: integer, description: "Number of nodes this extension is attached to" }
+      required: [id, name, dataSchemaUrl, specVersion, status, createdAt, updatedAt]
+    CreateDataModelExtensionRequest:
+      type: object
+      properties:
+        name: { type: string }
+        dataSchemaUrl: { type: string, format: uri }
+        documentationUrl: { type: string, nullable: true }
+        specVersion: { type: string, description: "Defaults to 2.0.0" }
+        version: { type: string, nullable: true }
+        description: { type: string, nullable: true }
+        author: { type: string, nullable: true }
+        contactEmail: { type: string, nullable: true }
+        status: { type: string, enum: [active, deprecated] }
+        schemaJson: { type: object, nullable: true, additionalProperties: true }
+      required: [name, dataSchemaUrl]
+    UpdateDataModelExtensionRequest:
+      type: object
+      properties:
+        name: { type: string }
+        dataSchemaUrl: { type: string, format: uri }
+        documentationUrl: { type: string, nullable: true }
+        specVersion: { type: string }
+        version: { type: string, nullable: true }
+        description: { type: string, nullable: true }
+        author: { type: string, nullable: true }
+        contactEmail: { type: string, nullable: true }
+        status: { type: string, enum: [active, deprecated] }
+        schemaJson: { type: object, nullable: true, additionalProperties: true }
+    FetchDataModelExtensionSchemaRequest:
+      type: object
+      properties:
+        dataSchemaUrl: { type: string, format: uri, description: "HTTPS URL of a publicly accessible JSON Schema document" }
+      required: [dataSchemaUrl]
+    FetchDataModelExtensionSchemaResponse:
+      type: object
+      properties:
+        schemaJson: { type: object, additionalProperties: true }
+        name: { type: string, description: "Suggested name taken from the schema title" }
+        description: { type: string, description: "Suggested description taken from the schema description" }
+      required: [schemaJson]
     NodeConnectionData:
       type: object
       properties:
@@ -399,6 +480,11 @@ components:
           schema: { $ref: "#/components/schemas/Error" }
     BadRequest:
       description: Bad Request
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Conflict:
+      description: Conflict
       content:
         application/json:
           schema: { $ref: "#/components/schemas/Error" }
@@ -1162,6 +1248,157 @@ paths:
                   pagination: { $ref: "#/components/schemas/Pagination" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
+
+  /directory/data-model-extensions:
+    get:
+      summary: List registered data model extensions
+      tags: [DataModelExtensions]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema: { type: integer, minimum: 1, default: 1 }
+        - in: query
+          name: pageSize
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+        - in: query
+          name: search
+          required: false
+          schema: { type: string }
+        - in: query
+          name: sortBy
+          required: false
+          schema: { type: string, enum: [name, author, specVersion, version, status, createdAt, updatedAt] }
+        - in: query
+          name: sortOrder
+          required: false
+          schema: { type: string, enum: [asc, desc], default: asc }
+      responses:
+        "200":
+          description: List of data model extensions with pagination
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/DataModelExtension" }
+                  pagination: { $ref: "#/components/schemas/Pagination" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+    post:
+      summary: Create a data model extension
+      tags: [DataModelExtensions]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateDataModelExtensionRequest" }
+      responses:
+        "201":
+          description: Data model extension created successfully
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DataModelExtension" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "409": { $ref: "#/components/responses/Conflict" }
+
+  /directory/data-model-extensions/fetch-schema:
+    post:
+      summary: Retrieve and validate an extension schema file
+      description: >
+        Fetches the JSON Schema document at the given HTTPS URL so it can be previewed
+        and cached on the registry entry. Only publicly routable https hosts are allowed.
+      tags: [DataModelExtensions]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/FetchDataModelExtensionSchemaRequest" }
+      responses:
+        "200":
+          description: The fetched schema document
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FetchDataModelExtensionSchemaResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  /directory/data-model-extensions/{id}:
+    get:
+      summary: Get a data model extension by ID
+      tags: [DataModelExtensions]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          description: Data model extension ID
+      responses:
+        "200":
+          description: Data model extension details
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DataModelExtension" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    put:
+      summary: Update a data model extension by ID
+      tags: [DataModelExtensions]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          description: Data model extension ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateDataModelExtensionRequest" }
+      responses:
+        "200":
+          description: Data model extension updated successfully
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DataModelExtension" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+    delete:
+      summary: Delete a data model extension by ID
+      tags: [DataModelExtensions]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+          description: Data model extension ID
+      responses:
+        "204":
+          description: Data model extension deleted successfully
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: Still attached to one or more nodes
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
 
   /directory/nodes/{id}:
     get:

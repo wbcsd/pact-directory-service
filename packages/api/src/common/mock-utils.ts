@@ -24,6 +24,7 @@ export const createMockQueryChain = (executors = createMockExecutors()) => ({
   
   // Filter methods
   where: jest.fn().mockReturnThis(),
+  whereRef: jest.fn().mockReturnThis(),
 
   // Order methods
   orderBy: jest.fn().mockReturnThis(),
@@ -34,6 +35,7 @@ export const createMockQueryChain = (executors = createMockExecutors()) => ({
   updateTable: jest.fn().mockReturnThis(),
   values: jest.fn().mockReturnThis(),
   set: jest.fn().mockReturnThis(),
+  returning: jest.fn().mockReturnThis(),
   returningAll: jest.fn().mockReturnThis(),
   onConflict: jest.fn().mockReturnThis(),
   
