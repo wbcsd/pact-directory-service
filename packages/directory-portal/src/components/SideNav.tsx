@@ -28,6 +28,14 @@ const SideNav: React.FC = () => {
               </NavLink>
             </PolicyGuard>
           </FeatureFlag>          
+          <PolicyGuard policies={["view-data-model-extensions"]}>
+            <NavLink
+              to="/data-model-extensions"
+              style={{ textDecoration: "none" }}
+            >
+              <Text>Data Model Extensions</Text>
+            </NavLink>
+          </PolicyGuard>
           <NavLink to="/activity-logs">
             <Text>Activity Logs</Text>
           </NavLink>
@@ -59,14 +67,6 @@ const SideNav: React.FC = () => {
             </PolicyGuard>
             </>
           </FeatureFlag>
-          <PolicyGuard policies={["view-data-model-extensions"]}>
-            <NavLink
-              to="/data-model-extensions"
-              style={{ textDecoration: "none" }}
-            >
-              <Text>Data Model Extensions</Text>
-            </NavLink>
-          </PolicyGuard>
         </nav>
       </div>
       <div className="nav-group">
