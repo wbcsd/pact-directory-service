@@ -1,4 +1,5 @@
 import { Kysely } from 'kysely';
+import { jsonArrayFrom } from 'kysely/helpers/postgres';
 import { Database } from '@src/database/types';
 import { NotFoundError, ForbiddenError, BadRequestError } from '@src/common/errors';
 import { registerPolicy, Role } from '@src/common/policies';
@@ -6,6 +7,10 @@ import { UserContext } from './user-service';
 import { ListQuery, ListResult } from '@src/common/list-query';
 import config from '@src/common/config';
 import { logNode } from '@src/common/activity-logger';
+import {
+  DataModelExtensionService,
+  DataModelExtensionSummary,
+} from './data-model-extension-service';
 
 // Register all policies used in this service
 registerPolicy([Role.Administrator], 'view-nodes-own-organization');
@@ -30,6 +35,7 @@ export interface NodeData {
   createdAt: Date;
   updatedAt: Date;
   connectionsCount?: number;
+  extensions?: DataModelExtensionSummary[];
 }
 
 export type NodeStatus = 'active' | 'inactive' | 'pending';
@@ -45,6 +51,7 @@ export interface CreateNodeData {
   resource?: string;
   specVersion?: string;
   discoverable?: boolean;
+  extensionIds?: number[];
 }
 
 export interface UpdateNodeData {
@@ -57,10 +64,45 @@ export interface UpdateNodeData {
   specVersion?: string;
   status?: 'active' | 'inactive' | 'pending';
   discoverable?: boolean;
+  extensionIds?: number[];
 }
 
 export class NodeService {
-  constructor(private db: Kysely<Database>) {}
+  constructor(
+    private db: Kysely<Database>,
+    private dataModelExtensions: DataModelExtensionService
+  ) {}
+
+  /**
+   * Replace the set of data model extensions attached to a node.
+   */
+  private async setExtensions(
+    nodeId: number,
+    extensionIds: number[]
+  ): Promise<void> {
+    const uniqueIds = [...new Set(extensionIds)];
+    await this.dataModelExtensions.assertAllExist(uniqueIds);
+
+    await this.db.transaction().execute(async (trx) => {
+      await trx
+        .deleteFrom('node_data_model_extensions')
+        .where('nodeId', '=', nodeId)
+        .execute();
+
+      if (uniqueIds.length > 0) {
+        await trx
+          .insertInto('node_data_model_extensions')
+          .values(
+            uniqueIds.map((extensionId) => ({
+              nodeId,
+              extensionId,
+              createdAt: new Date(),
+            }))
+          )
+          .execute();
+      }
+    });
+  }
 
   /**
    * Get a single node by ID (no access control, for internal service use)
@@ -86,6 +128,27 @@ export class NodeService {
         'nodes.updatedAt',
         'organizations.name as organizationName',
       ])
+      .select((eb) =>
+        jsonArrayFrom(
+          eb
+            .selectFrom('node_data_model_extensions')
+            .innerJoin(
+              'data_model_extensions',
+              'data_model_extensions.id',
+              'node_data_model_extensions.extensionId'
+            )
+            .select([
+              'data_model_extensions.id',
+              'data_model_extensions.name',
+              'data_model_extensions.dataSchemaUrl',
+              'data_model_extensions.documentationUrl',
+              'data_model_extensions.version',
+              'data_model_extensions.status',
+            ])
+            .whereRef('node_data_model_extensions.nodeId', '=', 'nodes.id')
+            .orderBy('data_model_extensions.name', 'asc')
+        ).as('extensions')
+      )
       .where('nodes.id', '=', nodeId)
       .executeTakeFirst();
 
@@ -183,6 +246,10 @@ export class NodeService {
       result.apiUrl = generatedApiUrl;
     }
 
+    if (data.extensionIds !== undefined) {
+      await this.setExtensions(result.id, data.extensionIds);
+    }
+
     logNode(result.id, 'created', {
       organizationId,
       userId: context.userId,
@@ -190,7 +257,7 @@ export class NodeService {
       nodeType: result.type,
     });
 
-    return result as NodeData;
+    return this.getById(result.id);
   }
 
   /**
@@ -265,13 +332,17 @@ export class NodeService {
       .returningAll()
       .executeTakeFirstOrThrow();
 
+    if (data.extensionIds !== undefined) {
+      await this.setExtensions(nodeId, data.extensionIds);
+    }
+
     logNode(nodeId, 'updated', {
       organizationId: existingNode.organizationId,
       userId: context.userId,
       changes: data,
     });
 
-    return updated as NodeData;
+    return this.getById(updated.id);
   }
 
   /**

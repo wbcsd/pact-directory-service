@@ -14,6 +14,7 @@ import { ActivityLogService } from './activity-log-service';
 import { FootprintService } from './footprint-service';
 import { PcfRequestService } from './pcf-request-service';
 import { FeedbackService } from './feedback-service';
+import { DataModelExtensionService } from './data-model-extension-service';
 import config from '../common/config';
 
 // Export individual service classes for direct usage if needed
@@ -29,6 +30,7 @@ export { ActivityLogService } from './activity-log-service';
 export { FootprintService } from './footprint-service';
 export { PcfRequestService } from './pcf-request-service';
 export { FeedbackService } from './feedback-service';
+export { DataModelExtensionService } from './data-model-extension-service';
 
 export interface Services {
   auth: AuthService;
@@ -45,6 +47,7 @@ export interface Services {
   footprint: FootprintService;
   pcfRequest: PcfRequestService;
   feedback: FeedbackService;
+  dataModelExtension: DataModelExtensionService;
 }
 
 export class ServiceContainer implements Services {
@@ -62,6 +65,7 @@ export class ServiceContainer implements Services {
   footprint: FootprintService;
   pcfRequest: PcfRequestService;
   feedback: FeedbackService;
+  dataModelExtension: DataModelExtensionService;
 
   constructor(db: Kysely<Database>) {
     this.email = new EmailService();
@@ -70,7 +74,8 @@ export class ServiceContainer implements Services {
     this.connection = new ConnectionService(db, this.organization, this.email);
     this.user = new UserService(db, this.email);
     this.testRun = new TestRunService(db, this.user, this.organization);
-    this.node = new NodeService(db);
+    this.dataModelExtension = new DataModelExtensionService(db);
+    this.node = new NodeService(db, this.dataModelExtension);
     this.nodeConnection = new NodeConnectionService(
       db,
       this.node,

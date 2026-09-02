@@ -1,4 +1,5 @@
 import { NodeService } from './node-service';
+import { DataModelExtensionService } from './data-model-extension-service';
 import { BadRequestError, NotFoundError, ForbiddenError } from '@src/common/errors';
 import { Role } from '@src/common/policies';
 import { createMockDatabase } from '../common/mock-utils';
@@ -42,7 +43,10 @@ describe('NodeService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     dbMocks = createMockDatabase();
-    nodeService = new NodeService(dbMocks.db as any);
+    nodeService = new NodeService(
+      dbMocks.db as any,
+      new DataModelExtensionService(dbMocks.db as any)
+    );
   });
 
   describe('get', () => {
@@ -161,6 +165,10 @@ describe('NodeService', () => {
 
       dbMocks.executors.executeTakeFirstOrThrow
         .mockResolvedValueOnce(mockNode);
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
+        ...mockNode,
+        apiUrl: 'http://localhost:3010/api/nodes/1',
+      });
 
       dbMocks.executors.execute.mockResolvedValueOnce(undefined);
 
@@ -193,6 +201,7 @@ describe('NodeService', () => {
       };
 
       dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce(mockNode);
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
 
       const result = await nodeService.create(adminUserContext, 1, {
         name: 'External Node',
@@ -228,6 +237,7 @@ describe('NodeService', () => {
       };
 
       dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce(mockNode);
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
 
       const result = await nodeService.create(adminUserContext, 1, {
         name: 'External Node',
@@ -261,6 +271,7 @@ describe('NodeService', () => {
 
       dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce(mockNode);
       dbMocks.executors.execute.mockResolvedValueOnce(undefined);
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
 
       const result = await nodeService.create(rootUserContext, 999, {
         name: 'Root Created Node',
@@ -340,6 +351,10 @@ describe('NodeService', () => {
         ...mockNode,
         name: 'New Name',
       });
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
+        ...mockNode,
+        name: 'New Name',
+      });
 
       const result = await nodeService.update(adminUserContext, 1, { name: 'New Name' });
 
@@ -368,6 +383,10 @@ describe('NodeService', () => {
         ...mockNode,
         status: 'inactive' as const,
       });
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
+        ...mockNode,
+        status: 'inactive' as const,
+      });
 
       const result = await nodeService.update(adminUserContext, 1, { status: 'inactive' });
 
@@ -388,6 +407,10 @@ describe('NodeService', () => {
 
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
       dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({
+        ...mockNode,
+        apiUrl: 'http://new.com',
+      });
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
         ...mockNode,
         apiUrl: 'http://new.com',
       });
@@ -416,6 +439,14 @@ describe('NodeService', () => {
 
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
       dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({
+        ...mockNode,
+        authBaseUrl: 'https://auth.example.com',
+        scope: 'openid',
+        audience: 'https://api.example.com',
+        resource: 'https://api.example.com',
+        specVersion: 'V3.0',
+      });
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce({
         ...mockNode,
         authBaseUrl: 'https://auth.example.com',
         scope: 'openid',
@@ -458,6 +489,7 @@ describe('NodeService', () => {
 
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
       dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce(mockNode);
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockNode);
 
       const result = await nodeService.update(adminUserContext, 1, {
         authBaseUrl: 'https://auth.example.com',

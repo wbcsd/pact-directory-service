@@ -220,6 +220,59 @@ router.post('/directory/organizations/create-connection-request', authenticate, 
   );
 }));
 
+/////////////////// Data model extensions
+// List registered data model extensions
+router.get('/directory/data-model-extensions', authenticate, context(async (req) => {
+  return req.services.dataModelExtension.list(
+    req.context,
+    ListQuery.parse(req.query)
+  );
+}));
+
+// Retrieve and validate an extension schema file before saving an entry
+router.post('/directory/data-model-extensions/fetch-schema', authenticate, context(async (req) => {
+  return req.services.dataModelExtension.fetchSchema(
+    req.context,
+    req.body.dataSchemaUrl
+  );
+}));
+
+// Create a data model extension
+router.post('/directory/data-model-extensions', authenticate, context(async (req, res) => {
+  const result = await req.services.dataModelExtension.create(
+    req.context,
+    req.body
+  );
+  res.status(201);
+  return result;
+}));
+
+// Get a data model extension by ID
+router.get('/directory/data-model-extensions/:id', authenticate, context(async (req) => {
+  return req.services.dataModelExtension.get(
+    req.context,
+    parseInt(req.params.id as string)
+  );
+}));
+
+// Update a data model extension by ID
+router.put('/directory/data-model-extensions/:id', authenticate, context(async (req) => {
+  return req.services.dataModelExtension.update(
+    req.context,
+    parseInt(req.params.id as string),
+    req.body
+  );
+}));
+
+// Delete a data model extension by ID
+router.delete('/directory/data-model-extensions/:id', authenticate, context(async (req, res) => {
+  await req.services.dataModelExtension.delete(
+    req.context,
+    parseInt(req.params.id as string)
+  );
+  res.status(204).send();
+}));
+
 /////////////////// Nodes
 // Create a node for an organization
 router.post('/directory/organizations/:id/nodes', authenticate, context(async (req) => {

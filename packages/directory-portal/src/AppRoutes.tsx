@@ -23,6 +23,7 @@ import ActivityLogsPage from "./pages/ActivityLogsPage";
 import ActivityLogDetailPage from "./pages/ActivityLogDetailPage";
 import AddProductFootprintPage from "./pages/AddProductFootprintPage";
 import ViewProductFootprintPage from "./pages/ViewProductFootprintPage";
+import DataModelExtensionsList from "./pages/DataModelExtensionsList";
 
 const AppRoutes: React.FC = () => {
   return (
@@ -62,6 +63,14 @@ const AppRoutes: React.FC = () => {
       )}§
       <Route path="/conformance-test-runs" element={<ConformanceTestListPage />} />
       <Route path="/conformance-test-runs/:id" element={<ConformanceTestDetailPage />} />
+      <Route
+        path="/data-model-extensions"
+        element={
+          <PolicyGuard policies={["view-data-model-extensions"]}>
+            <DataModelExtensionsList />
+          </PolicyGuard>
+        }
+      />
       <Route path="/activity-logs" element={<ActivityLogsPage />} />
       <Route path="/activity-logs/path" element={<ActivityLogDetailPage />} />
       <Route path="/" element={<Navigate to="/signup" />} />
