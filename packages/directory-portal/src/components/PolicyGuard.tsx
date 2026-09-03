@@ -1,8 +1,9 @@
 import { useAuth } from "../contexts/AuthContext";
 import { ReactElement } from "react";
+import { Policy } from "@wbcsd/pact-policies";
 
 const PolicyGuard: React.FC<{
-  policies?: string[];
+  policies?: Policy[];
   predicate?: "and" | "or";
   children: ReactElement;
 }> = ({ policies, predicate, children }) => {

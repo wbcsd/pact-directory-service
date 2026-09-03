@@ -5,7 +5,7 @@ import {
   NotFoundError,
   ForbiddenError,
 } from '@src/common/errors';
-import { registerPolicy, Role } from '@src/common/policies';
+import { Policy, registerPolicy, Role } from '@src/common/policies';
 import { UserContext } from './user-service';
 import { NodeService } from './node-service';
 import { EmailService } from './email-service';
@@ -15,8 +15,8 @@ import crypto from 'crypto';
 import { logNodeConnection } from '@src/common/activity-logger';
 
 // Register policies
-registerPolicy([Role.Administrator], 'manage-connections-own-nodes');
-registerPolicy([Role.Root], 'manage-connections-all-nodes');
+registerPolicy([Role.Administrator], Policy.ManageConnectionsOwnNodes);
+registerPolicy([Role.Root], Policy.ManageConnectionsAllNodes);
 
 export type CredentialsSource = 'generated' | 'external';
 
