@@ -1,17 +1,17 @@
 import { Kysely } from 'kysely';
 import { Database } from '@src/database/types';
 import { NotFoundError, ForbiddenError, BadRequestError } from '@src/common/errors';
-import { registerPolicy, Role } from '@src/common/policies';
+import { Policy, registerPolicy, Role } from '@src/common/policies';
 import { UserContext } from './user-service';
 import { ListQuery, ListResult } from '@src/common/list-query';
 import config from '@src/common/config';
 import { logNode } from '@src/common/activity-logger';
 
 // Register all policies used in this service
-registerPolicy([Role.Administrator], 'view-nodes-own-organization');
-registerPolicy([Role.Administrator], 'edit-nodes-own-organization');
-registerPolicy([Role.Root], 'view-nodes-all-organizations');
-registerPolicy([Role.Root], 'edit-nodes-all-organizations');
+registerPolicy([Role.Administrator], Policy.ViewNodesOwnOrganization);
+registerPolicy([Role.Administrator], Policy.EditNodesOwnOrganization);
+registerPolicy([Role.Root], Policy.ViewNodesAllOrganizations);
+registerPolicy([Role.Root], Policy.EditNodesAllOrganizations);
 
 export interface NodeData {
   id: number;

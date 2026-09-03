@@ -30,6 +30,7 @@
     "node-mailjet": "^6.0.11",
     "@wbcsd/pact-api-client": "*",
     "@wbcsd/pact-data-model": "*",
+    "@wbcsd/pact-policies": "*",
     "pg": "^8.13.1",
     "pino": "^9.9.0",
     "pino-abstract-transport": "^3.0.0",

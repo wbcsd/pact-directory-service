@@ -1,21 +1,21 @@
 import { Kysely, sql } from 'kysely';
 import { Database } from '@src/database/types';
 import { NotFoundError, ForbiddenError } from '@src/common/errors';
-import { registerPolicy, checkAccess, Role, hasAccess } from '@src/common/policies';
+import { registerPolicy, checkAccess, Policy, Role, hasAccess } from '@src/common/policies';
 import { UserContext, UserData, UserStatus } from './user-service';
 import { EmailService } from './email-service';
 import { ListQuery, ListResult } from '@src/common/list-query';
 
 // Register all policies used in this service
-registerPolicy([Role.Administrator], 'view-connections-own-organization');
-registerPolicy([Role.Administrator], 'edit-connections-own-organization');
-registerPolicy([Role.Administrator], 'view-own-organizations');
-registerPolicy([Role.Administrator], 'edit-own-organizations');
-registerPolicy([Role.Root], 'view-connections-all-organizations');
-registerPolicy([Role.Root], 'edit-connections-all-organizations');
-registerPolicy([Role.Root], 'view-all-organizations');
-registerPolicy([Role.Root], 'edit-all-organizations');
-registerPolicy([Role.Root], 'assign-root-role');
+registerPolicy([Role.Administrator], Policy.ViewConnectionsOwnOrganization);
+registerPolicy([Role.Administrator], Policy.EditConnectionsOwnOrganization);
+registerPolicy([Role.Administrator], Policy.ViewOwnOrganizations);
+registerPolicy([Role.Administrator], Policy.EditOwnOrganizations);
+registerPolicy([Role.Root], Policy.ViewConnectionsAllOrganizations);
+registerPolicy([Role.Root], Policy.EditConnectionsAllOrganizations);
+registerPolicy([Role.Root], Policy.ViewAllOrganizations);
+registerPolicy([Role.Root], Policy.EditAllOrganizations);
+registerPolicy([Role.Root], Policy.AssignRootRole);
 
 export interface OrganizationData {
   id: number;

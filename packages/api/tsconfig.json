@@ -14,7 +14,8 @@
       "@wbcsd/pact-data-model": ["../../packages/pact-data-model/src/index.ts"],
       "@wbcsd/pact-data-model/*": ["../../packages/pact-data-model/src/*"],
       "@wbcsd/pact-api-client": ["../../packages/pact-api-client/src/index.ts"],
-      "@wbcsd/pact-api-client/*": ["../../packages/pact-api-client/src/*"]
+      "@wbcsd/pact-api-client/*": ["../../packages/pact-api-client/src/*"],
+      "@wbcsd/pact-policies": ["../../packages/pact-policies/src/index.ts"]
     }
   },
   "include": ["src/**/*.ts"]

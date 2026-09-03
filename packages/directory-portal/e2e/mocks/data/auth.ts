@@ -14,9 +14,8 @@ export const mockProfileData: ProfileData = {
   policies: [
     "view-all-organizations",
     "view-nodes-own-organization",
-    "manage-nodes-own-organization",
-    "view-users-own-organization",
-    "manage-users-own-organization",
+    "edit-nodes-own-organization",
+    "view-users",
     "edit-users",
   ],
 };

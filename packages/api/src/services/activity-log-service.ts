@@ -2,11 +2,11 @@ import { Kysely } from 'kysely';
 import { Database } from '@src/database/types';
 import { ListQuery, ListResult } from '@src/common/list-query';
 import { UserContext } from './user-service';
-import { hasAccess, Role, registerPolicy } from '@src/common/policies';
+import { hasAccess, Policy, Role, registerPolicy } from '@src/common/policies';
 
 // Register activity log policies
-registerPolicy([Role.Root], 'view-all-logs');
-registerPolicy([Role.Administrator, Role.User], 'view-org-logs');
+registerPolicy([Role.Root], Policy.ViewAllLogs);
+registerPolicy([Role.Administrator, Role.User], Policy.ViewOrgLogs);
 
 export interface ActivityLogFilters {
   path?: string;

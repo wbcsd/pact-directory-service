@@ -23,12 +23,14 @@
     "noUncheckedSideEffectImports": true,
     "paths": {
       "pact-data-model": ["../../packages/pact-data-model/src/index.ts"],
-      "pact-data-model/*": ["../../packages/pact-data-model/src/*"]
+      "pact-data-model/*": ["../../packages/pact-data-model/src/*"],
+      "@wbcsd/pact-policies": ["../../packages/pact-policies/src/index.ts"]
     }
   },
   "include": ["src", "e2e"],
   "exclude": ["**/*.test.tsx"],
   "references": [
-    { "path": "../../packages/pact-data-model/tsconfig.prod.json" }
+    { "path": "../../packages/pact-data-model/tsconfig.prod.json" },
+    { "path": "../../packages/pact-policies/tsconfig.prod.json" }
   ]
 }

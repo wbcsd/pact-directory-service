@@ -19,6 +19,8 @@ packages/
                         credentials, footprints, events).
   pact-data-model/      TypeScript types and JSON schemas for PACT data model
                         versions v2.0, v2.1, v2.2, v2.3 and v3.0.
+  pact-policies/        Shared authorization roles and access policy identifiers,
+                        the single source of truth for both the API and the portal.
 
 docs/                   Design notes, integration guide, diagrams.
 ```

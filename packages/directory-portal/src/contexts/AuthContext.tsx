@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
+import { Policy, Role } from "@wbcsd/pact-policies";
 import { fetchWithAuth } from "../utils/auth-fetch";
 
 // Define our profile data type
@@ -9,11 +10,11 @@ export interface ProfileData {
   organizationId: number;
   fullName: string;
   email: string;
-  role: string;
+  role: Role;
   status: string;
   organizationDescription?: string | null;
   solutionApiUrl?: string | null;
-  policies?: string[];
+  policies?: Policy[];
 }
 
 // Define the context shape
