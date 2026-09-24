@@ -20,6 +20,8 @@ import { fetchWithAuth } from "../utils/auth-fetch";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { FormField, TextField } from "./ui";
+import ConnectionRegistrationFlow from "./dcr/ConnectionRegistrationFlow";
+import { featureFlags } from "../utils/feature-flags";
 import "./NodeForm.css";
 
 interface Node {
@@ -261,6 +263,8 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
   const selectedTargetNode =
     availableNodes.find((node) => node.id === formData.targetNodeId) ?? targetNode;
   const isExternalTarget = selectedTargetNode?.type === "external";
+  const isInternalTarget = selectedTargetNode?.type === "internal";
+  const showRegistration = featureFlags.enableIdentityManagement;
 
   if (loading) {
     return (
@@ -416,6 +420,14 @@ const CreateNodeConnectionForm: React.FC<CreateNodeConnectionFormProps> = ({
             </div>
           )}
         </Form.Field>
+
+        {/* Internal targets register dynamically; external ones exchange credentials by hand. */}
+        {isInternalTarget && showRegistration && selectedTargetNode && (
+          <ConnectionRegistrationFlow
+            targetNodeId={selectedTargetNode.id}
+            targetNodeName={selectedTargetNode.name}
+          />
+        )}
 
         {/* Credentials (external targets only) */}
         {isExternalTarget && (

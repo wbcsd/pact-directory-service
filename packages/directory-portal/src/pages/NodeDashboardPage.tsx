@@ -43,6 +43,8 @@ import ConnectionCredentialsDialog from "../components/ConnectionCredentialsDial
 import EditConnectionCredentialsDialog from "../components/EditConnectionCredentialsDialog";
 import DeleteNodeDialogs from "../components/DeleteNodeDialogs";
 import PcfLevelBadge from "../components/PcfLevelBadge";
+import FeatureFlag from "../components/FeatureFlag";
+import NodeRegistrationSection from "../components/dcr/NodeRegistrationSection";
 import {
   NodeData,
   ActivityLog,
@@ -239,9 +241,13 @@ const NodeDashboardPage: React.FC = () => {
       const response = await fetchWithAuth(`/node-invitations/${invitationId}/accept`, { method: "POST" });
       if (response?.ok) {
         const credentials: ConnectionCredentials = await response.json();
-        // Only directory-issued credentials are returned, and only once. For an
-        // external target the requesting side already holds them.
-        if (credentials.clientId && credentials.clientSecret) {
+        // Only worth showing when the requesting node is external software someone
+        // has to configure. A directory-hosted node reads them from the connection.
+        if (
+          credentials.clientId &&
+          credentials.clientSecret &&
+          credentials.requestingNodeType === "external"
+        ) {
           setAcceptedCredentials(credentials);
         }
         setConnectionsRefreshTrigger(prev => prev + 1);
@@ -785,6 +791,27 @@ const NodeDashboardPage: React.FC = () => {
               }}
             />
           </section>
+
+          <FeatureFlag flag="enableIdentityManagement">
+            <>
+              {nodeData?.type === "internal" && (
+                <>
+                  <Separator size="4" my="4" />
+                  <section className="node-dashboard-section">
+                    <Flex mb="3" gap="2">
+                      <Box flexGrow="1">
+                        <Heading size="4">Registration</Heading>
+                        <Text size="2" color="gray">
+                          How other nodes obtain credentials to connect to this one.
+                        </Text>
+                      </Box>
+                    </Flex>
+                    <NodeRegistrationSection nodeId={Number(nodeId)} />
+                  </section>
+                </>
+              )}
+            </>
+          </FeatureFlag>
 
           <Separator size="4" my="4" />
 

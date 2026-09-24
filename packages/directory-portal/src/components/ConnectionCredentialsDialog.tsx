@@ -50,8 +50,7 @@ const ConnectionCredentialsDialog: React.FC<ConnectionCredentialsDialogProps> = 
             <Callout.Root color="blue" mb="4">
               <Callout.Icon><CheckIcon /></Callout.Icon>
               <Callout.Text>
-                Register this client ID and client secret in the <strong>{credentials.requestingNodeName ?? "requesting"}</strong> node configuration.
-                {credentials.requestingNodeType === "external" && " If that node is managed in external software, open that software and add these credentials there."}
+                <strong>{credentials.requestingNodeName ?? "The requesting node"}</strong> runs outside the directory, so add these credentials to that software yourself. Directory-hosted nodes are configured automatically and never need this step.
               </Callout.Text>
             </Callout.Root>
           </>

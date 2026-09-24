@@ -37,6 +37,7 @@ interface ConnectionCredentials {
   credentialsSource: CredentialsSource;
   clientId?: string;
   clientSecret?: string;
+  requestingNodeType?: 'internal' | 'external';
 }
 
 interface NodeConnectionsManagerProps {
@@ -96,9 +97,12 @@ const NodeConnectionsManager: React.FC<NodeConnectionsManagerProps> = ({ nodeId 
       }
 
       const credentials: ConnectionCredentials = await response.json();
-      // Credentials issued by an external operator are not disclosed here — the
-      // requesting side already holds them.
-      const revealed = !!credentials.clientId && !!credentials.clientSecret;
+      // Only external requesting nodes need a human to carry the credentials across;
+      // a directory-hosted node authenticates with what is already on the connection.
+      const revealed =
+        !!credentials.clientId &&
+        !!credentials.clientSecret &&
+        credentials.requestingNodeType === 'external';
       setShowCredentials(revealed ? credentials : null);
       setActionMessage({
         type: 'success',
