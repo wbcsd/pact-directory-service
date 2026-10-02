@@ -17,6 +17,8 @@ export const mockProfileData: ProfileData = {
     "edit-nodes-own-organization",
     "view-users",
     "edit-users",
+    "view-data-model-extensions",
+    "manage-data-model-extensions",
   ],
 };
 

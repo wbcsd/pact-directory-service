@@ -13,6 +13,8 @@ export interface Database {
   activity_logs: ActivityLogsTable;
   product_footprints: ProductFootprintsTable;
   pcf_requests: PcfRequestsTable;
+  data_model_extensions: DataModelExtensionsTable;
+  node_data_model_extensions: NodeDataModelExtensionsTable;
 }
 
 export interface OrganizationsTable {
@@ -132,4 +134,28 @@ export interface PcfRequestsTable {
   fulfilledFootprintIds: unknown[] | null; // footprint IDs sent in RequestFulfilledEvent
   createdAt: Generated<Date>;
   updatedAt: Generated<Date>;
+}
+
+/** Registry of known PACT data model extensions — see https://wbcsd.github.io/data-model-extensions/spec/ */
+export interface DataModelExtensionsTable {
+  id: Generated<number>;
+  name: string;
+  dataSchemaUrl: string; // URL of the extension schema file (spec § 4.3)
+  documentationUrl: string | null;
+  specVersion: Generated<string>; // version of the extension specification, e.g. '2.0.0'
+  version: string | null; // semantic version of the extension itself
+  description: string | null;
+  author: string | null;
+  contactEmail: string | null;
+  status: Generated<'active' | 'deprecated'>;
+  schemaJson: Record<string, unknown> | null; // JSONB — cached extension schema file
+  schemaFetchedAt: Date | null;
+  createdAt: Generated<Date>;
+  updatedAt: Generated<Date>;
+}
+
+export interface NodeDataModelExtensionsTable {
+  nodeId: number;
+  extensionId: number;
+  createdAt: Generated<Date>;
 }

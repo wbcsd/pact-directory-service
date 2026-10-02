@@ -1,3 +1,5 @@
+import type { DataModelExtensionSummary } from "../types/dataModelExtension";
+
 export interface NodeData {
   id: number;
   name: string;
@@ -10,6 +12,7 @@ export interface NodeData {
   createdAt: string;
   updatedAt: string;
   connectionsCount?: number;
+  extensions?: DataModelExtensionSummary[];
 }
 
 export interface ActivityLog {

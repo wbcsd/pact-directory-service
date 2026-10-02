@@ -8,6 +8,7 @@ import { mockFootprintListResponse, mockFootprintDetail } from "./data/footprint
 import { mockPcfRequestListResponse } from "./data/pcf-requests";
 import { mockActivityLogsListResponse, mockActivityLogDetailResponse, mockNodeActivityLogsResponse } from "./data/activity-logs";
 import { mockTestRunListResponse, mockTestResultsResponse, mockPostTestResponse } from "./data/conformance";
+import { mockDataModelExtensionListResponse, mockDataModelExtensionDetail, mockFetchSchemaResponse } from "./data/data-model-extensions";
 
 const apiBase = process.env.API_BASE_URL ?? "http://localhost:3010/api";
 
@@ -89,6 +90,14 @@ const mockRegistry: Record<string, MockEntry> = {
 
   // Feedback
   postFeedback:            { method: "POST",   pattern: /^\/directory\/feedback$/,                                defaultResponse: { message: "Feedback submitted." } },
+
+  // Data model extensions
+  postExtensionFetchSchema: { method: "POST",  pattern: /^\/directory\/data-model-extensions\/fetch-schema$/,      defaultResponse: mockFetchSchemaResponse },
+  getDataModelExtensions:  { method: "GET",    pattern: /^\/directory\/data-model-extensions$/,                    defaultResponse: mockDataModelExtensionListResponse },
+  getDataModelExtension:   { method: "GET",    pattern: /^\/directory\/data-model-extensions\/\d+$/,               defaultResponse: mockDataModelExtensionDetail },
+  postDataModelExtension:  { method: "POST",   pattern: /^\/directory\/data-model-extensions$/,                    defaultResponse: mockDataModelExtensionDetail },
+  putDataModelExtension:   { method: "PUT",    pattern: /^\/directory\/data-model-extensions\/\d+$/,               defaultResponse: mockDataModelExtensionDetail },
+  deleteDataModelExtension:{ method: "DELETE", pattern: /^\/directory\/data-model-extensions\/\d+$/,               defaultResponse: { message: "Deleted." } },
 };
 
 // ---------------------------------------------------------------------------

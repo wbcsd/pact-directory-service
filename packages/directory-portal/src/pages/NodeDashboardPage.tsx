@@ -6,6 +6,7 @@ import {
   DropdownMenu,
   Heading,
   IconButton,
+  Link,
   Separator,
   Text,
   Box,
@@ -756,6 +757,22 @@ const NodeDashboardPage: React.FC = () => {
                   {nodeData.apiUrl}
                 </Text>
               )}
+              {nodeData.extensions?.map((extension) => (
+                <Badge key={extension.id} color="indigo" size="2" variant="soft">
+                  {extension.documentationUrl ? (
+                    <Link
+                      href={extension.documentationUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      color="indigo"
+                    >
+                      {extension.name}
+                    </Link>
+                  ) : (
+                    extension.name
+                  )}
+                </Badge>
+              ))}
             </div>
           ) : null}
 

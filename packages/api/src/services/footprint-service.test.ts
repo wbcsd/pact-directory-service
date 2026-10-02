@@ -4,6 +4,7 @@ import { Role } from '@src/common/policies';
 import { createMockDatabase } from '../common/mock-utils';
 import { UserContext } from './user-service';
 import { NodeService } from './node-service';
+import { DataModelExtensionService } from './data-model-extension-service';
 
 describe('FootprintService', () => {
   let dbMocks: ReturnType<typeof createMockDatabase>;
@@ -106,7 +107,10 @@ describe('FootprintService', () => {
 
   beforeEach(() => {
     dbMocks = createMockDatabase();
-    nodeService = new NodeService(dbMocks.db as any);
+    nodeService = new NodeService(
+      dbMocks.db as any,
+      new DataModelExtensionService(dbMocks.db as any)
+    );
     footprintService = new FootprintService(dbMocks.db as any, nodeService);
   });
 

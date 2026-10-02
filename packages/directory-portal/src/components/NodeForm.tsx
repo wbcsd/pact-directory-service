@@ -18,7 +18,9 @@ import {
 } from "@radix-ui/react-icons";
 import { fetchWithAuth } from "../utils/auth-fetch";
 import { useAuth } from "../contexts/AuthContext";
-import { FormField, TextField, SelectField } from "../components/ui";
+import { FormField, TextField, SelectField, MultiSelect } from "../components/ui";
+import type { MultiSelectOption } from "../components/ui";
+import type { DataModelExtension } from "../types/dataModelExtension";
 
 enum NodeType {
   INTERNAL = "internal",
@@ -43,6 +45,7 @@ export interface NodeFormData {
   resource?: string;
   specVersion?: string;
   discoverable: boolean;
+  extensionIds: number[];
 }
 
 interface NodeFormProps {
@@ -68,8 +71,12 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
     resource: "",
     specVersion: "V3.0",
     discoverable: false,
+    extensionIds: [],
   });
   const [readOnlyOrganization, setReadOnlyOrganization] = useState("");
+  const [extensionOptions, setExtensionOptions] = useState<MultiSelectOption[]>(
+    []
+  );
   const [status, setStatus] = useState<null | "success" | "error">(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(isEditMode);
@@ -92,6 +99,9 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
           resource: node.resource || "",
           specVersion: node.specVersion || "",
           discoverable: node.discoverable ?? false,
+          extensionIds: (node.extensions ?? []).map(
+            (extension: { id: number }) => extension.id
+          ),
         });
         setReadOnlyOrganization(node.organizationName || "");
       } else {
@@ -110,6 +120,30 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
     loadNode();
   }, [loadNode]);
 
+  useEffect(() => {
+    const loadExtensions = async () => {
+      try {
+        const response = await fetchWithAuth(
+          "/data-model-extensions?pageSize=100"
+        );
+        if (!response?.ok) return;
+        const result: { data: DataModelExtension[] } = await response.json();
+        setExtensionOptions(
+          result.data.map((extension) => ({
+            value: extension.id,
+            label: extension.version
+              ? `${extension.name} (${extension.version})`
+              : extension.name,
+            description: extension.description ?? extension.dataSchemaUrl,
+          }))
+        );
+      } catch {
+        setExtensionOptions([]);
+      }
+    };
+    loadExtensions();
+  }, []);
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
@@ -121,6 +155,7 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
         name: formData.name,
         type: formData.type,
         discoverable: formData.discoverable,
+        extensionIds: formData.extensionIds,
       };
       if (formData.type === NodeType.EXTERNAL && formData.apiUrl) {
         dataToSend.apiUrl = formData.apiUrl;
@@ -367,6 +402,28 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
           </Text>
         </Box>
       </Flex>
+
+      {/* Data model extensions */}
+      <FormField
+        name="extensionIds"
+        label="Data Model Extensions"
+        description="Declare which registered PACT data model extensions this node supports."
+      >
+        <MultiSelect
+          aria-label="Data Model Extensions"
+          options={extensionOptions}
+          value={formData.extensionIds}
+          onChange={(value) =>
+            setFormData((prev) => ({
+              ...prev,
+              extensionIds: value as number[],
+            }))
+          }
+          placeholder="No extensions selected"
+          searchPlaceholder="Search extensions…"
+          emptyMessage="No extensions registered"
+        />
+      </FormField>
 
       {/* Actions */}
       <Flex gap="3" mt="2" justify="end">
