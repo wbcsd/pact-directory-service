@@ -8,6 +8,7 @@ import { mockFootprintListResponse, mockFootprintDetail } from "./data/footprint
 import { mockPcfRequestListResponse } from "./data/pcf-requests";
 import { mockActivityLogsListResponse, mockActivityLogDetailResponse, mockNodeActivityLogsResponse } from "./data/activity-logs";
 import { mockTestRunListResponse, mockTestResultsResponse, mockPostTestResponse } from "./data/conformance";
+import { productTourStorageKey } from "../../src/utils/tour-storage";
 
 const apiBase = process.env.API_BASE_URL ?? "http://localhost:3010/api";
 
@@ -113,11 +114,21 @@ export type MockOverrides = Partial<Record<MockKey, unknown>>;
  *
  * @param page      Playwright Page instance
  * @param overrides Per-named-key response overrides for the current test
+ * @param options    `suppressTour` (default true) pre-marks the first-login
+ *                   product tour as seen so its dialog never covers the UI
+ *                   under test. The tour spec opts out.
  */
 export async function setupApiMocks(
   page: Page,
-  overrides: MockOverrides = {}
+  overrides: MockOverrides = {},
+  options: { suppressTour?: boolean } = {}
 ): Promise<void> {
+  if (options.suppressTour ?? true) {
+    await page.addInitScript((key) => {
+      window.localStorage.setItem(key, "true");
+    }, productTourStorageKey(mockProfileData.id));
+  }
+
   const urlPattern = `${apiBase}/**`;
 
   await page.route(urlPattern, (route: Route) => {

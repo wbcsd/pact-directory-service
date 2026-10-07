@@ -9,13 +9,13 @@ interface PageHeaderProps {
 
 const PageHeader: React.FC<PageHeaderProps> = ({ title, actions, subtitle }) => {
   return (
-    <Flex className="header">
+    <Flex className="header" data-tour="page-header">
       <Box flexGrow="1">
         <Heading as="h2" mt="0">{title}</Heading>
         <Text as="p" size="3" mb="6">{subtitle}</Text>
       </Box>
       {actions && 
-      <Flex gap="2">
+      <Flex gap="2" data-tour="page-actions">
         {actions}
       </Flex>}
     </Flex>
