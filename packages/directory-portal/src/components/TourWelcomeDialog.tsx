@@ -32,14 +32,16 @@ const TourWelcomeDialog: React.FC<TourWelcomeDialogProps> = ({
           any point.
         </Text>
 
-        <Flex gap="3" justify="end" wrap="wrap">
+        <Flex gap="3" justify="between" align="center" wrap="wrap">
           <Button variant="ghost" color="gray" onClick={onDecline}>
             No thanks
           </Button>
-          <Button variant="soft" color="gray" onClick={onPostpone}>
-            Remind me later
-          </Button>
-          <Button onClick={onAccept}>Take the tour</Button>
+          <Flex gap="3" align="center">
+            <Button variant="soft" color="gray" onClick={onPostpone}>
+              Remind me later
+            </Button>
+            <Button onClick={onAccept}>Take the tour</Button>
+          </Flex>
         </Flex>
       </Dialog.Content>
     </Dialog.Root>
