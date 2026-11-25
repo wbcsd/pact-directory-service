@@ -43,6 +43,12 @@ export interface NodeFormData {
   resource?: string;
   specVersion?: string;
   discoverable: boolean;
+  organizationId?: number;
+}
+
+interface Organization {
+  id: number;
+  organizationName: string;
 }
 
 interface NodeFormProps {
@@ -57,6 +63,9 @@ interface NodeFormProps {
 const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
   const isEditMode = nodeId != null;
   const { profileData } = useAuth();
+  // const isRoot = profileData?.role === "root";
+  const isRoot = profileData?.policies?.includes("view-nodes-all-organizations") ?? false;
+  //const isRoot = true;
 
   const [formData, setFormData] = useState<NodeFormData>({
     name: "",
@@ -68,11 +77,13 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
     resource: "",
     specVersion: "V3.0",
     discoverable: false,
+    organizationId: isRoot ? undefined : profileData?.organizationId,
   });
   const [readOnlyOrganization, setReadOnlyOrganization] = useState("");
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [status, setStatus] = useState<null | "success" | "error">(null);
   const [errorMessage, setErrorMessage] = useState("");
-  const [loading, setLoading] = useState(isEditMode);
+  const [loading, setLoading] = useState(isEditMode || (isRoot && !isEditMode));
   const [submitting, setSubmitting] = useState(false);
 
   // Load existing node data for edit mode
@@ -92,6 +103,7 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
           resource: node.resource || "",
           specVersion: node.specVersion || "",
           discoverable: node.discoverable ?? false,
+          organizationId: node.organizationId,
         });
         setReadOnlyOrganization(node.organizationName || "");
       } else {
@@ -106,9 +118,42 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
     }
   }, [nodeId, isEditMode]);
 
+  const loadOrganizations = useCallback(async () => {
+    if (!isRoot || isEditMode) return;
+    try {
+      const response = await fetchWithAuth("/organizations");
+      if (response!.ok) {
+        const result = await response!.json();
+        const orgs = result.data || [];
+        setOrganizations(orgs);
+        if (orgs.length > 0 && !formData.organizationId) {
+          const currentOrgId = profileData?.organizationId;
+          const selectedOrgId = currentOrgId && orgs.some(o => o.id === currentOrgId)
+            ? currentOrgId
+            : orgs[0].id;
+          setFormData((prev) => ({ ...prev, organizationId: selectedOrgId }));
+        }
+      } else {
+        setErrorMessage("Failed to load organizations");
+        setStatus("error");
+      }
+    } catch {
+      setErrorMessage("Error loading organizations");
+      setStatus("error");
+    } finally {
+      setLoading(false);
+    }
+  }, [isRoot, isEditMode, formData.organizationId, profileData?.organizationId]);
+
   useEffect(() => {
-    loadNode();
-  }, [loadNode]);
+    if (isEditMode) {
+      loadNode();
+    } else if (isRoot) {
+      loadOrganizations();
+    } else {
+      setLoading(false);
+    }
+  }, [loadNode, loadOrganizations, isEditMode, isRoot]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -133,9 +178,13 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
         if (formData.specVersion) dataToSend.specVersion = formData.specVersion;
       }
 
+      const organizationId = isEditMode
+        ? (formData.organizationId || profileData?.organizationId)
+        : (formData.organizationId || profileData?.organizationId);
+
       const url = isEditMode
         ? `/nodes/${nodeId}`
-        : `/organizations/${profileData?.organizationId}/nodes`;
+        : `/organizations/${organizationId}/nodes`;
       const method = isEditMode ? "PUT" : "POST";
 
       const response = await fetchWithAuth(url, {
@@ -185,8 +234,6 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
   };
 
   const isExternalNode = formData.type === NodeType.EXTERNAL;
-  const organizationName =
-    readOnlyOrganization || profileData?.organizationName || "";
 
   if (loading) {
     return (
@@ -203,9 +250,9 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
       {/* Intro text */}
       <Box mb="4">
         <Text as="p" size="2">
-          A Node represents a PACT-compatible solution endpoint in the PACT Network.
+          A Node represents a PACT-conformant solution endpoint in the PACT Network.
           An <strong>internal</strong> node belongs to your own organization and is hosted within the PACT Directory.
-          An <strong>external</strong> node is a PACT-compatible endpoint hosted outside this system that you register for network connectivity.
+          An <strong>external</strong> node is a PACT-conformant endpoint hosted outside this system that you register for network connectivity.
         </Text>
       </Box>
 
@@ -232,6 +279,38 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
               `Error ${isEditMode ? "updating" : "creating"} node, please try again.`}
           </Callout.Text>
         </Callout.Root>
+      )}
+
+      {/* Organization (read-only for edit mode, selectable for root in create mode) */}
+      {isRoot && !isEditMode && (
+        <FormField name="organization" label="Organization" required>
+          <Select.Root
+            value={formData.organizationId?.toString() || ""}
+            onValueChange={(value) =>
+              setFormData((prev) => ({ ...prev, organizationId: parseInt(value) }))
+            }
+          >
+            <Select.Trigger />
+            <Select.Content>
+              {organizations.map((org) => (
+                <Select.Item key={org.id} value={org.id.toString()}>
+                  {org.organizationName}
+                </Select.Item>
+              ))}
+            </Select.Content>
+          </Select.Root>
+        </FormField>
+      )}
+
+      {/* Organization (read-only in edit mode) */}
+      {isRoot && isEditMode && (
+        <FormField name="organization" label="Organization">
+          <TextField
+            name="organization"
+            value={readOnlyOrganization}
+            disabled
+          />
+        </FormField>
       )}
 
       {/* Name */}
@@ -336,17 +415,6 @@ const NodeForm: React.FC<NodeFormProps> = ({ nodeId, onSaved, onCancel }) => {
             />
           </FormField>
         </>
-      )}
-
-      {/* Organization (read-only, visible to root users only) */}
-      {profileData?.role === "root" && (
-        <FormField name="organization" label="Organization">
-          <TextField
-            name="organization"
-            value={organizationName}
-            disabled
-          />
-        </FormField>
       )}
 
       {/* Discoverable */}

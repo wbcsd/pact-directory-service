@@ -52,7 +52,9 @@ const NodesList: React.FC = () => {
     pageSize: number;
     search?: string;
   }): Promise<{ data: Node[]; pagination: PaginationInfo }> => {
-    if (!profileData?.organizationId) {
+    const isRoot = profileData?.policies?.includes("view-nodes-all-organizations") ?? false;
+
+    if (!isRoot && !profileData?.organizationId) {
       throw new Error("Organization not loaded");
     }
 
@@ -65,9 +67,12 @@ const NodesList: React.FC = () => {
       queryParams.append("search", params.search);
     }
 
-    const response = await fetchWithAuth(
-      `/organizations/${profileData.organizationId}/nodes?${queryParams.toString()}`
-    );
+    // Root users see nodes from all organizations
+    const endpoint = isRoot
+      ? `/nodes`
+      : `/organizations/${profileData?.organizationId}/nodes`;
+
+    const response = await fetchWithAuth(`${endpoint}?${queryParams.toString()}`);
     
     if (!response || !response.ok) {
       throw new Error("Failed to fetch nodes");
@@ -77,6 +82,8 @@ const NodesList: React.FC = () => {
     return result;
   }, [profileData]);
 
+  const isRoot = profileData?.policies?.includes("view-nodes-all-organizations") ?? false;
+
   const columns: Column<Node>[] = [    {
       key: "name",
       header: "Node Name",
@@ -85,12 +92,19 @@ const NodesList: React.FC = () => {
       render: (row: Node) => (
         <Flex align="center" gap="2">
           {row.name}
-          {row.organizationId !== profileData?.organizationId && row.organizationName && (
+          {row.organizationId !== profileData?.organizationId && row.organizationName && !isRoot && (
             <Badge size="1" color="gray" variant="soft">{row.organizationName}</Badge>
           )}
         </Flex>
       ),
     },
+    ...(isRoot ? [{
+      key: "organizationName",
+      header: "Organization",
+      sortable: true,
+      sortValue: (row: Node) => row.organizationName,
+      render: (row: Node) => row.organizationName || "—",
+    }] : []),
     {
       key: "type",
       header: "Type",
@@ -146,7 +160,7 @@ const NodesList: React.FC = () => {
   return (
     <GridPageLayout
       title="Nodes"
-      subtitle="A Node represents a PACT-compliant system endpoint that can exchange Product Carbon Footprint data with other nodes. Each node in your organization can hold PCF records, connect to other nodes, and send or receive PCF requests."
+      subtitle="A Node represents a PACT-conformant system endpoint that can exchange Product Carbon Footprint data with other nodes. Each node in your organization can hold PCF records, connect to other nodes, and send or receive PCF requests."
       actions={
         <Button onClick={() => setPanel({ mode: "add" })}>
           <PlusIcon /> Add Node
@@ -181,9 +195,7 @@ const NodesList: React.FC = () => {
           panel.mode === "connections" ? "Node Connections" : ""
         }
         subtitle={
-          panel.mode === "add"
-            ? (profileData?.organizationName ? `For ${profileData.organizationName}` : undefined)
-            : panel.mode === "edit" || panel.mode === "connections"
+          panel.mode === "edit" || panel.mode === "connections"
               ? panel.nodeName
               : undefined
         }

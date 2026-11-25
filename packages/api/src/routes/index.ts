@@ -248,12 +248,20 @@ router.delete('/directory/nodes/:id', authenticate, context(async (req) => {
 }));
 
 // List nodes for an organization
-// Lists all if user is root
 router.get('/directory/organizations/:id/nodes', authenticate, context(async (req) => {
   console.log('List nodes query params:', req.query);
   return req.services.node.list(
     req.context,
     parseInt(req.params.id as string),
+    ListQuery.parse(req.query)
+  );
+}));
+
+// List nodes across all organizations (root only)
+router.get('/directory/nodes', authenticate, context(async (req) => {
+  return req.services.node.list(
+    req.context,
+    undefined,
     ListQuery.parse(req.query)
   );
 }));
@@ -477,7 +485,7 @@ router.post('/directory/users/resend-verification', context(async (req) => {
 }));
 
 // Internal Node PACT API Routes
-// Mount PACT-compliant endpoints for internal nodes
+// Mount PACT-conformant endpoints for internal nodes
 // URL structure: /api/nodes/:nodeId/auth/token and /api/nodes/:nodeId/3/footprints
 router.use('/nodes', createInternalNodeRoutes());
 

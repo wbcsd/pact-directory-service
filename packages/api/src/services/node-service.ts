@@ -313,18 +313,19 @@ export class NodeService {
   }
 
   /**
-   * List nodes for a specific organization
+   * List nodes for a specific organization, or across all organizations when no organization is given
    */
   async list(
     context: UserContext,
-    organizationId: number,
+    organizationId: number | undefined,
     query: ListQuery = ListQuery.default()
   ): Promise<ListResult<NodeData>> {
 
     // Check access
     const allowed =
       context.policies.includes('view-nodes-all-organizations') ||
-      (context.policies.includes('view-nodes-own-organization') &&
+      (organizationId !== undefined &&
+        context.policies.includes('view-nodes-own-organization') &&
         context.organizationId === organizationId);
 
     if (!allowed) {
@@ -369,7 +370,9 @@ export class NodeService {
           .as('connectionsCount')
       )
 
-    qb = qb.where('nodes.organizationId', '=', organizationId);
+    if (organizationId !== undefined) {
+      qb = qb.where('nodes.organizationId', '=', organizationId);
+    }
 
     // Apply filters
     if (query.filters) {

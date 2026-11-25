@@ -1122,6 +1122,46 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /directory/nodes:
+    get:
+      summary: List nodes across all organizations
+      description: Root users only. Returns nodes from every organization.
+      tags: [Nodes]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: pageSize
+          schema: { type: integer, default: 50, maximum: 100 }
+        - in: query
+          name: search
+          schema: { type: string }
+          description: Search by node name
+        - in: query
+          name: sortBy
+          schema: { type: string, enum: [name, type, status, createdAt, updatedAt] }
+        - in: query
+          name: sortOrder
+          schema: { type: string, enum: [asc, desc], default: desc }
+          description: Sort order
+      responses:
+        "200":
+          description: List of nodes across all organizations with pagination
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/NodeData"
+                  pagination:
+                    $ref: "#/components/schemas/PaginationInfo"
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
   /directory/nodes/discoverable:
     get:
       summary: List discoverable nodes from across the PACT Network

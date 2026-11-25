@@ -518,6 +518,25 @@ describe('NodeService', () => {
       ).rejects.toThrow(ForbiddenError);
     });
 
+    it('should throw ForbiddenError when listing across organizations without root policy', async () => {
+      await expect(
+        nodeService.list(adminUserContext, undefined, ListQuery.default())
+      ).rejects.toThrow(ForbiddenError);
+    });
+
+    it('should not filter by organization when root lists across all organizations', async () => {
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce({ total: 0 });
+      dbMocks.executors.execute.mockResolvedValueOnce([]);
+
+      await nodeService.list(rootUserContext, undefined, ListQuery.default());
+
+      expect(dbMocks.queryChain.where).not.toHaveBeenCalledWith(
+        'nodes.organizationId',
+        '=',
+        expect.anything()
+      );
+    });
+
     it('should return paginated list of nodes', async () => {
       const mockNodes = [
         {
