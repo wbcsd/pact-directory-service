@@ -74,6 +74,7 @@ const FunctionalPageLayout: React.FC<FunctionalPageLayoutProps> = ({
         )}
         <aside
           className={`sidebar${mobileMenuOpen ? " sidebar--open" : ""}`}
+          data-tour="sidebar"
           onClick={() => setMobileMenuOpen(false)}
         >
           <SideNav />

@@ -315,6 +315,22 @@ code {
   font-weight: 600;
 }
 
+.nav-link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-bottom: 0.5rem;
+  font: inherit;
+  font-weight: bold;
+  color: var(--accent-11);
+  text-align: left;
+  cursor: pointer;
+}
+
+.nav-link-button:hover {
+  text-decoration: underline;
+}
+
 .main {
   flex: 1;
   padding: 2rem 3rem;
