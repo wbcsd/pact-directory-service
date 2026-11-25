@@ -10,7 +10,7 @@ import {
   ForbiddenError,
   EmailNotVerifiedError,
 } from '@src/common/errors';
-import { Policy, Role } from '@src/common/policies';
+import { Role } from '@src/common/policies';
 import { createMockDatabase } from '../common/mock-utils';
 import logger from '@src/common/logger';
 
@@ -708,7 +708,7 @@ describe('UserService', () => {
       email: 'admin@example.com',
       organizationId: 1,
       role: Role.Administrator,
-      policies: [Policy.EditUsers],
+      policies: ['edit-users'],
       status: 'enabled' as const,
     };
 
@@ -832,7 +832,7 @@ describe('UserService', () => {
       const rootContext = {
         ...context,
         role: Role.Root,
-        policies: [Policy.EditAllUsers],
+        policies: ['edit-all-users'],
       };
 
       dbMocks.db.selectFrom = jest
@@ -927,7 +927,7 @@ describe('UserService', () => {
       email: 'admin@example.com',
       organizationId: 10,
       role: Role.Administrator,
-      policies: [Policy.EditUsers],
+      policies: ['edit-users'],
       status: 'enabled' as const,
     };
 
@@ -979,7 +979,7 @@ describe('UserService', () => {
       const rootContext = {
         ...adminContext,
         role: Role.Root,
-        policies: [Policy.EditAllUsers],
+        policies: ['edit-all-users'],
         organizationId: 10,
       };
 

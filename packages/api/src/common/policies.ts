@@ -1,15 +1,18 @@
-import { Policy, Role } from '@wbcsd/pact-policies';
 import { UserContext } from '../services/user-service';
 import { ForbiddenError } from './errors';
 
-const POLICIES: Map<Role, Policy[]> = new Map<Role, Policy[]>();
+const POLICIES: Map<Role, string[]> = new Map<Role, string[]>();
 
-export { Policy, Role };
+export enum Role {
+  Administrator = 'administrator',
+  User = 'user',
+  Root = 'root',
+}
 
 /**
  * Registers a new policy by adding it to the global policies list.
  */
-export function registerPolicy(roles: Role[], policy: Policy) {
+export function registerPolicy(roles: Role[], policy: string) {
   roles.forEach((role) => {
     if (!POLICIES.has(role)) {
       POLICIES.set(role, []);
@@ -25,7 +28,7 @@ export function registerPolicy(roles: Role[], policy: Policy) {
 /**
  * Lists all registered policies.
  */
-export function getPoliciesForRole(role: Role): Policy[] {
+export function getPoliciesForRole(role: Role): string[] {
   return POLICIES.get(role) ?? [];
 }
 
@@ -49,7 +52,7 @@ export function getPoliciesForRole(role: Role): Policy[] {
  */
 export function hasAccess(
   context: UserContext, 
-  policy: Policy | Policy[],
+  policy: string | string[],
 ): boolean {
   if (Array.isArray(policy)) {
     if (policy.length > 0 && !policy.some((p) => context.policies.includes(p))) {
@@ -70,7 +73,7 @@ export function hasAccess(
  */
 export function checkAccess(
   context: UserContext,
-  policy: Policy | Policy[]
+  policy: string | string[]
 ) {
   if (!hasAccess(context, policy)) {
     throw new ForbiddenError('Access denied');

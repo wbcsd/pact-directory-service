@@ -14,16 +14,15 @@ import { EmailService } from './email-service';
 import {
   getPoliciesForRole,
   hasAccess,
-  Policy,
   registerPolicy,
   Role,
 } from '@src/common/policies';
 import logger from '@src/common/logger';
 
-registerPolicy([Role.Administrator], Policy.ViewUsers);
-registerPolicy([Role.Administrator], Policy.EditUsers);
-registerPolicy([Role.Root], Policy.ViewAllUsers);
-registerPolicy([Role.Root], Policy.EditAllUsers);
+registerPolicy([Role.Administrator], 'view-users');
+registerPolicy([Role.Administrator], 'edit-users');
+registerPolicy([Role.Root], 'view-all-users');
+registerPolicy([Role.Root], 'edit-all-users');
 
 export type UserStatus = 'unverified' | 'enabled' | 'disabled' | 'deleted';
 
@@ -32,7 +31,7 @@ export interface UserContext {
   email: string;
   organizationId: number;
   role: Role;
-  policies: Policy[];
+  policies: string[];
   status: UserStatus
 }
 
@@ -60,7 +59,7 @@ export interface UserData {
   organizationIdentifier: string | null;
   organizationDescription?: string | null;
   solutionApiUrl?: string | null;
-  policies?: Policy[];
+  policies?: string[];
 }
 
 export interface ForgotPasswordData {

@@ -1,15 +1,15 @@
 import { Kysely } from 'kysely';
 import { Database } from '@src/database/types';
 import { NotFoundError, ForbiddenError, BadRequestError } from '@src/common/errors';
-import { Policy, registerPolicy, Role } from '@src/common/policies';
+import { registerPolicy, Role } from '@src/common/policies';
 import { UserContext } from './user-service';
 import { ListQuery, ListResult } from '@src/common/list-query';
 import { NodeService } from './node-service';
 import { schema, validate } from '@wbcsd/pact-data-model/v3_0';
 
 // Register all policies used in this service
-registerPolicy([Role.Administrator], Policy.ManageFootprintsOwnOrganization);
-registerPolicy([Role.Root], Policy.ManageFootprintsAllOrganizations);
+registerPolicy([Role.Administrator], 'manage-footprints-own-organization');
+registerPolicy([Role.Root], 'manage-footprints-all-organizations');
 
 export interface FootprintData {
   id: string;
