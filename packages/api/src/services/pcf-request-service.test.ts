@@ -252,24 +252,7 @@ describe('PcfRequestService', () => {
       expect(mockSendRequestCreated).toHaveBeenCalledWith(mockFilters);
     });
 
-    it('coerces a string status filter to an array in the outgoing event', async () => {
-      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockConnection); // load connection
-      nodeService.get.mockResolvedValueOnce(mockFromNode as any);              // access check
-      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce(mockTargetNode);  // target node
-      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce(mockInsertedRow); // insert
-
-      await service.create(adminContext, nodeId, {
-        connectionId,
-        filters: { ...mockFilters, status: 'Active' },
-      });
-
-      // The PACT v3 spec models RequestCreatedEvent's data.status as an array.
-      expect(mockSendRequestCreated).toHaveBeenCalledWith(
-        expect.objectContaining({ status: ['Active'] })
-      );
-    });
-
-    it('leaves an already-array status filter unchanged in the outgoing event', async () => {
+    it('sends a string status filter unchanged in the outgoing event', async () => {
       dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockConnection);
       nodeService.get.mockResolvedValueOnce(mockFromNode as any);
       dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce(mockTargetNode);
@@ -277,11 +260,37 @@ describe('PcfRequestService', () => {
 
       await service.create(adminContext, nodeId, {
         connectionId,
-        filters: { ...mockFilters, status: ['Active', 'Deprecated'] as unknown as string },
+        filters: { ...mockFilters, status: 'Deprecated' },
       });
 
       expect(mockSendRequestCreated).toHaveBeenCalledWith(
-        expect.objectContaining({ status: ['Active', 'Deprecated'] })
+        expect.objectContaining({ status: 'Deprecated' })
+      );
+    });
+
+    
+    it('converts plain validity dates to date-times in the outgoing event', async () => {
+      dbMocks.executors.executeTakeFirst.mockResolvedValueOnce(mockConnection);
+      nodeService.get.mockResolvedValueOnce(mockFromNode as any);
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce(mockTargetNode);
+      dbMocks.executors.executeTakeFirstOrThrow.mockResolvedValueOnce(mockInsertedRow);
+
+      await service.create(adminContext, nodeId, {
+        connectionId,
+        filters: {
+          ...mockFilters,
+          validOn: '2026-01-01',
+          validAfter: '2026-02-03',
+          validBefore: '2026-03-04T10:00:00Z',
+        },
+      });
+
+      expect(mockSendRequestCreated).toHaveBeenCalledWith(
+        expect.objectContaining({
+          validOn: '2026-01-01T00:00:00Z',
+          validAfter: '2026-02-03T00:00:00Z',
+          validBefore: '2026-03-04T10:00:00Z',
+        })
       );
     });
 

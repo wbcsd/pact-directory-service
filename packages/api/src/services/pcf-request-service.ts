@@ -33,6 +33,11 @@ export interface CreatePcfRequestData {
   filters: FootprintFilters;
 }
 
+/** Turn a plain date (YYYY-MM-DD) into a UTC date-time; other values are left as they are. */
+function toDateTime(value: string): string {
+  return /^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T00:00:00Z` : value;
+}
+
 export class PcfRequestService {
   constructor(
     private db: Kysely<Database>,
@@ -109,7 +114,7 @@ export class PcfRequestService {
       ? targetNode.apiUrl.replace(/\/$/, '')
       : `${this.directoryApiBaseUrl}/api/nodes/${targetNode.id}`;
 
-    const source = `${this.directoryApiBaseUrl}/api/nodes/${nodeId}`;
+    const source = fromNode.apiUrl ? fromNode.apiUrl.replace(/\/$/, '') : `${this.directoryApiBaseUrl}/api/nodes/${nodeId}`;
 
     // The connection carries the credentials the from node authenticates with:
     // issued by this directory for an internal target (and validated there by
@@ -133,16 +138,15 @@ export class PcfRequestService {
     );
 
     // Send the RequestCreatedEvent and get back the event ID.
-    // The PACT v3 spec models the RequestCreatedEvent's `data.status` as an array
-    // of strings, whereas FootprintFilters (shared with the ListFootprints query
-    // parameters) types it as a single string. Coerce `status` to an array so the
-    // outgoing event validates against a spec-conformant recipient.
+    // `status` is a single string. The validity dates
+    // must be date-times, while the UI may send plain dates.
     const eventFilters: FootprintFilters = {
       ...filters,
-      ...(filters.status !== undefined
-        ? { status: (Array.isArray(filters.status) ? filters.status : [filters.status]) as unknown as string }
-        : {}),
+      ...(filters.validOn ? { validOn: toDateTime(filters.validOn) } : {}),
+      ...(filters.validAfter ? { validAfter: toDateTime(filters.validAfter) } : {}),
+      ...(filters.validBefore ? { validBefore: toDateTime(filters.validBefore) } : {}),
     };
+    console.log('Event filters:', eventFilters);
     const requestEventId = await client.sendRequestCreated(eventFilters);
 
     // Persist the outgoing request.
